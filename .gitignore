@@ -1,5 +1,7 @@
 /Samples/Cocos2d-x/cocos2d-x/*
 !Please copy cocos2d-x
+/Core/*
+!Please copy cubism native core
 Debug.win32
 Release.win32
 

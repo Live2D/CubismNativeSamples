@@ -1,3 +1,3 @@
 [submodule "Framework"]
 	path = Framework
-	url = git@github.com:Live2D/CubismNativeFramework.git
+	url = https://github.com/Live2D/CubismNativeFramework.git

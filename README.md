@@ -39,6 +39,11 @@ Cubism Natve FrameworkおよびCubism Coreライブラリと組み合わせて�
 [Cubism SDK Manual](http://docs.live2d.com/cubism-sdk-manual/top/)
 
 
+# 変更履歴
+
+当リポジトリの変更履歴については[コミットログ](https://github.com/Live2D/CubismNativeSamples/commits/master)を参照ください。
+
+
 # TODO
 
 - サンプルの追加

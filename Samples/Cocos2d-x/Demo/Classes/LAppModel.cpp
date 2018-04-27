@@ -645,23 +645,17 @@ csmRectF LAppModel::GetDrawableArea(csmInt32 drawableIndex, const CubismMatrix44
     const csmInt32 count = _model->GetDrawableVertexCount(drawableIndex);
     const csmFloat32* vertices = _model->GetDrawableVertices(drawableIndex);
 
-    csmFloat32 left = windowSize.X;
-    csmFloat32 right = 0.0f;
-    csmFloat32 top = windowSize.Y;
-    csmFloat32 bottom = 0.0f;
+    csmFloat32 left = vertices[0];
+    csmFloat32 right = vertices[0];
+    csmFloat32 top = vertices[1];
+    csmFloat32 bottom = vertices[1];
 
-    for (csmInt32 j = 0; j < count; ++j)
+    for (csmInt32 j = 1; j < count; ++j)
     {
         CubismVector2 pos;
 
         pos.X = vertices[Constant::VertexOffset + j * Constant::VertexStep];
         pos.Y = vertices[Constant::VertexOffset + j * Constant::VertexStep + 1];
-
-        pos.X = pos.X * currentMatrix.GetArray()[0] + pos.Y * currentMatrix.GetArray()[1];
-        pos.Y = pos.X * currentMatrix.GetArray()[4] + pos.Y * currentMatrix.GetArray()[5];
-
-        pos.X = pos.X * windowSize.X / 2 + windowSize.X / 2;
-        pos.Y = pos.Y * windowSize.Y / 2 + windowSize.Y / 2;
 
         if (pos.X < left)
         {
@@ -684,5 +678,14 @@ csmRectF LAppModel::GetDrawableArea(csmInt32 drawableIndex, const CubismMatrix44
         }
     }
 
-    return csmRectF(left, top, right - left, bottom - top);
+    csmFloat32 convertLeft   = left  * currentMatrix.GetArray()[0] + top    * currentMatrix.GetArray()[1];
+    convertLeft   = convertLeft   * windowSize.X / 2 + windowSize.X / 2;
+    csmFloat32 convertTop    = left  * currentMatrix.GetArray()[4] + top    * currentMatrix.GetArray()[5];
+    convertTop    = convertTop    * windowSize.Y / 2 + windowSize.Y / 2;
+    csmFloat32 convertRight  = right * currentMatrix.GetArray()[0] + bottom * currentMatrix.GetArray()[1];
+    convertRight  = convertRight  * windowSize.X / 2 + windowSize.X / 2;
+    csmFloat32 convertBottom = right * currentMatrix.GetArray()[4] + bottom * currentMatrix.GetArray()[5];
+    convertBottom = convertBottom * windowSize.Y / 2 + windowSize.Y / 2;
+    
+    return csmRectF(convertLeft, convertTop, (convertRight - convertLeft), (convertBottom - convertTop));
 }

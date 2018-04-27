@@ -68,12 +68,12 @@
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v7.1A\lib;$(ProjectDir)..\..\..\..\Core\lib\windows\$(PlatformTarget)\$(PlatformToolsetVersion);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v7.1A\lib;$(ProjectDir)..\..\..\..\Core\lib\windows\$(PlatformTarget)\140;$(LibraryPath)</LibraryPath>
     <IncludePath>$(ProjectDir)..\..\..\..\Framework\src;$(ProjectDir)..\..\..\..\Core\include;$(IncludePath)</IncludePath>
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LibraryPath>$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v7.1A\lib;$(ProjectDir)..\..\..\..\Core\lib\windows\$(PlatformTarget)\$(PlatformToolsetVersion);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v7.1A\lib;$(ProjectDir)..\..\..\..\Core\lib\windows\$(PlatformTarget)\140;$(LibraryPath)</LibraryPath>
     <IncludePath>$(ProjectDir)..\..\..\..\Framework\src;$(ProjectDir)..\..\..\..\Core\include;$(IncludePath)</IncludePath>
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>

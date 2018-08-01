@@ -672,7 +672,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "../../../../Core/lib/ios/Debug-iphonesimulator";
+				LIBRARY_SEARCH_PATHS = "../../../../Core/lib/ios/$(CONFIGURATION)-$(PLATFORM_NAME)";
 				OTHER_CFLAGS = (
 					"-DGLEW_STATIC",
 					"-DCSM_TARGET_IPHONE_ES2",
@@ -702,7 +702,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "../../../../Core/lib/ios/Debug-iphonesimulator";
+				LIBRARY_SEARCH_PATHS = "../../../../Core/lib/ios/$(CONFIGURATION)-$(PLATFORM_NAME)";
 				OTHER_CFLAGS = (
 					"-DGLEW_STATIC",
 					"-DCSM_TARGET_IPHONE_ES2",

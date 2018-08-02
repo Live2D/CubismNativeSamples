@@ -37,7 +37,6 @@ set(Demo
 # Framework側のCMakeFielsのプリプロセッサ定義
 set(FRAMEWORK_DEFINITIOINS
     -DCSM_TARGET_WIN_GL
-    -D_USE_MATH_DEFINES
     -DGLEW_STATIC
 )
 
@@ -55,7 +54,7 @@ add_subdirectory(../../../../Framework ${CMAKE_CURRENT_BINARY_DIR}/Framework)
 
 
 # プリプロセッサ定義の追加
-add_definitions(-DCSM_TARGET_WIN_GL -D_USE_MATH_DEFINES -DGLEW_STATIC)
+add_definitions(-DCSM_TARGET_WIN_GL -DGLEW_STATIC)
 
 # includeパスの追加
 include_directories(../../../../Framework/src)

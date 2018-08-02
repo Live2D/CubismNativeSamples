@@ -25,8 +25,14 @@ Demo
 			
 			シェルスクリプトの実行にはCMake(version3.1以上)とXCode及び、homebrewのインストールが必要になります。
 
-		Resources
-			サンプルプロジェクトで使用するLive2Dモデル、各種ファイルが含まれるフォルダ
+		proj.android
+			AndroidStudio用のプロジェクトファイルが含まれています。
+
+		proj.ios
+			iOS用のXcodeプロジェクトが含まれています。
+			
+		Res
+			サンプルプロジェクトで使用するLive2Dモデル、各種ファイルが含まれています。
 
 thirdParty
 	サンプルプロジェクトで使用するサードパーティライブラリが含まれるフォルダ

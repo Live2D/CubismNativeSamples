@@ -1,0 +1,176 @@
+/*
+ * Copyright(c) Live2D Inc. All rights reserved.
+ *
+ * Use of this source code is governed by the Live2D Open Software license
+ * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ */
+
+#import <Foundation/Foundation.h>
+#import <GLKit/GLKit.h>
+#import "LAppLive2DManager.h"
+#import "LAppModel.h"
+#import "LAppDefine.h"
+#import "LAppPal.h"
+
+@interface LAppLive2DManager()
+
+- (id)init;
+- (void)dealloc;
+@end
+
+@implementation LAppLive2DManager
+
+static LAppLive2DManager* s_instance = nil;
+
++ (LAppLive2DManager*)getInstance
+{
+    @synchronized(self)
+    {
+        if(s_instance == nil)
+        {
+            s_instance = [[LAppLive2DManager alloc] init];
+        }
+    }
+    return s_instance;
+}
+
++ (void)releaseInstance
+{
+    if(s_instance != nil)
+    {
+        [s_instance release];
+        s_instance = nil;
+    }
+}
+
+- (id)init
+{
+    self = [super init];
+    if ( self ) {
+        _viewMatrix = nil;
+        _sceneIndex = 0;
+        
+        [self changeScene:_sceneIndex];
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    [self releaseAllModel];
+    [super dealloc];
+    
+}
+
+- (void)releaseAllModel
+{
+    for (Csm::csmUint32 i = 0; i < _models.GetSize(); i++)
+    {
+        delete _models[i];
+    }
+    
+    _models.Clear();
+}
+
+- (LAppModel*)getModel:(Csm::csmUint32)no
+{
+    if (no < _models.GetSize())
+    {
+        return _models[no];
+    }
+    return nil;
+}
+
+- (void)onDrag:(Csm::csmFloat32)x floatY:(Csm::csmFloat32)y
+{
+    for (Csm::csmUint32 i = 0; i < _models.GetSize(); i++)
+    {
+        Csm::CubismUserModel* model = static_cast<Csm::CubismUserModel*>([self getModel:i]);
+        model->SetDragging(x,y);
+    }
+}
+
+- (void)onTap:(Csm::csmFloat32)x floatY:(Csm::csmFloat32)y;
+{
+    if (LAppDefine::DebugLogEnable)
+    {
+        LAppPal::PrintLog("[APP]tap point: {x:%.2f y:%.2f}", x, y);
+    }
+    
+    for (Csm::csmUint32 i = 0; i < _models.GetSize(); i++)
+    {
+        if(_models[i]->HitTest(LAppDefine::HitAreaNameHead,x,y))
+        {
+            if (LAppDefine::DebugLogEnable)
+            {
+                LAppPal::PrintLog("[APP]hit area: [%s]", LAppDefine::HitAreaNameHead);
+            }
+            _models[i]->SetRandomExpression();
+        }
+        else if (_models[i]->HitTest(LAppDefine::HitAreaNameBody, x, y))
+        {
+            if (LAppDefine::DebugLogEnable)
+            {
+                LAppPal::PrintLog("[APP]hit area: [%s]", LAppDefine::HitAreaNameBody);
+            }
+            _models[i]->StartRandomMotion(LAppDefine::MotionGroupTapBody, LAppDefine::PriorityNormal);
+        }
+    }
+}
+
+- (void)onUpdate;
+{
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    int width = screenRect.size.width;
+    int height = screenRect.size.height;
+    Csm::CubismMatrix44 projection;
+    
+    projection.Scale(1.0f, static_cast<float>(width) / static_cast<float>(height));
+    
+    if (_viewMatrix != nil)
+    {
+        projection.MultiplyByMatrix(_viewMatrix);
+    }
+    
+    Csm::CubismMatrix44    saveProjection = projection;
+    Csm::csmUint32 modelCount = _models.GetSize();
+    for (Csm::csmUint32 i = 0; i < modelCount; ++i)
+    {
+        LAppModel* model = [self getModel:i];
+        projection = saveProjection;
+        
+        model->Update();
+        model->Draw(projection);///< 参照渡しなのでprojectionは変質する
+    }
+}
+
+- (void)nextScene;
+{
+    Csm::csmInt32 no = (_sceneIndex + 1) % LAppDefine::ModelDirSize;
+    [self changeScene:no];
+}
+
+- (void)changeScene:(Csm::csmInt32)index;
+{
+    _sceneIndex = index;
+    if (LAppDefine::DebugLogEnable)
+    {
+        LAppPal::PrintLog("[APP]model index: %d", _sceneIndex);
+    }
+    
+    // ModelDir[]に保持したディレクトリ名から
+    // model3.jsonのパスを決定する.
+    // ディレクトリ名とmodel3.jsonの名前を一致させておくこと.
+    std::string model = LAppDefine::ModelDir[index];
+    std::string modelPath = LAppDefine::ResourcesPath + model + "/";
+    std::string modelJsonName = LAppDefine::ModelDir[index];
+    modelJsonName += ".model3.json";
+    
+    [self releaseAllModel];
+    _models.PushBack(new LAppModel());
+    _models[0]->LoadAssets(modelPath.c_str(), modelJsonName.c_str());
+}
+
+
+@end
+

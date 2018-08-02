@@ -25,7 +25,7 @@ namespace LAppDefine {
     const csmFloat32 ViewLogicalMaxTop = 2.0f;
 
     // 相対パス
-    const csmChar* ResourcesPath = "../../Res/";
+    const csmChar* ResourcesPath = "";
 
     // モデルの後ろにある背景の画像ファイル
     const csmChar* BackImageName = "back_class_normal.png";

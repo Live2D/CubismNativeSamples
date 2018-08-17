@@ -12,6 +12,7 @@
 #include <Motion/CubismMotion.hpp>
 #include <Physics/CubismPhysics.hpp>
 #include <CubismDefaultParameterId.hpp>
+#include <GL/glew.h>
 #include <Rendering/OpenGL/CubismRenderer_OpenGLES2.hpp>
 #include <Utils/CubismString.hpp>
 #include <Id/CubismIdManager.hpp>

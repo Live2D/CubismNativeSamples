@@ -67,6 +67,7 @@
                                 STBI_rgb_alpha);
     
     {
+#ifdef PREMULTIPLIED_ALPHA_ENABLE
         unsigned int* fourBytes = reinterpret_cast<unsigned int*>(png);
         for (int i = 0; i < width * height; i++)
         {
@@ -74,6 +75,7 @@
             int tes = [self pemultiply:p[0] Green:p[1] Blue:p[2] Alpha:p[3]];
             fourBytes[i] = tes;
         }
+#endif
     }
 
     // OpenGL用のテクスチャを生成する

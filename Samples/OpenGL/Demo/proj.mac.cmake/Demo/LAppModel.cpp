@@ -73,7 +73,7 @@ LAppModel::~LAppModel()
         const csmChar* group = _modelSetting->GetMotionGroupName(i);
         ReleaseMotionGroup(group);
     }
-    CSM_DELETE(_modelSetting);
+    delete(_modelSetting);
 }
 
 void LAppModel::LoadAssets(const csmChar* dir, const csmChar* fileName)
@@ -603,7 +603,11 @@ void LAppModel::SetupTextures()
         GetRenderer<Rendering::CubismRenderer_OpenGLES2>()->BindTexture(modelTextureNumber, glTextueNumber);
     }
 
+#ifdef PREMULTIPLIED_ALPHA_ENABLE
     GetRenderer<Rendering::CubismRenderer_OpenGLES2>()->IsPremultipliedAlpha(true);
+#else
+    GetRenderer<Rendering::CubismRenderer_OpenGLES2>()->IsPremultipliedAlpha(false);
+#endif
 
 }
 

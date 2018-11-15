@@ -53,7 +53,7 @@ android {
         java.srcDir "src"
         res.srcDir "res"
         manifest.srcFile "AndroidManifest.xml"
-        assets.srcDir "../../Resources"
+        assets.srcDirs = ["../../../../Res", "../../Resources"]
     }
 
     externalNativeBuild {

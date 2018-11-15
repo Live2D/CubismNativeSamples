@@ -114,7 +114,7 @@ void LAppPal::PrintMessage(const csmChar* message)
     PrintLog("%s", message);
 }
 
-void LAppPal::CoodinateFullScreenToWindow(float clientWidth, float clientHeight, float fullScreenX, float fullScreenY, float& retWindowX, float& retWindowY)
+void LAppPal::CoordinateFullScreenToWindow(float clientWidth, float clientHeight, float fullScreenX, float fullScreenY, float& retWindowX, float& retWindowY)
 {
     retWindowX = retWindowY = 0.0f;
 
@@ -127,7 +127,7 @@ void LAppPal::CoodinateFullScreenToWindow(float clientWidth, float clientHeight,
     retWindowY = (-fullScreenY + height) * 0.5f;
 }
 
-void LAppPal::CoodinateWindowToFullScreen(float clientWidth, float clientHeight, float windowX, float windowY, float& retFullScreenX, float& retFullScreenY)
+void LAppPal::CoordinateWindowToFullScreen(float clientWidth, float clientHeight, float windowX, float windowY, float& retFullScreenX, float& retFullScreenY)
 {
     retFullScreenX = retFullScreenY = 0.0f;
 

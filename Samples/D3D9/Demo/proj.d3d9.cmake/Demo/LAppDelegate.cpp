@@ -67,7 +67,9 @@ bool LAppDelegate::Initialize()
     }
 
     //ウインドウの生成
-    _windowHandle = CreateWindow(ClassName, ClassName, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, rect.right, rect.bottom, NULL, NULL, _windowClass.hInstance, NULL);
+    _windowHandle = CreateWindow(ClassName, ClassName, 
+        WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME & ~WS_MAXIMIZEBOX, // サイズ変更禁止 
+        CW_USEDEFAULT, CW_USEDEFAULT, rect.right, rect.bottom, NULL, NULL, _windowClass.hInstance, NULL);
     if(_windowHandle==NULL)
     {
         LAppPal::PrintLog("Fail Create Window");
@@ -85,8 +87,11 @@ bool LAppDelegate::Initialize()
         return false;
     }
 
+    // デフォルトバックバッファ作成枚数 
+    const csmInt32 BackBufferNum = 1;
+
     // デバイス設定 
-    ZeroMemory(&_presentParameters, sizeof(_presentParameters));
+    memset(&_presentParameters, 0, sizeof(_presentParameters));
     _presentParameters.Windowed = TRUE;                          // ウインドウモード 
     _presentParameters.SwapEffect = D3DSWAPEFFECT_DISCARD;       // バックバッファのスワップエフェクト Direct3Dにスワップエフェクトをまかせる 
     _presentParameters.BackBufferFormat = D3DFMT_A8R8G8B8;       // バックバッファのフォーマット D3DFMT_UNKNOWNだと今表示されているモニタの設定と同じ 
@@ -336,7 +341,7 @@ void LAppDelegate::StartFrame()
     }
 
     //バックバッファのクリア
-    _device->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 0);
+    _device->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
     //シーンの開始
     if (SUCCEEDED(_device->BeginScene()))

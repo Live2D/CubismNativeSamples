@@ -1,9 +1,9 @@
 ﻿/*
-* Copyright(c) Live2D Inc. All rights reserved.
-*
-* Use of this source code is governed by the Live2D Open Software license
-* that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
-*/
+ * Copyright(c) Live2D Inc. All rights reserved.
+ *
+ * Use of this source code is governed by the Live2D Open Software license
+ * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ */
 
 #include "LAppDefine.hpp"
 #include <CubismFramework.hpp>
@@ -25,14 +25,14 @@ namespace LAppDefine {
     const csmFloat32 ViewLogicalMaxTop = 2.0f;
 
     // 相対パス
-    const csmChar* ResourcesPath = "../../Res/";
+    const csmChar* ResourcesPath = "../../../../Res/";
 
     // モデルの後ろにある背景の画像ファイル
     const csmChar* BackImageName = "back_class_normal.png";
     // 歯車
     const csmChar* GearImageName = "icon_gear.png";
     // 終了ボタン
-    const csmChar* PowerImageName = "CloseNormal.png";
+    const csmChar* PowerImageName = "Close.png";
 
     // モデル定義------------------------------------------
     // モデルを配置したディレクトリ名の配列
@@ -64,4 +64,8 @@ namespace LAppDefine {
 
     // Frameworkから出力するログのレベル設定
     const CubismFramework::Option::LogLevel CubismLoggingLevel = CubismFramework::Option::LogLevel_Verbose;
+
+    // デフォルトのレンダーターゲットサイズ 
+    const csmInt32 RenderTargetWidth = 1900;
+    const csmInt32 RenderTargetHeight = 1000;
 }

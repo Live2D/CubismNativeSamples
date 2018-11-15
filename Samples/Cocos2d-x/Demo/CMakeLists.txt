@@ -63,16 +63,16 @@ endif()
 # Compiler options
 if(MSVC)
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:msvcrt /NODEFAULTLIB:libcmt")
+      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:msvcrt /NODEFAULTLIB:libcmt")
   else()
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:libcmt")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:libcmt")
   endif()
   ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS
                   -wd4251 -wd4244 -wd4334 -wd4005 -wd4820 -wd4710
                   -wd4514 -wd4056 -wd4996 -wd4099)
 else()
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	ADD_DEFINITIONS(-DCOCOS2D_DEBUG=1)
+    ADD_DEFINITIONS(-DCOCOS2D_DEBUG=1)
   endif()
   set(CMAKE_C_FLAGS_DEBUG "-g -Wall")
   set(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
@@ -134,14 +134,14 @@ else()
 endif()
 
 include_directories(
-	/usr/local/include/GLFW
-	/usr/include/GLFW
-	${COCOS2D_ROOT}
-	${COCOS2D_ROOT}/cocos
-	${COCOS2D_ROOT}/external
-	${COCOS2D_ROOT}/cocos/platform
-	${COCOS2D_ROOT}/cocos/audio/include/
-	Classes
+    /usr/local/include/GLFW
+    /usr/include/GLFW
+    ${COCOS2D_ROOT}
+    ${COCOS2D_ROOT}/cocos
+    ${COCOS2D_ROOT}/external
+    ${COCOS2D_ROOT}/cocos/platform
+    ${COCOS2D_ROOT}/cocos/audio/include/
+    Classes
 )
 if ( WINDOWS )
     include_directories(
@@ -173,7 +173,7 @@ if(ANDROID)
         ADD_CUSTOM_COMMAND(TARGET ${APP_NAME} POST_BUILD COMMAND ${CMAKE_STRIP} lib${APP_NAME}.so)
     ENDIF()
 elseif(MSVC)
-	add_executable(${APP_NAME} ${GAME_SRC} ${GAME_HEADERS} proj.win32/game.rc)
+    add_executable(${APP_NAME} ${GAME_SRC} ${GAME_HEADERS} proj.win32/game.rc)
 else()
     add_executable(${APP_NAME} ${GAME_SRC} ${GAME_HEADERS})
 endif()
@@ -183,40 +183,40 @@ target_link_libraries(${APP_NAME} cocos2d)
 
 if(MSVC)
 
-	set(APP_BIN_DIR "${CMAKE_BINARY_DIR}/bin/${PLATFORM_FOLDER}/$<CONFIG>")
+    set(APP_BIN_DIR "${CMAKE_BINARY_DIR}/bin/${PLATFORM_FOLDER}/$<CONFIG>")
 
     #get our resources
     add_custom_command(TARGET ${APP_NAME} PRE_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_CURRENT_SOURCE_DIR}/Resources ${APP_BIN_DIR})
-	    
+        
     # create a list of dlls to copy
-	file(GLOB THIRD_PARTY_DLLS
-		"${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/gles/prebuilt/glew32.dll"
-		"${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/zlib/prebuilt/zlib1.dll"
-		"${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/OggDecoder/prebuilt/libogg.dll"
-		"${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/OggDecoder/prebuilt/libvorbis.dll"
-		"${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/OggDecoder/prebuilt/libvorbisfile.dll"
-		"${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/MP3Decoder/prebuilt/libmpg123.dll"
-		"${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/OpenalSoft/prebuilt/OpenAL32.dll"
-		"${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/icon/prebuilt/iconv.dll"
-		"${COCOS2D_ROOT}/external/tiff/prebuilt/${PLATFORM_FOLDER}/libtiff.dll"
-	)
-	
-	list(SORT THIRD_PARTY_DLLS)
+    file(GLOB THIRD_PARTY_DLLS
+        "${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/gles/prebuilt/glew32.dll"
+        "${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/zlib/prebuilt/zlib1.dll"
+        "${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/OggDecoder/prebuilt/libogg.dll"
+        "${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/OggDecoder/prebuilt/libvorbis.dll"
+        "${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/OggDecoder/prebuilt/libvorbisfile.dll"
+        "${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/MP3Decoder/prebuilt/libmpg123.dll"
+        "${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/OpenalSoft/prebuilt/OpenAL32.dll"
+        "${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/icon/prebuilt/iconv.dll"
+        "${COCOS2D_ROOT}/external/tiff/prebuilt/${PLATFORM_FOLDER}/libtiff.dll"
+    )
+    
+    list(SORT THIRD_PARTY_DLLS)
 
-	# do the copying
-	foreach( file_i ${THIRD_PARTY_DLLS})
-		add_custom_command(TARGET ${APP_NAME} PRE_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy
-			${file_i} 
-			${APP_BIN_DIR}
-		)
-	endforeach( file_i )
+    # do the copying
+    foreach( file_i ${THIRD_PARTY_DLLS})
+        add_custom_command(TARGET ${APP_NAME} PRE_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            ${file_i} 
+            ${APP_BIN_DIR}
+        )
+    endforeach( file_i )
 
     #Visual Studio Defaults to wrong type
     set_target_properties(${APP_NAME} PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS"
-									RUNTIME_OUTPUT_DIRECTORY  "${APP_BIN_DIR}")
+                                    RUNTIME_OUTPUT_DIRECTORY  "${APP_BIN_DIR}")
 
 elseif(MACOSX OR APPLE)
     set_target_properties(${APP_NAME} PROPERTIES

@@ -42,11 +42,11 @@ set(FRAMEWORK_DEFINITIOINS
 
 # Framework側のCMakeFilesに渡すgl系のパスを変数にセットしておく
 if (CMAKE_GENERATOR_PLATFORM STREQUAL "x64" OR CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64")
-	set(FRAMEWORK_GLFW_PATH ../Samples/OpenGL/thirdParty/glfw-3.2.1.bin.WIN64/include)
-	set(FRAMEWORK_GLEW_PATH ../Samples/OpenGL/thirdParty/glew-2.1.0/include)
+    set(FRAMEWORK_GLFW_PATH ../Samples/OpenGL/thirdParty/glfw-3.2.1.bin.WIN64/include)
+    set(FRAMEWORK_GLEW_PATH ../Samples/OpenGL/thirdParty/glew-2.1.0/include)
 else ()
-	set(FRAMEWORK_GLFW_PATH ../Samples/OpenGL/thirdParty/glfw-3.2.1.bin.WIN32/include)
-	set(FRAMEWORK_GLEW_PATH ../Samples/OpenGL/thirdParty/glew-2.1.0/include)
+    set(FRAMEWORK_GLFW_PATH ../Samples/OpenGL/thirdParty/glfw-3.2.1.bin.WIN32/include)
+    set(FRAMEWORK_GLEW_PATH ../Samples/OpenGL/thirdParty/glew-2.1.0/include)
 endif ()
 
 # Frameworkの追加
@@ -61,11 +61,11 @@ include_directories(../../../../Framework/src)
 include_directories(../../../../Core/include)
 include_directories(../../thirdParty/stb/include)
 if (CMAKE_GENERATOR_PLATFORM STREQUAL "x64" OR CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64")
-	set(GLFW_HEADER_PATH ../../thirdParty/glfw-3.2.1.bin.WIN64/include)
-	set(GLEW_HEADER_PATH ../../thirdParty/glew-2.1.0/include)
+    set(GLFW_HEADER_PATH ../../thirdParty/glfw-3.2.1.bin.WIN64/include)
+    set(GLEW_HEADER_PATH ../../thirdParty/glew-2.1.0/include)
 else ()
-	set(GLFW_HEADER_PATH ../../thirdParty/glfw-3.2.1.bin.WIN32/include)
-	set(GLEW_HEADER_PATH ../../thirdParty/glew-2.1.0/include)
+    set(GLFW_HEADER_PATH ../../thirdParty/glfw-3.2.1.bin.WIN32/include)
+    set(GLEW_HEADER_PATH ../../thirdParty/glew-2.1.0/include)
 endif ()
 include_directories("${GLFW_HEADER_PATH}")
 include_directories("${GLEW_HEADER_PATH}")
@@ -75,54 +75,54 @@ include_directories("${GLEW_HEADER_PATH}")
 
 # Visual Studioのソリューション生成
 if (CMAKE_GENERATOR_PLATFORM STREQUAL "x64" AND CMAKE_GENERATOR MATCHES "Visual Studio 14 2015")
-	link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/140)
-	link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN64/lib-vc2015)
-	link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/x64)
+    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/140)
+    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN64/lib-vc2015)
+    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/x64)
 
 elseif (CMAKE_GENERATOR_PLATFORM STREQUAL "x64" AND CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
-	link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/120)
-	link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN64/lib-vc2013)
-	link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/x64)
+    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/120)
+    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN64/lib-vc2013)
+    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/x64)
 
 elseif (CMAKE_GENERATOR_PLATFORM STREQUAL "Win32" AND CMAKE_GENERATOR MATCHES "Visual Studio 14 2015")
-	link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/140)
-	link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN32/lib-vc2015)
-	link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/Win32)
+    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/140)
+    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN32/lib-vc2015)
+    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/Win32)
 
 elseif (CMAKE_GENERATOR_PLATFORM STREQUAL "Win32" AND CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
-	link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/120)
-	link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN32/lib-vc2013)
-	link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/Win32)
+    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/120)
+    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN32/lib-vc2013)
+    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/Win32)
 
 
 # NMake MakeFiles指定
 elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION MATCHES 1900 AND CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64" )
-	link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/140)
-	link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN64/lib-vc2015)
-	link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/x64)
+    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/140)
+    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN64/lib-vc2015)
+    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/x64)
 
 elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION MATCHES 1900 )
-	link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/140)
-	link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN32/lib-vc2015)
-	link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/Win32)
+    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/140)
+    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN32/lib-vc2015)
+    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/Win32)
 
 elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION MATCHES 1800 AND CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64" )
-	link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/120)
-	link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN64/lib-vc2013)
-	link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/x64)
+    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/120)
+    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN64/lib-vc2013)
+    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/x64)
 
 elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION MATCHES 1800 )
-	link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/120)
-	link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN32/lib-vc2013)
-	link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/Win32)
-endif ()	
+    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/120)
+    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN32/lib-vc2013)
+    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/Win32)
+endif ()    
 
 # ソースの追加
 add_executable(Demo ${Demo})
 
 # 出力ファイル名の指定
 if (CMAKE_GENERATOR_PLATFORM STREQUAL "x64" OR CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64")
-	SET_TARGET_PROPERTIES(Demo PROPERTIES OUTPUT_NAME "Demo_x64")
+    SET_TARGET_PROPERTIES(Demo PROPERTIES OUTPUT_NAME "Demo_x64")
 endif ()
 
 # ライブラリの追加

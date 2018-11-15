@@ -99,12 +99,12 @@ public:
      * @brief   座標変換 
      *          フルスクリーン LT(-bufferX, bufferY) RB(bufferX, -bufferY) → ウィンドウ・マウス LT(0, 0) RB(bufferX, bufferY)
      */
-    static void CoodinateFullScreenToWindow(float clientWidth, float clientHeight, float fullScreenX, float fullScreenY, float& retWindowX, float& retWindowY);
+    static void CoordinateFullScreenToWindow(float clientWidth, float clientHeight, float fullScreenX, float fullScreenY, float& retWindowX, float& retWindowY);
 
     /**
      * @brief   座標変換 
      *          ウィンドウ・マウス LT(0, 0) RB(bufferX, bufferY) → フルスクリーン LT(-bufferX, bufferY) RB(bufferX, -bufferY)
      */
-    static void CoodinateWindowToFullScreen(float clientWidth, float clientHeight, float windowX, float windowY, float& retFullScreenX, float& retFullScreenY);
+    static void CoordinateWindowToFullScreen(float clientWidth, float clientHeight, float windowX, float windowY, float& retFullScreenX, float& retFullScreenY);
 };
 

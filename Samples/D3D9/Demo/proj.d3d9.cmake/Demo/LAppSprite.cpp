@@ -149,7 +149,7 @@ bool LAppSprite::IsHit(float pointX, float pointY) const
     float coordX = 0.0f, coordY = 0.0f;
     int clientWidth = 0, clientHeight = 0;
     LAppDelegate::GetClientSize(clientWidth, clientHeight);
-    LAppPal::CoodinateWindowToFullScreen(static_cast<float>(clientWidth), static_cast<float>(clientHeight), pointX, pointY, coordX, coordY);
+    LAppPal::CoordinateWindowToFullScreen(static_cast<float>(clientWidth), static_cast<float>(clientHeight), pointX, pointY, coordX, coordY);
 
     coordX = (clientWidth+coordX)/(2.0f*clientWidth) * clientWidth;
     coordY = (clientHeight+coordY)/(2.0f*clientHeight) * clientHeight;

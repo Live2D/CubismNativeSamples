@@ -1,10 +1,9 @@
 ﻿/*
-* Copyright(c) Live2D Inc. All rights reserved.
-*
-* Use of this source code is governed by the Live2D Open Software license
-* that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
-*/
-
+ * Copyright(c) Live2D Inc. All rights reserved.
+ *
+ * Use of this source code is governed by the Live2D Open Software license
+ * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ */
 #pragma once
 
 #include <CubismFramework.hpp>
@@ -57,4 +56,8 @@ namespace LAppDefine {
 
     // Frameworkから出力するログのレベル設定
     extern const CubismFramework::Option::LogLevel CubismLoggingLevel;
+
+    // デフォルトのレンダーターゲットサイズ 
+    extern const csmInt32 RenderTargetWidth;
+    extern const csmInt32 RenderTargetHeight;
 }

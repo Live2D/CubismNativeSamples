@@ -21,8 +21,5 @@ Demo
             "nmake_XXXX.bat"は各VisualStudioのnmake用バッチファイルになります。
             (上記の環境変数を設定した後に実行してください)
             
-            バッチ実行にはCMake(version3.1以上)とVisualStudio(2013or2015)のインストールが必要になります。
-            
-        Res
-            サンプルプロジェクトで使用するLive2Dモデル、各種ファイルが含まれています。
+            バッチ実行にはCMake(version3.10以上)とVisualStudio(2013or2015)のインストールが必要になります。
 

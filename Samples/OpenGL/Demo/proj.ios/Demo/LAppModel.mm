@@ -567,7 +567,7 @@ void LAppModel::SetRandomExpression()
     }
 }
 
-void LAppModel::ReloadRnederer()
+void LAppModel::ReloadRenderer()
 {
     DeleteRenderer();
     

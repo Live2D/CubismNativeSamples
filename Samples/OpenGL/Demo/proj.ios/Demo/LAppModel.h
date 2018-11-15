@@ -42,7 +42,7 @@ public:
      * @brief レンダラを再構築する
      *
      */
-    void ReloadRnederer();
+    void ReloadRenderer();
     
     /**
      * @brief   モデルの更新処理。モデルのパラメータから描画状態を決定する。

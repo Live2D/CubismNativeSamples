@@ -148,7 +148,7 @@
 		802EE06120C6706900751E42 /* CubismTargetPoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CubismTargetPoint.cpp; path = ../../../../Framework/src/Math/CubismTargetPoint.cpp; sourceTree = "<group>"; };
 		802EE06220C6706900751E42 /* CubismVector2.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = CubismVector2.hpp; path = ../../../../Framework/src/Math/CubismVector2.hpp; sourceTree = "<group>"; };
 		802EE06320C6706A00751E42 /* CubismMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CubismMath.cpp; path = ../../../../Framework/src/Math/CubismMath.cpp; sourceTree = "<group>"; };
-		803466E321073658005901A1 /* Res */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Res; path = ../Res; sourceTree = "<group>"; };
+		803466E321073658005901A1 /* Res */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Res; path = ../../../Res; sourceTree = "<group>"; };
 		806DA24020C6259C00D4E6B9 /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		806DA24320C6259C00D4E6B9 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		806DA24420C6259C00D4E6B9 /* AppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };

@@ -1,9 +1,9 @@
 ﻿/*
-* Copyright(c) Live2D Inc. All rights reserved.
-*
-* Use of this source code is governed by the Live2D Open Software license
-* that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
-*/
+ * Copyright(c) Live2D Inc. All rights reserved.
+ *
+ * Use of this source code is governed by the Live2D Open Software license
+ * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ */
 
 #include "LAppModel.hpp"
 #include <fstream>
@@ -573,7 +573,7 @@ void LAppModel::SetRandomExpression()
     }
 }
 
-void LAppModel::ReloadRnederer()
+void LAppModel::ReloadRenderer()
 {
     DeleteRenderer();
 

@@ -32,7 +32,7 @@ namespace LAppDefine {
     // 歯車
     const csmChar* GearImageName = "icon_gear.png";
     // 終了ボタン
-    const csmChar* PowerImageName = "CloseNormal.png";
+    const csmChar* PowerImageName = "Close.png";
     
     // モデル定義------------------------------------------
     // モデルを配置したディレクトリ名の配列

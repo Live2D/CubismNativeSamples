@@ -1,9 +1,9 @@
 /*
-* Copyright(c) Live2D Inc. All rights reserved.
-*
-* Use of this source code is governed by the Live2D Open Software license
-* that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
-*/
+ * Copyright(c) Live2D Inc. All rights reserved.
+ *
+ * Use of this source code is governed by the Live2D Open Software license
+ * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ */
 
 #include "LAppDelegate.hpp"
 #include <iostream>
@@ -63,7 +63,7 @@ bool LAppDelegate::Initialize()
     }
 
     // Windowの生成_
-    _window = glfwCreateWindow(1900, 1000, "SAMPLE", NULL, NULL);
+    _window = glfwCreateWindow(RenderTargetWidth, RenderTargetHeight, "SAMPLE", NULL, NULL);
     if (_window == NULL)
     {
         if (DebugLogEnable)
@@ -169,7 +169,7 @@ LAppDelegate::LAppDelegate():
     _mouseY(0.0f),
     _isEnd(false)
 {
-	_rootDirectory = "";
+    _rootDirectory = "";
     _view = new LAppView();
     _textureManager = new LAppTextureManager();
 }

@@ -12,7 +12,11 @@
 #define STBI_NO_STDIO
 #define STBI_ONLY_PNG
 #define STB_IMAGE_IMPLEMENTATION
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcomma"
+#pragma clang diagnostic ignored "-Wunused-function"
 #import "stb_image.h"
+#pragma clang diagnostic pop
 #import "LAppPal.h"
 
 

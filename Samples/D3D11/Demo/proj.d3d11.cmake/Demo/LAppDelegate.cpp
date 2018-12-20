@@ -125,6 +125,20 @@ bool LAppDelegate::Initialize()
     // RenderTargetView/DepthStencilViewの作成 
     CreateRenderTarget(static_cast<UINT>(LAppDefine::RenderTargetWidth), static_cast<UINT>(LAppDefine::RenderTargetHeight));
 
+    // Z無効深度オブジェクト 
+    D3D11_DEPTH_STENCIL_DESC depthDesc;
+    memset(&depthDesc, 0, sizeof(depthDesc));
+    depthDesc.DepthEnable = false;
+    depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    depthDesc.DepthFunc = D3D11_COMPARISON_LESS;
+    depthDesc.StencilEnable = false;
+    result = _device->CreateDepthStencilState(&depthDesc, &_depthState);
+    if (FAILED(result))
+    {
+        LAppPal::PrintLog("Fail Create Depth 0x%x", result);
+        return false;
+    }
+
     // ラスタライザ 
     D3D11_RASTERIZER_DESC rasterDesc;
     memset(&rasterDesc, 0, sizeof(rasterDesc));
@@ -267,6 +281,11 @@ void LAppDelegate::Release()
         _renderTargetView->Release();
         _renderTargetView = NULL;
     }
+    if(_depthState)
+    {
+        _depthState->Release();
+        _depthState = NULL;
+    }
     if(_depthStencilView)
     {
         _depthStencilView->Release();
@@ -353,6 +372,7 @@ LAppDelegate::LAppDelegate()
     , _renderTargetView(NULL)
     , _depthTexture(NULL)
     , _depthStencilView(NULL)
+    , _depthState(NULL)
     , _rasterizer(NULL)
     , _samplerState(NULL)
     , _vertexShader(NULL)
@@ -632,6 +652,9 @@ void LAppDelegate::StartFrame()
     _deviceContext->OMSetRenderTargets(1, &_renderTargetView, _depthStencilView);
     _deviceContext->ClearRenderTargetView(_renderTargetView, clearColor);
     _deviceContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+    // Z無効 
+    _deviceContext->OMSetDepthStencilState(_depthState, 0);
 }
 
 void LAppDelegate::EndFrame()

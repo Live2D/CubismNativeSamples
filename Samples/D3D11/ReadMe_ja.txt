@@ -13,7 +13,7 @@
             DirectXTK_Desktop_2013.slnまたはDirectXTK_Desktop_2015.slnを開き、Win32・x64のソリューションターゲット、Debug・Releaseのソリューション構成それぞれでビルドを行ってください。
             (以下の構成で確認を行っております。
               ・VS2013 April 23, 2018 DirectXTK_Desktop_2013.slnでビルド https://github.com/Microsoft/DirectXTK/releases/tag/apr2018
-			    (DirectXTKのVS2013用ソリューションはApril 23, 2018を最後に提供を終了しています)
+                (DirectXTKのVS2013用ソリューションはApril 23, 2018を最後に提供を終了しています)
               ・VS2015 August 17, 2018 DirectXTK_Desktop_2015.slnでビルド https://github.com/Microsoft/DirectXTK/releases/tag/aug2018 )
             
             "proj_XXXX.bat"は各VisualStudioのソリューションファイルの生成バッチファイルになります。

@@ -19,11 +19,11 @@
  */
 class LAppAllocator : public Csm::ICubismAllocator
 {
-    void* Allocate(const Csm::csmUint32 size);
+    void* Allocate(const Csm::csmSizeType size);
 
     void Deallocate(void* memory);
 
-    void* AllocateAligned(const Csm::csmUint32 size, const Csm::csmUint32 alignment);
+    void* AllocateAligned(const Csm::csmSizeType size, const Csm::csmUint32 alignment);
 
     void DeallocateAligned(void* alignedMemory);
 };

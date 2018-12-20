@@ -77,9 +77,10 @@ void LAppView::Initialize()
 
 void LAppView::Render() 
 {
-    _back->Render(_programId,LAppDelegate::GetInstance()->GetWindow());
-    _gear->Render(_programId, LAppDelegate::GetInstance()->GetWindow());
-    _power->Render(_programId, LAppDelegate::GetInstance()->GetWindow());
+    _back->Render();
+    _gear->Render();
+    _power->Render();
+
 
     LAppLive2DManager* Live2DManager = LAppLive2DManager::GetInstance();
     Live2DManager->OnUpdate();
@@ -87,6 +88,8 @@ void LAppView::Render()
 
 void LAppView::InitializeSprite()
 {
+    _programId = LAppDelegate::GetInstance()->CreateShader();
+
     int width, height;
     glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
 
@@ -100,7 +103,7 @@ void LAppView::InitializeSprite()
     float y = height * 0.5f;
     float fWidth = static_cast<float>(backgroundTexture->width * 2.0f);
     float fHeight = static_cast<float>(height * 0.95f);
-    _back = new LAppSprite(x, y, fWidth, fHeight, backgroundTexture->id);
+    _back = new LAppSprite(x, y, fWidth, fHeight, backgroundTexture->id, _programId);
 
     imageName = GearImageName;
     LAppTextureManager::TextureInfo* gearTexture = textureManager->CreateTextureFromPngFile(resourcesPath + imageName);
@@ -109,7 +112,7 @@ void LAppView::InitializeSprite()
     y = static_cast<float>(height - gearTexture->height * 0.5f);
     fWidth = static_cast<float>(gearTexture->width);
     fHeight = static_cast<float>(gearTexture->height);
-    _gear = new LAppSprite(x, y, fWidth, fHeight, gearTexture->id);
+    _gear = new LAppSprite(x, y, fWidth, fHeight, gearTexture->id, _programId);
 
     imageName = PowerImageName;
     LAppTextureManager::TextureInfo* powerTexture = textureManager->CreateTextureFromPngFile(resourcesPath + imageName);
@@ -118,9 +121,8 @@ void LAppView::InitializeSprite()
     y = static_cast<float>(powerTexture->height * 0.5f);
     fWidth = static_cast<float>(powerTexture->width);
     fHeight = static_cast<float>(powerTexture->height);
-    _power = new LAppSprite(x, y, fWidth, fHeight, powerTexture->id);
+    _power = new LAppSprite(x, y, fWidth, fHeight, powerTexture->id, _programId);
 
-    _programId = LAppDelegate::GetInstance()->CreateShader();
 }
 
 void LAppView::OnTouchesBegan(float px, float py) const

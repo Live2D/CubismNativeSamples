@@ -178,6 +178,7 @@ private:
     ID3D11RenderTargetView* _renderTargetView;  ///< 描画ターゲットビュー 
     ID3D11Texture2D*        _depthTexture;      ///< Zバッファ 
     ID3D11DepthStencilView* _depthStencilView;  ///< Zバッファビュー 
+    ID3D11DepthStencilState* _depthState;       ///< スプライト描画用深度オブジェクト 
 
     ID3D11RasterizerState*  _rasterizer;    ///< スプライト描画用ラスタライザ 
     ID3D11SamplerState*     _samplerState;  ///< スプライト描画用サンプラーステート 

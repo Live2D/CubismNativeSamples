@@ -8,7 +8,7 @@
 #include "LAppSprite.hpp"
 #include "LAppDelegate.hpp"
 
-LAppSprite::LAppSprite(float x, float y, float width, float height, GLuint textureId) 
+LAppSprite::LAppSprite(float x, float y, float width, float height, GLuint textureId, GLuint programId) 
     : _rect()
 {
     _rect.left = (x - width * 0.5f);
@@ -16,13 +16,18 @@ LAppSprite::LAppSprite(float x, float y, float width, float height, GLuint textu
     _rect.up = (y + height * 0.5f);
     _rect.down = (y - height * 0.5f);
     _textureId = textureId;
+
+    // 何番目のattribute変数か
+    _positionLocation = glGetAttribLocation(programId, "position");
+    _uvLocation      = glGetAttribLocation(programId, "uv");
+    _textureLocation = glGetUniformLocation(programId, "texture");
 }
 
 LAppSprite::~LAppSprite()
 {
 }
 
-void LAppSprite::Render(GLuint programId, GLFWwindow* window) const
+void LAppSprite::Render() const
 {
     glEnable(GL_TEXTURE_2D);
     const GLfloat uvVertex[] = 
@@ -33,17 +38,12 @@ void LAppSprite::Render(GLuint programId, GLFWwindow* window) const
         1.0f, 1.0f,
     };
 
-    // 何番目のattribute変数か
-    int positionLocation = glGetAttribLocation(programId, "position");
-    int uvLocation = glGetAttribLocation(programId, "uv");
-    int textureLocation = glGetUniformLocation(programId, "texture");
-
     // attribute属性を有効にする
-    glEnableVertexAttribArray(positionLocation);
-    glEnableVertexAttribArray(uvLocation);
+    glEnableVertexAttribArray(_positionLocation);
+    glEnableVertexAttribArray(_uvLocation);
 
     // uniform属性の登録
-    glUniform1i(textureLocation, 0);
+    glUniform1i(_textureLocation, 0);
 
     // 画面サイズを取得する
     int maxWidth, maxHeight;
@@ -59,8 +59,8 @@ void LAppSprite::Render(GLuint programId, GLFWwindow* window) const
     };
 
     // attribute属性を登録
-    glVertexAttribPointer(positionLocation, 2, GL_FLOAT, false, 0, positionVertex);
-    glVertexAttribPointer(uvLocation, 2, GL_FLOAT, false, 0, uvVertex);
+    glVertexAttribPointer(_positionLocation, 2, GL_FLOAT, false, 0, positionVertex);
+    glVertexAttribPointer(_uvLocation, 2, GL_FLOAT, false, 0, uvVertex);
 
     // モデルの描画
     glBindTexture(GL_TEXTURE_2D, _textureId);

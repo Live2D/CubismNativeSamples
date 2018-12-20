@@ -117,6 +117,12 @@ elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION MATCHES 1800 
     link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/Win32)
 endif ()    
 
+
+# 競合するライブラリのWarning対策
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /NODEFAULTLIB:MSVCRT")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:LIBCMT")
+
+
 # ソースの追加
 add_executable(Demo ${Demo})
 

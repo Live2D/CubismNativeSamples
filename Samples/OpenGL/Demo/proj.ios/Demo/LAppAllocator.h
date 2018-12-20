@@ -26,7 +26,7 @@ class LAppAllocator : public Csm::ICubismAllocator
      * @param[in]   size    割り当てたいサイズ。
      * @return  指定したメモリ領域
      */
-    void* Allocate(const Csm::csmUint32 size);
+    void* Allocate(const Csm::csmSizeType size);
     
     /**
      * @brief   メモリ領域を解放する。
@@ -42,7 +42,7 @@ class LAppAllocator : public Csm::ICubismAllocator
      * @param[in]   alignment    割り当てたいサイズ。
      * @return  alignedAddress
      */
-    void* AllocateAligned(const Csm::csmUint32 size, const Csm::csmUint32 alignment);
+    void* AllocateAligned(const Csm::csmSizeType size, const Csm::csmUint32 alignment);
     
     /**
      * @brief メモリ領域を解放する。

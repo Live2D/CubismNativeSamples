@@ -10,7 +10,7 @@
 
 using namespace Csm;
 
-void * LAppAllocator::Allocate(const csmUint32  size)
+void * LAppAllocator::Allocate(const csmSizeType  size)
 {
     return malloc(size);
 }
@@ -20,7 +20,7 @@ void LAppAllocator::Deallocate(void* memory)
     if (memory) { free(memory); }
 }
 
-void * LAppAllocator::AllocateAligned(const csmUint32 size, const csmUint32 alignment)
+void * LAppAllocator::AllocateAligned(const csmSizeType size, const csmUint32 alignment)
 {
     size_t offset, shift, alignedAddress;
     void *allocation, **preamble;

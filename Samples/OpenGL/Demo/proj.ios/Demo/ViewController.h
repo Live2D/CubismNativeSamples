@@ -31,22 +31,6 @@
 - (void)initializeSprite;
 
 /**
- * @brief タッチしているときにポインタが動いたら呼ばれる。
- *
- * @param[in]       pointX            スクリーンX座標
- * @param[in]       pointY            スクリーンY座標
- */
-- (void)onTouchesMoved:(float)pointX PointY:(float)pointY;
-
-/**
- * @brief タッチが終了したら呼ばれる。
- *
- * @param[in]       pointX            スクリーンX座標
- * @param[in]       pointY            スクリーンY座標
- */
-- (void)onTouchesEnded:(float)pointX PointY:(float) pointY;
-
-/**
  * @brief X座標をView座標に変換する。
  *
  * @param[in]       deviceX            デバイスX座標

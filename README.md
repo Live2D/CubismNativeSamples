@@ -66,9 +66,9 @@ Live2D のサンプルモデルは Free Material License で提供していま�
 - Free Material License 
 [日本語](http://www.live2d.com/eula/live2d-free-material-license-agreement_jp.html) 
 [English](http://www.live2d.com/eula/live2d-free-material-license-agreement_en.html) 
-   - Resources/Haru/*
-   - Resources/Hiyori/*
-   - Resources/Mark/*
+   - Samples/Res/Haru/*
+   - Samples/Res/Hiyori/*
+   - Samples/Res/Mark/*
 
 
 直近会計年度の売上高が 1000 万円以上の事業者様がご利用になる場合は、SDKリリース(出版許諾)ライセンスに同意していただく必要がございます。 

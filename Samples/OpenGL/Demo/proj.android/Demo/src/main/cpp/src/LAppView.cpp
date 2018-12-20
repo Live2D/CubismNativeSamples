@@ -101,7 +101,7 @@ void LAppView::InitializeSprite()
 
     if(_back == NULL)
     {
-        _back = new LAppSprite(x, y, fWidth, fHeight, backgroundTexture->id);
+        _back = new LAppSprite(x, y, fWidth, fHeight, backgroundTexture->id, _programId);
     }
     else
     {
@@ -119,7 +119,7 @@ void LAppView::InitializeSprite()
 
     if(_gear == NULL)
     {
-        _gear = new LAppSprite(x, y, fWidth, fHeight, gearTexture->id);
+        _gear = new LAppSprite(x, y, fWidth, fHeight, gearTexture->id, _programId);
     }
     else
     {
@@ -136,7 +136,7 @@ void LAppView::InitializeSprite()
 
     if(_power == NULL)
     {
-        _power = new LAppSprite(x, y, fWidth, fHeight, powerTexture->id);
+        _power = new LAppSprite(x, y, fWidth, fHeight, powerTexture->id, _programId);
     }
     else
     {
@@ -147,9 +147,9 @@ void LAppView::InitializeSprite()
 
 void LAppView::Render()
 {
-    _back->Render(_programId);
-    _gear->Render(_programId);
-    _power->Render(_programId);
+    _back->Render();
+    _gear->Render();
+    _power->Render();
 
     if(_changeModel)
     {

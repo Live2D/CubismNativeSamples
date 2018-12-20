@@ -93,8 +93,6 @@
 
 - (bool)isHit:(float)pointX PointY:(float)pointY
 {
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    
     return (pointX >= _rect.left && pointX <= _rect.right &&
             pointY >= _rect.down && pointY <= _rect.up);
 }

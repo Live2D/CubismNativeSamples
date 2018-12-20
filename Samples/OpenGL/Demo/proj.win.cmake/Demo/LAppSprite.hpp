@@ -39,8 +39,9 @@ public:
     * @param[in]       width        横幅
     * @param[in]       height       高さ
     * @param[in]       textureId    テクスチャID
+    * @param[in]       programId    シェーダID
     */
-    LAppSprite(float x, float y, float width, float height, GLuint textureId);
+    LAppSprite(float x, float y, float width, float height, GLuint textureId, GLuint programId);
 
     /**
     * @brief デストラクタ
@@ -56,10 +57,8 @@ public:
     /**
     * @brief 描画する
     *
-    * @param[in]       programId    シェーダID
-    * @param[in]       window       描画するWindow情報
     */
-    void Render(GLuint programId, GLFWwindow* window) const;
+    void Render() const;
     
     /**
     * @brief コンストラクタ
@@ -70,7 +69,10 @@ public:
     bool IsHit(float pointX, float pointY) const;
 
 private:
-    GLuint _textureId;   ///< テクスチャID
-    Rect _rect;          ///< 矩形
+    GLuint _textureId;      ///< テクスチャID
+    Rect _rect;             ///< 矩形
+    int _positionLocation;  ///< 位置アトリビュート
+    int _uvLocation;        ///< UVアトリビュート
+    int _textureLocation;   ///< テクスチャアトリビュート
 };
 

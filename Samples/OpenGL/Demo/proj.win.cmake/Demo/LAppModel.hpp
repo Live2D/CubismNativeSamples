@@ -11,6 +11,7 @@
 #include <Model/CubismUserModel.hpp>
 #include <ICubismModelSetting.hpp>
 #include <Type/csmRectF.hpp>
+#include <Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp>
 
 
 /**
@@ -105,6 +106,11 @@ public:
      */
     virtual Csm::csmBool HitTest(const Csm::csmChar* hitAreaName, Csm::csmFloat32 x, Csm::csmFloat32 y);
 
+    /**
+     * @brief   別ターゲットに描画する際に使用するバッファの取得
+     */
+    Csm::Rendering::CubismOffscreenFrame_OpenGLES2& GetRenderBuffer();
+
 protected:
     /**
      *  @brief  モデルを描画する処理。モデルを描画する空間のView-Projection行列を渡す。
@@ -173,6 +179,8 @@ private:
     const Csm::CubismId* _idParamBodyAngleX; ///< パラメータID: ParamBodyAngleX
     const Csm::CubismId* _idParamEyeBallX; ///< パラメータID: ParamEyeBallX
     const Csm::CubismId* _idParamEyeBallY; ///< パラメータID: ParamEyeBallXY
+
+    Csm::Rendering::CubismOffscreenFrame_OpenGLES2  _renderBuffer;   ///< フレームバッファ以外の描画先 
 };
 
 

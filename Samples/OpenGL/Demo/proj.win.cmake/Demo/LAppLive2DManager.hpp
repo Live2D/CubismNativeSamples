@@ -84,6 +84,12 @@ public:
     */
     void ChangeScene(Csm::csmInt32 index);
 
+    /**
+     * @brief   モデル個数を得る
+     * @return  所持モデル個数
+     */
+    Csm::csmUint32 GetModelNum() const;
+
 private:
     /**
     * @brief  コンストラクタ

@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
 #import "LAppLive2DManager.h"
+#import "AppDelegate.h"
+#import "ViewController.h"
 #import "LAppModel.h"
 #import "LAppDefine.h"
 #import "LAppPal.h"
@@ -132,6 +134,9 @@ static LAppLive2DManager* s_instance = nil;
         projection.MultiplyByMatrix(_viewMatrix);
     }
     
+    AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
+    ViewController* view = [delegate viewController];
+    
     Csm::CubismMatrix44    saveProjection = projection;
     Csm::csmUint32 modelCount = _models.GetSize();
     for (Csm::csmUint32 i = 0; i < modelCount; ++i)
@@ -139,8 +144,12 @@ static LAppLive2DManager* s_instance = nil;
         LAppModel* model = [self getModel:i];
         projection = saveProjection;
         
+        [view PreModelDraw:*model];
+        
         model->Update();
         model->Draw(projection);///< 参照渡しなのでprojectionは変質する
+        
+        [view PostModelDraw:*model];
     }
 }
 
@@ -169,8 +178,47 @@ static LAppLive2DManager* s_instance = nil;
     [self releaseAllModel];
     _models.PushBack(new LAppModel());
     _models[0]->LoadAssets(modelPath.c_str(), modelJsonName.c_str());
+
+    /*
+     * モデル半透明表示を行うサンプルを提示する。
+     * ここでUSE_RENDER_TARGET、USE_MODEL_RENDER_TARGETが定義されている場合
+     * 別のレンダリングターゲットにモデルを描画し、描画結果をテクスチャとして別のスプライトに張り付ける。
+     */
+    {
+#if defined(USE_RENDER_TARGET)
+        // LAppViewの持つターゲットに描画を行う場合、こちらを選択
+        SelectTarget useRenderTarget = SelectTarget_ViewFrameBuffer;
+#elif defined(USE_MODEL_RENDER_TARGET)
+        // 各LAppModelの持つターゲットに描画を行う場合、こちらを選択
+        SelectTarget useRenderTarget = SelectTarget_ModelFrameBuffer;
+#else
+        // デフォルトのメインフレームバッファへレンダリングする(通常)
+        SelectTarget useRenderTarget = SelectTarget_None;
+#endif
+        
+#if defined(USE_RENDER_TARGET) || defined(USE_MODEL_RENDER_TARGET)
+        // モデル個別にαを付けるサンプルとして、もう1体モデルを作成し、少し位置をずらす
+        _models.PushBack(new LAppModel());
+        _models[1]->LoadAssets(modelPath.c_str(), modelJsonName.c_str());
+        _models[1]->GetModelMatrix()->TranslateX(0.2f);
+#endif
+        
+        float clearColorR = 1.0f;
+        float clearColorG = 1.0f;
+        float clearColorB = 1.0f;
+        
+        AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
+        ViewController* view = [delegate viewController];
+
+        [view SwitchRenderingTarget:useRenderTarget];
+        [view SetRenderTargetClearColor:clearColorR g:clearColorG b:clearColorB];
+    }
 }
 
+- (Csm::csmUint32)GetModelNum;
+{
+    return _models.GetSize();
+}
 
 @end
 

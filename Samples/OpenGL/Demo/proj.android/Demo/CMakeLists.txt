@@ -21,6 +21,8 @@ add_definitions(-D CSM_TARGET_ANDROID_ES2)
 # add_definitions(-D CSM_DEBUG)
 # add_definitions(-D CSM_DEBUG_MEMORY_LEAKING)
 
+# ここを有効にすると、Cubismモデルをフレームバッファとは別のテクスチャにレンダリングする挙動をとる 
+#add_definitions(-DUSE_RENDER_TARGET)
 
 #---------------------------------------
 # Include Directories
@@ -74,6 +76,7 @@ add_library(
     ${FRAMEWORK_DIR}/Physics/CubismPhysicsJson.cpp
     ${FRAMEWORK_DIR}/Rendering/CubismRenderer.cpp
     ${FRAMEWORK_DIR}/Rendering/OpenGL/CubismRenderer_OpenGLES2.cpp
+    ${FRAMEWORK_DIR}/Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.cpp
     ${FRAMEWORK_DIR}/Type/csmRectF.cpp
     ${FRAMEWORK_DIR}/Type/csmString.cpp
     ${FRAMEWORK_DIR}/Utils/CubismDebug.cpp

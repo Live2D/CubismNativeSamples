@@ -76,12 +76,30 @@ public:
     void Render(LPDIRECT3DDEVICE9 device, int width, int height) const;
 
     /**
+     * @brief テクスチャを指定しての描画
+     * @param[in]        width   幅
+     * @param[in]        height  高さ
+     * @param[in]        resourceView   使用テクスチャ
+     */
+    void RenderImmidiate(LPDIRECT3DDEVICE9 device, int maxWidth, int maxHeight, LPDIRECT3DTEXTURE9 texture) const;
+
+    /**
     * @brief ヒットチェック
     *
     * @param[in]       pointX    x座標
     * @param[in]       pointY    y座標
     */
     bool IsHit(float pointX, float pointY) const;
+
+    /**
+     * @brief 色設定
+     *
+     * @param[in]       r (0.0~1.0)
+     * @param[in]       g (0.0~1.0)
+     * @param[in]       b (0.0~1.0)
+     * @param[in]       a (0.0~1.0)
+     */
+    void SetColor(float r, float g, float b, float a);
 
     // 4頂点・6インデックス 単なる四角描画に付きこれは不変 
     static const int VERTEX_NUM = 4;
@@ -94,5 +112,6 @@ private:
 
     SpriteVertex*                           _vertexStore;   ///< 頂点をストアしておく領域 
     Live2D::Cubism::Framework::csmUint16*   _indexStore;    ///< インデックスをストアしておく領域 
+    D3DXVECTOR4                             _color;         ///< 描画色 
 };
 

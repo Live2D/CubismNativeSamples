@@ -8,7 +8,6 @@
 #pragma once
 
 #include <Rendering/D3D11/CubismNativeInclude_D3D11.hpp>
-
 #include <CubismFramework.hpp>
 #include <Math/CubismMatrix44.hpp>
 #include <Type/csmVector.hpp>
@@ -113,6 +112,11 @@ public:
      * @return  所持モデル個数
      */
     Csm::csmUint32 GetModelNum() const;
+
+    /**
+     * @brief   ウィンドウサイズが変更された際に呼ばれる処理
+     */
+    void ResizedWindow();
 
 private:
     /**

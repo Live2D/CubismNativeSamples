@@ -60,9 +60,6 @@ bool LAppDelegate::Initialize()
         return GL_FALSE;
     }
 
-    // 生成前に、これでウィンドウサイズ変更禁止指定 
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
     // Windowの生成_
     _window = glfwCreateWindow(RenderTargetWidth, RenderTargetHeight, "SAMPLE", NULL, NULL);
     if (_window == NULL)
@@ -100,6 +97,12 @@ bool LAppDelegate::Initialize()
     glfwSetMouseButtonCallback(_window, EventHandler::OnMouseCallBack);
     glfwSetCursorPosCallback(_window, EventHandler::OnMouseCallBack);
 
+    // ウィンドウサイズ記憶 
+    int width, height;
+    glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
+    _windowWidth = width;
+    _windowHeight = height;
+
     //AppViewの初期化
     _view->Initialize();
 
@@ -131,6 +134,22 @@ void LAppDelegate::Run()
     //メインループ
     while (glfwWindowShouldClose(_window) == GL_FALSE && !_isEnd)
     {
+        int width, height;
+        glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
+        if( (_windowWidth!=width || _windowHeight!=height) && width>0 && height>0)
+        {
+            //AppViewの初期化
+            _view->Initialize();
+            // スプライトサイズを再設定 
+            _view->ResizeSprite();
+            // サイズを保存しておく 
+            _windowWidth = width;
+            _windowHeight = height;
+
+            // ビューポート変更 
+            glViewport(0, 0, width, height);
+        }
+
         // 時間更新
         LAppPal::UpdateTime();
 
@@ -160,7 +179,9 @@ LAppDelegate::LAppDelegate():
     _captured(false),
     _mouseX(0.0f),
     _mouseY(0.0f),
-    _isEnd(false)
+    _isEnd(false),
+    _windowWidth(0),
+    _windowHeight(0)
 {
     _view = new LAppView();
     _textureManager = new LAppTextureManager();
@@ -249,17 +270,26 @@ GLuint LAppDelegate::CreateShader()
         "}";
     glShaderSource(vertexShaderId, 1, &vertexShader, NULL);
     glCompileShader(vertexShaderId);
+    if(!CheckShader(vertexShaderId))
+    {
+        return 0;
+    }
 
     //フラグメントシェーダのコンパイル
     GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
     const char* fragmentShader =
         "varying vec2 vuv;"
         "uniform sampler2D texture;"
+        "uniform vec4 baseColor;"
         "void main(void){"
-        "    gl_FragColor = texture2D(texture, vuv);"
+        "    gl_FragColor = texture2D(texture, vuv) * baseColor;"
         "}";
     glShaderSource(fragmentShaderId, 1, &fragmentShader, NULL);
     glCompileShader(fragmentShaderId);
+    if (!CheckShader(fragmentShaderId))
+    {
+        return 0;
+    }
 
     //プログラムオブジェクトの作成
     GLuint programId = glCreateProgram();
@@ -272,4 +302,27 @@ GLuint LAppDelegate::CreateShader()
     glUseProgram(programId);
 
     return programId;
+}
+
+bool LAppDelegate::CheckShader(GLuint shaderId)
+{
+    GLint status;
+    GLint logLength;
+    glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &logLength);
+    if (logLength > 0)
+    {
+        GLchar* log = reinterpret_cast<GLchar*>(CSM_MALLOC(logLength));
+        glGetShaderInfoLog(shaderId, logLength, &logLength, log);
+        CubismLogError("Shader compile log: %s", log);
+        CSM_FREE(log);
+    }
+
+    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &status);
+    if (status == GL_FALSE)
+    {
+        glDeleteShader(shaderId);
+        return false;
+    }
+
+    return true;
 }

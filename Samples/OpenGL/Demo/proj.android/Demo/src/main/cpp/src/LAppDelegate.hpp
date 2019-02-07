@@ -121,6 +121,11 @@ public:
     */
     void DeActivateApp() { _isActive = false; }
 
+    /**
+    * @brief   View情報を取得する。
+    */
+    LAppView* GetView() { return _view; }
+
 private:
     /**
     * @brief   コンストラクタ

@@ -15,6 +15,7 @@
 #include "LAppDefine.hpp"
 #include "TouchManager.hpp"
 #include "LAppSprite.hpp"
+#include "LAppModel.hpp"
 
 using namespace std;
 using namespace LAppDefine;
@@ -23,8 +24,15 @@ LAppView::LAppView():
     _programId(0),
     _back(NULL),
     _gear(NULL),
-    _power(NULL)
+    _power(NULL),
+    _renderSprite(NULL),
+    _renderTarget(SelectTarget_None)
 {
+    _clearColor[0] = 1.0f;
+    _clearColor[1] = 1.0f;
+    _clearColor[2] = 1.0f;
+    _clearColor[3] = 0.0f;
+
     // タッチ関係のイベント管理
     _touchManager = new TouchManager();
 
@@ -37,6 +45,8 @@ LAppView::LAppView():
 
 LAppView::~LAppView()
 { 
+    _renderBuffer.DestroyOffscreenFrame();
+    delete _renderSprite;
     delete _viewMatrix;
     delete _deviceToScreen;
     delete _touchManager;
@@ -50,6 +60,11 @@ void LAppView::Initialize()
     int width, height;
     glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
 
+    if(width==0 || height==0)
+    {
+        return;
+    }
+
     float ratio = static_cast<float>(height) / static_cast<float>(width);
     float left = ViewLogicalLeft;
     float right = ViewLogicalRight;
@@ -59,6 +74,7 @@ void LAppView::Initialize()
     _viewMatrix->SetScreenRect(left, right, bottom, top); // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
 
     float screenW = fabsf(left - right);
+    _deviceToScreen->LoadIdentity(); // サイズが変わった際などリセット必須 
     _deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
     _deviceToScreen->TranslateRelative(-width * 0.5f, -height * 0.5f);
 
@@ -82,7 +98,33 @@ void LAppView::Render()
     _power->Render();
 
     LAppLive2DManager* Live2DManager = LAppLive2DManager::GetInstance();
+
+    // Cubism更新・描画 
     Live2DManager->OnUpdate();
+
+    // 各モデルが持つ描画ターゲットをテクスチャとする場合 
+    if (_renderTarget == SelectTarget_ModelFrameBuffer && _renderSprite)
+    {
+        const GLfloat uvVertex[] =
+        {
+            1.0f, 1.0f,
+            0.0f, 1.0f,
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+        };
+
+        for (csmUint32 i = 0; i < Live2DManager->GetModelNum(); i++)
+        {
+            float alpha = GetSpriteAlpha(i); // サンプルとしてαに適当な差をつける 
+            _renderSprite->SetColor(1.0f, 1.0f, 1.0f, alpha);
+
+            LAppModel *model = Live2DManager->GetModel(i);
+            if (model)
+            {
+                _renderSprite->RenderImmidiate( model->GetRenderBuffer().GetColorBuffer(), uvVertex);
+            }
+        }
+    }
 }
 
 void LAppView::InitializeSprite()
@@ -122,6 +164,10 @@ void LAppView::InitializeSprite()
     fHeight = static_cast<float>(powerTexture->height);
     _power = new LAppSprite(x, y, fWidth, fHeight, powerTexture->id, _programId);
 
+    // 画面全体を覆うサイズ 
+    x = width * 0.5f;
+    y = height * 0.5f;
+    _renderSprite = new LAppSprite(x, y, static_cast<float>(width), static_cast<float>(height), 0, _programId);
 }
 
 void LAppView::OnTouchesBegan(float px, float py) const
@@ -190,4 +236,152 @@ float LAppView::TransformScreenX(float deviceX) const
 float LAppView::TransformScreenY(float deviceY) const
 {
     return _deviceToScreen->TransformY(deviceY);
+}
+
+void LAppView::PreModelDraw(LAppModel& refModel)
+{
+    // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ 
+    Csm::Rendering::CubismOffscreenFrame_OpenGLES2* useTarget = NULL;
+
+    if (_renderTarget != SelectTarget_None)
+    {// 別のレンダリングターゲットへ向けて描画する場合 
+
+        // 使用するターゲット 
+        useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
+
+        if (!useTarget->IsValid())
+        {// 描画ターゲット内部未作成の場合はここで作成 
+            int width, height;
+            glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
+            if (width != 0 && height != 0)
+            {
+                // モデル描画キャンバス 
+                useTarget->CreateOffscreenFrame(static_cast<csmUint32>(width), static_cast<csmUint32>(height));
+            }
+        }
+
+        // レンダリング開始 
+        useTarget->BeginDraw();
+        useTarget->Clear(_clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]); // 背景クリアカラー 
+    }
+}
+
+void LAppView::PostModelDraw(LAppModel& refModel)
+{
+    // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ 
+    Csm::Rendering::CubismOffscreenFrame_OpenGLES2* useTarget = NULL;
+
+    if (_renderTarget != SelectTarget_None)
+    {// 別のレンダリングターゲットへ向けて描画する場合 
+
+        // 使用するターゲット 
+        useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
+
+        // レンダリング終了 
+        useTarget->EndDraw();
+
+        // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はここ 
+        if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderSprite)
+        {
+            const GLfloat uvVertex[] =
+            {
+                1.0f, 1.0f,
+                0.0f, 1.0f,
+                0.0f, 0.0f,
+                1.0f, 0.0f,
+            };
+
+            _renderSprite->SetColor(1.0f, 1.0f, 1.0f, GetSpriteAlpha(0));
+            _renderSprite->RenderImmidiate(useTarget->GetColorBuffer(), uvVertex);
+        }
+    }
+}
+
+void LAppView::SwitchRenderingTarget(SelectTarget targetType)
+{
+    _renderTarget = targetType;
+}
+
+void LAppView::SetRenderTargetClearColor(float r, float g, float b)
+{
+    _clearColor[0] = r;
+    _clearColor[1] = g;
+    _clearColor[2] = b;
+}
+
+
+float LAppView::GetSpriteAlpha(int assign) const
+{
+    // assignの数値に応じて適当に決定 
+    float alpha = 0.25f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける 
+    if (alpha > 1.0f)
+    {
+        alpha = 1.0f;
+    }
+    if (alpha < 0.1f)
+    {
+        alpha = 0.1f;
+    }
+
+    return alpha;
+}
+
+void LAppView::ResizeSprite()
+{
+    LAppTextureManager* textureManager = LAppDelegate::GetInstance()->GetTextureManager();
+    if (!textureManager)
+    {
+        return;
+    }
+
+    // 描画領域サイズ 
+    int width, height;
+    glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
+
+    float x = 0.0f;
+    float y = 0.0f;
+    float fWidth = 0.0f;
+    float fHeight = 0.0f;
+
+    if (_back)
+    {
+        GLuint id = _back->GetTextureId();
+        LAppTextureManager::TextureInfo* texInfo = textureManager->GetTextureInfoById(id);
+        if (texInfo)
+        {
+            x = width * 0.5f;
+            y = height * 0.5f;
+            fWidth = static_cast<float>(texInfo->width * 2);
+            fHeight = static_cast<float>(height) * 0.95f;
+            _back->ResetRect(x, y, fWidth, fHeight);
+        }
+    }
+
+    if (_power)
+    {
+        GLuint id = _power->GetTextureId();
+        LAppTextureManager::TextureInfo* texInfo = textureManager->GetTextureInfoById(id);
+        if (texInfo)
+        {
+            x = static_cast<float>(width - texInfo->width * 0.5f);
+            y = static_cast<float>(texInfo->height * 0.5f);
+            fWidth = static_cast<float>(texInfo->width);
+            fHeight = static_cast<float>(texInfo->height);
+            _power->ResetRect(x, y, fWidth, fHeight);
+        }
+    }
+
+    if (_gear)
+    {
+        GLuint id = _gear->GetTextureId();
+        LAppTextureManager::TextureInfo* texInfo = textureManager->GetTextureInfoById(id);
+        if (texInfo)
+        {
+            x = static_cast<float>(width - texInfo->width * 0.5f);
+            y = static_cast<float>(height - texInfo->height * 0.5f);
+            fWidth = static_cast<float>(texInfo->width);
+            fHeight = static_cast<float>(texInfo->height);
+            _gear->ResetRect(x, y, fWidth, fHeight);
+        }
+    }
 }

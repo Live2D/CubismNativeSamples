@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
@@ -11,6 +11,7 @@
 #include <Model/CubismUserModel.hpp>
 #include <ICubismModelSetting.hpp>
 #include <Type/csmRectF.hpp>
+#include <Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp>
 
 
 /**
@@ -104,6 +105,11 @@ public:
      * @param[in]   y               判定を行うY座標
      */
     virtual Csm::csmBool HitTest(const Csm::csmChar* hitAreaName, Csm::csmFloat32 x, Csm::csmFloat32 y);
+    
+    /**
+     * @brief   別ターゲットに描画する際に使用するバッファの取得
+     */
+    Csm::Rendering::CubismOffscreenFrame_OpenGLES2& GetRenderBuffer();
 
 protected:
     /**
@@ -173,6 +179,8 @@ private:
     const Csm::CubismId* _idParamBodyAngleX; ///< パラメータID: ParamBodyAngleX
     const Csm::CubismId* _idParamEyeBallX; ///< パラメータID: ParamEyeBallX
     const Csm::CubismId* _idParamEyeBallY; ///< パラメータID: ParamEyeBallXY
+    
+    Csm::Rendering::CubismOffscreenFrame_OpenGLES2 _renderBuffer;   ///< フレームバッファ以外の描画先
 };
 
 

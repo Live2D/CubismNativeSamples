@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
@@ -12,9 +12,11 @@
 #include <Math/CubismMatrix44.hpp>
 #include <Math/CubismViewMatrix.hpp>
 #include "CubismFramework.hpp"
+#include <Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp>
 
 class TouchManager;
 class LAppSprite;
+class LAppModel;
 
 /**
 * @brief 描画クラス
@@ -22,6 +24,17 @@ class LAppSprite;
 class LAppView 
 {
 public:
+    
+    /**
+     * @brief LAppModelのレンダリング先
+     */
+    enum SelectTarget
+    {
+        SelectTarget_None,                ///< デフォルトのフレームバッファにレンダリング
+        SelectTarget_ModelFrameBuffer,    ///< LAppModelが各自持つフレームバッファにレンダリング
+        SelectTarget_ViewFrameBuffer,     ///< LAppViewの持つフレームバッファにレンダリング
+    };
+    
     /**
     * @brief コンストラクタ
     */
@@ -46,6 +59,11 @@ public:
     * @brief 画像の初期化を行う。
     */
     void InitializeSprite();
+    
+    /**
+     * @brief スプライト系のサイズ再設定
+     */
+    void ResizeSprite();
 
     /**
     * @brief タッチされたときに呼ばれる。
@@ -98,6 +116,35 @@ public:
     * @param[in]       deviceY            デバイスY座標
     */
     float TransformScreenY(float deviceY) const;
+    
+    /**
+     * @brief   モデル1体を描画する直前にコールされる
+     */
+    void PreModelDraw(LAppModel &refModel);
+    
+    /**
+     * @brief   モデル1体を描画した直後にコールされる
+     */
+    void PostModelDraw(LAppModel &refModel);
+    
+    /**
+     * @brief   別レンダリングターゲットにモデルを描画するサンプルで
+     *           描画時のαを決定する
+     */
+    float GetSpriteAlpha(int assign) const;
+    
+    /**
+     * @brief レンダリング先を切り替える
+     */
+    void SwitchRenderingTarget(SelectTarget targetType);
+    
+    /**
+     * @brief レンダリング先をデフォルト以外に切り替えた際の背景クリア色設定
+     * @param[in]   r   赤(0.0~1.0)
+     * @param[in]   g   緑(0.0~1.0)
+     * @param[in]   b   青(0.0~1.0)
+     */
+    void SetRenderTargetClearColor(float r, float g, float b);
 
 private:
     TouchManager* _touchManager;                 ///< タッチマネージャー
@@ -107,4 +154,10 @@ private:
     LAppSprite* _back;                       ///< 背景画像
     LAppSprite* _gear;                       ///< ギア画像
     LAppSprite* _power;                      ///< 電源画像
+
+    // レンダリング先を別ターゲットにする方式の場合に使用
+    LAppSprite* _renderSprite;                                  ///< モードによっては_renderBufferのテクスチャを描画
+    Csm::Rendering::CubismOffscreenFrame_OpenGLES2 _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング
+    SelectTarget _renderTarget;     ///< レンダリング先の選択肢
+    float _clearColor[4];           ///< レンダリングターゲットのクリアカラー
 };

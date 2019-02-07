@@ -73,6 +73,14 @@ public:
     void Render(int width, int height) const;
 
     /**
+     * @brief テクスチャを指定しての描画
+     * @param[in]        width   幅
+     * @param[in]        height  高さ
+     * @param[in]        resourceView   使用テクスチャ
+     */
+    void RenderImmidiate(int width, int height, ID3D11ShaderResourceView* resourceView) const;
+
+    /**
      * @brief ヒットチェック
      *
      * @param[in]       pointX    x座標
@@ -90,6 +98,16 @@ public:
      */
     void ResetRect(float x, float y, float width, float height);
 
+    /**
+     * @brief 色設定
+     *
+     * @param[in]       r (0.0~1.0)
+     * @param[in]       g (0.0~1.0)
+     * @param[in]       b (0.0~1.0)
+     * @param[in]       a (0.0~1.0)
+     */
+    void SetColor(float r, float g, float b, float a);
+
     // 4頂点・6インデックス 単なる四角描画に付きこれは不変 
     static const int VERTEX_NUM = 4;
     static const int INDEX_NUM = 6;
@@ -102,5 +120,7 @@ private:
     ID3D11Buffer* _vertexBuffer;    ///< 頂点バッファ 
     ID3D11Buffer* _indexBuffer;     ///< インデックスバッファ 
     ID3D11Buffer* _constantBuffer;  ///< 定数バッファ 
+
+    DirectX::XMFLOAT4   _color;     ///< スプライトカラー 
 };
 

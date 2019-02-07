@@ -86,6 +86,11 @@ public:
     */
     void AppEnd() { _isEnd = true; }
 
+    /**
+     * @brief   デバイスロスト対処中かどうか
+     */
+    bool IsLostStep() const { return _deviceLostStep != LostStep_None; }
+
     LAppTextureManager* GetTextureManager() { return _textureManager; }
 
     /**
@@ -143,6 +148,12 @@ private:
     */
     void InitializeCubism();
 
+    /**
+     * @brief   フルスクリーン解像度調査
+     */
+    bool CheckFullScreen(D3DFORMAT format, UINT width, UINT height);
+
+
     LAppAllocator _cubismAllocator;              ///< Cubism3 Allocator
     Csm::CubismFramework::Option _cubismOption;  ///< Cubism3 Option
 
@@ -158,7 +169,10 @@ private:
     LPDIRECT3DDEVICE9       _device;        ///< D3Dデバイス 
     WNDCLASSEX              _windowClass;   ///< ウィンドウクラス 
     LostStep                _deviceLostStep;///< デバイス解放中 
+    int                     _lostCounter;   ///< デバイスロスト処理で再試行した回数 
+    bool                    _isFullScreen;  ///< フルスクリーン中か 
     D3DPRESENT_PARAMETERS   _presentParameters;     ///< プレゼントパラメータ 
+    D3DPRESENT_PARAMETERS   _presentParametersFull;     ///< プレゼントパラメータ フルスクリーン 
 
     ID3DXEffect*                    _shaderEffect;  ///< スプライト描画用シェーダ 
     IDirect3DVertexDeclaration9*    _vertexFormat;  ///< スプライト描画用型宣言 

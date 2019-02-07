@@ -90,6 +90,12 @@ public:
     */
     Csm::csmInt32 GetSceneIndex() { return _sceneIndex; }
 
+    /**
+     * @brief   モデル個数を得る
+     * @return  所持モデル個数
+     */
+    Csm::csmUint32 GetModelNum() const;
+
 private:
     /**
     * @brief  コンストラクタ

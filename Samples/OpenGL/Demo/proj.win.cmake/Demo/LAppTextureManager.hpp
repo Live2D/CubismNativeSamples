@@ -95,6 +95,14 @@ public:
     **/
     void ReleaseTexture(std::string fileName);
 
+    /**
+     * @brief テクスチャIDからテクスチャ情報を得る
+     *
+     * @param   textureId[in]       取得したいテクスチャID
+     * @return  テクスチャが存在していればTextureInfoが返る
+     */
+    TextureInfo* GetTextureInfoById(GLuint textureId) const;
+
 private:
     Csm::csmVector<TextureInfo*> _textures;
 };

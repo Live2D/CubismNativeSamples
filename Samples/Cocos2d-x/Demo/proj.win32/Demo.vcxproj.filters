@@ -180,6 +180,12 @@
     <ClCompile Include="..\..\..\..\Framework\src\CubismModelSettingJson.cpp">
       <Filter>Live2D::Cubism::Framework</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\Framework\src\Rendering\OpenGL\CubismOffscreenSurface_OpenGLES2.cpp">
+      <Filter>Live2D::Cubism::Framework\Rendering\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\LAppSprite.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -346,6 +352,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\Framework\src\Live2DCubismCore.hpp">
       <Filter>Live2D::Cubism::Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\src\Rendering\OpenGL\CubismOffscreenSurface_OpenGLES2.hpp">
+      <Filter>Live2D::Cubism::Framework\Rendering\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\LAppSprite.hpp">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

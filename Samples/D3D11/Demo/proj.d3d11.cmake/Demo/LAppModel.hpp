@@ -11,7 +11,7 @@
 #include <Model/CubismUserModel.hpp>
 #include <ICubismModelSetting.hpp>
 #include <Type/csmRectF.hpp>
-
+#include <Rendering/D3D11/CubismOffscreenSurface_D3D11.hpp>
 
 /**
  * @brief ユーザーが実際に使用するモデルの実装クラス<br>
@@ -112,6 +112,12 @@ public:
     void DeleteMark() { _deleteModel = true; }
 
 
+    /**
+     * @brief   別ターゲットに描画する際に使用するバッファの取得
+     */
+    Csm::Rendering::CubismOffscreenFrame_D3D11& GetRenderBuffer();
+
+
 protected:
     /**
      *  @brief  モデルを描画する処理。モデルを描画する空間のView-Projection行列を渡す。
@@ -184,6 +190,8 @@ private:
     Csm::csmVector<Csm::csmUint64> _bindTextureId; ///< テクスチャID 
 
     bool _deleteModel;  ///< 実体消滅予定フラグ Drawを呼ばない 
+
+    Csm::Rendering::CubismOffscreenFrame_D3D11 _renderBuffer;   ///< フレームバッファ以外の描画先 
 };
 
 

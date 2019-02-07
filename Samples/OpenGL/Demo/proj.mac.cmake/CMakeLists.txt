@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+﻿cmake_minimum_required(VERSION 3.10)
 
 # 次の行を追加するとMinSizeRelとRelWithDebInfoの選択肢を生成することが抑制できます。
 SET(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "limited configs" FORCE)
@@ -46,6 +46,11 @@ add_subdirectory(../../../../Framework ${CMAKE_CURRENT_BINARY_DIR}/Framework)
 
 # プリプロセッサ定義の追加
 add_definitions(-DCSM_TARGET_MAC_GL -DGLEW_STATIC)
+
+# ここを有効にすると、Cubismモデルをメインフレームバッファではなく各LAppModelが独自に確保するテクスチャへ描画する 
+#add_definitions(-DUSE_MODEL_RENDER_TARGET)
+# ここを有効にすると、CubismモデルをメインフレームバッファではなくLAppViewが一つだけ確保するテクスチャへ描画する なおDUSE_MODEL_RENDER_TARGETより優先される 
+#add_definitions(-DUSE_RENDER_TARGET)
 
 # includeパスの追加
 include_directories(../../../../Framework/src)

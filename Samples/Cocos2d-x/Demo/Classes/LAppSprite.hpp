@@ -7,8 +7,7 @@
 
 #pragma once
 
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
+#include "Rendering/OpenGL/CubismRenderer_OpenGLES2.hpp"
 
 /**
 * @brief スプライトを実装するクラス。
@@ -41,7 +40,7 @@ public:
     * @param[in]       textureId    テクスチャID
     * @param[in]       programId    シェーダID
     */
-    LAppSprite(float x, float y, float width, float height, GLuint textureId, GLuint programId);
+    LAppSprite(GLuint programId);
 
     /**
     * @brief デストラクタ
@@ -49,40 +48,10 @@ public:
     ~LAppSprite();
 
     /**
-    * @brief スプライトサイズ変更
-    *
-    * @param[in]       x            x座標
-    * @param[in]       y            y座標
-    * @param[in]       width        横幅
-    * @param[in]       height       高さ
-    */
-    void ReSize(float x, float y, float width, float height);
-
-    /**
-    * @brief Getter テクスチャID
-    * @return テクスチャIDを返す
-    */
-    GLuint GetTextureId() { return _textureId; }
-
-    /**
-    * @brief 描画する
-    *
-    */
-    void Render() const;
-
-    /**
     * @brief テクスチャIDを指定して描画する
     *
     */
     void RenderImmidiate(GLuint textureId, const GLfloat uvVertex[8]) const;
-
-    /**
-    * @brief コンストラクタ
-    *
-    * @param[in]       pointX    x座標
-    * @param[in]       pointY    y座標
-    */
-    bool IsHit(float pointX, float pointY) const;
 
     /**
      * @brief 色設定
@@ -95,8 +64,7 @@ public:
     void SetColor(float r, float g, float b, float a);
 
 private:
-    GLuint _textureId;   ///< テクスチャID
-    Rect _rect;          ///< 矩形
+
     int _positionLocation;  ///< 位置アトリビュート
     int _uvLocation;        ///< UVアトリビュート
     int _textureLocation;   ///< テクスチャアトリビュート

@@ -14,6 +14,7 @@
 #include "LAppPal.hpp"
 #include "LAppDefine.hpp"
 #include "LAppTextureManager.hpp"
+#include "LAppModel.hpp"
 
 using namespace std;
 using namespace Csm;
@@ -23,6 +24,8 @@ namespace {
     LAppDelegate* s_instance = NULL;
 
     const LPCSTR ClassName = "Cubism DirectX11 Sample";
+
+    const csmInt32 BackBufferNum = 1; // バックバッファ枚数 
 }
 
 LAppDelegate* LAppDelegate::GetInstance()
@@ -69,7 +72,7 @@ bool LAppDelegate::Initialize()
 
     //ウインドウの生成
     _windowHandle = CreateWindow(ClassName, ClassName,
-        WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME & ~WS_MAXIMIZEBOX, // サイズ変更禁止 
+        WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT, rect.right, rect.bottom, NULL, NULL, _windowClass.hInstance, NULL);
     if(_windowHandle==NULL)
     {
@@ -83,7 +86,6 @@ bool LAppDelegate::Initialize()
 
 
     // デバイス設定 
-    const csmInt32 BackBufferNum = 2; // バックバッファ枚数 
     memset(&_presentParameters, 0, sizeof(_presentParameters));
     _presentParameters.BufferCount = BackBufferNum;
     _presentParameters.BufferDesc.Width = LAppDefine::RenderTargetWidth;
@@ -398,7 +400,7 @@ void LAppDelegate::InitializeCubism()
     CubismFramework::Initialize();
 
     // モデルロード前に必ず呼び出す必要がある 
-    Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D11::InitializeConstantSettings(1, _device);
+    Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D11::InitializeConstantSettings(BackBufferNum, _device);
 
     //load model
     LAppLive2DManager::GetInstance();
@@ -448,7 +450,6 @@ bool LAppDelegate::CreateShader()
         "/* normal */"\
         "float4 PixelNormal(VS_OUT In) : SV_Target {"\
             "float4 color = mainTexture.Sample(mainSampler, In.uv) * baseColor;"\
-            "color.xyz *= color.w;"\
             "return color;"\
         "}";
 
@@ -763,8 +764,14 @@ void LAppDelegate::ResizeDevice()
                 {
                     if (_view)
                     {
+                        // パラメータ、スプライトサイズなど再設定 
+                        _view->Initialize();
                         _view->ResizeSprite();
+                        _view->DestroyOffscreenFrame();
                     }
+
+                    // マネージャにサイズ変更通知 
+                    LAppLive2DManager::GetInstance()->ResizedWindow();
 
                     // 通常に戻る 
                     _deviceStep = DeviceStep_None;

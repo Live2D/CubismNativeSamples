@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
@@ -82,6 +82,12 @@ public:
     *           サンプルアプリケーションではモデルセットの切り替えを行う。
     */
     void ChangeScene(Csm::csmInt32 index);
+    
+    /**
+     * @brief   モデル個数を得る
+     * @return  所持モデル個数
+     */
+    Csm::csmUint32 GetModelNum() const;
 
 private:
     /**

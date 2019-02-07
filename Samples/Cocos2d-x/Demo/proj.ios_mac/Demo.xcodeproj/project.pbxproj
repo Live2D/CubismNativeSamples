@@ -46,6 +46,8 @@
 		521A8E6419F0C34300D177D7 /* Default-667h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 521A8E6219F0C34300D177D7 /* Default-667h@2x.png */; };
 		521A8E6519F0C34300D177D7 /* Default-736h@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 521A8E6319F0C34300D177D7 /* Default-736h@3x.png */; };
 		52B47A471A53D09C004E4C60 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52B47A461A53D09B004E4C60 /* Security.framework */; };
+		8015F04221F87F9700A57734 /* LAppSprite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8015F04121F87F9700A57734 /* LAppSprite.cpp */; };
+		8015F04321F87F9700A57734 /* LAppSprite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8015F04121F87F9700A57734 /* LAppSprite.cpp */; };
 		8063476621887BC20025E859 /* Haru in Resources */ = {isa = PBXBuildFile; fileRef = 8063476321887BC10025E859 /* Haru */; };
 		8063476721887BC20025E859 /* Haru in Resources */ = {isa = PBXBuildFile; fileRef = 8063476321887BC10025E859 /* Haru */; };
 		8063476821887BC20025E859 /* Hiyori in Resources */ = {isa = PBXBuildFile; fileRef = 8063476421887BC20025E859 /* Hiyori */; };
@@ -62,6 +64,8 @@
 		8083D7C6219577C900BB8CB4 /* CloseNormal.png in Resources */ = {isa = PBXBuildFile; fileRef = 8083D7C1219577C900BB8CB4 /* CloseNormal.png */; };
 		8083D7C8219577E300BB8CB4 /* CloseSelected.png in Resources */ = {isa = PBXBuildFile; fileRef = 8083D7C7219577E300BB8CB4 /* CloseSelected.png */; };
 		8083D7C9219577E300BB8CB4 /* CloseSelected.png in Resources */ = {isa = PBXBuildFile; fileRef = 8083D7C7219577E300BB8CB4 /* CloseSelected.png */; };
+		809EB2CF21D3816E00A50681 /* CubismOffscreenSurface_OpenGLES2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 809EB2CE21D3816E00A50681 /* CubismOffscreenSurface_OpenGLES2.cpp */; };
+		809EB2D021D3816E00A50681 /* CubismOffscreenSurface_OpenGLES2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 809EB2CE21D3816E00A50681 /* CubismOffscreenSurface_OpenGLES2.cpp */; };
 		8262943E1AAF051F00CB7CF7 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8262943D1AAF051F00CB7CF7 /* Security.framework */; };
 		9711112320889DCB00D001F7 /* SampleScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9711111220889DC900D001F7 /* SampleScene.cpp */; };
 		9711112420889DCB00D001F7 /* SampleScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9711111220889DC900D001F7 /* SampleScene.cpp */; };
@@ -231,6 +235,8 @@
 		521A8E6219F0C34300D177D7 /* Default-667h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-667h@2x.png"; sourceTree = "<group>"; };
 		521A8E6319F0C34300D177D7 /* Default-736h@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-736h@3x.png"; sourceTree = "<group>"; };
 		52B47A461A53D09B004E4C60 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
+		8015F03D21F87F9700A57734 /* LAppSprite.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LAppSprite.hpp; sourceTree = "<group>"; };
+		8015F04121F87F9700A57734 /* LAppSprite.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LAppSprite.cpp; sourceTree = "<group>"; };
 		8063476321887BC10025E859 /* Haru */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Haru; sourceTree = "<group>"; };
 		8063476421887BC20025E859 /* Hiyori */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Hiyori; sourceTree = "<group>"; };
 		8063476521887BC20025E859 /* Mark */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Mark; sourceTree = "<group>"; };
@@ -239,6 +245,8 @@
 		8083D7B4218B10D400BB8CB4 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		8083D7C1219577C900BB8CB4 /* CloseNormal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CloseNormal.png; sourceTree = "<group>"; };
 		8083D7C7219577E300BB8CB4 /* CloseSelected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CloseSelected.png; sourceTree = "<group>"; };
+		809EB2CD21D3816E00A50681 /* CubismOffscreenSurface_OpenGLES2.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CubismOffscreenSurface_OpenGLES2.hpp; sourceTree = "<group>"; };
+		809EB2CE21D3816E00A50681 /* CubismOffscreenSurface_OpenGLES2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubismOffscreenSurface_OpenGLES2.cpp; sourceTree = "<group>"; };
 		8262943D1AAF051F00CB7CF7 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		9711111220889DC900D001F7 /* SampleScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SampleScene.cpp; sourceTree = "<group>"; };
 		9711111320889DCA00D001F7 /* LAppDefine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LAppDefine.hpp; sourceTree = "<group>"; };
@@ -464,6 +472,8 @@
 		46880B8319C43A87006E1F66 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				8015F04121F87F9700A57734 /* LAppSprite.cpp */,
+				8015F03D21F87F9700A57734 /* LAppSprite.hpp */,
 				9711111F20889DCA00D001F7 /* AppMacros.h */,
 				9711111E20889DCA00D001F7 /* LAppAllocator.cpp */,
 				9711111520889DCA00D001F7 /* LAppAllocator.hpp */,
@@ -728,6 +738,8 @@
 		971111B52088A4AE00D001F7 /* OpenGL */ = {
 			isa = PBXGroup;
 			children = (
+				809EB2CE21D3816E00A50681 /* CubismOffscreenSurface_OpenGLES2.cpp */,
+				809EB2CD21D3816E00A50681 /* CubismOffscreenSurface_OpenGLES2.hpp */,
 				971111B62088A4AE00D001F7 /* CubismRenderer_OpenGLES2.cpp */,
 				971111B72088A4AE00D001F7 /* CubismRenderer_OpenGLES2.hpp */,
 			);
@@ -956,7 +968,9 @@
 				971111EB2088A4AE00D001F7 /* CubismUserModel.cpp in Sources */,
 				971111C72088A4AE00D001F7 /* CubismDefaultParameterId.cpp in Sources */,
 				971111ED2088A4AE00D001F7 /* ACubismMotion.cpp in Sources */,
+				8015F04221F87F9700A57734 /* LAppSprite.cpp in Sources */,
 				503AE10117EB989F00D1A890 /* main.m in Sources */,
+				809EB2CF21D3816E00A50681 /* CubismOffscreenSurface_OpenGLES2.cpp in Sources */,
 				971111F32088A4AF00D001F7 /* CubismMotionJson.cpp in Sources */,
 				9711112720889DCB00D001F7 /* TouchManager.cpp in Sources */,
 				971111D72088A4AE00D001F7 /* CubismMath.cpp in Sources */,
@@ -1002,6 +1016,7 @@
 				971111C82088A4AE00D001F7 /* CubismDefaultParameterId.cpp in Sources */,
 				971112042088A4AF00D001F7 /* csmRectF.cpp in Sources */,
 				971111D22088A4AE00D001F7 /* CubismPose.cpp in Sources */,
+				8015F04321F87F9700A57734 /* LAppSprite.cpp in Sources */,
 				971111D82088A4AE00D001F7 /* CubismMath.cpp in Sources */,
 				971111DA2088A4AE00D001F7 /* CubismMatrix44.cpp in Sources */,
 				971111DC2088A4AE00D001F7 /* CubismModelMatrix.cpp in Sources */,
@@ -1010,6 +1025,7 @@
 				971111D62088A4AE00D001F7 /* CubismIdManager.cpp in Sources */,
 				971111EA2088A4AE00D001F7 /* CubismModelUserDataJson.cpp in Sources */,
 				971111D42088A4AE00D001F7 /* CubismId.cpp in Sources */,
+				809EB2D021D3816E00A50681 /* CubismOffscreenSurface_OpenGLES2.cpp in Sources */,
 				9711112C20889DCB00D001F7 /* LAppLive2DManager.cpp in Sources */,
 				971111F42088A4AF00D001F7 /* CubismMotionJson.cpp in Sources */,
 				971111D02088A4AE00D001F7 /* CubismEyeBlink.cpp in Sources */,

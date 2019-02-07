@@ -142,6 +142,9 @@ private:
     bool _isEnd;                                 ///< APP終了しているか
     LAppTextureManager* _textureManager;         ///< テクスチャマネージャー
     std::string _rootDirectory; ///< ルートディレクトリ
+    
+    int _windowWidth;                            ///< Initialize関数で設定したウィンドウ幅
+    int _windowHeight;                           ///< Initialize関数で設定したウィンドウ高さ 
 };
 
 class EventHandler

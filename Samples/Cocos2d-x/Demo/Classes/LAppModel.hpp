@@ -7,10 +7,13 @@
 
 #pragma once
 
+#include "2d/CCRenderTexture.h"
 #include <CubismFramework.hpp>
 #include <Model/CubismUserModel.hpp>
 #include <ICubismModelSetting.hpp>
 #include <Type/csmRectF.hpp>
+#include <Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp>
+#include "LAppDefine.hpp"
 
 /**
  * @brief ユーザーが実際に使用するモデルの実装クラス<br>
@@ -108,6 +111,22 @@ public:
     const Csm::csmVector<Csm::csmRectF>& GetHitAreas(const Csm::CubismMatrix44& vpMatrix, const Csm::CubismVector2& windowSize);
     const Csm::csmVector<Csm::csmRectF>& GetUserDataAreas(const Csm::CubismMatrix44& vpMatrix, const Csm::CubismVector2& windowSize);
 
+    /**
+     * @brief   別ターゲットに描画する際に使用するバッファ・スプライトを作成し、
+     *           スプライトをSampleSceneへ登録する
+     */
+    void MakeRenderingTarget();
+
+    /**
+     * @brief   別ターゲットに描画する際のスプライト色設定
+     * @param[in]   r   赤(0.0~1.0)
+     * @param[in]   g   緑(0.0~1.0)
+     * @param[in]   b   青(0.0~1.0)
+     * @param[in]   a   α(0.0~1.0)
+     */
+    void SetSpriteColor(float r, float g, float b, float a);
+
+
 protected:
     /**
      *  @brief  モデルを描画する処理。モデルを描画する空間のView-Projection行列を渡す。
@@ -181,6 +200,9 @@ private:
     const Csm::CubismId* _idParamEyeBallX;          ///< パラメータID: ParamEyeBallX
     const Csm::CubismId* _idParamEyeBallY;          ///< パラメータID: ParamEyeBallXY
 
+    Csm::Rendering::CubismOffscreenFrame_OpenGLES2  _renderBuffer;  ///< モードによってはCubismOffscreenFrameのテクスチャを描画 
+    cocos2d::RenderTexture* _renderSprite;          ///< _renderBufferを描画するスプライト 
+    float _clearColor[4];                           ///< _renderBufferをクリアする際の色 
 };
 
 

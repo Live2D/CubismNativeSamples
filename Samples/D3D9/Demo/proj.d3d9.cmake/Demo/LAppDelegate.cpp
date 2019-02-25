@@ -68,7 +68,7 @@ bool LAppDelegate::Initialize()
 
     //ウインドウの生成
     _windowHandle = CreateWindow(ClassName, ClassName, 
-        WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME & ~WS_MAXIMIZEBOX, // サイズ変更禁止 
+        WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT, rect.right, rect.bottom, NULL, NULL, _windowClass.hInstance, NULL);
     if(_windowHandle==NULL)
     {
@@ -105,13 +105,21 @@ bool LAppDelegate::Initialize()
     _presentParameters.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT; // 今のリフレッシュレートをそのまま使う 
     _presentParameters.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;   // モニタの垂直回帰を待つ 
 
-    if(FAILED(_direct3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, _windowHandle,
+    HRESULT createResult =_direct3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, _windowHandle,
         D3DCREATE_HARDWARE_VERTEXPROCESSING, &_presentParameters,
-        &_device)))
+        &_device);
+
+    if(FAILED(createResult))
     {
-        LAppPal::PrintLog("Fail Direct3D Create Device");
+        LAppPal::PrintLog("Fail Direct3D Create Device %x", createResult);
         return false;
     }
+
+    // メンバーコピー 
+    _presentParametersFull = _presentParameters;
+    _presentParametersFull.Windowed = FALSE; // 違いはこれとサイズ 
+    // フルスクリーン化した場合の最適解像度をチェック 
+    CheckFullScreen(D3DFMT_X8R8G8B8, RenderTargetWidth, RenderTargetHeight);
 
     //AppViewの初期化
     _view->Initialize();
@@ -197,6 +205,8 @@ LAppDelegate::LAppDelegate()
     , _direct3D(NULL)
     , _device(NULL)
     , _deviceLostStep(LostStep::LostStep_None)
+    , _lostCounter(0)
+    , _isFullScreen(false)
     , _shaderEffect(NULL)
     , _vertexFormat(NULL)
 {
@@ -267,7 +277,6 @@ bool LAppDelegate::CreateShader()
         "/* normal */"\
         "float4 PixelNormal(VS_OUT In) : COLOR0{"\
             "float4 color = tex2D(mainSampler, In.uv) * baseColor;"\
-            "color.xyz *= color.w;"\
             "return color;"\
         "}"\
         \
@@ -377,12 +386,14 @@ void LAppDelegate::EndFrame()
         {// ロスト中 
             if(_deviceLostStep == LostStep::LostStep_None)
             {
-                // スプライト開放 
-                _view->ReleaseSprite();
+                // Viewロスト処理 
+                _view->OnDeviceLost();
                 // L2Dデバイスロスト処理(各モデルレンダラーの破棄) 
                 LAppLive2DManager::GetInstance()->OnDeviceLost(_device);
                 // テクスチャ全開放 
                 _textureManager->ReleaseTextures();
+
+                _lostCounter = 0;
             }
             _deviceLostStep = LostStep::LostStep_Lost;
         }
@@ -392,13 +403,26 @@ void LAppDelegate::EndFrame()
             result = _device->TestCooperativeLevel();
             if (result == D3DERR_DEVICENOTRESET)
             {
-                // 今の大きさに合わせます 
-                int nowWidth, nowHeight;
-                GetClientSize(nowWidth, nowHeight);
-                _presentParameters.BackBufferWidth = nowWidth;
-                _presentParameters.BackBufferHeight = nowHeight;
+                if(s_instance->_isFullScreen && _lostCounter==0)
+                {
+                    result = _device->Reset(&_presentParametersFull);
+                }
+                else
+                {
+                    // 今の大きさに合わせます 
+                    int nowWidth, nowHeight;
+                    GetClientSize(nowWidth, nowHeight);
+                    _presentParameters.BackBufferWidth = nowWidth;
+                    _presentParameters.BackBufferHeight = nowHeight;
+                    if(nowWidth==0 || nowHeight==0)
+                    {// サイズゼロは無理なので、初期値で 
+                        _presentParameters.BackBufferWidth = RenderTargetWidth;
+                        _presentParameters.BackBufferHeight = RenderTargetHeight;
+                    }
 
-                result = _device->Reset(&_presentParameters);
+                    result = _device->Reset(&_presentParameters);
+                }
+                _lostCounter++;
 
                 if (SUCCEEDED(result))
                 {
@@ -416,11 +440,31 @@ void LAppDelegate::EndFrame()
     {
         if (_deviceLostStep == LostStep::LostStep_ReCreate)
         {
-            // 今の大きさに合わせます 
+            D3DPRESENT_PARAMETERS *presentParam = NULL;
+
             int nowWidth, nowHeight;
-            GetClientSize(nowWidth, nowHeight);
-            _presentParameters.BackBufferWidth = nowWidth;
-            _presentParameters.BackBufferHeight = nowHeight;
+            if (s_instance->_isFullScreen && _lostCounter == 0)
+            {
+                nowWidth = _presentParametersFull.BackBufferWidth;
+                nowHeight = _presentParametersFull.BackBufferHeight;
+
+                presentParam = &_presentParametersFull;
+            }
+            else
+            {
+                // 今の大きさに合わせます 
+                GetClientSize(nowWidth, nowHeight);
+                _presentParameters.BackBufferWidth = nowWidth;
+                _presentParameters.BackBufferHeight = nowHeight;
+                if (nowWidth == 0 || nowHeight == 0)
+                {// サイズゼロは無理なので、初期値で 
+                    _presentParameters.BackBufferWidth = RenderTargetWidth;
+                    _presentParameters.BackBufferHeight = RenderTargetHeight;
+                }
+
+                presentParam = &_presentParameters;
+            }
+            _lostCounter++;
 
             // デバイス設定 
             if (nowWidth==0 || nowHeight==0)// サイズが0の際は最小化されていると思われる CreateDeviceは成功しない 
@@ -428,7 +472,7 @@ void LAppDelegate::EndFrame()
                 // NOP サイズが戻ったら再チャレンジ 
             }
             else if(FAILED(_direct3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, _windowHandle,
-                D3DCREATE_HARDWARE_VERTEXPROCESSING, &_presentParameters,
+                D3DCREATE_HARDWARE_VERTEXPROCESSING, presentParam,
                 &_device)))
             {
                 LAppPal::PrintLog("Fail Direct3D Create Device");
@@ -483,8 +527,8 @@ void LAppDelegate::GetClientSize(int& rWidth, int& rHeight)
 
 void LAppDelegate::RecreateDevice()
 {
-    // スプライト開放 
-    _view->ReleaseSprite();
+    // Viewロスト処理 
+    _view->OnDeviceLost();
     // L2Dデバイスロスト処理(各モデルレンダラーの破棄) 
     LAppLive2DManager::GetInstance()->OnDeviceLost(_device);
     // テクスチャ全開放 
@@ -500,6 +544,7 @@ void LAppDelegate::RecreateDevice()
     // デバイス再作成の方へ行く 
     // LostStep_Lostだったとしても上書き 
     _deviceLostStep = LostStep::LostStep_ReCreate;
+    _lostCounter = 0;
 }
 
 LRESULT WINAPI LAppDelegate::MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -580,6 +625,24 @@ LRESULT WINAPI LAppDelegate::MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
         }
         return 0;
 
+    case WM_SYSKEYDOWN:
+        if (s_instance != NULL)
+        {
+            switch (wParam)
+            {
+            case VK_RETURN: // Alt+Enterでフルスクリーン切り替え 
+                {
+                    // フラグを反転してデバイス再作成ステップへ 
+                    s_instance->_isFullScreen = !s_instance->_isFullScreen;
+                    s_instance->RecreateDevice();
+                }
+                break;
+            default:
+                break;
+            }
+        }
+        break;
+
     default:
         break;
     }
@@ -593,4 +656,41 @@ LPDIRECT3DDEVICE9 LAppDelegate::GetD3dDevice()
         return NULL;
     }
     return s_instance->_device;
+}
+
+bool LAppDelegate::CheckFullScreen(D3DFORMAT format, UINT width, UINT height)
+{
+    UINT nearest = UINT_MAX;
+    UINT minWidh=0, minHeight=0;
+
+    // ディスプレイモード数 
+    D3DDISPLAYMODE d3dspMode;
+    int modeNum = _direct3D->GetAdapterModeCount(D3DADAPTER_DEFAULT, format);
+    for (int i = 0; i < modeNum; i++)
+    {
+        if(FAILED(_direct3D->EnumAdapterModes(D3DADAPTER_DEFAULT, format, i, &d3dspMode)))
+        {
+            continue;
+        }
+
+        // 指定サイズに一番近いもの 
+        INT nearW = d3dspMode.Width - width;
+        INT nearH = d3dspMode.Height - height;
+        UINT sum = abs(nearW) + abs(nearH);
+        if(nearest>sum) // 差分が小さい 
+        {
+            nearest = sum;
+            minWidh = d3dspMode.Width;
+            minHeight = d3dspMode.Height;
+        }
+    }
+
+    if(nearest != UINT_MAX)
+    {// 調査成功 
+        _presentParametersFull.BackBufferWidth = minWidh;
+        _presentParametersFull.BackBufferHeight = minHeight;
+    }
+
+    // 見つかっていたらtrueを返す 
+    return nearest != UINT_MAX;
 }

@@ -98,6 +98,12 @@ bool LAppDelegate::Initialize()
     //コールバック関数の登録
     glfwSetMouseButtonCallback(_window, EventHandler::OnMouseCallBack);
     glfwSetCursorPosCallback(_window, EventHandler::OnMouseCallBack);
+    
+    // ウィンドウサイズ記憶
+    int width, height;
+    glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
+    _windowWidth = width;
+    _windowHeight = height;
 
     //AppViewの初期化
     _view->Initialize();
@@ -138,6 +144,17 @@ void LAppDelegate::Run()
     //メインループ
     while (glfwWindowShouldClose(_window) == GL_FALSE && !_isEnd)
     {
+        int width, height;
+        glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
+        if((_windowWidth!=width || _windowHeight!=height) && width>0 && height>0)
+        {
+            _view->Initialize();
+            _view->ResizeSprite();
+            
+            _windowWidth = width;
+            _windowHeight = height;
+        }
+        
         // 時間更新
         LAppPal::UpdateTime();
 
@@ -167,7 +184,9 @@ LAppDelegate::LAppDelegate():
     _captured(false),
     _mouseX(0.0f),
     _mouseY(0.0f),
-    _isEnd(false)
+    _isEnd(false),
+    _windowWidth(0),
+    _windowHeight(0)
 {
     _rootDirectory = "";
     _view = new LAppView();
@@ -258,8 +277,9 @@ GLuint LAppDelegate::CreateShader()
     const char* fragmentShader =
         "varying vec2 vuv;"
         "uniform sampler2D texture;"
+        "uniform vec4 baseColor;"
         "void main(void){"
-        "    gl_FragColor = texture2D(texture, vuv);"
+        "    gl_FragColor = texture2D(texture, vuv) * baseColor;"
         "}";
     glShaderSource(fragmentShaderId, 1, &fragmentShader, NULL);
     glCompileShader(fragmentShaderId);

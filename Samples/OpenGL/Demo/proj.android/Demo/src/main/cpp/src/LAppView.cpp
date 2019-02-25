@@ -15,6 +15,11 @@
 #include "LAppDefine.hpp"
 #include "TouchManager.hpp"
 #include "LAppSprite.hpp"
+#include "LAppModel.hpp"
+
+#include <Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp>
+#include <Rendering/OpenGL/CubismRenderer_OpenGLES2.hpp>
+
 #include "../JniBridgeC.hpp"
 
 using namespace std;
@@ -25,8 +30,15 @@ LAppView::LAppView():
     _back(NULL),
     _gear(NULL),
     _power(NULL),
-    _changeModel(false)
+    _changeModel(false),
+    _renderSprite(NULL),
+    _renderTarget(SelectTarget_None)
 {
+    _clearColor[0] = 1.0f;
+    _clearColor[1] = 1.0f;
+    _clearColor[2] = 1.0f;
+    _clearColor[3] = 0.0f;
+
     // タッチ関係のイベント管理
     _touchManager = new TouchManager();
 
@@ -39,6 +51,9 @@ LAppView::LAppView():
 
 LAppView::~LAppView()
 { 
+    _renderBuffer.DestroyOffscreenFrame();
+    delete _renderSprite;
+
     delete _viewMatrix;
     delete _deviceToScreen;
     delete _touchManager;
@@ -143,6 +158,18 @@ void LAppView::InitializeSprite()
         _power->ReSize(x, y, fWidth, fHeight);
     }
 
+    // 画面全体を覆うサイズ 
+    x = width * 0.5f;
+    y = height * 0.5f;
+
+    if (_renderSprite == NULL)
+    {
+        _renderSprite = new LAppSprite(x, y, width, height, 0, _programId);
+    }
+    else
+    {
+        _renderSprite->ReSize(x, y, width, height);
+    }
 }
 
 void LAppView::Render()
@@ -157,8 +184,34 @@ void LAppView::Render()
         LAppLive2DManager::GetInstance()->NextScene();
     }
 
-    LAppLive2DManager::GetInstance()->OnUpdate();
+    LAppLive2DManager* Live2DManager = LAppLive2DManager::GetInstance();
 
+    // Cubism更新・描画 
+    Live2DManager->OnUpdate();
+
+    // 各モデルが持つ描画ターゲットをテクスチャとする場合 
+    if (_renderTarget == SelectTarget_ModelFrameBuffer && _renderSprite)
+    {
+        const GLfloat uvVertex[] =
+        {
+            1.0f, 1.0f,
+            0.0f, 1.0f,
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+        };
+
+        for (csmUint32 i = 0; i < Live2DManager->GetModelNum(); i++)
+        {
+            float alpha = GetSpriteAlpha(i); // サンプルとしてαに適当な差をつける 
+            _renderSprite->SetColor(1.0f, 1.0f, 1.0f, alpha);
+
+            LAppModel *model = Live2DManager->GetModel(i);
+            if (model)
+            {
+                _renderSprite->RenderImmidiate(model->GetRenderBuffer().GetColorBuffer(), uvVertex);
+            }
+        }
+    }
 }
 
 void LAppView::OnTouchesBegan(float pointX, float pointY) const
@@ -226,4 +279,89 @@ float LAppView::TransformScreenX(float deviceX) const
 float LAppView::TransformScreenY(float deviceY) const
 {
     return _deviceToScreen->TransformY(deviceY);
+}
+
+void LAppView::PreModelDraw(LAppModel &refModel)
+{
+    // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ 
+    Csm::Rendering::CubismOffscreenFrame_OpenGLES2* useTarget = NULL;
+
+    if (_renderTarget != SelectTarget_None)
+    {// 別のレンダリングターゲットへ向けて描画する場合 
+
+        // 使用するターゲット 
+        useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
+
+        if (!useTarget->IsValid())
+        {// 描画ターゲット内部未作成の場合はここで作成 
+            int width = LAppDelegate::GetInstance()->GetWindowWidth();
+            int height = LAppDelegate::GetInstance()->GetWindowHeight();
+
+            // モデル描画キャンバス 
+            useTarget->CreateOffscreenFrame(static_cast<csmUint32>(width), static_cast<csmUint32>(height));
+        }
+
+        // レンダリング開始 
+        useTarget->BeginDraw();
+        useTarget->Clear(_clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]); // 背景クリアカラー 
+    }
+}
+
+void LAppView::PostModelDraw(LAppModel &refModel)
+{
+    // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ 
+    Csm::Rendering::CubismOffscreenFrame_OpenGLES2* useTarget = NULL;
+
+    if (_renderTarget != SelectTarget_None)
+    {// 別のレンダリングターゲットへ向けて描画する場合 
+
+        // 使用するターゲット 
+        useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
+
+        // レンダリング終了 
+        useTarget->EndDraw();
+
+        // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はここ 
+        if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderSprite)
+        {
+            const GLfloat uvVertex[] =
+            {
+                1.0f, 1.0f,
+                0.0f, 1.0f,
+                0.0f, 0.0f,
+                1.0f, 0.0f,
+            };
+
+            _renderSprite->SetColor(1.0f, 1.0f, 1.0f, GetSpriteAlpha(0));
+            _renderSprite->RenderImmidiate(useTarget->GetColorBuffer(), uvVertex);
+        }
+    }
+}
+
+void LAppView::SwitchRenderingTarget(SelectTarget targetType)
+{
+    _renderTarget = targetType;
+}
+
+void LAppView::SetRenderTargetClearColor(float r, float g, float b)
+{
+    _clearColor[0] = r;
+    _clearColor[1] = g;
+    _clearColor[2] = b;
+}
+
+float LAppView::GetSpriteAlpha(int assign) const
+{
+    // assignの数値に応じて適当に決定 
+    float alpha = 0.25f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける 
+    if (alpha > 1.0f)
+    {
+        alpha = 1.0f;
+    }
+    if (alpha < 0.1f)
+    {
+        alpha = 0.1f;
+    }
+
+    return alpha;
 }

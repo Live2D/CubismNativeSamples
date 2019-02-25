@@ -65,6 +65,8 @@ LAppModel::LAppModel()
 
 LAppModel::~LAppModel()
 {
+    _renderBuffer.DestroyOffscreenFrame();
+
     ReleaseMotions();
     ReleaseExpressions();
 
@@ -614,4 +616,9 @@ void LAppModel::SetupTextures()
 void LAppModel::MotionEventFired(const csmString& eventValue)
 {
     CubismLogInfo("%s is fired on LAppModel!!", eventValue.GetRawString());
+}
+
+Csm::Rendering::CubismOffscreenFrame_OpenGLES2& LAppModel::GetRenderBuffer()
+{
+    return _renderBuffer;
 }

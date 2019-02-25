@@ -22,6 +22,7 @@
 #import "LAppLive2DManager.h"
 #import "LAppTextureManager.h"
 #import "LAppPal.h"
+#import "LAppModel.h"
 
 #define BUFFER_OFFSET(bytes) ((GLubyte *)NULL + (bytes))
 
@@ -32,21 +33,15 @@ using namespace LAppDefine;
 @property (nonatomic) LAppSprite *back; //背景画像
 @property (nonatomic) LAppSprite *gear; //歯車画像
 @property (nonatomic) LAppSprite *power; //電源画像
+@property (nonatomic) LAppSprite *renderSprite; //レンダリングターゲット描画用
 @property (nonatomic) TouchManager *touchManager; ///< タッチマネージャー
 @property (nonatomic) Csm::CubismMatrix44 *deviceToScreen;///< デバイスからスクリーンへの行列
 @property (nonatomic) Csm::CubismViewMatrix *viewMatrix;
+
 @end
 
 @implementation ViewController
 @synthesize mOpenGLRun;
-
-static const GLfloat uv[] =
-{
-    0.0f, 1.0f,
-    1.0f, 1.0f,
-    0.0f, 0.0f,
-    1.0f, 0.0f,
-};
 
 - (void)dealloc
 {
@@ -56,6 +51,10 @@ static const GLfloat uv[] =
 
 - (void)releaseView
 {
+    _renderBuffer.DestroyOffscreenFrame();
+
+    [_renderSprite release];
+    _renderSprite = nil;
     [_gear release];
     _gear = nil;
     [_back release];
@@ -82,6 +81,11 @@ static const GLfloat uv[] =
     [super viewDidLoad];
     mOpenGLRun = true;
     
+    _anotherTarget = false;
+    _spriteColorR = _spriteColorG = _spriteColorB = _spriteColorA = 1.0f;
+    _clearColorR = _clearColorG = _clearColorB = 1.0f;
+    _clearColorA = 0.0f;
+    
     // タッチ関係のイベント管理
     _touchManager = [[TouchManager alloc]init];
     
@@ -101,9 +105,8 @@ static const GLfloat uv[] =
     
     // set context
     [EAGLContext setCurrentContext:view.context];
-    
+
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    
     
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -117,7 +120,6 @@ static const GLfloat uv[] =
     
     glGenBuffers(1, &_fragmentBufferId);
     glBindBuffer(GL_ARRAY_BUFFER,  _fragmentBufferId);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(uv), uv, GL_STATIC_DRAW);
 }
 
 - (void)initializeScreen
@@ -156,7 +158,7 @@ static const GLfloat uv[] =
 {
     //時間更新
     LAppPal::UpdateTime();
-    
+
     if(mOpenGLRun)
     {
         // 画面クリア
@@ -168,8 +170,35 @@ static const GLfloat uv[] =
     
         [_power render:_vertexBufferId fragmentBufferID:_fragmentBufferId];
     
-        [[LAppLive2DManager getInstance] onUpdate];
-    
+        LAppLive2DManager* Live2DManager = [LAppLive2DManager getInstance];
+        [Live2DManager onUpdate];
+            
+        // 各モデルが持つ描画ターゲットをテクスチャとする場合はスプライトへの描画はここ 
+        if (_renderTarget == SelectTarget_ModelFrameBuffer && _renderSprite)
+        {
+            float uvVertex[] =
+            {
+                0.0f, 0.0f,
+                1.0f, 0.0f,
+                0.0f, 1.0f,
+                1.0f, 1.0f,
+            };
+                
+            for(csmUint32 i=0; i<[Live2DManager GetModelNum]; i++)
+            {
+                float a = [self GetSpriteAlpha:i]; // サンプルとしてαに適当な差をつける
+                [_renderSprite SetColor:1.0f g:1.0f b:1.0f a:a];
+                    
+                LAppModel* model = [Live2DManager getModel:i];
+                if (model)
+                {
+                    Csm::Rendering::CubismOffscreenFrame_OpenGLES2& useTarget = model->GetRenderBuffer();
+                    GLuint id = useTarget.GetColorBuffer();
+                    [_renderSprite renderImmidiate:_vertexBufferId fragmentBufferID:_fragmentBufferId TextureId:id uvArray:uvVertex];
+                }
+            }
+        }
+
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
 }
@@ -208,7 +237,13 @@ static const GLfloat uv[] =
     y = static_cast<float>(powerTexture->height * 0.5f);
     fWidth = static_cast<float>(powerTexture->width);
     fHeight = static_cast<float>(powerTexture->height);
-    _power = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight TextureId:powerTexture->id];
+    _power = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight TextureId:powerTexture->id];    
+    
+    x = static_cast<float>(width) * 0.5f;
+    y = static_cast<float>(height) * 0.5f;
+    fWidth = static_cast<float>(width*2);
+    fHeight = static_cast<float>(height*2);
+    _renderSprite = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth/2 Height:fHeight/2 TextureId:0];
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
@@ -299,4 +334,100 @@ static const GLfloat uv[] =
     int height = screenRect.size.height;
     return deviceY * -1 + height;
 }
+
+- (void)PreModelDraw:(LAppModel&)refModel
+{
+    // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
+    Csm::Rendering::CubismOffscreenFrame_OpenGLES2* useTarget = NULL;
+    
+    if (_renderTarget != SelectTarget_None)
+    {// 別のレンダリングターゲットへ向けて描画する場合
+        
+        // 使用するターゲット
+        useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
+        
+        if (!useTarget->IsValid())
+        {// 描画ターゲット内部未作成の場合はここで作成
+            CGRect screenRect = [[UIScreen mainScreen] nativeBounds];
+            int width = screenRect.size.width;
+            int height = screenRect.size.height;
+            
+            // モデル描画キャンバス
+            // PadとPhoneで縦横を変えている
+            if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+            {
+                useTarget->CreateOffscreenFrame(height, width);
+            }
+            else
+            {
+                useTarget->CreateOffscreenFrame(width, height);
+            }
+        }
+        
+        // レンダリング開始
+        useTarget->BeginDraw();
+        useTarget->Clear(_clearColorR, _clearColorG, _clearColorB, _clearColorA); // 背景クリアカラー
+    }
+}
+
+- (void)PostModelDraw:(LAppModel&)refModel
+{
+    // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
+    Csm::Rendering::CubismOffscreenFrame_OpenGLES2* useTarget = NULL;
+    
+    if (_renderTarget != SelectTarget_None)
+    {// 別のレンダリングターゲットへ向けて描画する場合
+        
+        // 使用するターゲット
+        useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
+        
+        // レンダリング終了
+        useTarget->EndDraw();
+        
+        // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はここ
+        if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderSprite)
+        {
+            float uvVertex[] =
+            {
+                0.0f, 0.0f,
+                1.0f, 0.0f,
+                0.0f, 1.0f,
+                1.0f, 1.0f,
+            };
+            
+            float a = [self GetSpriteAlpha:0];
+            [_renderSprite SetColor:1.0f g:1.0f b:1.0f a:a];
+            [_renderSprite renderImmidiate:_vertexBufferId fragmentBufferID:_fragmentBufferId TextureId:useTarget->GetColorBuffer() uvArray:uvVertex];
+        }
+    }
+}
+
+- (void)SwitchRenderingTarget:(SelectTarget)targetType
+{
+    _renderTarget = targetType;
+}
+
+- (void)SetRenderTargetClearColor:(float)r g:(float)g b:(float)b
+{
+    _clearColorR = r;
+    _clearColorG = g;
+    _clearColorB = b;
+}
+
+- (float)GetSpriteAlpha:(int)assign
+{
+    // assignの数値に応じて適当に決定
+    float alpha = 0.25f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける
+    if (alpha > 1.0f)
+    {
+        alpha = 1.0f;
+    }
+    if (alpha < 0.1f)
+    {
+        alpha = 0.1f;
+    }
+    
+    return alpha;
+}
+
 @end

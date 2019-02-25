@@ -112,6 +112,11 @@ private:
     */
     void InitializeCubism();
 
+    /**
+     * @brief   CreateShader内部関数 エラーチェック
+     */
+    bool CheckShader(GLuint shaderId);
+
     LAppAllocator _cubismAllocator;              ///< Cubism3 Allocator
     Csm::CubismFramework::Option _cubismOption;  ///< Cubism3 Option
     GLFWwindow* _window;                         ///< OpenGL ウィンドウ
@@ -121,6 +126,9 @@ private:
     float _mouseY;                               ///< マウスY座標
     bool _isEnd;                                 ///< APP終了しているか
     LAppTextureManager* _textureManager;         ///< テクスチャマネージャー
+
+    int _windowWidth;                            ///< Initialize関数で設定したウィンドウ幅 
+    int _windowHeight;                           ///< Initialize関数で設定したウィンドウ高さ 
 };
 
 class EventHandler

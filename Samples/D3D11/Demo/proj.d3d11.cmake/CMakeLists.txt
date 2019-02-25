@@ -59,6 +59,10 @@ include_directories(../../../../Core/include)
 
 include_directories("${FRAMEWORK_DX11_INCLUDE_PATH}")
 
+# ここを有効にすると、Cubismモデルをメインフレームバッファではなく各LAppModelが独自に確保するテクスチャへ描画する 
+#add_definitions(-DUSE_MODEL_RENDER_TARGET)
+# ここを有効にすると、CubismモデルをメインフレームバッファではなくLAppViewが一つだけ確保するテクスチャへ描画する なおDUSE_MODEL_RENDER_TARGETより優先される 
+#add_definitions(-DUSE_RENDER_TARGET)
 
 # ライブラリパスの追加
 

@@ -25,6 +25,7 @@ LOCAL_SRC_FILES := $(LOCAL_PATH)/hellocpp/main.cpp \
                    $(LOCAL_PATH)/../../../Classes/LAppModel.cpp \
                    $(LOCAL_PATH)/../../../Classes/LAppPal.cpp \
                    $(LOCAL_PATH)/../../../Classes/LAppView.cpp \
+                   $(LOCAL_PATH)/../../../Classes/LAppSprite.cpp \
                    $(LOCAL_PATH)/../../../Classes/SampleScene.cpp \
                    $(LOCAL_PATH)/../../../Classes/TouchManager.cpp \
                    $(LOCAL_PATH)/../../../../../../Framework/src/Motion/ACubismMotion.cpp \
@@ -57,6 +58,7 @@ LOCAL_SRC_FILES := $(LOCAL_PATH)/hellocpp/main.cpp \
                    $(LOCAL_PATH)/../../../../../../Framework/src/Effect/CubismPose.cpp \
                    $(LOCAL_PATH)/../../../../../../Framework/src/Rendering/CubismRenderer.cpp \
                    $(LOCAL_PATH)/../../../../../../Framework/src/Rendering/OpenGL/CubismRenderer_OpenGLES2.cpp \
+                   $(LOCAL_PATH)/../../../../../../Framework/src/Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.cpp \
                    $(LOCAL_PATH)/../../../../../../Framework/src/Utils/CubismString.cpp \
                    $(LOCAL_PATH)/../../../../../../Framework/src/Math/CubismTargetPoint.cpp \
                    $(LOCAL_PATH)/../../../../../../Framework/src/Model/CubismUserModel.cpp \

@@ -12,6 +12,8 @@
 #include <Type/csmVector.hpp>
 #include "LAppModel.hpp"
 
+class LAppSprite;
+
 /**
  * @brief サンプルアプリケーションにおいてCubismModelを管理するクラス<br>
  *         モデル生成と破棄、タップイベントの処理、モデル切り替えを行う。
@@ -21,6 +23,17 @@ class LAppLive2DManager
 {
 
 public:
+
+    /**
+     * @brief LAppModelのレンダリング先
+     */
+    enum SelectTarget
+    {
+        SelectTarget_None,                ///< デフォルトのフレームバッファにレンダリング 
+        SelectTarget_ModelFrameBuffer,    ///< LAppModelが各自持つフレームバッファにレンダリング 
+        SelectTarget_ViewFrameBuffer,     ///< LAppViewの持つフレームバッファにレンダリング 
+    };
+
     /**
      * @brief   クラスのインスタンス（シングルトン）を返す。<br>
      *           インスタンスが生成されていない場合は内部でインスタンを生成する。
@@ -104,6 +117,14 @@ public:
      */
     void ChangeScene(Csm::csmInt32 index);
 
+    /**
+     * @brief レンダリング先をデフォルト以外に切り替えた際の背景クリア色設定
+     * @param[in]   r   赤(0.0~1.0)
+     * @param[in]   g   緑(0.0~1.0)
+     * @param[in]   b   青(0.0~1.0)
+     */
+    void SetRenderTargetClearColor(float r, float g, float b);
+
 private:
     /**
      * @brief  コンストラクタ
@@ -115,7 +136,24 @@ private:
      */
     virtual ~LAppLive2DManager();
 
+    /**
+     * @brief　シェーダーを登録する。
+     */
+    void CreateShader();
+
+    /**
+     * @brief   CreateShader内部関数
+     */
+    bool CheckShader(GLuint shaderId);
+
     Csm::CubismMatrix44*        _viewMatrix;    ///< モデル描画に用いるView行列
     Csm::csmVector<LAppModel*>  _models;        ///< モデルインスタンスのコンテナ
     Csm::csmInt32               _sceneIndex;    ///< 表示するシーンのインデックス値
+
+    // レンダリング先を別ターゲットにする方式の場合に使用 
+    SelectTarget _renderTarget;                 ///< レンダリング先の選択肢  
+    GLuint _programId;                          ///< プリミティブを描画するためのシェーダID
+    LAppSprite* _sprite;                        ///< テクスチャの単純描画クラス 
+    Csm::Rendering::CubismOffscreenFrame_OpenGLES2* _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング 
+    float _clearColor[4];                       ///< レンダリングターゲットのクリアカラー 
 };

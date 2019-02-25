@@ -59,6 +59,12 @@ public:
     *
     */
     void Render() const;
+
+    /**
+    * @brief テクスチャIDを指定して描画する
+    *
+    */
+    void RenderImmidiate(GLuint textureId, const GLfloat uvVertex[8]) const;
     
     /**
     * @brief コンストラクタ
@@ -68,11 +74,34 @@ public:
     */
     bool IsHit(float pointX, float pointY) const;
 
+    /**
+     * @brief 色設定
+     *
+     * @param[in]       r (0.0~1.0)
+     * @param[in]       g (0.0~1.0)
+     * @param[in]       b (0.0~1.0)
+     * @param[in]       a (0.0~1.0)
+     */
+    void SetColor(float r, float g, float b, float a);
+
+    /**
+     * @brief サイズ再設定
+     *
+     * @param[in]       x            x座標
+     * @param[in]       y            y座標
+     * @param[in]       width        横幅
+     * @param[in]       height       高さ
+     */
+    void ResetRect(float x, float y, float width, float height);
+
 private:
     GLuint _textureId;      ///< テクスチャID
     Rect _rect;             ///< 矩形
     int _positionLocation;  ///< 位置アトリビュート
     int _uvLocation;        ///< UVアトリビュート
     int _textureLocation;   ///< テクスチャアトリビュート
+    int _colorLocation;     ///< カラーアトリビュート
+
+    float _spriteColor[4];  ///< 表示カラー 
 };
 

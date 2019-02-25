@@ -22,6 +22,7 @@ LAppSprite::LAppSprite()
     _indexBuffer(NULL),
     _constantBuffer(NULL)
 {
+    _color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint64 textureId)
@@ -30,6 +31,8 @@ LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint
     _indexBuffer(NULL),
     _constantBuffer(NULL)
 {
+    _color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+
     _rect.left = (x - width * 0.5f);
     _rect.right = (x + width * 0.5f);
     _rect.up = (y + height * 0.5f);
@@ -151,6 +154,11 @@ LAppSprite::~LAppSprite()
 
 void LAppSprite::Render(int width, int height) const
 {
+    if (width == 0 || height == 0)
+    {
+        return; // この際は描画できず 
+    }
+
     LAppDelegate* appDelegate = LAppDelegate::GetInstance();
     ID3D11DeviceContext* renderContext = LAppDelegate::GetD3dContext();
 
@@ -182,7 +190,7 @@ void LAppSprite::Render(int width, int height) const
     {
         CubismConstantBufferD3D11 cb;
         memset(&cb, 0, sizeof(cb));
-        XMStoreFloat4(&cb.baseColor, XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f));
+        cb.baseColor = _color;
         DirectX::XMMATRIX proj = XMMatrixIdentity();
         XMStoreFloat4x4(&cb.projectMatrix, XMMatrixTranspose(proj));
         renderContext->UpdateSubresource(_constantBuffer, 0, NULL, &cb, 0, 0);
@@ -214,6 +222,76 @@ void LAppSprite::Render(int width, int height) const
     }
 }
 
+void LAppSprite::RenderImmidiate(int width, int height, ID3D11ShaderResourceView* resourceView) const
+{
+    if (!resourceView) return;
+
+    if (width == 0 || height == 0)
+    {
+        return; // この際は描画できず 
+    }
+
+    LAppDelegate* appDelegate = LAppDelegate::GetInstance();
+    ID3D11DeviceContext* renderContext = LAppDelegate::GetD3dContext();
+
+    SpriteVertex vtx[VERTEX_NUM] = {
+        { 0.0f, 0.0f, 0.0f, 0.0f },
+        { 0.5f, 0.0f, 1.0f, 0.0f },
+        { 0.0f, 0.5f, 0.0f, 1.0f },
+        { 0.5f, 0.5f, 1.0f, 1.0f },
+    };
+
+    vtx[0].x = (_rect.left - width * 0.5f) / (width * 0.5f); vtx[0].y = (_rect.down - height * 0.5f) / (height * 0.5f);
+    vtx[1].x = (_rect.right - width * 0.5f) / (width * 0.5f); vtx[1].y = (_rect.down - height * 0.5f) / (height * 0.5f);
+    vtx[2].x = (_rect.left - width * 0.5f) / (width * 0.5f); vtx[2].y = (_rect.up - height * 0.5f) / (height * 0.5f);
+    vtx[3].x = (_rect.right - width * 0.5f) / (width * 0.5f); vtx[3].y = (_rect.up - height * 0.5f) / (height * 0.5f);
+
+    // 頂点書き込み 
+    if (_vertexBuffer)
+    {
+        D3D11_MAPPED_SUBRESOURCE subRes;
+        if (SUCCEEDED(renderContext->Map(_vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subRes)))
+        {
+            memcpy(subRes.pData, vtx, sizeof(SpriteVertex) * VERTEX_NUM);
+            renderContext->Unmap(_vertexBuffer, 0);
+        }
+    }
+
+    // 定数バッファ設定 
+    if (_constantBuffer)
+    {
+        CubismConstantBufferD3D11 cb;
+        memset(&cb, 0, sizeof(cb));
+        cb.baseColor = _color;
+        DirectX::XMMATRIX proj = XMMatrixIdentity();
+        XMStoreFloat4x4(&cb.projectMatrix, XMMatrixTranspose(proj));
+        renderContext->UpdateSubresource(_constantBuffer, 0, NULL, &cb, 0, 0);
+
+        renderContext->VSSetConstantBuffers(0, 1, &_constantBuffer);
+        renderContext->PSSetConstantBuffers(0, 1, &_constantBuffer);
+    }
+
+    {
+        UINT strides = sizeof(LAppSprite::SpriteVertex);
+        UINT offsets = 0;
+
+        renderContext->IASetVertexBuffers(0, 1, &_vertexBuffer, &strides, &offsets);
+        renderContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+        renderContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+        // 描画用設定 
+        appDelegate->SetupShader();
+
+        // テクスチャセット 
+        {
+            renderContext->PSSetShaderResources(0, 1, &resourceView);
+        }
+
+        // 描画実行 
+        renderContext->DrawIndexed(INDEX_NUM, 0, 0);
+    }
+}
+
 bool LAppSprite::IsHit(float pointX, float pointY) const
 {
     // フルスクリーン座標に変換 
@@ -221,6 +299,11 @@ bool LAppSprite::IsHit(float pointX, float pointY) const
     int clientWidth = 0, clientHeight = 0;
     LAppDelegate::GetClientSize(clientWidth, clientHeight);
     LAppPal::CoordinateWindowToFullScreen(static_cast<float>(clientWidth), static_cast<float>(clientHeight), pointX, pointY, coordX, coordY);
+
+    if(clientWidth==0 || clientHeight==0)
+    {// この際はヒットしない 
+        return false;
+    }
 
     coordX = (clientWidth+coordX)/(2.0f*clientWidth) * clientWidth;
     coordY = (clientHeight+coordY)/(2.0f*clientHeight) * clientHeight;
@@ -234,4 +317,9 @@ void LAppSprite::ResetRect(float x, float y, float width, float height)
     _rect.right = (x + width * 0.5f);
     _rect.up = (y + height * 0.5f);
     _rect.down = (y - height * 0.5f);
+}
+
+void LAppSprite::SetColor(float r, float g, float b, float a)
+{
+    _color = DirectX::XMFLOAT4(r, g, b, a);
 }

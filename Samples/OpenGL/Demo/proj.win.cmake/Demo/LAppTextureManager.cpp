@@ -125,3 +125,16 @@ void LAppTextureManager::ReleaseTexture(std::string fileName)
         } 
     }
 }
+
+LAppTextureManager::TextureInfo* LAppTextureManager::GetTextureInfoById(GLuint textureId) const
+{
+    for (Csm::csmUint32 i = 0; i < _textures.GetSize(); i++)
+    {
+        if (_textures[i]->id == textureId)
+        {
+            return _textures[i];
+        }
+    }
+
+    return NULL;
+}

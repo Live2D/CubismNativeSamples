@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
@@ -95,6 +95,14 @@ public:
     **/
     void ReleaseTexture(std::string fileName);
 
+    /**
+     * @brief テクスチャIDからテクスチャ情報を得る
+     *
+     * @param[in] textureId  取得したいテクスチャID
+     * @return テクスチャが存在していればTextureInfoが返る
+     **/
+    TextureInfo* GetTextureInfoById(GLuint textureId) const;
+    
 private:
     Csm::csmVector<TextureInfo*> _textures;
 };

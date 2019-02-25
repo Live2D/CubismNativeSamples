@@ -14,6 +14,8 @@
 #include "LAppDefine.hpp"
 #include "LAppDelegate.hpp"
 #include "LAppModel.hpp"
+#include "LAppView.hpp"
+#include "LAppSprite.hpp"
 
 using namespace Csm;
 using namespace LAppDefine;
@@ -132,8 +134,12 @@ void LAppLive2DManager::OnUpdate() const
         LAppModel* model = GetModel(i);
         projection = saveProjection;
 
+        LAppDelegate::GetInstance()->GetView()->PreModelDraw(*model);
+        
         model->Update();
         model->Draw(projection);///< 参照渡しなのでprojectionは変質する
+        
+        LAppDelegate::GetInstance()->GetView()->PostModelDraw(*model);
     }
 }
 
@@ -162,4 +168,45 @@ void LAppLive2DManager::ChangeScene(Csm::csmInt32 index)
     ReleaseAllModel();
     _models.PushBack(new LAppModel());
     _models[0]->LoadAssets(modelPath.c_str(), modelJsonName.c_str());
+    
+    /*
+     * モデル半透明表示を行うサンプルを提示する。
+     * ここでUSE_RENDER_TARGET、USE_MODEL_RENDER_TARGETが定義されている場合
+     * 別のレンダリングターゲットにモデルを描画し、描画結果をテクスチャとして別のスプライトに張り付ける。
+     */
+    {
+#if defined(USE_RENDER_TARGET)
+        // LAppViewの持つターゲットに描画を行う場合、こちらを選択
+        LAppView::SelectTarget useRenderTarget = LAppView::SelectTarget_ViewFrameBuffer;
+#elif defined(USE_MODEL_RENDER_TARGET)
+        // 各LAppModelの持つターゲットに描画を行う場合、こちらを選択
+        LAppView::SelectTarget useRenderTarget = LAppView::SelectTarget_ModelFrameBuffer;
+#else
+        // デフォルトのメインフレームバッファへレンダリングする(通常)
+        LAppView::SelectTarget useRenderTarget = LAppView::SelectTarget_None;
+#endif
+        
+#if defined(USE_RENDER_TARGET) || defined(USE_MODEL_RENDER_TARGET)
+        // モデル個別にαを付けるサンプルとして、もう1体モデルを作成し、少し位置をずらす
+        _models.PushBack(new LAppModel());
+        _models[1]->LoadAssets(modelPath.c_str(), modelJsonName.c_str());
+        _models[1]->GetModelMatrix()->TranslateX(0.2f);
+#endif
+        
+        float clearColor[3] = { 1.0f, 1.0f, 1.0f };
+        
+        LAppDelegate::GetInstance()->GetView()->SwitchRenderingTarget(useRenderTarget);
+        
+        if(useRenderTarget)
+        {
+            LAppDelegate::GetInstance()->GetView()->SwitchRenderingTarget(useRenderTarget);
+            // 背景クリア色
+            LAppDelegate::GetInstance()->GetView()->SetRenderTargetClearColor(clearColor[0], clearColor[1], clearColor[2]);
+        }
+    }
+}
+
+csmUint32 LAppLive2DManager::GetModelNum() const
+{
+    return _models.GetSize();
 }

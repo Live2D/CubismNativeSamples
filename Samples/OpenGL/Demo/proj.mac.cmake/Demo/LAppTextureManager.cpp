@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
@@ -131,4 +131,17 @@ void LAppTextureManager::ReleaseTexture(std::string fileName)
             break;
         } 
     }
+}
+
+LAppTextureManager::TextureInfo* LAppTextureManager::GetTextureInfoById(GLuint textureId) const
+{
+    for (Csm::csmUint32 i = 0; i < _textures.GetSize(); i++)
+    {
+        if (_textures[i]->id == textureId)
+        {
+            return _textures[i];
+        }
+    }
+    
+    return NULL;
 }

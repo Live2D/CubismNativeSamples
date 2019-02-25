@@ -190,6 +190,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y</Command>
     <ClCompile Include="..\..\..\..\Framework\src\Physics\CubismPhysics.cpp" />
     <ClCompile Include="..\..\..\..\Framework\src\Physics\CubismPhysicsJson.cpp" />
     <ClCompile Include="..\..\..\..\Framework\src\Rendering\CubismRenderer.cpp" />
+    <ClCompile Include="..\..\..\..\Framework\src\Rendering\OpenGL\CubismOffscreenSurface_OpenGLES2.cpp" />
     <ClCompile Include="..\..\..\..\Framework\src\Rendering\OpenGL\CubismRenderer_OpenGLES2.cpp" />
     <ClCompile Include="..\..\..\..\Framework\src\Type\csmRectF.cpp" />
     <ClCompile Include="..\..\..\..\Framework\src\Type\csmString.cpp" />
@@ -202,6 +203,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y</Command>
     <ClCompile Include="..\Classes\LAppDefine.cpp" />
     <ClCompile Include="..\Classes\LAppLive2DManager.cpp" />
     <ClCompile Include="..\Classes\LAppModel.cpp" />
+    <ClCompile Include="..\Classes\LAppSprite.cpp" />
     <ClCompile Include="..\Classes\LAppView.cpp" />
     <ClCompile Include="..\Classes\SampleScene.cpp" />
     <ClCompile Include="..\Classes\TouchManager.cpp" />
@@ -243,6 +245,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y</Command>
     <ClInclude Include="..\..\..\..\Framework\src\Physics\CubismPhysics.hpp" />
     <ClInclude Include="..\..\..\..\Framework\src\Physics\CubismPhysicsInternal.hpp" />
     <ClInclude Include="..\..\..\..\Framework\src\Physics\CubismPhysicsJson.hpp" />
+    <ClInclude Include="..\..\..\..\Framework\src\Rendering\OpenGL\CubismOffscreenSurface_OpenGLES2.hpp" />
     <ClInclude Include="..\..\..\..\Framework\src\Rendering\OpenGL\CubismRenderer_OpenGLES2.hpp" />
     <ClInclude Include="..\..\..\..\Framework\src\Type\csmMap.hpp" />
     <ClInclude Include="..\..\..\..\Framework\src\Type\csmRectF.hpp" />
@@ -259,6 +262,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y</Command>
     <ClInclude Include="..\Classes\LAppDefine.hpp" />
     <ClInclude Include="..\Classes\LAppLive2DManager.hpp" />
     <ClInclude Include="..\Classes\LAppModel.hpp" />
+    <ClInclude Include="..\Classes\LAppSprite.hpp" />
     <ClInclude Include="..\Classes\LAppView.hpp" />
     <ClInclude Include="..\Classes\SampleScene.h" />
     <ClInclude Include="..\Classes\TouchManager.h" />

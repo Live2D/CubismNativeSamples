@@ -66,6 +66,8 @@ LAppModel::LAppModel()
 
 LAppModel::~LAppModel()
 {
+    _renderBuffer.DestroyOffscreenFrame();
+
     ReleaseMotions();
     ReleaseExpressions();
 
@@ -641,4 +643,18 @@ void LAppModel::SetupTextures()
 void LAppModel::MotionEventFired(const csmString& eventValue)
 {
     CubismLogInfo("%s is fired on LAppModel!!", eventValue.GetRawString());
+}
+
+Csm::Rendering::CubismOffscreenFrame_D3D9& LAppModel::GetRenderBuffer()
+{
+    return _renderBuffer;
+}
+
+void LAppModel::OnDeviceLost()
+{
+     // レンダリングバッファ破棄 
+    _renderBuffer.DestroyOffscreenFrame();
+
+    // レンダラー破棄 
+    DeleteRenderer();
 }

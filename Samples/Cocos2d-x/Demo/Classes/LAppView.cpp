@@ -97,6 +97,8 @@ void LAppView::onDraw(const cocos2d::Mat4& transform, uint32_t flags)
     Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, transform);
 
     LAppLive2DManager* Live2DMgr = LAppLive2DManager::GetInstance();
+
+    // Cubism更新・描画 
     Live2DMgr->OnUpdate();
 
     if (_debugRects)

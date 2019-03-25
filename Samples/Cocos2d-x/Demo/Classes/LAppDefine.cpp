@@ -33,7 +33,8 @@ namespace LAppDefine {
     const csmChar* ModelDir[] = {
         "Haru",
         "Hiyori",
-        "Mark"
+        "Mark",
+        "Natori"
     };
     const csmInt32 ModelDirSize = sizeof(ModelDir) / sizeof(const csmChar*);
 

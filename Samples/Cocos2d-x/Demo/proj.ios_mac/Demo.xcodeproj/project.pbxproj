@@ -66,6 +66,8 @@
 		8083D7C9219577E300BB8CB4 /* CloseSelected.png in Resources */ = {isa = PBXBuildFile; fileRef = 8083D7C7219577E300BB8CB4 /* CloseSelected.png */; };
 		809EB2CF21D3816E00A50681 /* CubismOffscreenSurface_OpenGLES2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 809EB2CE21D3816E00A50681 /* CubismOffscreenSurface_OpenGLES2.cpp */; };
 		809EB2D021D3816E00A50681 /* CubismOffscreenSurface_OpenGLES2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 809EB2CE21D3816E00A50681 /* CubismOffscreenSurface_OpenGLES2.cpp */; };
+		80C8FE052248D5210018391B /* Natori in Resources */ = {isa = PBXBuildFile; fileRef = 80C8FE012248D5210018391B /* Natori */; };
+		80C8FE062248D5210018391B /* Natori in Resources */ = {isa = PBXBuildFile; fileRef = 80C8FE012248D5210018391B /* Natori */; };
 		8262943E1AAF051F00CB7CF7 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8262943D1AAF051F00CB7CF7 /* Security.framework */; };
 		9711112320889DCB00D001F7 /* SampleScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9711111220889DC900D001F7 /* SampleScene.cpp */; };
 		9711112420889DCB00D001F7 /* SampleScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9711111220889DC900D001F7 /* SampleScene.cpp */; };
@@ -247,6 +249,7 @@
 		8083D7C7219577E300BB8CB4 /* CloseSelected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CloseSelected.png; sourceTree = "<group>"; };
 		809EB2CD21D3816E00A50681 /* CubismOffscreenSurface_OpenGLES2.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CubismOffscreenSurface_OpenGLES2.hpp; sourceTree = "<group>"; };
 		809EB2CE21D3816E00A50681 /* CubismOffscreenSurface_OpenGLES2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubismOffscreenSurface_OpenGLES2.cpp; sourceTree = "<group>"; };
+		80C8FE012248D5210018391B /* Natori */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Natori; sourceTree = "<group>"; };
 		8262943D1AAF051F00CB7CF7 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		9711111220889DC900D001F7 /* SampleScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SampleScene.cpp; sourceTree = "<group>"; };
 		9711111320889DCA00D001F7 /* LAppDefine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LAppDefine.hpp; sourceTree = "<group>"; };
@@ -553,6 +556,7 @@
 				8063476321887BC10025E859 /* Haru */,
 				8063476421887BC20025E859 /* Hiyori */,
 				8063476521887BC20025E859 /* Mark */,
+				80C8FE012248D5210018391B /* Natori */,
 			);
 			name = Res;
 			path = ../../../Res;
@@ -906,6 +910,7 @@
 				5087E77E17EB970100C73F5D /* Default.png in Resources */,
 				521A8E6419F0C34300D177D7 /* Default-667h@2x.png in Resources */,
 				50EF629717ECD46A001EB2F8 /* Icon-58.png in Resources */,
+				80C8FE052248D5210018391B /* Natori in Resources */,
 				8083D7C8219577E300BB8CB4 /* CloseSelected.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -919,6 +924,7 @@
 				8063476921887BC20025E859 /* Hiyori in Resources */,
 				503AE0F817EB97AB00D1A890 /* Icon.icns in Resources */,
 				8063477321887BF00025E859 /* icon_gear.png in Resources */,
+				80C8FE062248D5210018391B /* Natori in Resources */,
 				8083D7B6218B10D400BB8CB4 /* fonts in Resources */,
 				8083D7C6219577C900BB8CB4 /* CloseNormal.png in Resources */,
 				8063476B21887BC20025E859 /* Mark in Resources */,

@@ -74,7 +74,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../Classes \
 # _COCOS_HEADER_ANDROID_END
 
 
-LOCAL_STATIC_LIBRARIES := cocos2dx_static libLive2DCubismCore
+LOCAL_STATIC_LIBRARIES := cc_static libLive2DCubismCore
 
 
 # _COCOS_LIB_ANDROID_BEGIN

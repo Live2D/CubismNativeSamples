@@ -68,13 +68,21 @@ include_directories("${FRAMEWORK_DX9_INCLUDE_PATH}")
 # ライブラリパスの追加
 
 # Visual Studioのソリューション生成
-if (CMAKE_GENERATOR_PLATFORM STREQUAL "x64" AND CMAKE_GENERATOR MATCHES "Visual Studio 14 2015")
+if (CMAKE_GENERATOR_PLATFORM STREQUAL "x64" AND CMAKE_GENERATOR MATCHES "Visual Studio 15 2017")
+    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/141)
+    link_directories("$ENV{DXSDK_FOR_CUBISM_D3D9}/Lib/x64")
+
+elseif (CMAKE_GENERATOR_PLATFORM STREQUAL "x64" AND CMAKE_GENERATOR MATCHES "Visual Studio 14 2015")
     link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/140)
     link_directories("$ENV{DXSDK_FOR_CUBISM_D3D9}/Lib/x64")
 
 elseif (CMAKE_GENERATOR_PLATFORM STREQUAL "x64" AND CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
     link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/120)
     link_directories("$ENV{DXSDK_FOR_CUBISM_D3D9}/Lib/x64")
+
+elseif (CMAKE_GENERATOR_PLATFORM STREQUAL "Win32" AND CMAKE_GENERATOR MATCHES "Visual Studio 15 2017")
+    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/141)
+    link_directories("$ENV{DXSDK_FOR_CUBISM_D3D9}/Lib/x86")
 
 elseif (CMAKE_GENERATOR_PLATFORM STREQUAL "Win32" AND CMAKE_GENERATOR MATCHES "Visual Studio 14 2015")
     link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/140)
@@ -86,6 +94,14 @@ elseif (CMAKE_GENERATOR_PLATFORM STREQUAL "Win32" AND CMAKE_GENERATOR MATCHES "V
 
 
 # NMake MakeFiles指定
+elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION GREATER 1910 AND CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64" )
+    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/141)
+    link_directories("$ENV{DXSDK_FOR_CUBISM_D3D9}/Lib/x64")
+
+elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION GREATER 1910 )
+    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/141)
+    link_directories("$ENV{DXSDK_FOR_CUBISM_D3D9}/Lib/x86")
+
 elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION MATCHES 1900 AND CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64" )
     link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/140)
     link_directories("$ENV{DXSDK_FOR_CUBISM_D3D9}/Lib/x64")

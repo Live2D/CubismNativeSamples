@@ -198,6 +198,7 @@ GLuint LAppDelegate::CreateShader()
     //バーテックスシェーダのコンパイル
     GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
     const char* vertexShader =
+        "#version 100\n"
         "attribute vec3 position;"
         "attribute vec2 uv;"
         "varying vec2 vuv;"
@@ -211,6 +212,7 @@ GLuint LAppDelegate::CreateShader()
     //フラグメントシェーダのコンパイル
     GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
     const char* fragmentShader =
+        "#version 100\n"
         "precision mediump float;"
         "varying vec2 vuv;"
         "uniform sampler2D texture;"

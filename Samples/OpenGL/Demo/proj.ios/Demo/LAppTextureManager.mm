@@ -1,8 +1,8 @@
-/*
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #import <Foundation/Foundation.h>
@@ -43,7 +43,7 @@
 
 - (TextureInfo*) createTextureFromPngFile:(std::string)fileName
 {
-    
+
     //search loaded texture already.
     for (Csm::csmUint32 i = 0; i < _textures.GetSize(); i++)
     {
@@ -52,15 +52,15 @@
             return _textures[i];
         }
     }
-    
+
     GLuint textureId;
     int width, height, channels;
     unsigned int size;
     unsigned char* png;
     unsigned char* address;
-    
+
     address = LAppPal::LoadFileAsBytes(fileName, &size);
-    
+
     // png情報を取得する
     png = stbi_load_from_memory(
                                 address,
@@ -69,7 +69,7 @@
                                 &height,
                                 &channels,
                                 STBI_rgb_alpha);
-    
+
     {
 #ifdef PREMULTIPLIED_ALPHA_ENABLE
         unsigned int* fourBytes = reinterpret_cast<unsigned int*>(png);
@@ -90,19 +90,19 @@
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
-     
-    
+
+
     // 解放処理
     stbi_image_free(png);
     LAppPal::ReleaseBytes(address);
-    
+
     TextureInfo* textureInfo = new TextureInfo;
     textureInfo->fileName = fileName;
     textureInfo->width = width;
     textureInfo->height = height;
     textureInfo->id = textureId;
     _textures.PushBack(textureInfo);
-    
+
     return textureInfo;
 }
 
@@ -121,7 +121,7 @@
     {
         delete _textures[i];
     }
-    
+
     _textures.Clear();
 }
 

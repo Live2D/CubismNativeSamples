@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "LAppView.hpp"
@@ -74,7 +74,7 @@ void LAppView::Initialize()
     _viewMatrix->SetScreenRect(left, right, bottom, top); // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
 
     float screenW = fabsf(left - right);
-    _deviceToScreen->LoadIdentity(); // サイズが変わった際などリセット必須 
+    _deviceToScreen->LoadIdentity(); // サイズが変わった際などリセット必須
     _deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
     _deviceToScreen->TranslateRelative(-width * 0.5f, -height * 0.5f);
 
@@ -91,7 +91,7 @@ void LAppView::Initialize()
     );
 }
 
-void LAppView::Render() 
+void LAppView::Render()
 {
     LAppLive2DManager* live2DManager = LAppLive2DManager::GetInstance();
     if (!live2DManager)
@@ -105,7 +105,7 @@ void LAppView::Render()
         return;
     }
 
-    // スプライト描画 
+    // スプライト描画
     int width, height;
     LAppDelegate::GetInstance()->GetClientSize(width, height);
 
@@ -124,15 +124,15 @@ void LAppView::Render()
         }
     }
 
-    // Cubism更新・描画 
+    // Cubism更新・描画
     live2DManager->OnUpdate();
 
-    // 各モデルが持つ描画ターゲットをテクスチャとする場合 
+    // 各モデルが持つ描画ターゲットをテクスチャとする場合
     if (_renderTarget == SelectTarget_ModelFrameBuffer && _renderSprite)
     {
         for (csmUint32 i = 0; i < live2DManager->GetModelNum(); i++)
         {
-            float alpha = GetSpriteAlpha(i); // サンプルとしてαに適当な差をつける 
+            float alpha = GetSpriteAlpha(i); // サンプルとしてαに適当な差をつける
             _renderSprite->SetColor(1.0f, 1.0f, 1.0f, alpha);
 
             LAppModel *model = live2DManager->GetModel(i);
@@ -182,12 +182,12 @@ void LAppView::InitializeSprite()
     fHeight = static_cast<float>(powerTexture->height);
     _power = new LAppSprite(x, y, fWidth, fHeight, powerTexture->id);
 
-    // 画面全体を覆うサイズ 
+    // 画面全体を覆うサイズ
     x = width * 0.5f;
     y = height * 0.5f;
     _renderSprite = new LAppSprite(x, y, static_cast<float>(width), static_cast<float>(height), 0);
 
-    // シェーダ作成 
+    // シェーダ作成
     LAppDelegate::GetInstance()->CreateShader();
 }
 
@@ -198,16 +198,16 @@ void LAppView::ReleaseSprite()
     delete _gear; _gear = NULL;
     delete _back; _back = NULL;
 
-    // スプライト用のシェーダ・頂点宣言も開放 
+    // スプライト用のシェーダ・頂点宣言も開放
     LAppDelegate::GetInstance()->ReleaseShader();
 }
 
 void LAppView::OnDeviceLost()
 {
-    // スプライト開放 
+    // スプライト開放
     ReleaseSprite();
 
-    // レンダリングターゲット開放 
+    // レンダリングターゲット開放
     _renderBuffer.DestroyOffscreenFrame();
 }
 
@@ -236,7 +236,7 @@ void LAppView::OnTouchesEnded(float px, float py) const
         int width, height;
         LAppDelegate::GetInstance()->GetClientSize(width, height);
 
-        // シングルタップ 
+        // シングルタップ
         float x = _deviceToScreen->TransformX(px); // 論理座標変換した座標を取得。
         float y = _deviceToScreen->TransformY(py); // 論理座標変換した座標を取得。
         if (DebugTouchLogEnable)
@@ -284,51 +284,51 @@ float LAppView::TransformScreenY(float deviceY) const
 void LAppView::PreModelDraw(LAppModel &refModel)
 {
     if (_renderTarget != SelectTarget_None && !LAppDelegate::GetInstance()->IsLostStep())
-    {// 別のレンダリングターゲットへ向けて描画する場合 
+    {// 別のレンダリングターゲットへ向けて描画する場合
 
-        // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ 
+        // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
         Csm::Rendering::CubismOffscreenFrame_D3D9* useTarget = NULL;
 
-        // 使用するターゲット 
+        // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
 
         if (!useTarget->IsValid())
-        {// 描画ターゲット内部未作成の場合はここで作成 
+        {// 描画ターゲット内部未作成の場合はここで作成
             int width, height;
             LAppDelegate::GetClientSize(width, height);
 
             if (width != 0 && height != 0)
             {
-                // モデル描画キャンバス 
+                // モデル描画キャンバス
                 useTarget->CreateOffscreenFrame(LAppDelegate::GetInstance()->GetD3dDevice(),
                     static_cast<csmUint32>(width), static_cast<csmUint32>(height));
             }
         }
 
-        // レンダリング開始 
+        // レンダリング開始
         useTarget->BeginDraw(LAppDelegate::GetInstance()->GetD3dDevice());
-        useTarget->Clear(LAppDelegate::GetInstance()->GetD3dDevice(), _clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]); // 背景クリアカラー 
+        useTarget->Clear(LAppDelegate::GetInstance()->GetD3dDevice(), _clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]); // 背景クリアカラー
     }
 }
 
 void LAppView::PostModelDraw(LAppModel &refModel)
 {
     if (_renderTarget != SelectTarget_None && !LAppDelegate::GetInstance()->IsLostStep())
-    {// 別のレンダリングターゲットへ向けて描画する場合 
+    {// 別のレンダリングターゲットへ向けて描画する場合
 
-        // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ 
+        // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
         Csm::Rendering::CubismOffscreenFrame_D3D9* useTarget = NULL;
 
-        // 使用するターゲット 
+        // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
 
-        // レンダリング終了 
+        // レンダリング終了
         useTarget->EndDraw(LAppDelegate::GetInstance()->GetD3dDevice());
 
-        // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はここ 
+        // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はここ
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderSprite)
         {
-            // スプライト描画 
+            // スプライト描画
             int width, height;
             LAppDelegate::GetInstance()->GetClientSize(width, height);
 
@@ -353,8 +353,8 @@ void LAppView::SetRenderTargetClearColor(float r, float g, float b)
 
 float LAppView::GetSpriteAlpha(int assign) const
 {
-    // assignの数値に応じて適当に決定 
-    float alpha = 0.25f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける 
+    // assignの数値に応じて適当に決定
+    float alpha = 0.25f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける
     if (alpha > 1.0f)
     {
         alpha = 1.0f;

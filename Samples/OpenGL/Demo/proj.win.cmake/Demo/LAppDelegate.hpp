@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #pragma once
@@ -16,7 +16,7 @@ class LAppTextureManager;
 
 /**
 * @brief   アプリケーションクラス。
-*   Cubism3の管理を行う。
+*   Cubism SDK の管理を行う。
 */
 class LAppDelegate
 {
@@ -34,17 +34,17 @@ public:
     *
     */
     static void ReleaseInstance();
-    
+
     /**
     * @brief   APPに必要なものを初期化する。
     */
     bool Initialize();
-    
+
     /**
     * @brief   解放する。
     */
     void Release();
-    
+
     /**
     * @brief   実行処理。
     */
@@ -56,7 +56,7 @@ public:
     * @param[in]       window            コールバックを呼んだWindow情報
     * @param[in]       button            ボタン種類
     * @param[in]       action            実行結果
-    * @param[in]       modify            
+    * @param[in]       modify
     */
     void OnMouseCallBack(GLFWwindow* window, int button, int action, int modify);
 
@@ -108,7 +108,7 @@ private:
     ~LAppDelegate();
 
     /**
-    * @brief   Cubism3の初期化
+    * @brief   Cubism SDK の初期化
     */
     void InitializeCubism();
 
@@ -117,8 +117,8 @@ private:
      */
     bool CheckShader(GLuint shaderId);
 
-    LAppAllocator _cubismAllocator;              ///< Cubism3 Allocator
-    Csm::CubismFramework::Option _cubismOption;  ///< Cubism3 Option
+    LAppAllocator _cubismAllocator;              ///< Cubism SDK Allocator
+    Csm::CubismFramework::Option _cubismOption;  ///< Cubism SDK Option
     GLFWwindow* _window;                         ///< OpenGL ウィンドウ
     LAppView* _view;                             ///< View情報
     bool _captured;                              ///< クリックしているか
@@ -127,8 +127,8 @@ private:
     bool _isEnd;                                 ///< APP終了しているか
     LAppTextureManager* _textureManager;         ///< テクスチャマネージャー
 
-    int _windowWidth;                            ///< Initialize関数で設定したウィンドウ幅 
-    int _windowHeight;                           ///< Initialize関数で設定したウィンドウ高さ 
+    int _windowWidth;                            ///< Initialize関数で設定したウィンドウ幅
+    int _windowHeight;                           ///< Initialize関数で設定したウィンドウ高さ
 };
 
 class EventHandler
@@ -141,7 +141,7 @@ public:
     {
         LAppDelegate::GetInstance()->OnMouseCallBack(window, button, action, modify);
     }
-    
+
     /**
     * @brief   glfwSetCursorPosCallback用コールバック関数。
     */

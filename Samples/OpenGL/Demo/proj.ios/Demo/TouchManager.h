@@ -1,8 +1,8 @@
-/*
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #ifndef TouchManager_h
@@ -34,7 +34,7 @@
  * @brief 解放処理
  */
 - (void)dealloc;
-    
+
 /*
  * @brief タッチ開始時イベント
  *
@@ -42,7 +42,7 @@
  * @param[in] deviceX    タッチした画面のxの値
  */
 - (void)touchesBegan:(float)deviceX DeciveY:(float)deviceY;
-    
+
 /*
  * @brief ドラッグ時のイベント
  *
@@ -67,7 +67,7 @@
  * @return フリック距離
  */
 - (float)getFlickDistance;
-    
+
 /*
  * @brief 点1から点2への距離を求める
  *

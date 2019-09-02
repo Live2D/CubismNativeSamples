@@ -1,21 +1,30 @@
-﻿cmake_minimum_required(VERSION 3.10)
+﻿cmake_minimum_required(VERSION 3.15)
 
-# 次の行を追加するとMinSizeRelとRelWithDebInfoの選択肢を生成することが抑制できます。
-SET(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "limited configs" FORCE)
+# Suppress the generation of MinSizeRel and RelWithDebInfo.
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "limited configs" FORCE)
 
-# ZERO_CHECKプロジェクトの生成を抑制
-set(CMAKE_SUPPRESS_REGENERATION true) 
+# Suppress generation of ZERO_CHECK project.
+set(CMAKE_SUPPRESS_REGENERATION true)
 
-# compilerのバージョン指定
-SET(CMAKE_CXX_STANDARD 14)
+# Specify version of compiler.
+set(CMAKE_CXX_STANDARD 14)
 
-# プロジェクト名
+# Set project name.
 project(Demo)
 
-# 出力フォルダの指定
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+# Set output directory paths.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR})
 
-# ここにプロジェクトに追加するソースファイルを追加
+# Set directory paths.
+set(CORE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Core)
+set(FRAMEWORK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Framework)
+set(THIRD_PARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdParty)
+set(STB_DIR ${THIRD_PARTY_DIR}/stb)
+set(GLEW_DIR ${THIRD_PARTY_DIR}/glew-2.1.0)
+set(GLFW_DIR ${THIRD_PARTY_DIR}/glfw-3.3)
+
+# Add the sourcecodes for this project.
 set(Demo
     Demo/main.cpp
     Demo/LAppAllocator.cpp
@@ -27,50 +36,53 @@ set(Demo
     Demo/LAppSprite.cpp
     Demo/LAppTextureManager.cpp
     Demo/LAppView.cpp
-    Demo/TouchManager.cpp
-)
+    Demo/TouchManager.cpp)
 
-# Framework側のCMakeFielsのプリプロセッサ定義
-set(FRAMEWORK_DEFINITIOINS
-    -DCSM_TARGET_MAC_GL
-    -DGLEW_STATIC
-)
+# Set preprocessor definitions for CubismNativeFramework.
+set(FRAMEWORK_DEFINITIOINS -DCSM_TARGET_MAC_GL -DGLEW_STATIC)
 
-# Framework側のCMakeFilesに渡すgl系のパスを変数にセットしておく
-set(FRAMEWORK_GLFW_PATH /usr/local/include)
-set(FRAMEWORK_GLEW_PATH /usr/local/include)
+# Give the thirdparty OpenGL library include paths to CubismNativeFramework.
+set(FRAMEWORK_GLEW_PATH ${GLEW_DIR}/include)
+set(FRAMEWORK_GLFW_PATH ${GLFW_DIR}/include)
 
-# Frameworkの追加
-add_subdirectory(../../../../Framework ${CMAKE_CURRENT_BINARY_DIR}/Framework)
+# Add CubismNativeFramework.
+add_subdirectory(${FRAMEWORK_DIR} ${CMAKE_CURRENT_BINARY_DIR}/Framework)
 
-
-# プリプロセッサ定義の追加
+# Add preprocessor definition.
 add_definitions(-DCSM_TARGET_MAC_GL -DGLEW_STATIC)
 
-# ここを有効にすると、Cubismモデルをメインフレームバッファではなく各LAppModelが独自に確保するテクスチャへ描画する 
+# When this flag is turned on, the renderer will draw for each texture that has LAppModel.
+# Otherwise, will draw to the main framebuffer.
 #add_definitions(-DUSE_MODEL_RENDER_TARGET)
-# ここを有効にすると、CubismモデルをメインフレームバッファではなくLAppViewが一つだけ確保するテクスチャへ描画する なおDUSE_MODEL_RENDER_TARGETより優先される 
+# When this flag is turned on, the renderer will draw to the texture. The texture only has LAppView.
+# This flag has higher priority than DUSE_MODEL_RENDER_TARGET.
 #add_definitions(-DUSE_RENDER_TARGET)
 
-# includeパスの追加
-include_directories(../../../../Framework/src)
-include_directories(../../../../Core/include)
-include_directories(../../thirdParty/stb/include)
-include_directories(/usr/local/include)
+# Add include paths.
+include_directories(
+    ${CORE_DIR}/include
+    ${FRAMEWORK_DIR}/src
+    ${STB_DIR}/include
+    ${GLEW_DIR}/include
+    ${GLFW_DIR}/include)
 
-# ライブラリパスの追加
+# Add library paths.
+link_directories(
+    ${CORE_DIR}/lib/macos
+    ${GLEW_DIR}/lib
+    ${GLFW_DIR}/lib)
 
-# Visual Studioのソリューション生成
-link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/macos)
-link_directories(/usr/local/lib)
-
-# ソースの追加
+# Set sourcecodes.
 add_executable(Demo ${Demo})
 
-# ライブラリの追加
+# Set output file name.
+set_target_properties(Demo PROPERTIES OUTPUT_NAME_DEBUG "Demo_Debug")
+
+# Set libraries for linking.
 find_package(OpenGL REQUIRED)
-target_link_libraries(Demo ${OPENGL_LIBRARIES})
-target_link_libraries(Demo libGLEW.2.1.dylib)
-target_link_libraries(Demo libglfw.3.dylib)
-target_link_libraries(Demo Live2DCubismCore.a)
-target_link_libraries(Demo Framework)
+target_link_libraries(Demo
+                      Live2DCubismCore.a
+                      Framework
+                      libGLEW.dylib
+                      libglfw.dylib
+                      ${OPENGL_LIBRARIES})

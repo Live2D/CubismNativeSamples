@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "LAppSprite.hpp"
@@ -51,12 +51,12 @@ LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint
     // |   \|
     // +----+
     // 0    1
-    // インデックスはもう不変で良いのでここでコピー完了 
+    // インデックスはもう不変で良いのでここでコピー完了
     WORD idx[INDEX_NUM] = {
         0, 1, 2,
         1, 3, 2,
     };
-    // Indexの書き込み 
+    // Indexの書き込み
     if(_indexStore)
     {
         memcpy(_indexStore, idx, sizeof(WORD) * INDEX_NUM);
@@ -67,12 +67,12 @@ LAppSprite::~LAppSprite()
 {
     LAppDelegate::GetInstance()->GetTextureManager()->ReleaseTexture(_textureId);
 
-    // インデックス 
+    // インデックス
     if (_indexStore)
     {
         CSM_FREE(_indexStore);
     }
-    // 頂点 
+    // 頂点
     if (_vertexStore)
     {
         CSM_FREE(_vertexStore);
@@ -90,10 +90,10 @@ void LAppSprite::Render(LPDIRECT3DDEVICE9 device, int maxWidth, int maxHeight) c
 
     if (maxWidth == 0 || maxHeight == 0)
     {
-        return; // この際は描画できず 
+        return; // この際は描画できず
     }
 
-    // 頂点設定 
+    // 頂点設定
     _vertexStore[0].x = (_rect.left  - maxWidth * 0.5f) / (maxWidth * 0.5f); _vertexStore[0].y = (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f); _vertexStore[0].u = 0.0f; _vertexStore[0].v = 0.0f;
     _vertexStore[1].x = (_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f); _vertexStore[1].y = (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f); _vertexStore[1].u = 1.0f; _vertexStore[1].v = 0.0f;
     _vertexStore[2].x = (_rect.left  - maxWidth * 0.5f) / (maxWidth * 0.5f); _vertexStore[2].y = (_rect.up   - maxHeight * 0.5f) / (maxHeight * 0.5f); _vertexStore[2].u = 0.0f; _vertexStore[2].v = 1.0f;
@@ -107,11 +107,11 @@ void LAppSprite::Render(LPDIRECT3DDEVICE9 device, int maxWidth, int maxHeight) c
             0.0f, 0.0f, 0.0f, 1.0f
         );
 
-        // このエフェクトで描画 
+        // このエフェクトで描画
         ID3DXEffect* shaderEffect = LAppDelegate::GetInstance()->SetupShader();
         if (shaderEffect)
         {
-            // レンダーステート 
+            // レンダーステート
             device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
             device->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
             device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -123,7 +123,7 @@ void LAppSprite::Render(LPDIRECT3DDEVICE9 device, int maxWidth, int maxHeight) c
             UINT numPass = 0;
             shaderEffect->SetTechnique("ShaderNames_Normal");
 
-            // numPassには指定のtechnique内に含まれるpassの数が返る 
+            // numPassには指定のtechnique内に含まれるpassの数が返る
             shaderEffect->Begin(&numPass, 0);
             shaderEffect->BeginPass(0);
 
@@ -140,7 +140,7 @@ void LAppSprite::Render(LPDIRECT3DDEVICE9 device, int maxWidth, int maxHeight) c
 
 
             {
-                // 描画 
+                // 描画
                 device->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, VERTEX_NUM, 2, _indexStore, D3DFMT_INDEX16, _vertexStore, sizeof(SpriteVertex));
             }
 
@@ -159,10 +159,10 @@ void LAppSprite::RenderImmidiate(LPDIRECT3DDEVICE9 device, int maxWidth, int max
 
     if (maxWidth == 0 || maxHeight == 0)
     {
-        return; // この際は描画できず 
+        return; // この際は描画できず
     }
 
-    // 頂点設定 
+    // 頂点設定
     _vertexStore[0].x = (_rect.left - maxWidth * 0.5f) / (maxWidth * 0.5f); _vertexStore[0].y = (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f); _vertexStore[0].u = 0.0f; _vertexStore[0].v = 0.0f;
     _vertexStore[1].x = (_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f); _vertexStore[1].y = (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f); _vertexStore[1].u = 1.0f; _vertexStore[1].v = 0.0f;
     _vertexStore[2].x = (_rect.left - maxWidth * 0.5f) / (maxWidth * 0.5f); _vertexStore[2].y = (_rect.up - maxHeight * 0.5f) / (maxHeight * 0.5f); _vertexStore[2].u = 0.0f; _vertexStore[2].v = 1.0f;
@@ -176,11 +176,11 @@ void LAppSprite::RenderImmidiate(LPDIRECT3DDEVICE9 device, int maxWidth, int max
             0.0f, 0.0f, 0.0f, 1.0f
         );
 
-        // このエフェクトで描画 
+        // このエフェクトで描画
         ID3DXEffect* shaderEffect = LAppDelegate::GetInstance()->SetupShader();
         if (shaderEffect)
         {
-            // レンダーステート 
+            // レンダーステート
             device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
             device->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
             device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -192,7 +192,7 @@ void LAppSprite::RenderImmidiate(LPDIRECT3DDEVICE9 device, int maxWidth, int max
             UINT numPass = 0;
             shaderEffect->SetTechnique("ShaderNames_Normal");
 
-            // numPassには指定のtechnique内に含まれるpassの数が返る 
+            // numPassには指定のtechnique内に含まれるpassの数が返る
             shaderEffect->Begin(&numPass, 0);
             shaderEffect->BeginPass(0);
 
@@ -207,7 +207,7 @@ void LAppSprite::RenderImmidiate(LPDIRECT3DDEVICE9 device, int maxWidth, int max
 
 
             {
-                // 描画 
+                // 描画
                 device->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, VERTEX_NUM, 2, _indexStore, D3DFMT_INDEX16, _vertexStore, sizeof(SpriteVertex));
             }
 
@@ -219,14 +219,14 @@ void LAppSprite::RenderImmidiate(LPDIRECT3DDEVICE9 device, int maxWidth, int max
 
 bool LAppSprite::IsHit(float pointX, float pointY) const
 {
-    // フルスクリーン座標に変換 
+    // フルスクリーン座標に変換
     float coordX = 0.0f, coordY = 0.0f;
     int clientWidth = 0, clientHeight = 0;
     LAppDelegate::GetClientSize(clientWidth, clientHeight);
     LAppPal::CoordinateWindowToFullScreen(static_cast<float>(clientWidth), static_cast<float>(clientHeight), pointX, pointY, coordX, coordY);
 
     if (clientWidth == 0 || clientHeight == 0)
-    {// この際はヒットしない 
+    {// この際はヒットしない
         return false;
     }
 

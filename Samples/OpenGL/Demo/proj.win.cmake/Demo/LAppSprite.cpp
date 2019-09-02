@@ -1,14 +1,14 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "LAppSprite.hpp"
 #include "LAppDelegate.hpp"
 
-LAppSprite::LAppSprite(float x, float y, float width, float height, GLuint textureId, GLuint programId) 
+LAppSprite::LAppSprite(float x, float y, float width, float height, GLuint textureId, GLuint programId)
     : _rect()
 {
     _rect.left = (x - width * 0.5f);
@@ -41,11 +41,11 @@ void LAppSprite::Render() const
 
     if (maxWidth == 0 || maxHeight == 0)
     {
-        return; // この際は描画できず 
+        return; // この際は描画できず
     }
 
     glEnable(GL_TEXTURE_2D);
-    const GLfloat uvVertex[] = 
+    const GLfloat uvVertex[] =
     {
         1.0f, 0.0f,
         0.0f, 0.0f,
@@ -61,7 +61,7 @@ void LAppSprite::Render() const
     glUniform1i(_textureLocation, 0);
 
     // 頂点データ
-    float positionVertex[] = 
+    float positionVertex[] =
     {
         (_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.up   - maxHeight * 0.5f) / (maxHeight * 0.5f),
         (_rect.left  - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.up   - maxHeight * 0.5f) / (maxHeight * 0.5f),
@@ -89,7 +89,7 @@ void LAppSprite::RenderImmidiate(GLuint textureId, const GLfloat uvVertex[8]) co
 
     if (maxWidth == 0 || maxHeight == 0)
     {
-        return; // この際は描画できず 
+        return; // この際は描画できず
     }
 
     glEnable(GL_TEXTURE_2D);
@@ -129,7 +129,7 @@ bool LAppSprite::IsHit(float pointX, float pointY) const
 
     if (maxWidth == 0 || maxHeight == 0)
     {
-        return false; // この際は描画できず 
+        return false; // この際は描画できず
     }
 
     //Y座標は変換する必要あり

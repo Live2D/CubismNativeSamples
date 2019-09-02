@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "LAppTextureManager.hpp"
@@ -34,38 +34,38 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
 
     D3DXIMAGE_INFO resultInfo;
 
-    // 実験としてここでα合成を行う場合はMipLevelを1にする 
+    // 実験としてここでα合成を行う場合はMipLevelを1にする
     if(isPreMult)
     {
         mipLevel = 1;
     }
 
-    // Lockする場合は立てる 
+    // Lockする場合は立てる
     DWORD usage = isPreMult ? D3DUSAGE_DYNAMIC : 0;
 
     if (SUCCEEDED(D3DXCreateTextureFromFileExA(device, fileName.c_str(), width, height,
-        mipLevel,   // 「この値が 0 または D3DX_DEFAULT の場合は、完全なミップマップ チェーンが作成される。」 
+        mipLevel,   // 「この値が 0 または D3DX_DEFAULT の場合は、完全なミップマップ チェーンが作成される。」
         usage,
         D3DFMT_A8R8G8B8,
         D3DPOOL_DEFAULT,
         filter,
-        D3DX_DEFAULT,   // ミップフィルタ設定 「このパラメータに D3DX_DEFAULT を指定することは、D3DX_FILTER_BOX を指定することと等しい。」 
-        0,              // カラーキー 
+        D3DX_DEFAULT,   // ミップフィルタ設定 「このパラメータに D3DX_DEFAULT を指定することは、D3DX_FILTER_BOX を指定することと等しい。」
+        0,              // カラーキー
         &resultInfo,
-        NULL,           // パレット 使用せず 
+        NULL,           // パレット 使用せず
         &texture)))
     {
-        // テクスチャ情報 
+        // テクスチャ情報
         textureInfo = new LAppTextureManager::TextureInfo();
 
         if (textureInfo)
         {
-            // 次のID 
+            // 次のID
             const Csm::csmUint64 addId = _sequenceId + 1;
 
             _textures.PushBack(texture);
 
-            // 情報格納 
+            // 情報格納
             textureInfo->fileName = fileName;
             textureInfo->width = static_cast<int>(resultInfo.Width);
             textureInfo->height = static_cast<int>(resultInfo.Height);
@@ -100,7 +100,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
         }
     }
 
-    // 失敗 
+    // 失敗
     if (DebugLogEnable)
     {
         LAppPal::PrintLog("Texture Load Error : %s", fileName.c_str());
@@ -120,10 +120,10 @@ void LAppTextureManager::ReleaseTextures()
 {
     for (Csm::csmUint32 i = 0; i < _texturesInfo.GetSize(); i++)
     {
-        // info除去 
+        // info除去
         delete _texturesInfo[i];
 
-        // 実体除去 
+        // 実体除去
         if(_textures[i])
         {
             _textures[i]->Release();
@@ -143,14 +143,14 @@ void LAppTextureManager::ReleaseTexture(Csm::csmUint64 textureId)
         {
             continue;
         }
-        // ID一致 
+        // ID一致
 
-        // info除去 
+        // info除去
         delete _texturesInfo[i];
         _texturesInfo.Remove(i);
 
-        // 実体除去 
-        // getBaseAddressでFramework::loadTextureFromGnfが確保した個所が取れる 
+        // 実体除去
+        // getBaseAddressでFramework::loadTextureFromGnfが確保した個所が取れる
         if (_textures[i])
         {
             _textures[i]->Release();
@@ -177,11 +177,11 @@ void LAppTextureManager::ReleaseTexture(std::string fileName)
     {
         if (_texturesInfo[i]->fileName == fileName)
         {
-            // info除去 
+            // info除去
             delete _texturesInfo[i];
             _texturesInfo.Remove(i);
 
-            // 実体除去 
+            // 実体除去
             if (_textures[i])
             {
                 _textures[i]->Release();
@@ -190,7 +190,7 @@ void LAppTextureManager::ReleaseTexture(std::string fileName)
             _textures.Remove(i);
 
             break;
-        } 
+        }
     }
 
     if (_textures.GetSize() == 0)

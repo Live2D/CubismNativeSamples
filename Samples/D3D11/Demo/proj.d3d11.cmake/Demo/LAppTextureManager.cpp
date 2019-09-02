@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "LAppTextureManager.hpp"
@@ -28,7 +28,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
     ID3D11Device* device = LAppDelegate::GetD3dDevice();
     ID3D11DeviceContext* context = LAppDelegate::GetD3dContext();
 
-    // wcharに変換 
+    // wcharに変換
     const int WCHAR_LENGTH = 512;
     wchar_t wchrStr[WCHAR_LENGTH] = L"";
     LAppPal::MbcToWchar(fileName.c_str(), fileName.length(), wchrStr, sizeof(wchrStr));
@@ -42,11 +42,11 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
     if(isPreMult)
     {
         hr = DirectX::CreateWICTextureFromFileEx(device,
-            NULL,   // NULLにするとMIP=1となる 
+            NULL,   // NULLにするとMIP=1となる
             wchrStr, maxSize,
-            D3D11_USAGE_DYNAMIC, 
+            D3D11_USAGE_DYNAMIC,
             D3D11_BIND_SHADER_RESOURCE,
-            D3D11_CPU_ACCESS_WRITE, 
+            D3D11_CPU_ACCESS_WRITE,
             0,
             DirectX::WIC_LOADER_DEFAULT,
             &texture, &textureView);
@@ -68,7 +68,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
     {
         do
         {
-            Microsoft::WRL::ComPtr<IWICImagingFactory> factoryWic;  ///< 
+            Microsoft::WRL::ComPtr<IWICImagingFactory> factoryWic;  ///<
             hr = CoCreateInstance(
                 CLSID_WICImagingFactory,
                 nullptr,
@@ -80,7 +80,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
                 break;
             }
 
-            // decoder作ってファイルを渡す 
+            // decoder作ってファイルを渡す
             Microsoft::WRL::ComPtr<IWICBitmapDecoder> decoder;
             hr = factoryWic->CreateDecoderFromFilename(wchrStr, NULL,
                 GENERIC_READ, WICDecodeMetadataCacheOnDemand, &decoder);
@@ -89,7 +89,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
                 break;
             }
 
-            // decoderからframeを取得 
+            // decoderからframeを取得
             Microsoft::WRL::ComPtr<IWICBitmapFrameDecode> frame;
             hr = decoder->GetFrame(0, &frame);
             if (FAILED(hr))
@@ -103,7 +103,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
                 break;
             }
 
-            // テクスチャ情報 
+            // テクスチャ情報
             textureInfo = new LAppTextureManager::TextureInfo();
 
             if (!textureInfo)
@@ -111,12 +111,12 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
                 break;
             }
 
-            // 作成成功 
+            // 作成成功
             {
-                // 次のID 
+                // 次のID
                 const Csm::csmUint64 addId = _sequenceId + 1;
 
-                // 情報格納 
+                // 情報格納
                 textureInfo->fileName = fileName;
                 textureInfo->width = static_cast<int>(texWidth);
                 textureInfo->height = static_cast<int>(texHeight);
@@ -134,9 +134,9 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
                     D3D11_MAPPED_SUBRESOURCE subRes;
                     if (SUCCEEDED(context->Map(texture, 0, D3D11_MAP_WRITE_DISCARD, 0, &subRes)))
                     {
-                        // テンポラリ領域確保 
+                        // テンポラリ領域確保
                         byte* pdd = static_cast<byte*>(malloc(subRes.RowPitch * texHeight));
-                        // 全エリアコピー 
+                        // 全エリアコピー
                         frame->CopyPixels(NULL, subRes.RowPitch, subRes.RowPitch * texHeight, pdd);
 
                         ULONG* pixel32 = static_cast<ULONG*>(subRes.pData);
@@ -153,9 +153,9 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
                             }
                         }
 
-                        // テンポラリ開放 
+                        // テンポラリ開放
                         free(pdd);
-                        // 解除 
+                        // 解除
                         context->Unmap(texture, 0);
                     }
                 }
@@ -165,7 +165,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
         } while (0);
     }
 
-    // 失敗 
+    // 失敗
     if (DebugLogEnable)
     {
         LAppPal::PrintLog("Texture Load Error : %s", fileName.c_str());
@@ -178,10 +178,10 @@ void LAppTextureManager::ReleaseTextures()
 {
     for (Csm::csmUint32 i = 0; i < _texturesInfo.GetSize(); i++)
     {
-        // info除去 
+        // info除去
         delete _texturesInfo[i];
 
-        // 実体除去 
+        // 実体除去
         if (_textureView[i])
         {
             _textureView[i]->Release();
@@ -207,12 +207,12 @@ void LAppTextureManager::ReleaseTexture(Csm::csmUint64 textureId)
         {
             continue;
         }
-        // ID一致 
+        // ID一致
 
-        // info除去 
+        // info除去
         delete _texturesInfo[i];
 
-        // 実体除去 
+        // 実体除去
         if (_textureView[i])
         {
             _textureView[i]->Release();
@@ -224,7 +224,7 @@ void LAppTextureManager::ReleaseTexture(Csm::csmUint64 textureId)
             _textures[i] = NULL;
         }
 
-        // 器除去 
+        // 器除去
         _texturesInfo.Remove(i);
         _textures.Remove(i);
         _textureView.Remove(i);
@@ -252,10 +252,10 @@ void LAppTextureManager::ReleaseTexture(std::string fileName)
     {
         if (_texturesInfo[i]->fileName == fileName)
         {
-            // info除去 
+            // info除去
             delete _texturesInfo[i];
 
-            // 実体除去 
+            // 実体除去
             if (_textureView[i])
             {
                 _textureView[i]->Release();
@@ -267,13 +267,13 @@ void LAppTextureManager::ReleaseTexture(std::string fileName)
                 _textures[i] = NULL;
             }
 
-            // 器除去 
+            // 器除去
             _texturesInfo.Remove(i);
             _textures.Remove(i);
             _textureView.Remove(i);
 
             break;
-        } 
+        }
     }
 
     if (_textureView.GetSize() == 0)

@@ -1,8 +1,8 @@
-/*
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #ifndef LAppPal_h
@@ -30,8 +30,8 @@ public:
      * @return                  バイトデータ
      */
     static Csm::csmByte* LoadFileAsBytes(const std::string filePath, Csm::csmSizeInt* outSize);
-    
-    
+
+
     /**
      * @brief バイトデータを解放する
      *
@@ -40,7 +40,7 @@ public:
      * @param[in]   byteData    解放したいバイトデータ
      */
     static void ReleaseBytes(Csm::csmByte* byteData);
-    
+
     /**
      * @biref   デルタ時間（前回フレームとの差分）を取得する
      *
@@ -48,12 +48,12 @@ public:
      *
      */
     static double GetDeltaTime() {return s_deltaTime;}
-    
+
     /**
      * @brief 時間を更新する。
      */
     static void UpdateTime();
-    
+
     /**
      * @brief ログを出力する
      *
@@ -64,7 +64,7 @@ public:
      *
      */
     static void PrintLog(const Csm::csmChar* format, ...);
-    
+
     /**
      * @brief メッセージを出力する
      *
@@ -74,7 +74,7 @@ public:
      *
      */
     static void PrintMessage(const Csm::csmChar* message);
-    
+
 private:
     static double s_currentFrame;
     static double s_lastFrame;

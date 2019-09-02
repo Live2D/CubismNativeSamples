@@ -1,8 +1,8 @@
-/*
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 //Cubism
@@ -66,21 +66,21 @@ LAppLive2DManager::LAppLive2DManager()
     int width = static_cast<int>(cocos2d::Director::getInstance()->getOpenGLView()->getFrameSize().width);
     int height = static_cast<int>(cocos2d::Director::getInstance()->getOpenGLView()->getFrameSize().height);
 
-    // 画面全体を覆うサイズ 
+    // 画面全体を覆うサイズ
     _sprite = new LAppSprite(_programId);
 
-    // 使用するターゲット 
+    // 使用するターゲット
     _renderBuffer = new Csm::Rendering::CubismOffscreenFrame_OpenGLES2;
     if (_renderBuffer)
-    {// 描画ターゲット作成 
+    {// 描画ターゲット作成
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
         // Retina対策でこっちからとる
         GLViewImpl *glimpl = (GLViewImpl *)Director::getInstance()->getOpenGLView();
         glfwGetFramebufferSize(glimpl->getWindow(), &width, &height);
 #endif
-        
-        // モデル描画キャンバス 
+
+        // モデル描画キャンバス
         _renderBuffer->CreateOffscreenFrame(static_cast<csmUint32>(width), static_cast<csmUint32>(height));
     }
 
@@ -115,7 +115,7 @@ void LAppLive2DManager::ReleaseAllModel()
     {
         delete _models[i];
     }
-    
+
     _models.Clear();
 }
 
@@ -199,18 +199,18 @@ void LAppLive2DManager::OnUpdate() const
         projection = saveProjection;
 
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderBuffer && _sprite)
-        {// レンダリングターゲット使いまわしの場合 
-            // レンダリング開始 
+        {// レンダリングターゲット使いまわしの場合
+            // レンダリング開始
             _renderBuffer->BeginDraw();
-            _renderBuffer->Clear(_clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]); // 背景クリアカラー 
+            _renderBuffer->Clear(_clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]); // 背景クリアカラー
         }
 
         model->Update();
         model->Draw(projection);///< 参照渡しなのでprojectionは変質する
 
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderBuffer && _sprite)
-        {// レンダリングターゲット使いまわしの場合 
-            // レンダリング終了 
+        {// レンダリングターゲット使いまわしの場合
+            // レンダリング終了
             _renderBuffer->EndDraw();
 
             const GLfloat uvVertex[] =
@@ -221,16 +221,16 @@ void LAppLive2DManager::OnUpdate() const
                 1.0f, 0.0f,
             };
 
-            // program退避 
+            // program退避
             GLint lastProgram;
             glGetIntegerv(GL_CURRENT_PROGRAM, &lastProgram);
 
-            // GL系関数で直接描画 
+            // GL系関数で直接描画
             glUseProgram(_programId);
             _sprite->SetColor(1.0f, 1.0f, 1.0f, 0.25f + (float)i*0.5f);
             _sprite->RenderImmidiate(_renderBuffer->GetColorBuffer(), uvVertex);
 
-            // 元に戻す 
+            // 元に戻す
             glUseProgram(lastProgram);
         }
     }
@@ -259,25 +259,25 @@ void LAppLive2DManager::ChangeScene(Csm::csmInt32 index)
     _models.PushBack(new LAppModel());
     _models[0]->LoadAssets(dir.c_str(), modelJsonName.c_str());
 
-    /* 
+    /*
      * モデル半透明表示を行うサンプルを提示する。
      * ここでUSE_RENDER_TARGET、USE_MODEL_RENDER_TARGETが定義されている場合
      * 別のレンダリングターゲットにモデルを描画し、描画結果をテクスチャとして別のスプライトに張り付ける。
      */
     {
 #if defined(USE_RENDER_TARGET)
-        // Live2DManagerの持つターゲットに描画を行う場合、こちらを選択 
+        // Live2DManagerの持つターゲットに描画を行う場合、こちらを選択
         _renderTarget = SelectTarget_ViewFrameBuffer;
 #elif defined(USE_MODEL_RENDER_TARGET)
-        // 各LAppModelの持つターゲットに描画を行う場合、こちらを選択 
+        // 各LAppModelの持つターゲットに描画を行う場合、こちらを選択
         _renderTarget = SelectTarget_ModelFrameBuffer;
 #else
-        // デフォルトのメインフレームバッファへレンダリングする(通常) 
+        // デフォルトのメインフレームバッファへレンダリングする(通常)
         _renderTarget = SelectTarget_None;
 #endif
 
 #if defined(USE_RENDER_TARGET) || defined(USE_MODEL_RENDER_TARGET)
-        // モデル個別にαを付けるサンプルとして、もう1体モデルを作成し、少し位置をずらす 
+        // モデル個別にαを付けるサンプルとして、もう1体モデルを作成し、少し位置をずらす
         _models.PushBack(new LAppModel());
         _models[1]->LoadAssets(dir.c_str(), modelJsonName.c_str());
         _models[1]->GetModelMatrix()->TranslateX(0.2f);
@@ -287,9 +287,9 @@ void LAppLive2DManager::ChangeScene(Csm::csmInt32 index)
         {
             for(Csm::csmUint32 i=0;i<_models.GetSize(); i++)
             {
-                // レンダリング先とスプライトを作成 
+                // レンダリング先とスプライトを作成
                 _models[i]->MakeRenderingTarget();
-                // 適当なαを付ける 
+                // 適当なαを付ける
                 _models[i]->SetSpriteColor(1.0f, 1.0f, 1.0f, 0.25f + 0.5f*(float)i);
             }
         }

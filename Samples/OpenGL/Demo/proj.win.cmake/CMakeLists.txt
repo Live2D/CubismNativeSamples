@@ -1,26 +1,54 @@
-﻿cmake_minimum_required(VERSION 3.10)
+﻿cmake_minimum_required(VERSION 3.15)
 
-# 次の行を追加するとMinSizeRelとRelWithDebInfoの選択肢を生成することが抑制できます。
-SET(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "limited configs" FORCE)
+# Suppress the generation of MinSizeRel and RelWithDebInfo.
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "limited configs" FORCE)
 
-# ZERO_CHECKプロジェクトの生成を抑制
-set(CMAKE_SUPPRESS_REGENERATION true) 
+# Suppress generation of ZERO_CHECK project.
+set(CMAKE_SUPPRESS_REGENERATION TRUE)
 
-# プロジェクト名
+# Set project name.
 project(Demo)
 
-# 作成したプロジェクトをスタートアッププロジェクトに変更する
-set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Demo )
+# Mark as Startup project.
+set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Demo)
 
-# 出力フォルダの指定
-if (CMAKE_GENERATOR STREQUAL "NMake Makefiles")
-    #デフォルトのまま
-else ()
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-endif ()
+# Set output directory paths.
+if(CMAKE_GENERATOR MATCHES "^Visual Studio")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR})
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR})
+endif()
 
-# ここにプロジェクトに追加するソースファイルを追加
-set(Demo
+# Make sure the linker flag for architecture detection.
+if(CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64")
+    set(WIN_64 TRUE)
+elseif(CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:X86")
+    set(WIN_64 FALSE)
+else()
+    message(FATAL_ERROR "[CubismNativeSamples] Invalid linker flag.")
+endif()
+
+# Set library directory paths.
+set(CORE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Core)
+set(FRAMEWORK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Framework)
+set(THIRDPARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdParty)
+set(STB_DIR ${THIRDPARTY_DIR}/stb)
+set(GLEW_DIR ${THIRDPARTY_DIR}/glew-2.1.0)
+if(${WIN_64})
+    set(GLFW_DIR ${THIRDPARTY_DIR}/glfw-3.3.bin.WIN64)
+
+    set(CORE_LIB_DIR ${CORE_DIR}/lib/windows/x86_64)
+    set(GLEW_LIB_DIR ${GLEW_DIR}/lib/Release/x64)
+    set(GLFW_LIB_DIR ${GLFW_DIR})
+else()
+    set(GLFW_DIR ${THIRDPARTY_DIR}/glfw-3.3.bin.WIN32)
+
+    set(CORE_LIB_DIR ${CORE_DIR}/lib/windows/x86)
+    set(GLEW_LIB_DIR ${GLEW_DIR}/lib/Release/Win32)
+    set(GLFW_LIB_DIR ${GLFW_DIR})
+endif()
+
+# Add the sourcecodes for this project.
+set(SOURCES
     Demo/main.cpp
     Demo/LAppAllocator.cpp
     Demo/LAppDefine.cpp
@@ -31,137 +59,76 @@ set(Demo
     Demo/LAppSprite.cpp
     Demo/LAppTextureManager.cpp
     Demo/LAppView.cpp
-    Demo/TouchManager.cpp
-)
+    Demo/TouchManager.cpp)
 
-# Framework側のCMakeFielsのプリプロセッサ定義
-set(FRAMEWORK_DEFINITIOINS
-    -DCSM_TARGET_WIN_GL
-    -DGLEW_STATIC
-)
+# Set preprocessor definitions for CubismNativeFramework.
+set(FRAMEWORK_DEFINITIOINS -DCSM_TARGET_WIN_GL -DGLEW_STATIC)
 
-# Framework側のCMakeFilesに渡すgl系のパスを変数にセットしておく
-if (CMAKE_GENERATOR_PLATFORM STREQUAL "x64" OR CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64")
-    set(FRAMEWORK_GLFW_PATH ../Samples/OpenGL/thirdParty/glfw-3.2.1.bin.WIN64/include)
-    set(FRAMEWORK_GLEW_PATH ../Samples/OpenGL/thirdParty/glew-2.1.0/include)
-else ()
-    set(FRAMEWORK_GLFW_PATH ../Samples/OpenGL/thirdParty/glfw-3.2.1.bin.WIN32/include)
-    set(FRAMEWORK_GLEW_PATH ../Samples/OpenGL/thirdParty/glew-2.1.0/include)
-endif ()
+# Give the thirdparty OpenGL library include paths to CubismNativeFramework.
+set(FRAMEWORK_GLEW_PATH ${GLEW_DIR}/include)
+set(FRAMEWORK_GLFW_PATH ${GLFW_DIR}/include)
 
-# Frameworkの追加
-add_subdirectory(../../../../Framework ${CMAKE_CURRENT_BINARY_DIR}/Framework)
+# Add CubismNativeFramework.
+add_subdirectory(${FRAMEWORK_DIR} ${CMAKE_CURRENT_BINARY_DIR}/Framework)
 
-
-# プリプロセッサ定義の追加
+# Add preprocessor definition.
 add_definitions(-DCSM_TARGET_WIN_GL -DGLEW_STATIC)
 
-# ここを有効にすると、Cubismモデルをメインフレームバッファではなく各LAppModelが独自に確保するテクスチャへ描画する 
+# When this flag is turned on, the renderer will draw for each texture that has LAppModel.
+# Otherwise, will draw to the main framebuffer.
 #add_definitions(-DUSE_MODEL_RENDER_TARGET)
-# ここを有効にすると、CubismモデルをメインフレームバッファではなくLAppViewが一つだけ確保するテクスチャへ描画する なおDUSE_MODEL_RENDER_TARGETより優先される 
+# When this flag is turned on, the renderer will draw to the texture. The texture only has LAppView.
+# This flag has higher priority than DUSE_MODEL_RENDER_TARGET.
 #add_definitions(-DUSE_RENDER_TARGET)
 
+# Add include paths.
+include_directories(
+    ${CORE_DIR}/include
+    ${FRAMEWORK_DIR}/src
+    ${STB_DIR}/include
+    ${GLEW_DIR}/include
+    ${GLFW_DIR}/include)
 
-# includeパスの追加
-include_directories(../../../../Framework/src)
-include_directories(../../../../Core/include)
-include_directories(../../thirdParty/stb/include)
-if (CMAKE_GENERATOR_PLATFORM STREQUAL "x64" OR CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64")
-    set(GLFW_HEADER_PATH ../../thirdParty/glfw-3.2.1.bin.WIN64/include)
-    set(GLEW_HEADER_PATH ../../thirdParty/glew-2.1.0/include)
-else ()
-    set(GLFW_HEADER_PATH ../../thirdParty/glfw-3.2.1.bin.WIN32/include)
-    set(GLEW_HEADER_PATH ../../thirdParty/glew-2.1.0/include)
-endif ()
-include_directories("${GLFW_HEADER_PATH}")
-include_directories("${GLEW_HEADER_PATH}")
+# Add library paths.
+if(MSVC_VERSION MATCHES 1800)
+    # Visual Studio 2013
+    link_directories(
+        ${CORE_LIB_DIR}/120
+        ${GLEW_LIB_DIR}
+        ${GLFW_LIB_DIR}/lib-vc2013)
+elseif(MSVC_VERSION MATCHES 1900)
+    # Visual Studio 2015
+    link_directories(
+        ${CORE_LIB_DIR}/140
+        ${GLEW_LIB_DIR}
+        ${GLFW_LIB_DIR}/lib-vc2015)
+elseif(MSVC_VERSION GREATER_EQUAL 1910 AND MSVC_VERSION LESS 1920)
+    # Visual Studio 2017
+    link_directories(
+        ${CORE_LIB_DIR}/141
+        ${GLEW_LIB_DIR}
+        ${GLFW_LIB_DIR}/lib-vc2017)
+elseif(MSVC)
+    message(FATAL_ERROR "[CubismNativeSamples] Unsupported Visual C++ compiler used.")
+else()
+    message(FATAL_ERROR "[CubismNativeSamples] Unsupported compiler used.")
+endif()
 
+# Solve the MSVCRT confliction.
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:libcmtd.lib")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:libcmt.lib")
 
-# ライブラリパスの追加
+# Set sourcecodes.
+add_executable(Demo ${SOURCES})
 
-# Visual Studioのソリューション生成
+# Set output file name.
+set_target_properties(Demo PROPERTIES OUTPUT_NAME_DEBUG "Demo_Debug")
 
-if (CMAKE_GENERATOR_PLATFORM STREQUAL "x64" AND CMAKE_GENERATOR MATCHES "Visual Studio 15 2017")
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/141)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN64/lib-vc2015)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/x64)
-
-elseif (CMAKE_GENERATOR_PLATFORM STREQUAL "x64" AND CMAKE_GENERATOR MATCHES "Visual Studio 14 2015")
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/140)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN64/lib-vc2015)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/x64)
-
-elseif (CMAKE_GENERATOR_PLATFORM STREQUAL "x64" AND CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/120)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN64/lib-vc2013)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/x64)
-
-elseif (CMAKE_GENERATOR_PLATFORM STREQUAL "Win32" AND CMAKE_GENERATOR MATCHES "Visual Studio 15 2017")
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/141)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN32/lib-vc2015)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/Win32)
-
-elseif (CMAKE_GENERATOR_PLATFORM STREQUAL "Win32" AND CMAKE_GENERATOR MATCHES "Visual Studio 14 2015")
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/140)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN32/lib-vc2015)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/Win32)
-
-elseif (CMAKE_GENERATOR_PLATFORM STREQUAL "Win32" AND CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/120)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN32/lib-vc2013)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/Win32)
-
-
-# NMake MakeFiles指定
-
-elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION GREATER 1910 AND CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64" )
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/141)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN64/lib-vc2015)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/x64)
-
-elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION GREATER 1910 )
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/141)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN32/lib-vc2015)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/Win32)
-
-elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION MATCHES 1900 AND CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64" )
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/140)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN64/lib-vc2015)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/x64)
-
-elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION MATCHES 1900 )
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/140)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN32/lib-vc2015)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/Win32)
-
-elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION MATCHES 1800 AND CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64" )
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/120)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN64/lib-vc2013)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/x64)
-
-elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION MATCHES 1800 )
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/120)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glfw-3.2.1.bin.WIN32/lib-vc2013)
-    link_directories(${CMAKE_SOURCE_DIR}/../../thirdParty/glew-2.1.0/lib/Release/Win32)
-endif ()    
-
-
-# 競合するライブラリのWarning対策
-set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /NODEFAULTLIB:MSVCRT")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:LIBCMT")
-
-
-# ソースの追加
-add_executable(Demo ${Demo})
-
-# 出力ファイル名の指定
-if (CMAKE_GENERATOR_PLATFORM STREQUAL "x64" OR CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64")
-    SET_TARGET_PROPERTIES(Demo PROPERTIES OUTPUT_NAME "Demo_x64")
-endif ()
-
-# ライブラリの追加
-target_link_libraries(Demo opengl32.lib)
-target_link_libraries(Demo glew32s.lib)
-target_link_libraries(Demo glfw3.lib)
-target_link_libraries(Demo Live2DCubismCore_MT.lib)
-target_link_libraries(Demo Framework)
+# Set libraries for linking.
+target_link_libraries(Demo
+                      Framework
+                      glew32s.lib
+                      glfw3.lib
+                      opengl32.lib
+                      debug Live2DCubismCore_MTd.lib
+                      optimized Live2DCubismCore_MT.lib)

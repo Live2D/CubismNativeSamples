@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #pragma once
@@ -101,17 +101,17 @@ public:
      */
     void SetColor(float r, float g, float b, float a);
 
-    // 4頂点・6インデックス 単なる四角描画に付きこれは不変 
+    // 4頂点・6インデックス 単なる四角描画に付きこれは不変
     static const int VERTEX_NUM = 4;
     static const int INDEX_NUM = 6;
 
 private:
 
-    Csm::csmUint64 _textureId;  ///< テクスチャID 
-    Rect _rect;                 ///< 矩形 
+    Csm::csmUint64 _textureId;  ///< テクスチャID
+    Rect _rect;                 ///< 矩形
 
-    SpriteVertex*                           _vertexStore;   ///< 頂点をストアしておく領域 
-    Live2D::Cubism::Framework::csmUint16*   _indexStore;    ///< インデックスをストアしておく領域 
-    D3DXVECTOR4                             _color;         ///< 描画色 
+    SpriteVertex*                           _vertexStore;   ///< 頂点をストアしておく領域
+    Live2D::Cubism::Framework::csmUint16*   _indexStore;    ///< インデックスをストアしておく領域
+    D3DXVECTOR4                             _color;         ///< 描画色
 };
 

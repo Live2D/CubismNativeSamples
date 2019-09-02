@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #pragma once
@@ -60,7 +60,7 @@ public:
     *
     */
     static Csm::csmFloat32 GetDeltaTime();
-    
+
     static void UpdateTime();
 
     /**
@@ -96,13 +96,13 @@ public:
     static void PrintMessage(const Csm::csmChar* message);
 
     /**
-     * @brief   座標変換 
+     * @brief   座標変換
      *          フルスクリーン LT(-bufferX, bufferY) RB(bufferX, -bufferY) → ウィンドウ・マウス LT(0, 0) RB(bufferX, bufferY)
      */
     static void CoordinateFullScreenToWindow(float clientWidth, float clientHeight, float fullScreenX, float fullScreenY, float& retWindowX, float& retWindowY);
 
     /**
-     * @brief   座標変換 
+     * @brief   座標変換
      *          ウィンドウ・マウス LT(0, 0) RB(bufferX, bufferY) → フルスクリーン LT(-bufferX, bufferY) RB(bufferX, -bufferY)
      */
     static void CoordinateWindowToFullScreen(float clientWidth, float clientHeight, float windowX, float windowY, float& retFullScreenX, float& retFullScreenY);

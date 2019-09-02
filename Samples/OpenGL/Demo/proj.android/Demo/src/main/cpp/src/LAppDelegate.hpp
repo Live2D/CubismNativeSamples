@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #pragma once
@@ -16,7 +16,7 @@ class LAppTextureManager;
 
 /**
 * @brief   アプリケーションクラス。
-*   Cubism3の管理を行う。
+*   Cubism SDK の管理を行う。
 */
 class LAppDelegate
 {
@@ -138,12 +138,12 @@ private:
     ~LAppDelegate();
 
     /**
-    * @brief   Cubism3の初期化
+    * @brief   Cubism SDK の初期化
     */
     void InitializeCubism();
 
-    LAppAllocator _cubismAllocator;              ///< Cubism3 Allocator
-    Csm::CubismFramework::Option _cubismOption;  ///< Cubism3 Option
+    LAppAllocator _cubismAllocator;              ///< Cubism SDK Allocator
+    Csm::CubismFramework::Option _cubismOption;  ///< Cubism SDK Option
     LAppTextureManager* _textureManager;         ///< テクスチャマネージャー
     LAppView* _view;                             ///< View情報
     int _width;                                  ///< Windowの幅

@@ -1,8 +1,8 @@
-/*
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 //Cubism Framework
@@ -79,7 +79,7 @@ LAppModel::~LAppModel()
 
     if (_renderSprite)
     {
-        // Cocos本体が消滅した後ではこの呼び出しが出来ないことに注意 
+        // Cocos本体が消滅した後ではこの呼び出しが出来ないことに注意
         _renderSprite->removeFromParentAndCleanup(true);
         _renderSprite = NULL;
     }
@@ -712,13 +712,13 @@ csmRectF LAppModel::GetDrawableArea(csmInt32 drawableIndex, const CubismMatrix44
     convertRight  = convertRight  * windowSize.X / 2 + windowSize.X / 2;
     csmFloat32 convertBottom = right * currentMatrix.GetArray()[4] + bottom * currentMatrix.GetArray()[5];
     convertBottom = convertBottom * windowSize.Y / 2 + windowSize.Y / 2;
-    
+
     return csmRectF(convertLeft, convertTop, (convertRight - convertLeft), (convertBottom - convertTop));
 }
 
 void LAppModel::MakeRenderingTarget()
 {
-    // RenderTexture::createは描画タイミングで呼ぶとAssert扱いになるので注意すること 
+    // RenderTexture::createは描画タイミングで呼ぶとAssert扱いになるので注意すること
     if (!_renderSprite && !_renderBuffer.IsValid())
     {
         int frameW = Director::getInstance()->getOpenGLView()->getFrameSize().width, frameH = Director::getInstance()->getOpenGLView()->getFrameSize().height;
@@ -731,17 +731,17 @@ void LAppModel::MakeRenderingTarget()
 
         Size visibleSize = Director::getInstance()->getVisibleSize();
         Point origin = Director::getInstance()->getVisibleOrigin();
-        
+
         _renderSprite = RenderTexture::create(visibleSize.width, visibleSize.height);
         _renderSprite->setPosition(Point(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
         _renderSprite->getSprite()->getTexture()->setAntiAliasTexParameters();
         _renderSprite->getSprite()->setBlendFunc(BlendFunc::ALPHA_NON_PREMULTIPLIED);
         _renderSprite->getSprite()->setOpacityModifyRGB(false);
-        // サンプルシーンへ登録 
+        // サンプルシーンへ登録
         SampleScene::getInstance()->addChild(_renderSprite);
         _renderSprite->setVisible(true);
 
-        // _renderSpriteのテクスチャを作成する 
+        // _renderSpriteのテクスチャを作成する
         GLuint colorBuf = _renderSprite->getSprite()->getTexture()->getName();
         glBindTexture(GL_TEXTURE_2D, colorBuf);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, frameW, frameH, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
@@ -750,7 +750,7 @@ void LAppModel::MakeRenderingTarget()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBindTexture(GL_TEXTURE_2D, 0);
-        // レンダリングバッファの描画先をそのテクスチャにする 
+        // レンダリングバッファの描画先をそのテクスチャにする
         _renderBuffer.CreateOffscreenFrame(frameW, frameH, colorBuf);
     }
 }

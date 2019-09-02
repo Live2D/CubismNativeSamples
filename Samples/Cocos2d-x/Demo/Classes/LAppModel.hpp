@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #pragma once
@@ -200,9 +200,9 @@ private:
     const Csm::CubismId* _idParamEyeBallX;          ///< パラメータID: ParamEyeBallX
     const Csm::CubismId* _idParamEyeBallY;          ///< パラメータID: ParamEyeBallXY
 
-    Csm::Rendering::CubismOffscreenFrame_OpenGLES2  _renderBuffer;  ///< モードによってはCubismOffscreenFrameのテクスチャを描画 
-    cocos2d::RenderTexture* _renderSprite;          ///< _renderBufferを描画するスプライト 
-    float _clearColor[4];                           ///< _renderBufferをクリアする際の色 
+    Csm::Rendering::CubismOffscreenFrame_OpenGLES2  _renderBuffer;  ///< モードによってはCubismOffscreenFrameのテクスチャを描画
+    cocos2d::RenderTexture* _renderSprite;          ///< _renderBufferを描画するスプライト
+    float _clearColor[4];                           ///< _renderBufferをクリアする際の色
 };
 
 

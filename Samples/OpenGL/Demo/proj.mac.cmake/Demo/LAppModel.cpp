@@ -1,8 +1,8 @@
-/*
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "LAppModel.hpp"
@@ -54,7 +54,7 @@ LAppModel::LAppModel()
     {
         _debugMode = true;
     }
-    
+
     _idParamAngleX = CubismFramework::GetIdManager()->GetId(ParamAngleX);
     _idParamAngleY = CubismFramework::GetIdManager()->GetId(ParamAngleY);
     _idParamAngleZ = CubismFramework::GetIdManager()->GetId(ParamAngleZ);
@@ -66,7 +66,7 @@ LAppModel::LAppModel()
 LAppModel::~LAppModel()
 {
     _renderBuffer.DestroyOffscreenFrame();
-    
+
     ReleaseMotions();
     ReleaseExpressions();
 
@@ -282,7 +282,7 @@ void LAppModel::PreloadMotionGroup(const csmChar* group)
         }
         _motions[name] = tmpMotion;
 
-        DeleteBuffer(buffer, path.GetRawString());        
+        DeleteBuffer(buffer, path.GetRawString());
     }
 }
 
@@ -355,7 +355,7 @@ void LAppModel::Update()
     }
     _model->SaveParameters(); // 状態を保存
     //-----------------------------------------------------------------
-    
+
     // まばたき
     if (!motionUpdated)
     {
@@ -379,7 +379,7 @@ void LAppModel::Update()
 
     //ドラッグによる体の向きの調整
     _model->AddParameterValue(_idParamBodyAngleX, _dragX * 10); // -10から10の値を加える
-    
+
     //ドラッグによる目の向きの調整
     _model->AddParameterValue(_idParamEyeBallX, _dragX); // -1から1の値を加える
     _model->AddParameterValue(_idParamEyeBallY, _dragY);
@@ -519,7 +519,7 @@ void LAppModel::Draw(CubismMatrix44& matrix)
 csmBool LAppModel::HitTest(const csmChar* hitAreaName, csmFloat32 x, csmFloat32 y)
 {
     // 透明時は当たり判定なし。
-    if (_opacity < 1)  
+    if (_opacity < 1)
     {
         return false;
     }

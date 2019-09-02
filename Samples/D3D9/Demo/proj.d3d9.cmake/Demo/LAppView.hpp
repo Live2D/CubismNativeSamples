@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #pragma once
@@ -19,7 +19,7 @@ class LAppModel;
 /**
 * @brief 描画クラス
 */
-class LAppView 
+class LAppView
 {
 public:
 
@@ -28,16 +28,16 @@ public:
      */
     enum SelectTarget
     {
-        SelectTarget_None,                ///< デフォルトのフレームバッファにレンダリング 
-        SelectTarget_ModelFrameBuffer,    ///< LAppModelが各自持つフレームバッファにレンダリング 
-        SelectTarget_ViewFrameBuffer,     ///< LAppViewの持つフレームバッファにレンダリング 
+        SelectTarget_None,                ///< デフォルトのフレームバッファにレンダリング
+        SelectTarget_ModelFrameBuffer,    ///< LAppModelが各自持つフレームバッファにレンダリング
+        SelectTarget_ViewFrameBuffer,     ///< LAppViewの持つフレームバッファにレンダリング
     };
 
     /**
     * @brief コンストラクタ
     */
     LAppView();
-    
+
     /**
     * @brief デストラクタ
     */
@@ -180,10 +180,10 @@ private:
     LAppSprite* _gear;                       ///< ギア画像
     LAppSprite* _power;                      ///< 電源画像
 
-    // レンダリング先を別ターゲットにする方式の場合に使用 
-    LAppSprite* _renderSprite;                                      ///< モードによっては_renderBufferのテクスチャを描画 
-    Csm::Rendering::CubismOffscreenFrame_D3D9 _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング 
-    SelectTarget _renderTarget;     ///< レンダリング先の選択肢 
-    float _clearColor[4];           ///< レンダリングターゲットのクリアカラー 
+    // レンダリング先を別ターゲットにする方式の場合に使用
+    LAppSprite* _renderSprite;                                      ///< モードによっては_renderBufferのテクスチャを描画
+    Csm::Rendering::CubismOffscreenFrame_D3D9 _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング
+    SelectTarget _renderTarget;     ///< レンダリング先の選択肢
+    float _clearColor[4];           ///< レンダリングターゲットのクリアカラー
 
 };

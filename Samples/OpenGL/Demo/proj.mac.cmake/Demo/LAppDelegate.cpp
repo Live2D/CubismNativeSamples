@@ -1,8 +1,8 @@
-/*
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "LAppDelegate.hpp"
@@ -98,7 +98,7 @@ bool LAppDelegate::Initialize()
     //コールバック関数の登録
     glfwSetMouseButtonCallback(_window, EventHandler::OnMouseCallBack);
     glfwSetCursorPosCallback(_window, EventHandler::OnMouseCallBack);
-    
+
     // ウィンドウサイズ記憶
     int width, height;
     glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
@@ -108,14 +108,14 @@ bool LAppDelegate::Initialize()
     //AppViewの初期化
     _view->Initialize();
 
-    // Cubism3の初期化
+    // Cubism SDK の初期化
     InitializeCubism();
-    
+
     SetRootDirectory();
-    
+
     //load model
     LAppLive2DManager::GetInstance();
-    
+
     //load sprite
     _view->InitializeSprite();
 
@@ -134,8 +134,8 @@ void LAppDelegate::Release()
 
     // リソースを解放
     LAppLive2DManager::ReleaseInstance();
-    
-    //Cubism3の解放
+
+    //Cubism SDK の解放
     CubismFramework::Dispose();
 }
 
@@ -150,11 +150,11 @@ void LAppDelegate::Run()
         {
             _view->Initialize();
             _view->ResizeSprite();
-            
+
             _windowWidth = width;
             _windowHeight = height;
         }
-        
+
         // 時間更新
         LAppPal::UpdateTime();
 
@@ -163,9 +163,9 @@ void LAppDelegate::Run()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearDepth(1.0);
 
-        //描画更新 
+        //描画更新
         _view->Render();
- 
+
         // バッファの入れ替え
         glfwSwapBuffers(_window);
 
@@ -195,7 +195,7 @@ LAppDelegate::LAppDelegate():
 
 LAppDelegate::~LAppDelegate()
 {
-    
+
 }
 
 void LAppDelegate::InitializeCubism()
@@ -305,7 +305,7 @@ void LAppDelegate::SetRootDirectory()
     uint32_t size = sizeof(path);
     _NSGetExecutablePath(path, &size);
     Csm::csmVector<string> splitStrings = this->Split(path, '/');
-    
+
     this->_rootDirectory = "";
     for(int i = 0; i < splitStrings.GetSize() - 1; i++)
     {

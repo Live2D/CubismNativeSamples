@@ -1,8 +1,8 @@
-/*
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #import <Foundation/Foundation.h>
@@ -51,7 +51,7 @@ static LAppLive2DManager* s_instance = nil;
     if ( self ) {
         _viewMatrix = nil;
         _sceneIndex = 0;
-        
+
         [self changeScene:_sceneIndex];
     }
     return self;
@@ -61,7 +61,7 @@ static LAppLive2DManager* s_instance = nil;
 {
     [self releaseAllModel];
     [super dealloc];
-    
+
 }
 
 - (void)releaseAllModel
@@ -70,7 +70,7 @@ static LAppLive2DManager* s_instance = nil;
     {
         delete _models[i];
     }
-    
+
     _models.Clear();
 }
 
@@ -98,7 +98,7 @@ static LAppLive2DManager* s_instance = nil;
     {
         LAppPal::PrintLog("[APP]tap point: {x:%.2f y:%.2f}", x, y);
     }
-    
+
     for (Csm::csmUint32 i = 0; i < _models.GetSize(); i++)
     {
         if(_models[i]->HitTest(LAppDefine::HitAreaNameHead,x,y))
@@ -126,29 +126,29 @@ static LAppLive2DManager* s_instance = nil;
     int width = screenRect.size.width;
     int height = screenRect.size.height;
     Csm::CubismMatrix44 projection;
-    
+
     projection.Scale(1.0f, static_cast<float>(width) / static_cast<float>(height));
-    
+
     if (_viewMatrix != nil)
     {
         projection.MultiplyByMatrix(_viewMatrix);
     }
-    
+
     AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
     ViewController* view = [delegate viewController];
-    
+
     Csm::CubismMatrix44    saveProjection = projection;
     Csm::csmUint32 modelCount = _models.GetSize();
     for (Csm::csmUint32 i = 0; i < modelCount; ++i)
     {
         LAppModel* model = [self getModel:i];
         projection = saveProjection;
-        
+
         [view PreModelDraw:*model];
-        
+
         model->Update();
         model->Draw(projection);///< 参照渡しなのでprojectionは変質する
-        
+
         [view PostModelDraw:*model];
     }
 }
@@ -166,7 +166,7 @@ static LAppLive2DManager* s_instance = nil;
     {
         LAppPal::PrintLog("[APP]model index: %d", _sceneIndex);
     }
-    
+
     // ModelDir[]に保持したディレクトリ名から
     // model3.jsonのパスを決定する.
     // ディレクトリ名とmodel3.jsonの名前を一致させておくこと.
@@ -174,7 +174,7 @@ static LAppLive2DManager* s_instance = nil;
     std::string modelPath = LAppDefine::ResourcesPath + model + "/";
     std::string modelJsonName = LAppDefine::ModelDir[index];
     modelJsonName += ".model3.json";
-    
+
     [self releaseAllModel];
     _models.PushBack(new LAppModel());
     _models[0]->LoadAssets(modelPath.c_str(), modelJsonName.c_str());
@@ -195,18 +195,18 @@ static LAppLive2DManager* s_instance = nil;
         // デフォルトのメインフレームバッファへレンダリングする(通常)
         SelectTarget useRenderTarget = SelectTarget_None;
 #endif
-        
+
 #if defined(USE_RENDER_TARGET) || defined(USE_MODEL_RENDER_TARGET)
         // モデル個別にαを付けるサンプルとして、もう1体モデルを作成し、少し位置をずらす
         _models.PushBack(new LAppModel());
         _models[1]->LoadAssets(modelPath.c_str(), modelJsonName.c_str());
         _models[1]->GetModelMatrix()->TranslateX(0.2f);
 #endif
-        
+
         float clearColorR = 1.0f;
         float clearColorG = 1.0f;
         float clearColorB = 1.0f;
-        
+
         AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
         ViewController* view = [delegate viewController];
 

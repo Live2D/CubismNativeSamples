@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "TouchManager.hpp"
@@ -85,7 +85,7 @@ float TouchManager::CalculateDistance(float x1, float y1, float x2, float y2) co
 
 float TouchManager::CalculateMovingAmount(float v1, float v2)
 {
-    if ((v1 > 0.0f) != (v2 > 0.0f)) 
+    if ((v1 > 0.0f) != (v2 > 0.0f))
     {
         return 0.0f;
     }

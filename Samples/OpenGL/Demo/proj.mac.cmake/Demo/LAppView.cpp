@@ -1,8 +1,8 @@
-/*
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "LAppView.hpp"
@@ -46,7 +46,7 @@ LAppView::LAppView():
 }
 
 LAppView::~LAppView()
-{ 
+{
     _renderBuffer.DestroyOffscreenFrame();
     delete _renderSprite;
 
@@ -62,12 +62,12 @@ void LAppView::Initialize()
 {
     int width, height;
     glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
-    
+
     if(width==0 || height==0)
     {
         return;
     }
-    
+
     float ratio = static_cast<float>(height) / static_cast<float>(width);
     float left = ViewLogicalLeft;
     float right = ViewLogicalRight;
@@ -94,7 +94,7 @@ void LAppView::Initialize()
     );
 }
 
-void LAppView::Render() 
+void LAppView::Render()
 {
     _back->Render();
     _gear->Render();
@@ -105,7 +105,7 @@ void LAppView::Render()
 
     // Cubism更新・描画
     Live2DManager->OnUpdate();
-    
+
     // 各モデルが持つ描画ターゲットをテクスチャとする場合
     if (_renderTarget == SelectTarget_ModelFrameBuffer && _renderSprite)
     {
@@ -116,12 +116,12 @@ void LAppView::Render()
             0.0f, 0.0f,
             1.0f, 0.0f,
         };
-        
+
         for(csmUint32 i=0; i<Live2DManager->GetModelNum(); i++)
         {
             float alpha = GetSpriteAlpha(i); // サンプルとしてαに適当な差をつける
             _renderSprite->SetColor(1.0f, 1.0f, 1.0f, alpha);
-            
+
             LAppModel *model = Live2DManager->GetModel(i);
             if (model)
             {
@@ -143,7 +143,7 @@ void LAppView::InitializeSprite()
 
     string imageName = BackImageName;
     LAppTextureManager::TextureInfo* backgroundTexture = textureManager->CreateTextureFromPngFile(resourcesPath + imageName);
- 
+
     float x = width * 0.5f;
     float y = height * 0.5f;
     float fWidth = static_cast<float>(backgroundTexture->width * 2.0f);
@@ -168,7 +168,7 @@ void LAppView::InitializeSprite()
     fHeight = static_cast<float>(powerTexture->height);
     _power = new LAppSprite(x, y, fWidth, fHeight, powerTexture->id, _programId);
 
-    // 画面全体を覆うサイズ 
+    // 画面全体を覆うサイズ
     x = width * 0.5f;
     y = height * 0.5f;
     _renderSprite = new LAppSprite(x, y, static_cast<float>(width), static_cast<float>(height), 0, _programId);
@@ -247,25 +247,25 @@ void LAppView::PreModelDraw(LAppModel &refModel)
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
     Csm::Rendering::CubismOffscreenFrame_OpenGLES2* useTarget = NULL;
-    
+
     if (_renderTarget != SelectTarget_None)
     {// 別のレンダリングターゲットへ向けて描画する場合
-        
+
         // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
-        
+
         if (!useTarget->IsValid())
         {// 描画ターゲット内部未作成の場合はここで作成
             int bufWidth, bufHeight;
             glfwGetFramebufferSize(LAppDelegate::GetInstance()->GetWindow(), &bufWidth, &bufHeight);
-            
+
             if(bufWidth!=0 && bufHeight!=0)
             {
                 // モデル描画キャンバス
                 useTarget->CreateOffscreenFrame(static_cast<csmUint32>(bufWidth), static_cast<csmUint32>(bufHeight));
             }
         }
-        
+
         // レンダリング開始
         useTarget->BeginDraw();
         useTarget->Clear(_clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]); // 背景クリアカラー
@@ -276,16 +276,16 @@ void LAppView::PostModelDraw(LAppModel &refModel)
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
     Csm::Rendering::CubismOffscreenFrame_OpenGLES2* useTarget = NULL;
-    
+
     if (_renderTarget != SelectTarget_None)
     {// 別のレンダリングターゲットへ向けて描画する場合
-        
+
         // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
-        
+
         // レンダリング終了
         useTarget->EndDraw();
-        
+
         // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はここ
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderSprite)
         {
@@ -296,7 +296,7 @@ void LAppView::PostModelDraw(LAppModel &refModel)
                 0.0f, 0.0f,
                 1.0f, 0.0f,
             };
-            
+
             _renderSprite->SetColor(1.0f, 1.0f, 1.0f, GetSpriteAlpha(0));
             _renderSprite->RenderImmidiate(useTarget->GetColorBuffer(), uvVertex);
         }
@@ -328,7 +328,7 @@ float LAppView::GetSpriteAlpha(int assign) const
     {
         alpha = 0.1f;
     }
-    
+
     return alpha;
 }
 
@@ -339,16 +339,16 @@ void LAppView::ResizeSprite()
     {
         return;
     }
-    
+
     // 描画領域サイズ
     int width, height;
     glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
-    
+
     float x = 0.0f;
     float y = 0.0f;
     float fWidth = 0.0f;
     float fHeight = 0.0f;
-    
+
     if (_back)
     {
         GLuint id = _back->GetTextureId();
@@ -362,7 +362,7 @@ void LAppView::ResizeSprite()
             _back->ResetRect(x, y, fWidth, fHeight);
         }
     }
-    
+
     if (_power)
     {
         GLuint id = _power->GetTextureId();
@@ -376,7 +376,7 @@ void LAppView::ResizeSprite()
             _power->ResetRect(x, y, fWidth, fHeight);
         }
     }
-    
+
     if (_gear)
     {
         GLuint id = _gear->GetTextureId();

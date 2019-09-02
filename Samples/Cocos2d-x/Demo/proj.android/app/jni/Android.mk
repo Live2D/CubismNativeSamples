@@ -7,10 +7,10 @@ include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 
-$(call import-add-path,$(LOCAL_PATH)/../../../../cocos2d-x)
-$(call import-add-path,$(LOCAL_PATH)/../../../../cocos2d-x/external)
-$(call import-add-path,$(LOCAL_PATH)/../../../../cocos2d-x/cocos)
-$(call import-add-path,$(LOCAL_PATH)/../../../../cocos2d-x/cocos/audio/include)
+$(call import-add-path,$(LOCAL_PATH)/../../../../cocos2d)
+$(call import-add-path,$(LOCAL_PATH)/../../../../cocos2d/external)
+$(call import-add-path,$(LOCAL_PATH)/../../../../cocos2d/cocos)
+$(call import-add-path,$(LOCAL_PATH)/../../../../cocos2d/cocos/audio/include)
 
 LOCAL_CPPFLAGS := -DCSM_TARGET_ANDROID_ES2
 LOCAL_MODULE := MyGame_shared

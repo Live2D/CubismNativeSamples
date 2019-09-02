@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "LAppDelegate.hpp"
@@ -51,11 +51,11 @@ bool LAppDelegate::Initialize()
         LAppPal::PrintLog("START");
     }
 
-    // ウィンドウクラス 
+    // ウィンドウクラス
     _windowClass = { sizeof(WNDCLASSEX), CS_CLASSDC, MsgProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, ClassName, NULL };
     RegisterClassEx(&_windowClass);
 
-    // タイトルバー、ウィンドウ枠の分サイズを増やす 
+    // タイトルバー、ウィンドウ枠の分サイズを増やす
     RECT rect;
     {
         SetRect(&rect, 0, 0, RenderTargetWidth, RenderTargetHeight);
@@ -67,7 +67,7 @@ bool LAppDelegate::Initialize()
     }
 
     //ウインドウの生成
-    _windowHandle = CreateWindow(ClassName, ClassName, 
+    _windowHandle = CreateWindow(ClassName, ClassName,
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT, rect.right, rect.bottom, NULL, NULL, _windowClass.hInstance, NULL);
     if(_windowHandle==NULL)
@@ -80,30 +80,30 @@ bool LAppDelegate::Initialize()
     ShowWindow(_windowHandle, SW_SHOWDEFAULT);
     UpdateWindow(_windowHandle);
 
-    // Direct3D9 init 
+    // Direct3D9 init
     if ((_direct3D = Direct3DCreate9(D3D_SDK_VERSION)) == NULL)
     {
         LAppPal::PrintLog("Fail Direct3D Initialize");
         return false;
     }
 
-    // デフォルトバックバッファ作成枚数 
+    // デフォルトバックバッファ作成枚数
     const csmInt32 BackBufferNum = 1;
 
-    // デバイス設定 
+    // デバイス設定
     memset(&_presentParameters, 0, sizeof(_presentParameters));
-    _presentParameters.Windowed = TRUE;                          // ウインドウモード 
-    _presentParameters.SwapEffect = D3DSWAPEFFECT_DISCARD;       // バックバッファのスワップエフェクト Direct3Dにスワップエフェクトをまかせる 
-    _presentParameters.BackBufferFormat = D3DFMT_A8R8G8B8;       // バックバッファのフォーマット D3DFMT_UNKNOWNだと今表示されているモニタの設定と同じ 
-    _presentParameters.BackBufferCount = BackBufferNum;          // バックバッファ数 
-    _presentParameters.MultiSampleType = D3DMULTISAMPLE_NONE;    // マルチサンプリング無し 
-    _presentParameters.MultiSampleQuality = 0;                   // マルチサンプリング無し 
-    _presentParameters.EnableAutoDepthStencil = TRUE;            // ZはD3d任せ 
-    _presentParameters.AutoDepthStencilFormat = D3DFMT_D16;      // Z精度はushort 
+    _presentParameters.Windowed = TRUE;                          // ウインドウモード
+    _presentParameters.SwapEffect = D3DSWAPEFFECT_DISCARD;       // バックバッファのスワップエフェクト Direct3Dにスワップエフェクトをまかせる
+    _presentParameters.BackBufferFormat = D3DFMT_A8R8G8B8;       // バックバッファのフォーマット D3DFMT_UNKNOWNだと今表示されているモニタの設定と同じ
+    _presentParameters.BackBufferCount = BackBufferNum;          // バックバッファ数
+    _presentParameters.MultiSampleType = D3DMULTISAMPLE_NONE;    // マルチサンプリング無し
+    _presentParameters.MultiSampleQuality = 0;                   // マルチサンプリング無し
+    _presentParameters.EnableAutoDepthStencil = TRUE;            // ZはD3d任せ
+    _presentParameters.AutoDepthStencilFormat = D3DFMT_D16;      // Z精度はushort
     _presentParameters.hDeviceWindow = _windowHandle;
     _presentParameters.Flags = 0;
-    _presentParameters.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT; // 今のリフレッシュレートをそのまま使う 
-    _presentParameters.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;   // モニタの垂直回帰を待つ 
+    _presentParameters.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT; // 今のリフレッシュレートをそのまま使う
+    _presentParameters.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;   // モニタの垂直回帰を待つ
 
     HRESULT createResult =_direct3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, _windowHandle,
         D3DCREATE_HARDWARE_VERTEXPROCESSING, &_presentParameters,
@@ -115,16 +115,16 @@ bool LAppDelegate::Initialize()
         return false;
     }
 
-    // メンバーコピー 
+    // メンバーコピー
     _presentParametersFull = _presentParameters;
-    _presentParametersFull.Windowed = FALSE; // 違いはこれとサイズ 
-    // フルスクリーン化した場合の最適解像度をチェック 
+    _presentParametersFull.Windowed = FALSE; // 違いはこれとサイズ
+    // フルスクリーン化した場合の最適解像度をチェック
     CheckFullScreen(D3DFMT_X8R8G8B8, RenderTargetWidth, RenderTargetHeight);
 
     //AppViewの初期化
     _view->Initialize();
 
-    // Cubism3の初期化
+    // Cubism SDK の初期化
     InitializeCubism();
 
     return true;
@@ -162,7 +162,7 @@ void LAppDelegate::Run()
 
     do
     {
-        //メッセージループ 
+        //メッセージループ
         if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
             TranslateMessage(&msg);
@@ -170,29 +170,29 @@ void LAppDelegate::Run()
         }
         else
         {
-            // 時間更新 
+            // 時間更新
             LAppPal::UpdateTime();
 
-            // 画面クリアなど 
+            // 画面クリアなど
             StartFrame();
-            // 描画 
+            // 描画
             _view->Render();
 
-            // フレーム末端処理 
+            // フレーム末端処理
             EndFrame();
 
-            // アプリケーション終了メッセージでウィンドウを破棄する 
+            // アプリケーション終了メッセージでウィンドウを破棄する
             if (GetIsEnd() && _windowHandle!=NULL)
-            {// ウィンドウ破壊 
+            {// ウィンドウ破壊
                 DestroyWindow(_windowHandle);
                 _windowHandle = NULL;
             }
         }
     } while (msg.message != WM_QUIT);
 
-    // 解放 
+    // 解放
     Release();
-    // インスタンス削除 
+    // インスタンス削除
     ReleaseInstance();
 }
 
@@ -216,7 +216,7 @@ LAppDelegate::LAppDelegate()
 
 LAppDelegate::~LAppDelegate()
 {
-    
+
 }
 
 void LAppDelegate::InitializeCubism()
@@ -229,7 +229,7 @@ void LAppDelegate::InitializeCubism()
     //Initialize cubism
     CubismFramework::Initialize();
 
-    // モデルロード前に必ず呼び出す必要がある 
+    // モデルロード前に必ず呼び出す必要がある
     Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D9::InitializeConstantSettings(1, _device);
 
     //load model
@@ -295,7 +295,7 @@ bool LAppDelegate::CreateShader()
         return false;
     }
 
-    // この描画で使用する頂点フォーマット 
+    // この描画で使用する頂点フォーマット
     D3DVERTEXELEMENT9 elems[] = {
         { 0, 0, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
         { 0, sizeof(float) * 2, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
@@ -343,7 +343,7 @@ void LAppDelegate::StartFrame()
     レンダーターゲットクリアなど
     */
 
-    // デバイス未設定 
+    // デバイス未設定
     if (!_device)
     {
         return;
@@ -355,12 +355,12 @@ void LAppDelegate::StartFrame()
     //シーンの開始
     if (SUCCEEDED(_device->BeginScene()))
     {
-        // アルファ・ブレンディングを行う 
+        // アルファ・ブレンディングを行う
         _device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-        // α、1-α 
+        // α、1-α
         _device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
         _device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-        // 消す面を指定 
+        // 消す面を指定
         _device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
     }
 
@@ -368,7 +368,7 @@ void LAppDelegate::StartFrame()
 
 void LAppDelegate::EndFrame()
 {
-    // テクスチャの参照を外しておく 
+    // テクスチャの参照を外しておく
     if (_shaderEffect)
     {
         _shaderEffect->SetTexture("mainTexture", NULL);
@@ -383,14 +383,14 @@ void LAppDelegate::EndFrame()
         HRESULT result = _device->Present(NULL, NULL, NULL, NULL);
 
         if(result== D3DERR_DEVICELOST)
-        {// ロスト中 
+        {// ロスト中
             if(_deviceLostStep == LostStep::LostStep_None)
             {
-                // Viewロスト処理 
+                // Viewロスト処理
                 _view->OnDeviceLost();
-                // L2Dデバイスロスト処理(各モデルレンダラーの破棄) 
+                // L2Dデバイスロスト処理(各モデルレンダラーの破棄)
                 LAppLive2DManager::GetInstance()->OnDeviceLost(_device);
-                // テクスチャ全開放 
+                // テクスチャ全開放
                 _textureManager->ReleaseTextures();
 
                 _lostCounter = 0;
@@ -409,13 +409,13 @@ void LAppDelegate::EndFrame()
                 }
                 else
                 {
-                    // 今の大きさに合わせます 
+                    // 今の大きさに合わせます
                     int nowWidth, nowHeight;
                     GetClientSize(nowWidth, nowHeight);
                     _presentParameters.BackBufferWidth = nowWidth;
                     _presentParameters.BackBufferHeight = nowHeight;
                     if(nowWidth==0 || nowHeight==0)
-                    {// サイズゼロは無理なので、初期値で 
+                    {// サイズゼロは無理なので、初期値で
                         _presentParameters.BackBufferWidth = RenderTargetWidth;
                         _presentParameters.BackBufferHeight = RenderTargetHeight;
                     }
@@ -426,9 +426,9 @@ void LAppDelegate::EndFrame()
 
                 if (SUCCEEDED(result))
                 {
-                    // スプライト再作成 
+                    // スプライト再作成
                     _view->InitializeSprite();
-                    // レンダラー再生 
+                    // レンダラー再生
                     LAppLive2DManager::GetInstance()->RestoreDeviceLost(_device);
 
                     _deviceLostStep = LostStep::LostStep_None;
@@ -452,12 +452,12 @@ void LAppDelegate::EndFrame()
             }
             else
             {
-                // 今の大きさに合わせます 
+                // 今の大きさに合わせます
                 GetClientSize(nowWidth, nowHeight);
                 _presentParameters.BackBufferWidth = nowWidth;
                 _presentParameters.BackBufferHeight = nowHeight;
                 if (nowWidth == 0 || nowHeight == 0)
-                {// サイズゼロは無理なので、初期値で 
+                {// サイズゼロは無理なので、初期値で
                     _presentParameters.BackBufferWidth = RenderTargetWidth;
                     _presentParameters.BackBufferHeight = RenderTargetHeight;
                 }
@@ -466,10 +466,10 @@ void LAppDelegate::EndFrame()
             }
             _lostCounter++;
 
-            // デバイス設定 
-            if (nowWidth==0 || nowHeight==0)// サイズが0の際は最小化されていると思われる CreateDeviceは成功しない 
+            // デバイス設定
+            if (nowWidth==0 || nowHeight==0)// サイズが0の際は最小化されていると思われる CreateDeviceは成功しない
             {
-                // NOP サイズが戻ったら再チャレンジ 
+                // NOP サイズが戻ったら再チャレンジ
             }
             else if(FAILED(_direct3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, _windowHandle,
                 D3DCREATE_HARDWARE_VERTEXPROCESSING, presentParam,
@@ -480,15 +480,15 @@ void LAppDelegate::EndFrame()
             }
             else
             {
-                // デバイスが変わったことを通知 
+                // デバイスが変わったことを通知
                 Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D9::InitializeConstantSettings(1, _device);
 
-                // 描画のパラメータをウィンドウサイズに合わせて新設定 
+                // 描画のパラメータをウィンドウサイズに合わせて新設定
                 _view->Initialize();
 
-                // スプライト再作成 
+                // スプライト再作成
                 _view->InitializeSprite();
-                // レンダラー再生 
+                // レンダラー再生
                 LAppLive2DManager::GetInstance()->RestoreDeviceLost(_device);
 
                 _deviceLostStep = LostStep::LostStep_None;
@@ -496,7 +496,7 @@ void LAppDelegate::EndFrame()
         }
     }
 
-    // 遅延開放監視 
+    // 遅延開放監視
     LAppLive2DManager::GetInstance()->EndFrame();
 }
 
@@ -527,22 +527,22 @@ void LAppDelegate::GetClientSize(int& rWidth, int& rHeight)
 
 void LAppDelegate::RecreateDevice()
 {
-    // Viewロスト処理 
+    // Viewロスト処理
     _view->OnDeviceLost();
-    // L2Dデバイスロスト処理(各モデルレンダラーの破棄) 
+    // L2Dデバイスロスト処理(各モデルレンダラーの破棄)
     LAppLive2DManager::GetInstance()->OnDeviceLost(_device);
-    // テクスチャ全開放 
+    // テクスチャ全開放
     _textureManager->ReleaseTextures();
 
-    // ロスト時の処理に加えてさらにデバイスも再作成のため破棄 
+    // ロスト時の処理に加えてさらにデバイスも再作成のため破棄
     if(_device)
     {
         _device->Release();
         _device = NULL;
     }
 
-    // デバイス再作成の方へ行く 
-    // LostStep_Lostだったとしても上書き 
+    // デバイス再作成の方へ行く
+    // LostStep_Lostだったとしても上書き
     _deviceLostStep = LostStep::LostStep_ReCreate;
     _lostCounter = 0;
 }
@@ -551,18 +551,18 @@ LRESULT WINAPI LAppDelegate::MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 {
     switch (msg)
     {
-    case WM_DESTROY:    // 終了 
+    case WM_DESTROY:    // 終了
         PostQuitMessage(0);
         return 0;
 
-    case WM_PAINT:  // ウインドウ描画時 
+    case WM_PAINT:  // ウインドウ描画時
         ValidateRect(hWnd, NULL);
         return 0;
 
-    case WM_SIZE:   // ウィンドウサイズ変更 
+    case WM_SIZE:   // ウィンドウサイズ変更
         if(s_instance != NULL && s_instance->_view!=NULL && s_instance->_device)
-        {// _device作成前にCreateWindowをやった時もここに来るので、_deviceのNullチェックは必須 
-            // デバイス再作成通知 
+        {// _device作成前にCreateWindowをやった時もここに来るので、_deviceのNullチェックは必須
+            // デバイス再作成通知
             s_instance->RecreateDevice();
         }
         return 0;
@@ -630,9 +630,9 @@ LRESULT WINAPI LAppDelegate::MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
         {
             switch (wParam)
             {
-            case VK_RETURN: // Alt+Enterでフルスクリーン切り替え 
+            case VK_RETURN: // Alt+Enterでフルスクリーン切り替え
                 {
-                    // フラグを反転してデバイス再作成ステップへ 
+                    // フラグを反転してデバイス再作成ステップへ
                     s_instance->_isFullScreen = !s_instance->_isFullScreen;
                     s_instance->RecreateDevice();
                 }
@@ -663,7 +663,7 @@ bool LAppDelegate::CheckFullScreen(D3DFORMAT format, UINT width, UINT height)
     UINT nearest = UINT_MAX;
     UINT minWidh=0, minHeight=0;
 
-    // ディスプレイモード数 
+    // ディスプレイモード数
     D3DDISPLAYMODE d3dspMode;
     int modeNum = _direct3D->GetAdapterModeCount(D3DADAPTER_DEFAULT, format);
     for (int i = 0; i < modeNum; i++)
@@ -673,11 +673,11 @@ bool LAppDelegate::CheckFullScreen(D3DFORMAT format, UINT width, UINT height)
             continue;
         }
 
-        // 指定サイズに一番近いもの 
+        // 指定サイズに一番近いもの
         INT nearW = d3dspMode.Width - width;
         INT nearH = d3dspMode.Height - height;
         UINT sum = abs(nearW) + abs(nearH);
-        if(nearest>sum) // 差分が小さい 
+        if(nearest>sum) // 差分が小さい
         {
             nearest = sum;
             minWidh = d3dspMode.Width;
@@ -686,11 +686,11 @@ bool LAppDelegate::CheckFullScreen(D3DFORMAT format, UINT width, UINT height)
     }
 
     if(nearest != UINT_MAX)
-    {// 調査成功 
+    {// 調査成功
         _presentParametersFull.BackBufferWidth = minWidh;
         _presentParametersFull.BackBufferHeight = minHeight;
     }
 
-    // 見つかっていたらtrueを返す 
+    // 見つかっていたらtrueを返す
     return nearest != UINT_MAX;
 }

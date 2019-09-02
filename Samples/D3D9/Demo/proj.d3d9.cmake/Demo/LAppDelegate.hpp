@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #pragma once
@@ -15,7 +15,7 @@ class LAppTextureManager;
 
 /**
 * @brief   アプリケーションクラス。
-*   Cubism3の管理を行う。
+*   Cubism SDK の管理を行う。
 */
 class LAppDelegate
 {
@@ -49,17 +49,17 @@ public:
     *
     */
     static void ReleaseInstance();
-    
+
     /**
     * @brief   APPに必要なものを初期化する。
     */
     bool Initialize();
-    
+
     /**
     * @brief   解放する。
     */
     void Release();
-    
+
     /**
     * @brief   実行処理。
     */
@@ -123,9 +123,9 @@ private:
 
     enum LostStep
     {
-        LostStep_None,      ///< 平常 
-        LostStep_Lost,      ///< ロスト中 
-        LostStep_ReCreate,  ///< Deviceごと再作成 
+        LostStep_None,      ///< 平常
+        LostStep_Lost,      ///< ロスト中
+        LostStep_ReCreate,  ///< Deviceごと再作成
     };
 
     /**
@@ -144,7 +144,7 @@ private:
     ~LAppDelegate();
 
     /**
-    * @brief   Cubism3の初期化
+    * @brief   Cubism SDK の初期化
     */
     void InitializeCubism();
 
@@ -154,8 +154,8 @@ private:
     bool CheckFullScreen(D3DFORMAT format, UINT width, UINT height);
 
 
-    LAppAllocator _cubismAllocator;              ///< Cubism3 Allocator
-    Csm::CubismFramework::Option _cubismOption;  ///< Cubism3 Option
+    LAppAllocator _cubismAllocator;              ///< Cubism SDK Allocator
+    Csm::CubismFramework::Option _cubismOption;  ///< Cubism SDK Option
 
     LAppView* _view;                             ///< View情報
     bool _captured;                              ///< クリックしているか
@@ -164,16 +164,16 @@ private:
     bool _isEnd;                                 ///< APP終了しているか
     LAppTextureManager* _textureManager;         ///< テクスチャマネージャー
 
-    HWND _windowHandle;                     ///< ウィンドウハンドル 
-    LPDIRECT3D9             _direct3D;      ///< D3D 
-    LPDIRECT3DDEVICE9       _device;        ///< D3Dデバイス 
-    WNDCLASSEX              _windowClass;   ///< ウィンドウクラス 
-    LostStep                _deviceLostStep;///< デバイス解放中 
-    int                     _lostCounter;   ///< デバイスロスト処理で再試行した回数 
-    bool                    _isFullScreen;  ///< フルスクリーン中か 
-    D3DPRESENT_PARAMETERS   _presentParameters;     ///< プレゼントパラメータ 
-    D3DPRESENT_PARAMETERS   _presentParametersFull;     ///< プレゼントパラメータ フルスクリーン 
+    HWND _windowHandle;                     ///< ウィンドウハンドル
+    LPDIRECT3D9             _direct3D;      ///< D3D
+    LPDIRECT3DDEVICE9       _device;        ///< D3Dデバイス
+    WNDCLASSEX              _windowClass;   ///< ウィンドウクラス
+    LostStep                _deviceLostStep;///< デバイス解放中
+    int                     _lostCounter;   ///< デバイスロスト処理で再試行した回数
+    bool                    _isFullScreen;  ///< フルスクリーン中か
+    D3DPRESENT_PARAMETERS   _presentParameters;     ///< プレゼントパラメータ
+    D3DPRESENT_PARAMETERS   _presentParametersFull;     ///< プレゼントパラメータ フルスクリーン
 
-    ID3DXEffect*                    _shaderEffect;  ///< スプライト描画用シェーダ 
-    IDirect3DVertexDeclaration9*    _vertexFormat;  ///< スプライト描画用型宣言 
+    ID3DXEffect*                    _shaderEffect;  ///< スプライト描画用シェーダ
+    IDirect3DVertexDeclaration9*    _vertexFormat;  ///< スプライト描画用型宣言
 };

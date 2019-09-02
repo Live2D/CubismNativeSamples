@@ -1,11 +1,26 @@
-/Samples/Cocos2d-x/cocos2d-x/*
-!Please copy cocos2d-x
+# Sample build directories
+/Samples/**/nmake_*_*/
+/Samples/**/proj_*_*/
+
+# Cubism Core
 /Core/*
-!Please copy cubism native core
-Debug.win32
-Release.win32
+!/Core/Please_copy_cubism_core
 
+# Cocos2d-x Samples
+/Samples/Cocos2d-x/cocos2d/*
+!/Samples/Cocos2d-x/cocos2d/Please_copy_cocos2d
+/Samples/Cocos2d-x/Demo/proj.win32/[Dd]ebug.win32/
+/Samples/Cocos2d-x/Demo/proj.win32/[Rr]elease.win32/
 
+# DirectX 11 Samples
+/Samples/D3D11/thirdParty/DirectXTK/*
+!/Samples/D3D11/thirdParty/DirectXTK/Please_copy_DirectXTK_and_build_each_target
+
+# OpenGL Samples
+/Samples/OpenGL/thirdParty/
+!/Samples/OpenGL/thirdParty/stb/
+!/Samples/OpenGL/thirdParty/setup_*.*
+/Samples/OpenGL/Demo/proj.mac.cmake/build/
 
 # Built application files
 *.apk
@@ -43,11 +58,7 @@ captures/
 
 # IntelliJ
 *.iml
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/gradle.xml
-.idea/dictionaries
-.idea/libraries
+.idea/
 
 # Keystore files
 # Uncomment the following line if you do not want to check your keystore files in.
@@ -97,6 +108,8 @@ bld/
 [Oo]bj/
 [Ll]og/
 
+# Visual Studio Code cache/options directory
+.vscode/
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 # Uncomment if you have tasks that create the project's static files in wwwroot
@@ -292,7 +305,7 @@ ClientBin/
 *.publishsettings
 orleans.codegen.cs
 
-# Including strong name files can present a security risk 
+# Including strong name files can present a security risk
 # (https://github.com/github/gitignore/pull/2483#issue-259490424)
 #*.snk
 
@@ -358,10 +371,6 @@ paket-files/
 # FAKE - F# Make
 .fake/
 
-# JetBrains Rider
-.idea/
-*.sln.iml
-
 # CodeRush
 .cr/
 
@@ -388,7 +397,7 @@ __pycache__/
 # OpenCover UI analysis results
 OpenCover/
 
-# Azure Stream Analytics local run output 
+# Azure Stream Analytics local run output
 ASALocalRun/
 
 # MSBuild Binary and Structured Log
@@ -420,3 +429,4 @@ Podfile.lock
 *.swp
 !.gitkeep
 .DS_Store
+$RECYCLE.BIN/

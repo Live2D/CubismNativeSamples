@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "LAppView.hpp"
@@ -50,7 +50,7 @@ LAppView::LAppView():
 }
 
 LAppView::~LAppView()
-{ 
+{
     _renderBuffer.DestroyOffscreenFrame();
     delete _renderSprite;
 
@@ -158,7 +158,7 @@ void LAppView::InitializeSprite()
         _power->ReSize(x, y, fWidth, fHeight);
     }
 
-    // 画面全体を覆うサイズ 
+    // 画面全体を覆うサイズ
     x = width * 0.5f;
     y = height * 0.5f;
 
@@ -186,10 +186,10 @@ void LAppView::Render()
 
     LAppLive2DManager* Live2DManager = LAppLive2DManager::GetInstance();
 
-    // Cubism更新・描画 
+    // Cubism更新・描画
     Live2DManager->OnUpdate();
 
-    // 各モデルが持つ描画ターゲットをテクスチャとする場合 
+    // 各モデルが持つ描画ターゲットをテクスチャとする場合
     if (_renderTarget == SelectTarget_ModelFrameBuffer && _renderSprite)
     {
         const GLfloat uvVertex[] =
@@ -202,7 +202,7 @@ void LAppView::Render()
 
         for (csmUint32 i = 0; i < Live2DManager->GetModelNum(); i++)
         {
-            float alpha = GetSpriteAlpha(i); // サンプルとしてαに適当な差をつける 
+            float alpha = GetSpriteAlpha(i); // サンプルとしてαに適当な差をつける
             _renderSprite->SetColor(1.0f, 1.0f, 1.0f, alpha);
 
             LAppModel *model = Live2DManager->GetModel(i);
@@ -283,45 +283,45 @@ float LAppView::TransformScreenY(float deviceY) const
 
 void LAppView::PreModelDraw(LAppModel &refModel)
 {
-    // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ 
+    // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
     Csm::Rendering::CubismOffscreenFrame_OpenGLES2* useTarget = NULL;
 
     if (_renderTarget != SelectTarget_None)
-    {// 別のレンダリングターゲットへ向けて描画する場合 
+    {// 別のレンダリングターゲットへ向けて描画する場合
 
-        // 使用するターゲット 
+        // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
 
         if (!useTarget->IsValid())
-        {// 描画ターゲット内部未作成の場合はここで作成 
+        {// 描画ターゲット内部未作成の場合はここで作成
             int width = LAppDelegate::GetInstance()->GetWindowWidth();
             int height = LAppDelegate::GetInstance()->GetWindowHeight();
 
-            // モデル描画キャンバス 
+            // モデル描画キャンバス
             useTarget->CreateOffscreenFrame(static_cast<csmUint32>(width), static_cast<csmUint32>(height));
         }
 
-        // レンダリング開始 
+        // レンダリング開始
         useTarget->BeginDraw();
-        useTarget->Clear(_clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]); // 背景クリアカラー 
+        useTarget->Clear(_clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]); // 背景クリアカラー
     }
 }
 
 void LAppView::PostModelDraw(LAppModel &refModel)
 {
-    // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ 
+    // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
     Csm::Rendering::CubismOffscreenFrame_OpenGLES2* useTarget = NULL;
 
     if (_renderTarget != SelectTarget_None)
-    {// 別のレンダリングターゲットへ向けて描画する場合 
+    {// 別のレンダリングターゲットへ向けて描画する場合
 
-        // 使用するターゲット 
+        // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
 
-        // レンダリング終了 
+        // レンダリング終了
         useTarget->EndDraw();
 
-        // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はここ 
+        // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はここ
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderSprite)
         {
             const GLfloat uvVertex[] =
@@ -352,8 +352,8 @@ void LAppView::SetRenderTargetClearColor(float r, float g, float b)
 
 float LAppView::GetSpriteAlpha(int assign) const
 {
-    // assignの数値に応じて適当に決定 
-    float alpha = 0.25f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける 
+    // assignの数値に応じて適当に決定
+    float alpha = 0.25f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける
     if (alpha > 1.0f)
     {
         alpha = 1.0f;

@@ -1,8 +1,8 @@
-/*
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #pragma once
@@ -65,7 +65,7 @@ public:
     *
     */
     void RenderImmidiate(GLuint textureId, const GLfloat uvVertex[8]) const;
-    
+
     /**
     * @brief コンストラクタ
     *
@@ -83,7 +83,7 @@ public:
      * @param[in]       a (0.0~1.0)
      */
     void SetColor(float r, float g, float b, float a);
-    
+
     /**
      * @brief サイズ再設定
      *
@@ -102,6 +102,6 @@ private:
     int _textureLocation;   ///< テクスチャアトリビュート
     int _colorLocation;     ///< カラーアトリビュート
 
-    float _spriteColor[4];  ///< 表示カラー 
+    float _spriteColor[4];  ///< 表示カラー
 };
 

@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #pragma once
@@ -30,12 +30,12 @@ class LAppAllocator : public Csm::ICubismAllocator
     /**
     * @brief   メモリ領域を解放する
     *
-    * @param[in]   memory    解放するメモリ。 
+    * @param[in]   memory    解放するメモリ。
     */
     void Deallocate(void* memory);
 
     /**
-    * @brief   
+    * @brief
     *
     * @param[in]   size         割り当てたいサイズ。
     * @param[in]   alignment    割り当てたいサイズ。
@@ -44,7 +44,7 @@ class LAppAllocator : public Csm::ICubismAllocator
     void* AllocateAligned(const Csm::csmSizeType size, const Csm::csmUint32 alignment);
 
     /**
-    * @brief   
+    * @brief
     *
     * @param[in]   alignedMemory    解放するメモリ。
     */

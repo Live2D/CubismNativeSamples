@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #pragma once
@@ -20,7 +20,7 @@ class LAppTextureManager;
 
 /**
  * @brief   アプリケーションクラス。
- *   Cubism3の管理を行う。
+ *   Cubism SDK の管理を行う。
  */
 class LAppDelegate
 {
@@ -70,7 +70,7 @@ public:
      * @brief   解放処理
      */
     void Release();
-    
+
     /**
     * @brief   実行処理。
     */
@@ -122,9 +122,9 @@ private:
 
     enum DeviceStep
     {
-        DeviceStep_None,      ///< 平常 
-        DeviceStep_Lost,      ///< ロスト 
-        DeviceStep_Size,      ///< サイズ変更 
+        DeviceStep_None,      ///< 平常
+        DeviceStep_Lost,      ///< ロスト
+        DeviceStep_Size,      ///< サイズ変更
     };
 
     /**
@@ -143,7 +143,7 @@ private:
     ~LAppDelegate();
 
     /**
-    * @brief   Cubism3の初期化
+    * @brief   Cubism SDK の初期化
     */
     void InitializeCubism();
 
@@ -157,8 +157,8 @@ private:
      */
     void ResizeDevice();
 
-    LAppAllocator _cubismAllocator;              ///< Cubism3 Allocator
-    Csm::CubismFramework::Option _cubismOption;  ///< Cubism3 Option
+    LAppAllocator _cubismAllocator;              ///< Cubism SDK Allocator
+    Csm::CubismFramework::Option _cubismOption;  ///< Cubism SDK Option
 
     LAppView* _view;                             ///< View情報
     bool _captured;                              ///< クリックしているか
@@ -167,24 +167,24 @@ private:
     bool _isEnd;                                 ///< APP終了しているか
     LAppTextureManager* _textureManager;         ///< テクスチャマネージャー
 
-    HWND                    _windowHandle;  ///< ウィンドウハンドル 
-    ID3D11Device*           _device;        ///< D3Dデバイス 
-    ID3D11DeviceContext*    _deviceContext; ///< D3D描画コンテキスト 
-    IDXGISwapChain*         _swapChain;     ///< スワップチェーン 
-    WNDCLASSEX              _windowClass;   ///< ウィンドウクラス 
-    DeviceStep              _deviceStep;    ///< デバイスサイズ変更などのステップ 
-    DXGI_SWAP_CHAIN_DESC    _presentParameters; ///< プレゼントパラメータ 
+    HWND                    _windowHandle;  ///< ウィンドウハンドル
+    ID3D11Device*           _device;        ///< D3Dデバイス
+    ID3D11DeviceContext*    _deviceContext; ///< D3D描画コンテキスト
+    IDXGISwapChain*         _swapChain;     ///< スワップチェーン
+    WNDCLASSEX              _windowClass;   ///< ウィンドウクラス
+    DeviceStep              _deviceStep;    ///< デバイスサイズ変更などのステップ
+    DXGI_SWAP_CHAIN_DESC    _presentParameters; ///< プレゼントパラメータ
 
-    ID3D11RenderTargetView* _renderTargetView;  ///< 描画ターゲットビュー 
-    ID3D11Texture2D*        _depthTexture;      ///< Zバッファ 
-    ID3D11DepthStencilView* _depthStencilView;  ///< Zバッファビュー 
-    ID3D11DepthStencilState* _depthState;       ///< スプライト描画用深度オブジェクト 
+    ID3D11RenderTargetView* _renderTargetView;  ///< 描画ターゲットビュー
+    ID3D11Texture2D*        _depthTexture;      ///< Zバッファ
+    ID3D11DepthStencilView* _depthStencilView;  ///< Zバッファビュー
+    ID3D11DepthStencilState* _depthState;       ///< スプライト描画用深度オブジェクト
 
-    ID3D11RasterizerState*  _rasterizer;    ///< スプライト描画用ラスタライザ 
-    ID3D11SamplerState*     _samplerState;  ///< スプライト描画用サンプラーステート 
+    ID3D11RasterizerState*  _rasterizer;    ///< スプライト描画用ラスタライザ
+    ID3D11SamplerState*     _samplerState;  ///< スプライト描画用サンプラーステート
 
-    ID3D11VertexShader*     _vertexShader;  ///< スプライト描画シェーダ 
-    ID3D11PixelShader*      _pixelShader;   ///< スプライト描画シェーダ 
-    ID3D11BlendState*       _blendState;    ///< スプライト描画用ブレンドステート 
-    ID3D11InputLayout*      _vertexFormat;  ///< スプライト描画用型宣言 
+    ID3D11VertexShader*     _vertexShader;  ///< スプライト描画シェーダ
+    ID3D11PixelShader*      _pixelShader;   ///< スプライト描画シェーダ
+    ID3D11BlendState*       _blendState;    ///< スプライト描画用ブレンドステート
+    ID3D11InputLayout*      _vertexFormat;  ///< スプライト描画用型宣言
 };

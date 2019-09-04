@@ -1,8 +1,8 @@
-/*
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #pragma once
@@ -21,10 +21,10 @@ class LAppModel;
 /**
 * @brief 描画クラス
 */
-class LAppView 
+class LAppView
 {
 public:
-    
+
     /**
      * @brief LAppModelのレンダリング先
      */
@@ -34,12 +34,12 @@ public:
         SelectTarget_ModelFrameBuffer,    ///< LAppModelが各自持つフレームバッファにレンダリング
         SelectTarget_ViewFrameBuffer,     ///< LAppViewの持つフレームバッファにレンダリング
     };
-    
+
     /**
     * @brief コンストラクタ
     */
     LAppView();
-    
+
     /**
     * @brief デストラクタ
     */
@@ -59,7 +59,7 @@ public:
     * @brief 画像の初期化を行う。
     */
     void InitializeSprite();
-    
+
     /**
      * @brief スプライト系のサイズ再設定
      */
@@ -116,28 +116,28 @@ public:
     * @param[in]       deviceY            デバイスY座標
     */
     float TransformScreenY(float deviceY) const;
-    
+
     /**
      * @brief   モデル1体を描画する直前にコールされる
      */
     void PreModelDraw(LAppModel &refModel);
-    
+
     /**
      * @brief   モデル1体を描画した直後にコールされる
      */
     void PostModelDraw(LAppModel &refModel);
-    
+
     /**
      * @brief   別レンダリングターゲットにモデルを描画するサンプルで
      *           描画時のαを決定する
      */
     float GetSpriteAlpha(int assign) const;
-    
+
     /**
      * @brief レンダリング先を切り替える
      */
     void SwitchRenderingTarget(SelectTarget targetType);
-    
+
     /**
      * @brief レンダリング先をデフォルト以外に切り替えた際の背景クリア色設定
      * @param[in]   r   赤(0.0~1.0)

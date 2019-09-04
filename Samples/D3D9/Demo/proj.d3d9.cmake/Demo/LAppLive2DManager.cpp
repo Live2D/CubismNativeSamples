@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 
@@ -53,7 +53,7 @@ LAppLive2DManager::LAppLive2DManager()
 LAppLive2DManager::~LAppLive2DManager()
 {
     ReleaseAllModel();
-    // カウンターを待たず速攻破棄 
+    // カウンターを待たず速攻破棄
     for (int i = _releaseModel.GetSize() - 1; i >= 0; i--)
     {
         if (_releaseModel[i].model)
@@ -70,12 +70,12 @@ void LAppLive2DManager::ReleaseAllModel()
 {
     for (csmUint32 i = 0; i < _models.GetSize(); i++)
     {
-        //delete _models[i]; ここでは消さない 
+        //delete _models[i]; ここでは消さない
 
-        // 削除予定の印 
+        // 削除予定の印
         _models[i]->DeleteMark();
 
-        // 2フレーム後削除 
+        // 2フレーム後削除
         ReleaseModel rel;
         rel.model = _models[i];
         rel.counter = 2;
@@ -116,7 +116,7 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
     {
         if (_models[i]->HitTest(HitAreaNameHead, x, y))
         {
-            if (DebugLogEnable) 
+            if (DebugLogEnable)
             {
                 LAppPal::PrintLog("[APP]hit area: [%s]", HitAreaNameHead);
             }
@@ -135,7 +135,7 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
 
 void LAppLive2DManager::OnUpdate() const
 {
-    CubismMatrix44 projection;    
+    CubismMatrix44 projection;
     int width, height;
     LAppDelegate::GetInstance()->GetClientSize(width, height);
     projection.Scale(1.0f, static_cast<float>(width) / static_cast<float>(height));
@@ -145,8 +145,8 @@ void LAppLive2DManager::OnUpdate() const
         projection.MultiplyByMatrix(_viewMatrix);
     }
 
-    // D3D9 フレーム先頭処理 
-    // 各フレームでの、Cubismの処理前にコール 
+    // D3D9 フレーム先頭処理
+    // 各フレームでの、Cubism SDK の処理前にコール
     Rendering::CubismRenderer_D3D9::StartFrame(LAppDelegate::GetInstance()->GetD3dDevice(), width, height);
 
     const CubismMatrix44    saveProjection = projection;
@@ -156,18 +156,18 @@ void LAppLive2DManager::OnUpdate() const
         LAppModel* model = GetModel(i);
         projection = saveProjection;
 
-        // モデル1体描画前コール 
+        // モデル1体描画前コール
         LAppDelegate::GetInstance()->GetView()->PreModelDraw(*model);
 
         model->Update();
         model->Draw(projection);///< 参照渡しなのでprojectionは変質する
 
-        // モデル1体描画後コール 
+        // モデル1体描画後コール
         LAppDelegate::GetInstance()->GetView()->PostModelDraw(*model);
     }
 
-    // D3D9 フレーム終了処理 
-    // 各フレームでの、Cubismの処理前にコール 
+    // D3D9 フレーム終了処理
+    // 各フレームでの、Cubism SDK の処理前にコール
     Rendering::CubismRenderer_D3D9::EndFrame(LAppDelegate::GetInstance()->GetD3dDevice());
 
 }
@@ -205,18 +205,18 @@ void LAppLive2DManager::ChangeScene(Csm::csmInt32 index)
      */
     {
 #if defined(USE_RENDER_TARGET)
-        // LAppViewの持つターゲットに描画を行う場合、こちらを選択 
+        // LAppViewの持つターゲットに描画を行う場合、こちらを選択
         LAppView::SelectTarget useRenderTarget = LAppView::SelectTarget_ViewFrameBuffer;
 #elif defined(USE_MODEL_RENDER_TARGET)
-        // 各LAppModelの持つターゲットに描画を行う場合、こちらを選択 
+        // 各LAppModelの持つターゲットに描画を行う場合、こちらを選択
         LAppView::SelectTarget useRenderTarget = LAppView::SelectTarget_ModelFrameBuffer;
 #else
-        // デフォルトのメインフレームバッファへレンダリングする(通常) 
+        // デフォルトのメインフレームバッファへレンダリングする(通常)
         LAppView::SelectTarget useRenderTarget = LAppView::SelectTarget_None;
 #endif
 
 #if defined(USE_RENDER_TARGET) || defined(USE_MODEL_RENDER_TARGET)
-        // モデル個別にαを付けるサンプルとして、もう1体モデルを作成し、少し位置をずらす 
+        // モデル個別にαを付けるサンプルとして、もう1体モデルを作成し、少し位置をずらす
         _models.PushBack(new LAppModel());
         _models[1]->LoadAssets(modelPath.c_str(), modelJsonName.c_str());
         _models[1]->GetModelMatrix()->TranslateX(0.2f);
@@ -224,7 +224,7 @@ void LAppLive2DManager::ChangeScene(Csm::csmInt32 index)
 
         LAppDelegate::GetInstance()->GetView()->SwitchRenderingTarget(useRenderTarget);
 
-        // 別レンダリング先を選択した際の背景クリア色 
+        // 別レンダリング先を選択した際の背景クリア色
         float clearColor[3] = { 1.0f, 1.0f, 1.0f };
         LAppDelegate::GetInstance()->GetView()->SetRenderTargetClearColor(clearColor[0], clearColor[1], clearColor[2]);
     }
@@ -237,18 +237,18 @@ csmUint32 LAppLive2DManager::GetModelNum() const
 
 void LAppLive2DManager::EndFrame()
 {
-    // モデル解放監視 
+    // モデル解放監視
     for( int i= _releaseModel.GetSize()-1; i>=0; i--)
     {
         _releaseModel[i].counter--;
 
         if (_releaseModel[i].counter <= 0)
-        {// モデル削除 
+        {// モデル削除
             if (_releaseModel[i].model)
             {
                 delete _releaseModel[i].model;
             }
-            // コンテナも削除 
+            // コンテナも削除
             _releaseModel.Remove(i);
             continue;
         }
@@ -262,14 +262,14 @@ void LAppLive2DManager::OnDeviceLost(LPDIRECT3DDEVICE9 device)
         _models[i]->OnDeviceLost();
     }
 
-    // シェーダ・頂点宣言解放等 
+    // シェーダ・頂点宣言解放等
     Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D9::OnDeviceLost();
 }
 
 
 void LAppLive2DManager::RestoreDeviceLost(LPDIRECT3DDEVICE9 device)
 {
-    // レンダラー再作成 
+    // レンダラー再作成
     for (csmUint32 i = 0; i < _models.GetSize(); i++)
     {
         _models[i]->ReloadRenderer();

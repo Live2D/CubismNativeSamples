@@ -2,15 +2,19 @@
 #---------------------------------------
 # Cmake Version
 #---------------------------------------
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.10.2)
 
+#---------------------------------------
+# CXX_STANDARD
+#---------------------------------------
+set(CMAKE_CXX_STANDARD 11)
 
 #---------------------------------------
 # Variable
 #---------------------------------------
 set(SRC_DIR                     ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/src)
 set(THIRD_PARTY_INCLUDE_DIR     ${CMAKE_CURRENT_SOURCE_DIR}/../../../thirdParty/stb/include)
-set(CUBISM3_CORE_DIR            ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../Core)
+set(CUBISM_CORE_DIR             ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../Core)
 set(FRAMEWORK_DIR               ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../Framework/src)
 
 
@@ -21,14 +25,14 @@ add_definitions(-D CSM_TARGET_ANDROID_ES2)
 # add_definitions(-D CSM_DEBUG)
 # add_definitions(-D CSM_DEBUG_MEMORY_LEAKING)
 
-# ‚±‚±‚ğ—LŒø‚É‚·‚é‚ÆACubismƒ‚ƒfƒ‹‚ğƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Æ‚Í•Ê‚ÌƒeƒNƒXƒ`ƒƒ‚ÉƒŒƒ“ƒ_ƒŠƒ“ƒO‚·‚é‹““®‚ğ‚Æ‚é 
+# ã“ã“ã‚’æœ‰åŠ¹ã«ã™ã‚‹ã¨ã€Cubismãƒ¢ãƒ‡ãƒ«ã‚’ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã¨ã¯åˆ¥ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã™ã‚‹æŒ™å‹•ã‚’ã¨ã‚‹ 
 #add_definitions(-DUSE_RENDER_TARGET)
 
 #---------------------------------------
 # Include Directories
 #---------------------------------------
 include_directories(
-    ${CUBISM3_CORE_DIR}/include/
+    ${CUBISM_CORE_DIR}/include/
     ${THIRD_PARTY_INCLUDE_DIR}
     ${FRAMEWORK_DIR}
     ${SRC_DIR}
@@ -111,7 +115,7 @@ set_target_properties(
     Live2DCubismCore
     PROPERTIES
     IMPORTED_LOCATION
-    ${CUBISM3_CORE_DIR}/lib/android/${ANDROID_ABI}/libLive2DCubismCore.a
+    ${CUBISM_CORE_DIR}/lib/android/${ANDROID_ABI}/libLive2DCubismCore.a
 )
 
 

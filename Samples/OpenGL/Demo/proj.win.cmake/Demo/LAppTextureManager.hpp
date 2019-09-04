@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #pragma once
@@ -51,7 +51,7 @@ public:
     * @param[in] green  画像のGreen値
     * @param[in] blue  画像のBlue値
     * @param[in] alpha  画像のAlpha値
-    * 
+    *
     * @return プリマルチプライ処理後のカラー値
     */
     inline unsigned int Premultiply(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha)
@@ -70,11 +70,11 @@ public:
     * @param[in] fileName  読み込む画像ファイルパス名
     * @return 画像情報。読み込み失敗時はNULLを返す
     */
-    TextureInfo* CreateTextureFromPngFile(std::string fileName);   
+    TextureInfo* CreateTextureFromPngFile(std::string fileName);
 
     /**
     * @brief 画像の解放
-    * 
+    *
     * 配列に存在する画像全てを解放する
     */
     void ReleaseTextures();

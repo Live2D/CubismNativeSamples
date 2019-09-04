@@ -1,8 +1,8 @@
-/*
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #import <Foundation/Foundation.h>
@@ -64,7 +64,7 @@
     float distance = [self calculateDistance:deviceX1 TouchY1:deviceY1 TouchX2:deviceX2 TouchY2:deviceY2];
     float centerX = (deviceX1 + deviceX2) * 0.5f;
     float centerY = (deviceY1 + deviceY2) * 0.5f;
-    
+
     if (_lastTouchDistance > 0.0f)
     {
         _scale = powf(distance / _lastTouchDistance, 0.75f);
@@ -77,7 +77,7 @@
         _deltaX = 0.0f;
         _deltaY = 0.0f;
     }
-    
+
     _lastX = centerX;
     _lastY = centerY;
     _lastX1 = deviceX1;
@@ -105,7 +105,7 @@
     {
         return 0.0f;
     }
-    
+
     float sign = v1 > 0.0f ? 1.0f : -1.0f;
     float absoluteValue1 = fabsf(v1);
     float absoluteValue2 = fabsf(v2);

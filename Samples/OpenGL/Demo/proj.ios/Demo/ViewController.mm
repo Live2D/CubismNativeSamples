@@ -1,8 +1,8 @@
-/*
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #import "ViewController.h"
@@ -46,7 +46,7 @@ using namespace LAppDefine;
 - (void)dealloc
 {
     [super dealloc];
-    
+
 }
 
 - (void)releaseView
@@ -61,13 +61,13 @@ using namespace LAppDefine;
     _back = nil;
     [_power release];
     _power = nil;
-    
+
     GLKView *view = (GLKView*)self.view;
     [view.context release];
-    
+
     [view release];
     view = nil;
-    
+
     delete(_viewMatrix);
     _viewMatrix = nil;
     delete(_deviceToScreen);
@@ -80,44 +80,44 @@ using namespace LAppDefine;
 {
     [super viewDidLoad];
     mOpenGLRun = true;
-    
+
     _anotherTarget = false;
     _spriteColorR = _spriteColorG = _spriteColorB = _spriteColorA = 1.0f;
     _clearColorR = _clearColorG = _clearColorB = 1.0f;
     _clearColorA = 0.0f;
-    
+
     // タッチ関係のイベント管理
     _touchManager = [[TouchManager alloc]init];
-    
+
     // デバイス座標からスクリーン座標に変換するための
     _deviceToScreen = new CubismMatrix44();
-    
+
     // 画面の表示の拡大縮小や移動の変換を行う行列
     _viewMatrix = new CubismViewMatrix();
-    
+
     [self initializeScreen];
-    
+
     [super viewDidLoad];
     GLKView *view = (GLKView*)self.view;
-    
+
     // OpenGL ES2を指定
     view.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-    
+
     // set context
     [EAGLContext setCurrentContext:view.context];
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
-    
+
+
     glGenBuffers(1, &_vertexBufferId);
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferId);
-    
+
     glGenBuffers(1, &_fragmentBufferId);
     glBindBuffer(GL_ARRAY_BUFFER,  _fragmentBufferId);
 }
@@ -127,24 +127,24 @@ using namespace LAppDefine;
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     int width = screenRect.size.width;
     int height = screenRect.size.height;
-    
+
     float ratio = static_cast<float>(height) / static_cast<float>(width);
     float left = ViewLogicalLeft;
     float right = ViewLogicalRight;
     float bottom = -ratio;
     float top = ratio;
-    
+
     // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
     _viewMatrix->SetScreenRect(left, right, bottom, top);
-    
+
     float screenW = fabsf(left - right);
     _deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
     _deviceToScreen->TranslateRelative(-width * 0.5f, -height * 0.5f);
-    
+
     // 表示範囲の設定
     _viewMatrix->SetMaxScale(ViewMaxScale); // 限界拡大率
     _viewMatrix->SetMinScale(ViewMinScale); // 限界縮小率
-    
+
     // 表示できる最大範囲
     _viewMatrix->SetMaxScreenRect(
                                   ViewLogicalMaxLeft,
@@ -165,15 +165,15 @@ using namespace LAppDefine;
         glClear(GL_COLOR_BUFFER_BIT);
 
         [_back render:_vertexBufferId fragmentBufferID:_fragmentBufferId];
-    
+
         [_gear render:_vertexBufferId fragmentBufferID:_fragmentBufferId];
-    
+
         [_power render:_vertexBufferId fragmentBufferID:_fragmentBufferId];
-    
+
         LAppLive2DManager* Live2DManager = [LAppLive2DManager getInstance];
         [Live2DManager onUpdate];
-            
-        // 各モデルが持つ描画ターゲットをテクスチャとする場合はスプライトへの描画はここ 
+
+        // 各モデルが持つ描画ターゲットをテクスチャとする場合はスプライトへの描画はここ
         if (_renderTarget == SelectTarget_ModelFrameBuffer && _renderSprite)
         {
             float uvVertex[] =
@@ -183,12 +183,12 @@ using namespace LAppDefine;
                 0.0f, 1.0f,
                 1.0f, 1.0f,
             };
-                
+
             for(csmUint32 i=0; i<[Live2DManager GetModelNum]; i++)
             {
                 float a = [self GetSpriteAlpha:i]; // サンプルとしてαに適当な差をつける
                 [_renderSprite SetColor:1.0f g:1.0f b:1.0f a:a];
-                    
+
                 LAppModel* model = [Live2DManager getModel:i];
                 if (model)
                 {
@@ -208,11 +208,11 @@ using namespace LAppDefine;
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     int width = screenRect.size.width;
     int height = screenRect.size.height;
-    
+
     AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     LAppTextureManager* textureManager = [delegate getTextureManager];
     const string resourcesPath = ResourcesPath;
-    
+
     string imageName = BackImageName;
     TextureInfo* backgroundTexture = [textureManager createTextureFromPngFile:resourcesPath+imageName];
     float x = width * 0.5f;
@@ -222,7 +222,7 @@ using namespace LAppDefine;
     fWidth = static_cast<float>(width * 0.75f);
     fHeight = static_cast<float>(height * 0.95f);
     _back = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight TextureId:backgroundTexture->id];
-    
+
     imageName = GearImageName;
     TextureInfo* gearTexture = [textureManager createTextureFromPngFile:resourcesPath+imageName];
     x = static_cast<float>(width - gearTexture->width * 0.5f);
@@ -230,15 +230,15 @@ using namespace LAppDefine;
     fWidth = static_cast<float>(gearTexture->width);
     fHeight = static_cast<float>(gearTexture->height);
     _gear = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight TextureId:gearTexture->id];
-    
+
     imageName = PowerImageName;
     TextureInfo* powerTexture = [textureManager createTextureFromPngFile:resourcesPath+imageName];
     x = static_cast<float>(width - powerTexture->width * 0.5f);
     y = static_cast<float>(powerTexture->height * 0.5f);
     fWidth = static_cast<float>(powerTexture->width);
     fHeight = static_cast<float>(powerTexture->height);
-    _power = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight TextureId:powerTexture->id];    
-    
+    _power = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight TextureId:powerTexture->id];
+
     x = static_cast<float>(width) * 0.5f;
     y = static_cast<float>(height) * 0.5f;
     fWidth = static_cast<float>(width*2);
@@ -250,7 +250,7 @@ using namespace LAppDefine;
 {
     UITouch *touch = [touches anyObject];
     CGPoint point = [touch locationInView:self.view];
-    
+
     [_touchManager touchesBegan:point.x DeciveY:point.y];
 }
 
@@ -258,10 +258,10 @@ using namespace LAppDefine;
 {
     UITouch *touch = [touches anyObject];
     CGPoint point = [touch locationInView:self.view];
-    
+
     float viewX = [self transformViewX:[_touchManager getX]];
     float viewY = [self transformViewY:[_touchManager getY]];
-    
+
     [_touchManager touchesMoved:point.x DeviceY:point.y];
     [[LAppLive2DManager getInstance] onDrag:viewX floatY:viewY];
 }
@@ -270,10 +270,10 @@ using namespace LAppDefine;
 {
     UITouch *touch = [touches anyObject];
     NSLog(@"%@", touch.view);
-    
+
     CGPoint point = [touch locationInView:self.view];
     float pointY = [self transformTapY:point.y];
-    
+
     // タッチ終了
     LAppLive2DManager* live2DManager = [LAppLive2DManager getInstance];
     [live2DManager onDrag:0.0f floatY:0.0f];
@@ -283,19 +283,19 @@ using namespace LAppDefine;
         float getY = [_touchManager getY]; // 論理座標変換した座標を取得。
         float x = _deviceToScreen->TransformX(getX);
         float y = _deviceToScreen->TransformY(getY);
-        
+
         if (DebugTouchLogEnable)
         {
             LAppPal::PrintLog("[APP]touchesEnded x:%.2f y:%.2f", x, y);
         }
         [live2DManager onTap:x floatY:y];
-        
+
         // 歯車にタップしたか
         if ([_gear isHit:point.x PointY:pointY])
         {
             [live2DManager nextScene];
         }
-        
+
         // 電源ボタンにタップしたか
         if ([_power isHit:point.x PointY:pointY])
         {
@@ -339,19 +339,19 @@ using namespace LAppDefine;
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
     Csm::Rendering::CubismOffscreenFrame_OpenGLES2* useTarget = NULL;
-    
+
     if (_renderTarget != SelectTarget_None)
     {// 別のレンダリングターゲットへ向けて描画する場合
-        
+
         // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
-        
+
         if (!useTarget->IsValid())
         {// 描画ターゲット内部未作成の場合はここで作成
             CGRect screenRect = [[UIScreen mainScreen] nativeBounds];
             int width = screenRect.size.width;
             int height = screenRect.size.height;
-            
+
             // モデル描画キャンバス
             // PadとPhoneで縦横を変えている
             if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
@@ -363,7 +363,7 @@ using namespace LAppDefine;
                 useTarget->CreateOffscreenFrame(width, height);
             }
         }
-        
+
         // レンダリング開始
         useTarget->BeginDraw();
         useTarget->Clear(_clearColorR, _clearColorG, _clearColorB, _clearColorA); // 背景クリアカラー
@@ -374,16 +374,16 @@ using namespace LAppDefine;
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
     Csm::Rendering::CubismOffscreenFrame_OpenGLES2* useTarget = NULL;
-    
+
     if (_renderTarget != SelectTarget_None)
     {// 別のレンダリングターゲットへ向けて描画する場合
-        
+
         // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
-        
+
         // レンダリング終了
         useTarget->EndDraw();
-        
+
         // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はここ
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderSprite)
         {
@@ -394,7 +394,7 @@ using namespace LAppDefine;
                 0.0f, 1.0f,
                 1.0f, 1.0f,
             };
-            
+
             float a = [self GetSpriteAlpha:0];
             [_renderSprite SetColor:1.0f g:1.0f b:1.0f a:a];
             [_renderSprite renderImmidiate:_vertexBufferId fragmentBufferID:_fragmentBufferId TextureId:useTarget->GetColorBuffer() uvArray:uvVertex];
@@ -426,7 +426,7 @@ using namespace LAppDefine;
     {
         alpha = 0.1f;
     }
-    
+
     return alpha;
 }
 

@@ -1,8 +1,8 @@
-/*
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #ifndef LAppModel_h
@@ -26,38 +26,38 @@ public:
      * @brief コンストラクタ
      */
     LAppModel();
-    
+
     /**
      * @brief デストラクタ
      *
      */
     virtual ~LAppModel();
-    
+
     /**
      * @brief model3.jsonが置かれたディレクトリとファイルパスからモデルを生成する
      *
      */
     void LoadAssets(const Csm::csmChar* dir, const  Csm::csmChar* fileName);
-    
+
     /**
      * @brief レンダラを再構築する
      *
      */
     void ReloadRenderer();
-    
+
     /**
      * @brief   モデルの更新処理。モデルのパラメータから描画状態を決定する。
      *
      */
     void Update();
-    
+
     /**
      * @brief   モデルを描画する処理。モデルを描画する空間のView-Projection行列を渡す。
      *
      * @param[in]  matrix  View-Projection行列
      */
     void Draw(Csm::CubismMatrix44& matrix);
-    
+
     /**
      * @brief   引数で指定したモーションの再生を開始する。
      *
@@ -67,7 +67,7 @@ public:
      * @return                      開始したモーションの識別番号を返す。個別のモーションが終了したか否かを判定するIsFinished()の引数で使用する。開始できない時は「-1」
      */
     Csm::CubismMotionQueueEntryHandle StartMotion(const Csm::csmChar* group, Csm::csmInt32 no, Csm::csmInt32 priority);
-    
+
     /**
      * @brief   ランダムに選ばれたモーションの再生を開始する。
      *
@@ -76,26 +76,26 @@ public:
      * @return                      開始したモーションの識別番号を返す。個別のモーションが終了したか否かを判定するIsFinished()の引数で使用する。開始できない時は「-1」
      */
     Csm::CubismMotionQueueEntryHandle StartRandomMotion(const Csm::csmChar* group, Csm::csmInt32 priority);
-    
+
     /**
      * @brief   引数で指定した表情モーションをセットする
      *
      * @param   expressionID    表情モーションのID
      */
     void SetExpression(const Csm::csmChar* expressionID);
-    
+
     /**
      * @brief   ランダムに選ばれた表情モーションをセットする
      *
      */
     void SetRandomExpression();
-    
+
     /**
      * @brief   イベントの発火を受け取る
      *
      */
     virtual void MotionEventFired(const Live2D::Cubism::Framework::csmString& eventValue);
-    
+
     /**
      * @brief    当たり判定テスト。<br>
      *            指定IDの頂点リストから矩形を計算し、座標が矩形範囲内か判定する。
@@ -105,19 +105,19 @@ public:
      * @param[in]   y               判定を行うY座標
      */
     virtual Csm::csmBool HitTest(const Csm::csmChar* hitAreaName, Csm::csmFloat32 x, Csm::csmFloat32 y);
-    
+
     /**
      * @brief   別ターゲットに描画する際に使用するバッファの取得
      */
     Csm::Rendering::CubismOffscreenFrame_OpenGLES2& GetRenderBuffer();
-    
+
 protected:
     /**
      *  @brief  モデルを描画する処理。モデルを描画する空間のView-Projection行列を渡す。
      *
      */
     void DoDraw();
-    
+
 private:
     /**
      * @brief model3.jsonからモデルを生成する。<br>
@@ -127,13 +127,13 @@ private:
      *
      */
     void SetupModel(Csm::ICubismModelSetting* setting);
-    
+
     /**
      * @brief OpenGLのテクスチャユニットにテクスチャをロードする
      *
      */
     void SetupTextures();
-    
+
     /**
      * @brief   モーションデータをグループ名から一括でロードする。<br>
      *           モーションデータの名前は内部でModelSettingから取得する。
@@ -141,7 +141,7 @@ private:
      * @param[in]   group  モーションデータのグループ名
      */
     void PreloadMotionGroup(const Csm::csmChar* group);
-    
+
     /**
      * @brief   モーションデータをグループ名から一括で解放する。<br>
      *           モーションデータの名前は内部でModelSettingから取得する。
@@ -149,21 +149,21 @@ private:
      * @param[in]   group  モーションデータのグループ名
      */
     void ReleaseMotionGroup(const Csm::csmChar* group) const;
-    
+
     /**
      * @brief すべてのモーションデータの解放
      *
      * すべてのモーションデータを解放する。
      */
     void ReleaseMotions();
-    
+
     /**
      * @brief すべての表情データの解放
      *
      * すべての表情データを解放する。
      */
     void ReleaseExpressions();
-    
+
     Csm::ICubismModelSetting* _modelSetting; ///< モデルセッティング情報
     Csm::csmString _modelHomeDir; ///< モデルセッティングが置かれたディレクトリ
     Csm::csmFloat32 _userTimeSeconds; ///< デルタ時間の積算値[秒]
@@ -179,7 +179,7 @@ private:
     const Csm::CubismId* _idParamBodyAngleX; ///< パラメータID: ParamBodyAngleX
     const Csm::CubismId* _idParamEyeBallX; ///< パラメータID: ParamEyeBallX
     const Csm::CubismId* _idParamEyeBallY; ///< パラメータID: ParamEyeBallXY
-    
+
     Csm::Rendering::CubismOffscreenFrame_OpenGLES2 _renderBuffer;
 };
 

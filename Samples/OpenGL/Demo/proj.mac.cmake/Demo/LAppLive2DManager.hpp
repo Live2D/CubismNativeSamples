@@ -1,8 +1,8 @@
-/*
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 #pragma once
 
@@ -82,7 +82,7 @@ public:
     *           サンプルアプリケーションではモデルセットの切り替えを行う。
     */
     void ChangeScene(Csm::csmInt32 index);
-    
+
     /**
      * @brief   モデル個数を得る
      * @return  所持モデル個数

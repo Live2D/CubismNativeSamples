@@ -1,8 +1,8 @@
-/*
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "LAppSprite.hpp"
@@ -38,14 +38,14 @@ void LAppSprite::Render() const
     // 画面サイズを取得する
     int maxWidth, maxHeight;
     glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &maxWidth, &maxHeight);
-    
+
     if(maxWidth==0 || maxHeight==0)
     {
         return;
     }
-    
+
     glEnable(GL_TEXTURE_2D);
-    const GLfloat uvVertex[] = 
+    const GLfloat uvVertex[] =
     {
         1.0f, 0.0f,
         0.0f, 0.0f,
@@ -61,7 +61,7 @@ void LAppSprite::Render() const
     glUniform1i(_textureLocation, 0);
 
     // 頂点データ
-    float positionVertex[] = 
+    float positionVertex[] =
     {
         (_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.up   - maxHeight * 0.5f) / (maxHeight * 0.5f),
         (_rect.left  - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.up   - maxHeight * 0.5f) / (maxHeight * 0.5f),
@@ -85,12 +85,12 @@ void LAppSprite::RenderImmidiate(GLuint textureId, const GLfloat uvVertex[8]) co
     // 画面サイズを取得する
     int maxWidth, maxHeight;
     glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &maxWidth, &maxHeight);
-    
+
     if(maxWidth==0 || maxHeight==0)
     {
         return;
     }
-    
+
     glEnable(GL_TEXTURE_2D);
 
     // attribute属性を有効にする
@@ -125,7 +125,7 @@ bool LAppSprite::IsHit(float pointX, float pointY) const
     // 画面サイズを取得する
     int maxWidth, maxHeight;
     glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &maxWidth, &maxHeight);
-    
+
     if(maxWidth==0 || maxHeight==0)
     {
         return false;

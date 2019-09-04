@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #pragma once
@@ -10,7 +10,7 @@
 class TouchManager
 {
 public:
-    
+
     TouchManager();
 
     float GetCenterX() const { return _lastX; }
@@ -32,23 +32,23 @@ public:
 
     /*
     * @brief タッチ開始時イベント
-    * 
+    *
     * @param[in] deviceY    タッチした画面のyの値
     * @param[in] deviceX    タッチした画面のxの値
     */
     void TouchesBegan(float deviceX, float deviceY);
-    
+
     /*
     * @brief ドラッグ時のイベント
-    * 
+    *
     * @param[in] deviceX    タッチした画面のyの値
     * @param[in] deviceY    タッチした画面のxの値
     */
     void TouchesMoved(float deviceX, float deviceY);
-    
+
     /*
     * @brief ドラッグ時のイベント
-    * 
+    *
     * @param[in] deviceX1   1つめのタッチした画面のxの値
     * @param[in] deviceY1   1つめのタッチした画面のyの値
     * @param[in] deviceX2   2つめのタッチした画面のxの値
@@ -58,7 +58,7 @@ public:
 
     /*
     * @brief フリックの距離測定
-    * 
+    *
     * @return フリック距離
     */
     float GetFlickDistance() const;
@@ -66,7 +66,7 @@ public:
 private:
     /*
     * @brief 点1から点2への距離を求める
-    * 
+    *
     * @param[in] x1 1つめのタッチした画面のxの値
     * @param[in] y1 1つめのタッチした画面のyの値
     * @param[in] x2 2つめのタッチした画面のxの値
@@ -78,10 +78,10 @@ private:
     /*
     * 二つの値から、移動量を求める。
     * 違う方向の場合は移動量０。同じ方向の場合は、絶対値が小さい方の値を参照する
-    * 
+    *
     * @param[in] v1    1つめの移動量
     * @param[in] v2    2つめの移動量
-    * 
+    *
     * @return   小さい方の移動量
     */
     float CalculateMovingAmount(float v1, float v2);

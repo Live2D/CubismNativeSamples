@@ -158,6 +158,8 @@
 		9711120A2088A4AF00D001F7 /* CubismJson.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 971111C32088A4AE00D001F7 /* CubismJson.cpp */; };
 		9711120B2088A4AF00D001F7 /* CubismString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 971111C52088A4AE00D001F7 /* CubismString.cpp */; };
 		9711120C2088A4AF00D001F7 /* CubismString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 971111C52088A4AE00D001F7 /* CubismString.cpp */; };
+		AC6D13F72318F58E0079F158 /* Rice in Resources */ = {isa = PBXBuildFile; fileRef = AC6D13F62318F58E0079F158 /* Rice */; };
+		AC6D13F82318F58E0079F158 /* Rice in Resources */ = {isa = PBXBuildFile; fileRef = AC6D13F62318F58E0079F158 /* Rice */; };
 		BF171245129291EC00B8313A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB012928DE900B8313A /* OpenGLES.framework */; };
 		BF1712471292920000B8313A /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB412928DE900B8313A /* libz.dylib */; };
 		BF1C47F01293687400B63C5D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1C47EA1293683800B63C5D /* QuartzCore.framework */; };
@@ -268,7 +270,7 @@
 		9711112020889DCB00D001F7 /* SampleScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampleScene.h; sourceTree = "<group>"; };
 		9711112120889DCB00D001F7 /* LAppView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LAppView.cpp; sourceTree = "<group>"; };
 		9711112220889DCB00D001F7 /* LAppPal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LAppPal.hpp; sourceTree = "<group>"; };
-		9711113F20889E1500D001F7 /* cocos2d_libs.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cocos2d_libs.xcodeproj; path = "../../cocos2d-x/build/cocos2d_libs.xcodeproj"; sourceTree = "<group>"; };
+		9711113F20889E1500D001F7 /* cocos2d_libs.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cocos2d_libs.xcodeproj; path = ../../cocos2d/build/cocos2d_libs.xcodeproj; sourceTree = "<group>"; };
 		9711116B2088A48D00D001F7 /* Live2DCubismCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Live2DCubismCore.h; sourceTree = "<group>"; };
 		9711116E2088A4AE00D001F7 /* CubismDefaultParameterId.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubismDefaultParameterId.cpp; sourceTree = "<group>"; };
 		9711116F2088A4AE00D001F7 /* CubismDefaultParameterId.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CubismDefaultParameterId.hpp; sourceTree = "<group>"; };
@@ -349,6 +351,7 @@
 		971111C42088A4AE00D001F7 /* CubismJson.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CubismJson.hpp; sourceTree = "<group>"; };
 		971111C52088A4AE00D001F7 /* CubismString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubismString.cpp; sourceTree = "<group>"; };
 		971111C62088A4AE00D001F7 /* CubismString.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CubismString.hpp; sourceTree = "<group>"; };
+		AC6D13F62318F58E0079F158 /* Rice */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Rice; sourceTree = "<group>"; };
 		BF170DB012928DE900B8313A /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		BF170DB412928DE900B8313A /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		BF1C47EA1293683800B63C5D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -551,6 +554,7 @@
 		8063475F21887B850025E859 /* Res */ = {
 			isa = PBXGroup;
 			children = (
+				AC6D13F62318F58E0079F158 /* Rice */,
 				8063476F21887BEF0025E859 /* back_class_normal.png */,
 				8063476D21887BEF0025E859 /* icon_gear.png */,
 				8063476321887BC10025E859 /* Haru */,
@@ -823,10 +827,10 @@
 				LastUpgradeCheck = 0500;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 					};
 					5087E73D17EB910900C73F5D = {
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -912,6 +916,7 @@
 				50EF629717ECD46A001EB2F8 /* Icon-58.png in Resources */,
 				80C8FE052248D5210018391B /* Natori in Resources */,
 				8083D7C8219577E300BB8CB4 /* CloseSelected.png in Resources */,
+				AC6D13F72318F58E0079F158 /* Rice in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -928,6 +933,7 @@
 				8083D7B6218B10D400BB8CB4 /* fonts in Resources */,
 				8083D7C6219577C900BB8CB4 /* CloseNormal.png in Resources */,
 				8063476B21887BC20025E859 /* Mark in Resources */,
+				AC6D13F82318F58E0079F158 /* Rice in Resources */,
 				8063476721887BC20025E859 /* Haru in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1054,7 +1060,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				COMPRESS_PNG_FILES = NO;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
@@ -1071,14 +1077,13 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = ios/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../../../Core/lib/ios/$(CONFIGURATION)-$(PLATFORM_NAME)";
 				OTHER_LDFLAGS = (
 					"$(_COCOS_LIB_IOS_BEGIN)",
 					"$(_COCOS_LIB_IOS_END)",
 					"-lLive2DCubismCore",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.live2d.cubism.demo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.live2d.demo;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				STRIP_PNG_TEXT = NO;
@@ -1095,7 +1100,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				COMPRESS_PNG_FILES = NO;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
@@ -1111,14 +1116,13 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = ios/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../../../Core/lib/ios/$(CONFIGURATION)-$(PLATFORM_NAME)";
 				OTHER_LDFLAGS = (
 					"$(_COCOS_LIB_IOS_BEGIN)",
 					"$(_COCOS_LIB_IOS_END)",
 					"-lLive2DCubismCore",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.live2d.cubism.demo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.live2d.demo;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				STRIP_PNG_TEXT = NO;
@@ -1138,7 +1142,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_IDENTITY = "Mac Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
@@ -1153,7 +1157,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../../cocos2d-x/external/glfw3/include/mac",
+					"$(SRCROOT)/../../cocos2d/external/glfw3/include/mac",
 				);
 				INFOPLIST_FILE = mac/Info.plist;
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../../../Core/lib/macos";
@@ -1162,7 +1166,7 @@
 					"$(_COCOS_LIB_MAC_END)",
 					"-lLive2DCubismCore",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.live2d.cubism.demo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.live2d.demo;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				USER_HEADER_SEARCH_PATHS = "$(_COCOS_HEADER_MAC_BEGIN) $(_COCOS_HEADER_MAC_END)";
 				VALID_ARCHS = x86_64;
@@ -1177,7 +1181,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_IDENTITY = "Mac Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1191,7 +1195,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../../cocos2d-x/external/glfw3/include/mac",
+					"$(SRCROOT)/../../cocos2d/external/glfw3/include/mac",
 				);
 				INFOPLIST_FILE = mac/Info.plist;
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../../../Core/lib/macos";
@@ -1200,7 +1204,7 @@
 					"$(_COCOS_LIB_MAC_END)",
 					"-lLive2DCubismCore",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.live2d.cubism.demo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.live2d.demo;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				USER_HEADER_SEARCH_PATHS = "$(_COCOS_HEADER_MAC_BEGIN) $(_COCOS_HEADER_MAC_END)";
 				VALID_ARCHS = x86_64;
@@ -1217,22 +1221,20 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../../cocos2d-x",
-					"$(SRCROOT)/../../cocos2d-x/cocos/audio/include",
-					"$(SRCROOT)/../../cocos2d-x/cocos",
-					"$(SRCROOT)/../../cocos2d-x/extensions",
-					"$(SRCROOT)/../../cocos2d-x/external",
-					"$(SRCROOT)/../../cocos2d-x/external/chipmunk/include/chipmunk",
-					"$(SRCROOT)/../../cocos2d-x/cocos/editor-support",
+					"$(SRCROOT)/../../cocos2d",
+					"$(SRCROOT)/../../cocos2d/cocos/audio/include",
+					"$(SRCROOT)/../../cocos2d/cocos",
+					"$(SRCROOT)/../../cocos2d/extensions",
+					"$(SRCROOT)/../../cocos2d/external",
+					"$(SRCROOT)/../../cocos2d/external/chipmunk/include/chipmunk",
+					"$(SRCROOT)/../../cocos2d/cocos/editor-support",
 					"$(SRCROOT)/../../../../Framework/src/**",
 					"$(SRCROOT)/../../../../Core/include",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = "";
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = com.live2d.cubism.demo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.live2d.demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				VALID_ARCHS = x86_64;
@@ -1247,22 +1249,21 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../../cocos2d-x",
-					"$(SRCROOT)/../../cocos2d-x/cocos/audio/include",
-					"$(SRCROOT)/../../cocos2d-x/cocos",
-					"$(SRCROOT)/../../cocos2d-x/extensions",
-					"$(SRCROOT)/../../cocos2d-x/external",
-					"$(SRCROOT)/../../cocos2d-x/external/chipmunk/include/chipmunk",
-					"$(SRCROOT)/../../cocos2d-x/cocos/editor-support",
+					"$(SRCROOT)/../../cocos2d",
+					"$(SRCROOT)/../../cocos2d/cocos/audio/include",
+					"$(SRCROOT)/../../cocos2d/cocos",
+					"$(SRCROOT)/../../cocos2d/extensions",
+					"$(SRCROOT)/../../cocos2d/external",
+					"$(SRCROOT)/../../cocos2d/external/chipmunk/include/chipmunk",
+					"$(SRCROOT)/../../cocos2d/cocos/editor-support",
 					"$(SRCROOT)/../../../../Framework/src/**",
 					"$(SRCROOT)/../../../../Core/include",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = "";
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = com.live2d.cubism.demo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.live2d.demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				VALIDATE_PRODUCT = YES;

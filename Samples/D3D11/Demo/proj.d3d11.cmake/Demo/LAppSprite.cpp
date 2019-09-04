@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "LAppSprite.hpp"
@@ -48,12 +48,12 @@ LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint
 
     HRESULT hr = S_OK;
 
-    // 頂点バッファ作成 
+    // 頂点バッファ作成
     if (!_vertexBuffer)
     {
         D3D11_BUFFER_DESC bufferDesc;
         memset(&bufferDesc, 0, sizeof(bufferDesc));
-        bufferDesc.ByteWidth = sizeof(LAppSprite::SpriteVertex) * VERTEX_NUM;    // 総長 構造体サイズ*個数 
+        bufferDesc.ByteWidth = sizeof(LAppSprite::SpriteVertex) * VERTEX_NUM;    // 総長 構造体サイズ*個数
         bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
         bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
         bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -71,7 +71,7 @@ LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint
         }
     }
 
-    // インデックスバッファ作成 
+    // インデックスバッファ作成
     if (!_indexBuffer)
     {
         // 2    3
@@ -82,7 +82,7 @@ LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint
         // |   \|
         // +----+
         // 0    1
-        // インデックスはもう不変で良いのでここでコピー完了 
+        // インデックスはもう不変で良いのでここでコピー完了
         WORD idx[INDEX_NUM] = {
             0, 1, 2,
             1, 3, 2,
@@ -90,14 +90,14 @@ LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint
 
         D3D11_BUFFER_DESC bufferDesc;
         memset(&bufferDesc, 0, sizeof(bufferDesc));
-        bufferDesc.ByteWidth = sizeof(WORD) * INDEX_NUM;    // 総長 構造体サイズ*個数 
+        bufferDesc.ByteWidth = sizeof(WORD) * INDEX_NUM;    // 総長 構造体サイズ*個数
         bufferDesc.Usage = D3D11_USAGE_DEFAULT;
         bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
         bufferDesc.CPUAccessFlags = 0;
         bufferDesc.MiscFlags = 0;
         bufferDesc.StructureByteStride = 0;
 
-        // 生成と同時に設定 
+        // 生成と同時に設定
         D3D11_SUBRESOURCE_DATA subResourceData;
         memset(&subResourceData, 0, sizeof(subResourceData));
         subResourceData.pSysMem = idx;
@@ -115,13 +115,13 @@ LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint
         }
     }
 
-    // 定数バッファ作成 
+    // 定数バッファ作成
     if (!_constantBuffer)
     {
         D3D11_BUFFER_DESC bufferDesc;
         memset(&bufferDesc, 0, sizeof(bufferDesc));
-        bufferDesc.ByteWidth = sizeof(CubismConstantBufferD3D11);    // 総長 構造体サイズ*個数 
-        bufferDesc.Usage = D3D11_USAGE_DEFAULT; // 定数バッファに関しては「Map用にDynamic」にしなくともよい 
+        bufferDesc.ByteWidth = sizeof(CubismConstantBufferD3D11);    // 総長 構造体サイズ*個数
+        bufferDesc.Usage = D3D11_USAGE_DEFAULT; // 定数バッファに関しては「Map用にDynamic」にしなくともよい
         bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         bufferDesc.CPUAccessFlags = 0;
         bufferDesc.MiscFlags = 0;
@@ -156,7 +156,7 @@ void LAppSprite::Render(int width, int height) const
 {
     if (width == 0 || height == 0)
     {
-        return; // この際は描画できず 
+        return; // この際は描画できず
     }
 
     LAppDelegate* appDelegate = LAppDelegate::GetInstance();
@@ -174,7 +174,7 @@ void LAppSprite::Render(int width, int height) const
     vtx[2].x = (_rect.left  - width * 0.5f) / (width * 0.5f); vtx[2].y = (_rect.up   - height * 0.5f) / (height * 0.5f);
     vtx[3].x = (_rect.right - width * 0.5f) / (width * 0.5f); vtx[3].y = (_rect.up   - height * 0.5f) / (height * 0.5f);
 
-    // 頂点書き込み 
+    // 頂点書き込み
     if (_vertexBuffer)
     {
         D3D11_MAPPED_SUBRESOURCE subRes;
@@ -185,7 +185,7 @@ void LAppSprite::Render(int width, int height) const
         }
     }
 
-    // 定数バッファ設定 
+    // 定数バッファ設定
     if(_constantBuffer)
     {
         CubismConstantBufferD3D11 cb;
@@ -207,17 +207,17 @@ void LAppSprite::Render(int width, int height) const
         renderContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
         renderContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-        // 描画用設定 
+        // 描画用設定
         appDelegate->SetupShader();
 
-        // テクスチャセット 
+        // テクスチャセット
         ID3D11ShaderResourceView* textureView = NULL;
         if (LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(_textureId, textureView))
         {
             renderContext->PSSetShaderResources(0, 1, &textureView);
         }
 
-        // 描画実行 
+        // 描画実行
         renderContext->DrawIndexed(INDEX_NUM, 0, 0);
     }
 }
@@ -228,7 +228,7 @@ void LAppSprite::RenderImmidiate(int width, int height, ID3D11ShaderResourceView
 
     if (width == 0 || height == 0)
     {
-        return; // この際は描画できず 
+        return; // この際は描画できず
     }
 
     LAppDelegate* appDelegate = LAppDelegate::GetInstance();
@@ -246,7 +246,7 @@ void LAppSprite::RenderImmidiate(int width, int height, ID3D11ShaderResourceView
     vtx[2].x = (_rect.left - width * 0.5f) / (width * 0.5f); vtx[2].y = (_rect.up - height * 0.5f) / (height * 0.5f);
     vtx[3].x = (_rect.right - width * 0.5f) / (width * 0.5f); vtx[3].y = (_rect.up - height * 0.5f) / (height * 0.5f);
 
-    // 頂点書き込み 
+    // 頂点書き込み
     if (_vertexBuffer)
     {
         D3D11_MAPPED_SUBRESOURCE subRes;
@@ -257,7 +257,7 @@ void LAppSprite::RenderImmidiate(int width, int height, ID3D11ShaderResourceView
         }
     }
 
-    // 定数バッファ設定 
+    // 定数バッファ設定
     if (_constantBuffer)
     {
         CubismConstantBufferD3D11 cb;
@@ -279,29 +279,29 @@ void LAppSprite::RenderImmidiate(int width, int height, ID3D11ShaderResourceView
         renderContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
         renderContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-        // 描画用設定 
+        // 描画用設定
         appDelegate->SetupShader();
 
-        // テクスチャセット 
+        // テクスチャセット
         {
             renderContext->PSSetShaderResources(0, 1, &resourceView);
         }
 
-        // 描画実行 
+        // 描画実行
         renderContext->DrawIndexed(INDEX_NUM, 0, 0);
     }
 }
 
 bool LAppSprite::IsHit(float pointX, float pointY) const
 {
-    // フルスクリーン座標に変換 
+    // フルスクリーン座標に変換
     float coordX = 0.0f, coordY = 0.0f;
     int clientWidth = 0, clientHeight = 0;
     LAppDelegate::GetClientSize(clientWidth, clientHeight);
     LAppPal::CoordinateWindowToFullScreen(static_cast<float>(clientWidth), static_cast<float>(clientHeight), pointX, pointY, coordX, coordY);
 
     if(clientWidth==0 || clientHeight==0)
-    {// この際はヒットしない 
+    {// この際はヒットしない
         return false;
     }
 

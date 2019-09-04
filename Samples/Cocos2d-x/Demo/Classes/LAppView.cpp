@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "LAppView.hpp"
@@ -98,7 +98,7 @@ void LAppView::onDraw(const cocos2d::Mat4& transform, uint32_t flags)
 
     LAppLive2DManager* Live2DMgr = LAppLive2DManager::GetInstance();
 
-    // Cubism更新・描画 
+    // Cubism更新・描画
     Live2DMgr->OnUpdate();
 
     if (_debugRects)

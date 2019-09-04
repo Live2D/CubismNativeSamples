@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #pragma once
@@ -29,9 +29,9 @@ public:
      */
     enum SelectTarget
     {
-        SelectTarget_None,                ///< デフォルトのフレームバッファにレンダリング 
-        SelectTarget_ModelFrameBuffer,    ///< LAppModelが各自持つフレームバッファにレンダリング 
-        SelectTarget_ViewFrameBuffer,     ///< LAppViewの持つフレームバッファにレンダリング 
+        SelectTarget_None,                ///< デフォルトのフレームバッファにレンダリング
+        SelectTarget_ModelFrameBuffer,    ///< LAppModelが各自持つフレームバッファにレンダリング
+        SelectTarget_ViewFrameBuffer,     ///< LAppViewの持つフレームバッファにレンダリング
     };
 
     /**
@@ -150,10 +150,10 @@ private:
     Csm::csmVector<LAppModel*>  _models;        ///< モデルインスタンスのコンテナ
     Csm::csmInt32               _sceneIndex;    ///< 表示するシーンのインデックス値
 
-    // レンダリング先を別ターゲットにする方式の場合に使用 
-    SelectTarget _renderTarget;                 ///< レンダリング先の選択肢  
+    // レンダリング先を別ターゲットにする方式の場合に使用
+    SelectTarget _renderTarget;                 ///< レンダリング先の選択肢
     GLuint _programId;                          ///< プリミティブを描画するためのシェーダID
-    LAppSprite* _sprite;                        ///< テクスチャの単純描画クラス 
-    Csm::Rendering::CubismOffscreenFrame_OpenGLES2* _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング 
-    float _clearColor[4];                       ///< レンダリングターゲットのクリアカラー 
+    LAppSprite* _sprite;                        ///< テクスチャの単純描画クラス
+    Csm::Rendering::CubismOffscreenFrame_OpenGLES2* _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング
+    float _clearColor[4];                       ///< レンダリングターゲットのクリアカラー
 };

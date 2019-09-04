@@ -68,9 +68,9 @@ bool AppDelegate::applicationDidFinishLaunching()
     if (!glview)
     {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
-        glview = GLViewImpl::createWithRect("Cubism3.0 + Cocos2d-x", cocos2d::Rect(0, 0, designResolutionSize.width, designResolutionSize.height), 1, true);
+        glview = GLViewImpl::createWithRect("Cubism + Cocos2d-x", cocos2d::Rect(0, 0, designResolutionSize.width, designResolutionSize.height), 1, true);
 #else
-        glview = GLViewImpl::create("Cubism3.0 + Cocos2d-x");
+        glview = GLViewImpl::create("Cubism + Cocos2d-x");
 #endif
         director->setOpenGLView(glview);
     }

@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "LAppModel.hpp"
@@ -55,7 +55,7 @@ LAppModel::LAppModel()
     {
         _debugMode = true;
     }
-    
+
     _idParamAngleX = CubismFramework::GetIdManager()->GetId(ParamAngleX);
     _idParamAngleY = CubismFramework::GetIdManager()->GetId(ParamAngleY);
     _idParamAngleZ = CubismFramework::GetIdManager()->GetId(ParamAngleZ);
@@ -77,7 +77,7 @@ LAppModel::~LAppModel()
         ReleaseMotionGroup(group);
     }
 
-    // テクスチャの開放 
+    // テクスチャの開放
     for (csmUint32 i = 0; i < _bindTextureId.GetSize(); i++)
     {
         LAppDelegate::GetInstance()->GetTextureManager()->ReleaseTexture(_bindTextureId[i]);
@@ -291,7 +291,7 @@ void LAppModel::PreloadMotionGroup(const csmChar* group)
         }
         _motions[name] = tmpMotion;
 
-        DeleteBuffer(buffer, path.GetRawString());        
+        DeleteBuffer(buffer, path.GetRawString());
     }
 }
 
@@ -364,7 +364,7 @@ void LAppModel::Update()
     }
     _model->SaveParameters(); // 状態を保存
     //-----------------------------------------------------------------
-    
+
     // まばたき
     if (!motionUpdated)
     {
@@ -388,7 +388,7 @@ void LAppModel::Update()
 
     //ドラッグによる体の向きの調整
     _model->AddParameterValue(_idParamBodyAngleX, _dragX * 10); // -10から10の値を加える
-    
+
     //ドラッグによる目の向きの調整
     _model->AddParameterValue(_idParamEyeBallX, _dragX); // -1から1の値を加える
     _model->AddParameterValue(_idParamEyeBallY, _dragY);
@@ -529,7 +529,7 @@ void LAppModel::Draw(CubismMatrix44& matrix)
 csmBool LAppModel::HitTest(const csmChar* hitAreaName, csmFloat32 x, csmFloat32 y)
 {
     // 透明時は当たり判定なし。
-    if (_opacity < 1)  
+    if (_opacity < 1)
     {
         return false;
     }
@@ -598,7 +598,7 @@ void LAppModel::SetupTextures()
 {
 #ifdef PREMULTIPLIED_ALPHA_ENABLE
     const bool isPreMult = true;
-    // αが合成されていないテクスチャを無理矢理ここで合成する実験を行う場合はtrueにする 
+    // αが合成されていないテクスチャを無理矢理ここで合成する実験を行う場合はtrueにする
     const bool isTextureMult = false;
 #else
     const bool isPreMult = false;
@@ -615,14 +615,14 @@ void LAppModel::SetupTextures()
             continue;
         }
 
-        //テクスチャをロードする 
+        //テクスチャをロードする
         csmString texturePath = _modelSetting->GetTextureFileName(modelTextureNumber);
         texturePath = _modelHomeDir + texturePath;
 
         LAppTextureManager::TextureInfo* texture = LAppDelegate::GetInstance()->GetTextureManager()->CreateTextureFromPngFile(texturePath.GetRawString(), isTextureMult,
             D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DX_FILTER_BOX | D3DX_FILTER_DITHER_DIFFUSION);
 
-        // 
+        //
         if (texture)
         {
             const csmUint64 textureManageId = texture->id;
@@ -636,7 +636,7 @@ void LAppModel::SetupTextures()
         }
     }
 
-    // premultであるなら設定 
+    // premultであるなら設定
     GetRenderer<Rendering::CubismRenderer_D3D9>()->IsPremultipliedAlpha(isPreMult);
 }
 
@@ -652,9 +652,9 @@ Csm::Rendering::CubismOffscreenFrame_D3D9& LAppModel::GetRenderBuffer()
 
 void LAppModel::OnDeviceLost()
 {
-     // レンダリングバッファ破棄 
+     // レンダリングバッファ破棄
     _renderBuffer.DestroyOffscreenFrame();
 
-    // レンダラー破棄 
+    // レンダラー破棄
     DeleteRenderer();
 }

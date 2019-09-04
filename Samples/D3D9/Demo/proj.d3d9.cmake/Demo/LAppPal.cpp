@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "LAppPal.hpp"
@@ -29,7 +29,7 @@ void LAppPal::StartTimer()
 
 csmByte* LAppPal::LoadFileAsBytes(const string filePath, csmSizeInt* outSize)
 {
-    //filePath;// 
+    //filePath;//
     const char* path = filePath.c_str();
 
     int size = 0;
@@ -53,7 +53,7 @@ csmByte* LAppPal::LoadFileAsBytes(const string filePath, csmSizeInt* outSize)
     }
     file.read(buf, size);
     file.close();
-    
+
     *outSize = size;
     return reinterpret_cast<csmByte*>(buf);
 }
@@ -94,7 +94,7 @@ void LAppPal::PrintLog(const char* format, ...)
     va_start(args, format);
     _vsnprintf_s(buf, sizeof(buf), format, args);
     OutputDebugStringA((LPCSTR)buf);
-    OutputDebugStringA("\n");   // 改行を別途付与します 
+    OutputDebugStringA("\n");   // 改行を別途付与します
     va_end(args);
 }
 
@@ -105,7 +105,7 @@ void LAppPal::PrintLogW(const wchar_t* format, ...)
     va_start(args, format);
     _vsnwprintf_s(buf, sizeof(buf), format, args);
     OutputDebugString((LPCSTR)buf);
-    OutputDebugString("\n");   // 改行を別途付与します 
+    OutputDebugString("\n");   // 改行を別途付与します
     va_end(args);
 }
 

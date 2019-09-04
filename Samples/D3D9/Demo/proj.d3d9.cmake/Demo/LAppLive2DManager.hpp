@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #pragma once
@@ -140,5 +140,5 @@ private:
     Csm::csmInt32               _sceneIndex; ///< 表示するシーンのインデックス値
 
     Csm::csmVector<ReleaseModel>  _releaseModel; ///< 解放予定モデルインスタンスのコンテナ
-    Csm::csmMap<LAppModel*, int>  _releaseModels; ///< モデルインスタンスのコンテナ(解放予約、解放カウント) 
+    Csm::csmMap<LAppModel*, int>  _releaseModels; ///< モデルインスタンスのコンテナ(解放予約、解放カウント)
 };

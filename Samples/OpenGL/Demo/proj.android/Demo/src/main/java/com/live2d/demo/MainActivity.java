@@ -1,20 +1,19 @@
-/*
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 package com.live2d.demo;
 
-import android.opengl.GLSurfaceView;
 import android.app.Activity;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-public class MainActivity extends Activity  {
+public class MainActivity extends Activity {
 
     private GLSurfaceView _glSurfaceView;
     private GLRenderer _glRenderer;
@@ -75,8 +74,7 @@ public class MainActivity extends Activity  {
     public boolean onTouchEvent(MotionEvent event) {
         float pointX = event.getX();
         float pointY = event.getY();
-        switch (event.getAction())
-        {
+        switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 JniBridgeJava.nativeOnTouchesBegan(pointX, pointY);
                 break;

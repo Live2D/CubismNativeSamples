@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "LAppView.hpp"
@@ -74,7 +74,7 @@ void LAppView::Initialize()
     _viewMatrix->SetScreenRect(left, right, bottom, top); // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
 
     float screenW = fabsf(left - right);
-    _deviceToScreen->LoadIdentity(); // サイズが変わった際などリセット必須 
+    _deviceToScreen->LoadIdentity(); // サイズが変わった際などリセット必須
     _deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
     _deviceToScreen->TranslateRelative(-width * 0.5f, -height * 0.5f);
 
@@ -99,7 +99,7 @@ void LAppView::Render()
         return;
     }
 
-    // スプライト描画 
+    // スプライト描画
     int width, height;
     LAppDelegate::GetInstance()->GetClientSize(width, height);
 
@@ -116,15 +116,15 @@ void LAppView::Render()
         _power->Render(width, height);
     }
 
-    // Cubism更新・描画 
+    // Cubism更新・描画
     live2DManager->OnUpdate();
 
-    // 各モデルが持つ描画ターゲットをテクスチャとする場合 
+    // 各モデルが持つ描画ターゲットをテクスチャとする場合
     if (_renderTarget == SelectTarget_ModelFrameBuffer && _renderSprite)
     {
         for(csmUint32 i=0; i<live2DManager->GetModelNum(); i++)
         {
-            float alpha = GetSpriteAlpha(i); // サンプルとしてαに適当な差をつける 
+            float alpha = GetSpriteAlpha(i); // サンプルとしてαに適当な差をつける
             _renderSprite->SetColor(1.0f, 1.0f, 1.0f, alpha);
 
             LAppModel *model = live2DManager->GetModel(i);
@@ -138,7 +138,7 @@ void LAppView::Render()
 
 void LAppView::InitializeSprite()
 {
-    // 描画領域サイズ 
+    // 描画領域サイズ
     int width, height;
     LAppDelegate::GetInstance()->GetClientSize(width, height);
 
@@ -202,7 +202,7 @@ void LAppView::ResizeSprite()
         return;
     }
 
-    // 描画領域サイズ 
+    // 描画領域サイズ
     int width, height;
     LAppDelegate::GetInstance()->GetClientSize(width, height);
 
@@ -286,7 +286,7 @@ void LAppView::OnTouchesEnded(float px, float py) const
         int width, height;
         LAppDelegate::GetInstance()->GetClientSize(width, height);
 
-        // シングルタップ 
+        // シングルタップ
         float x = _deviceToScreen->TransformX(px); // 論理座標変換した座標を取得。
         float y = _deviceToScreen->TransformY(py); // 論理座標変換した座標を取得。
         if (DebugTouchLogEnable)
@@ -333,52 +333,52 @@ float LAppView::TransformScreenY(float deviceY) const
 
 void LAppView::PreModelDraw(LAppModel& refModel)
 {
-    // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ 
+    // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
     Csm::Rendering::CubismOffscreenFrame_D3D11* useTarget = NULL;
 
     if (_renderTarget != SelectTarget_None)
-    {// 別のレンダリングターゲットへ向けて描画する場合 
+    {// 別のレンダリングターゲットへ向けて描画する場合
 
-        // 使用するターゲット 
+        // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
 
         if (!useTarget->IsValid())
-        {// 描画ターゲット内部未作成の場合はここで作成 
+        {// 描画ターゲット内部未作成の場合はここで作成
             int width, height;
             LAppDelegate::GetClientSize(width, height);
 
             if (width != 0 && height != 0)
             {
-                // モデル描画キャンバス 
+                // モデル描画キャンバス
                 useTarget->CreateOffscreenFrame(LAppDelegate::GetInstance()->GetD3dDevice(),
                     static_cast<csmUint32>(width), static_cast<csmUint32>(height));
             }
         }
 
-        // レンダリング開始 
+        // レンダリング開始
         useTarget->BeginDraw(LAppDelegate::GetInstance()->GetD3dContext());
-        useTarget->Clear(LAppDelegate::GetInstance()->GetD3dContext(), _clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]); // 背景クリアカラー 
+        useTarget->Clear(LAppDelegate::GetInstance()->GetD3dContext(), _clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]); // 背景クリアカラー
     }
 }
 
 void LAppView::PostModelDraw(LAppModel& refModel)
 {
-    // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ 
+    // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
     Csm::Rendering::CubismOffscreenFrame_D3D11* useTarget = NULL;
 
     if (_renderTarget != SelectTarget_None)
-    {// 別のレンダリングターゲットへ向けて描画する場合 
+    {// 別のレンダリングターゲットへ向けて描画する場合
 
-        // 使用するターゲット 
+        // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
 
-        // レンダリング終了 
+        // レンダリング終了
         useTarget->EndDraw(LAppDelegate::GetInstance()->GetD3dContext());
 
-        // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はここ 
+        // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はここ
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderSprite)
         {
-            // スプライト描画 
+            // スプライト描画
             int width, height;
             LAppDelegate::GetInstance()->GetClientSize(width, height);
 
@@ -407,8 +407,8 @@ void LAppView::DestroyOffscreenFrame()
 
 float LAppView::GetSpriteAlpha(int assign) const
 {
-    // assignの数値に応じて適当に決定 
-    float alpha = 0.25f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける 
+    // assignの数値に応じて適当に決定
+    float alpha = 0.25f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける
     if (alpha > 1.0f)
     {
         alpha = 1.0f;

@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "LAppDelegate.hpp"
@@ -25,7 +25,7 @@ namespace {
 
     const LPCSTR ClassName = "Cubism DirectX11 Sample";
 
-    const csmInt32 BackBufferNum = 1; // バックバッファ枚数 
+    const csmInt32 BackBufferNum = 1; // バックバッファ枚数
 }
 
 LAppDelegate* LAppDelegate::GetInstance()
@@ -55,11 +55,11 @@ bool LAppDelegate::Initialize()
         LAppPal::PrintLog("START");
     }
 
-    // ウィンドウクラス 
+    // ウィンドウクラス
     _windowClass = { sizeof(WNDCLASSEX), CS_CLASSDC, MsgProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, ClassName, NULL };
     RegisterClassEx(&_windowClass);
 
-    // タイトルバー、ウィンドウ枠の分サイズを増やす 
+    // タイトルバー、ウィンドウ枠の分サイズを増やす
     RECT rect;
     {
         SetRect(&rect, 0, 0, RenderTargetWidth, RenderTargetHeight);
@@ -85,7 +85,7 @@ bool LAppDelegate::Initialize()
     UpdateWindow(_windowHandle);
 
 
-    // デバイス設定 
+    // デバイス設定
     memset(&_presentParameters, 0, sizeof(_presentParameters));
     _presentParameters.BufferCount = BackBufferNum;
     _presentParameters.BufferDesc.Width = LAppDefine::RenderTargetWidth;
@@ -104,14 +104,14 @@ bool LAppDelegate::Initialize()
     D3D_FEATURE_LEVEL level;
     HRESULT result = D3D11CreateDeviceAndSwapChain(NULL,
         D3D_DRIVER_TYPE_HARDWARE,
-        NULL, // D3D_DRIVER_TYPE_HARDWAREの場合はNULL固定 
+        NULL, // D3D_DRIVER_TYPE_HARDWAREの場合はNULL固定
 #ifdef CSM_DEBUG
         D3D11_CREATE_DEVICE_DEBUG,
 #else
-        0,  // 単一スレッドでの描画コマンド発行を保証する場合はこれでちょっと速度向上する → D3D11_CREATE_DEVICE_SINGLETHREADED 
+        0,  // 単一スレッドでの描画コマンド発行を保証する場合はこれでちょっと速度向上する → D3D11_CREATE_DEVICE_SINGLETHREADED
 #endif
-        NULL,   // NULLの場合勝手に{ D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_9_3, D3D_FEATURE_LEVEL_9_2, D3D_FEATURE_LEVEL_9_1, };　と認識される 
-        0,      // ↑の要素数 
+        NULL,   // NULLの場合勝手に{ D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_9_3, D3D_FEATURE_LEVEL_9_2, D3D_FEATURE_LEVEL_9_1, };　と認識される
+        0,      // ↑の要素数
         D3D11_SDK_VERSION,
         &_presentParameters,
         &_swapChain,
@@ -124,10 +124,10 @@ bool LAppDelegate::Initialize()
         return false;
     }
 
-    // RenderTargetView/DepthStencilViewの作成 
+    // RenderTargetView/DepthStencilViewの作成
     CreateRenderTarget(static_cast<UINT>(LAppDefine::RenderTargetWidth), static_cast<UINT>(LAppDefine::RenderTargetHeight));
 
-    // Z無効深度オブジェクト 
+    // Z無効深度オブジェクト
     D3D11_DEPTH_STENCIL_DESC depthDesc;
     memset(&depthDesc, 0, sizeof(depthDesc));
     depthDesc.DepthEnable = false;
@@ -141,12 +141,12 @@ bool LAppDelegate::Initialize()
         return false;
     }
 
-    // ラスタライザ 
+    // ラスタライザ
     D3D11_RASTERIZER_DESC rasterDesc;
     memset(&rasterDesc, 0, sizeof(rasterDesc));
     rasterDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
-    rasterDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK; // 裏面を切る 
-    rasterDesc.FrontCounterClockwise = TRUE; // CCWを表面にする 
+    rasterDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK; // 裏面を切る
+    rasterDesc.FrontCounterClockwise = TRUE; // CCWを表面にする
     rasterDesc.DepthClipEnable = FALSE;
     rasterDesc.MultisampleEnable = FALSE;
     rasterDesc.DepthBiasClamp = 0;
@@ -158,7 +158,7 @@ bool LAppDelegate::Initialize()
         return false;
     }
 
-    // テクスチャサンプラーステート 
+    // テクスチャサンプラーステート
     D3D11_SAMPLER_DESC samplerDesc;
     memset(&samplerDesc, 0, sizeof(D3D11_SAMPLER_DESC));
     samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -176,16 +176,16 @@ bool LAppDelegate::Initialize()
         return false;
     }
 
-    // スプライト用シェーダ作成 
+    // スプライト用シェーダ作成
     CreateShader();
 
-    // デバイス作成の後 
+    // デバイス作成の後
     _textureManager = new LAppTextureManager();
 
     //AppViewの初期化
     _view->Initialize();
 
-    // Cubism3の初期化
+    // Cubism SDK の初期化
     InitializeCubism();
 
     return true;
@@ -194,12 +194,12 @@ bool LAppDelegate::Initialize()
 bool LAppDelegate::CreateRenderTarget(UINT width, UINT height)
 {
     if(!_swapChain || !_device)
-    {// SwapChain、Deviceが無い場合は無理 
+    {// SwapChain、Deviceが無い場合は無理
         return false;
     }
 
     HRESULT hr;
-    // レンダーターゲットビュー作成 
+    // レンダーターゲットビュー作成
     ID3D11Texture2D* backBuffer;
     hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
     if (FAILED(hr))
@@ -208,7 +208,7 @@ bool LAppDelegate::CreateRenderTarget(UINT width, UINT height)
         return false;
     }
     hr = _device->CreateRenderTargetView(backBuffer, NULL, &_renderTargetView);
-    // Getした分はRelease 
+    // Getした分はRelease
     backBuffer->Release();
     if (FAILED(hr))
     {
@@ -216,14 +216,14 @@ bool LAppDelegate::CreateRenderTarget(UINT width, UINT height)
         return false;
     }
 
-    // Depth/Stencil 
+    // Depth/Stencil
     D3D11_TEXTURE2D_DESC depthDesc;
     memset(&depthDesc, 0, sizeof(depthDesc));
     depthDesc.Width = width;
     depthDesc.Height = height;
     depthDesc.MipLevels = 1;
     depthDesc.ArraySize = 1;
-    depthDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;   // format 
+    depthDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;   // format
     depthDesc.SampleDesc.Count = 1;
     depthDesc.SampleDesc.Quality = 0;
     depthDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -236,7 +236,7 @@ bool LAppDelegate::CreateRenderTarget(UINT width, UINT height)
         LAppPal::PrintLog("Fail Create DepthTarget 0x%x", hr);
         return false;
     }
-    // DepthView 
+    // DepthView
     D3D11_DEPTH_STENCIL_VIEW_DESC depthViewDesc;
     memset(&depthViewDesc, 0, sizeof(depthViewDesc));
     depthViewDesc.Format = depthDesc.Format;
@@ -259,7 +259,7 @@ void LAppDelegate::Release()
     // リソースを解放
     LAppLive2DManager::ReleaseInstance();
 
-    // シェーダ類の開放 
+    // シェーダ類の開放
     ReleaseShader();
 
     delete _view;
@@ -325,7 +325,7 @@ void LAppDelegate::Run()
 
     do
     {
-        //メッセージループ 
+        //メッセージループ
         if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
             TranslateMessage(&msg);
@@ -333,30 +333,30 @@ void LAppDelegate::Run()
         }
         else
         {
-            // 時間更新 
+            // 時間更新
             LAppPal::UpdateTime();
 
-            // 画面クリアなど 
+            // 画面クリアなど
             StartFrame();
 
-            // 描画 
+            // 描画
             _view->Render();
 
-            // フレーム末端処理 
+            // フレーム末端処理
             EndFrame();
 
-            // アプリケーション終了メッセージでウィンドウを破棄する 
+            // アプリケーション終了メッセージでウィンドウを破棄する
             if (GetIsEnd() && _windowHandle!=NULL)
-            {// ウィンドウ破壊 
+            {// ウィンドウ破壊
                 DestroyWindow(_windowHandle);
                 _windowHandle = NULL;
             }
         }
     } while (msg.message != WM_QUIT);
 
-    // 解放 
+    // 解放
     Release();
-    // インスタンス削除 
+    // インスタンス削除
     ReleaseInstance();
 }
 
@@ -399,7 +399,7 @@ void LAppDelegate::InitializeCubism()
     //Initialize cubism
     CubismFramework::Initialize();
 
-    // モデルロード前に必ず呼び出す必要がある 
+    // モデルロード前に必ず呼び出す必要がある
     Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D11::InitializeConstantSettings(BackBufferNum, _device);
 
     //load model
@@ -412,10 +412,10 @@ void LAppDelegate::InitializeCubism()
 
 bool LAppDelegate::CreateShader()
 {
-    // 一旦削除する 
+    // 一旦削除する
     ReleaseShader();
 
-// スプライト描画用シェーダ 
+// スプライト描画用シェーダ
     static const csmChar* SpriteShaderEffectSrc =
         "cbuffer ConstantBuffer {"\
         "float4x4 projectMatrix;"\
@@ -456,8 +456,8 @@ bool LAppDelegate::CreateShader()
     ID3DBlob* vertexError = NULL;
     ID3DBlob* pixelError = NULL;
 
-    ID3DBlob* vertexBlob = NULL;   ///< スプライト描画用シェーダ 
-    ID3DBlob* pixelBlob = NULL;     ///< スプライト描画用シェーダ 
+    ID3DBlob* vertexBlob = NULL;   ///< スプライト描画用シェーダ
+    ID3DBlob* pixelBlob = NULL;     ///< スプライト描画用シェーダ
 
     HRESULT hr = S_OK;
     do
@@ -465,17 +465,17 @@ bool LAppDelegate::CreateShader()
         UINT compileFlag = 0;
 
         hr = D3DCompile(
-            SpriteShaderEffectSrc,              // メモリー内のシェーダーへのポインターです 
-            strlen(SpriteShaderEffectSrc),      // メモリー内のシェーダーのサイズです 
+            SpriteShaderEffectSrc,              // メモリー内のシェーダーへのポインターです
+            strlen(SpriteShaderEffectSrc),      // メモリー内のシェーダーのサイズです
             NULL,                               // シェーダー コードが格納されているファイルの名前
-            NULL,                               // マクロ定義の配列へのポインター 
-            NULL,                               // インクルード ファイルを扱うインターフェイスへのポインター 
-            "VertNormal",                       // シェーダーの実行が開始されるシェーダー エントリポイント関数の名前 
+            NULL,                               // マクロ定義の配列へのポインター
+            NULL,                               // インクルード ファイルを扱うインターフェイスへのポインター
+            "VertNormal",                       // シェーダーの実行が開始されるシェーダー エントリポイント関数の名前
             "vs_4_0",                           // シェーダー モデルを指定する文字列。
-            compileFlag,                        // シェーダーコンパイルフラグ 
-            0,                                  // シェーダーコンパイルフラグ 
+            compileFlag,                        // シェーダーコンパイルフラグ
+            0,                                  // シェーダーコンパイルフラグ
             &vertexBlob,
-            &vertexError);                              // エラーが出る場合はここで 
+            &vertexError);                              // エラーが出る場合はここで
         if (FAILED(hr))
         {
             LAppPal::PrintLog("Fail Compile Vertex Shader");
@@ -489,17 +489,17 @@ bool LAppDelegate::CreateShader()
         }
 
         hr = D3DCompile(
-            SpriteShaderEffectSrc,              // メモリー内のシェーダーへのポインターです 
-            strlen(SpriteShaderEffectSrc),      // メモリー内のシェーダーのサイズです 
-            NULL,                               // シェーダー コードが格納されているファイルの名前 
-            NULL,                               // マクロ定義の配列へのポインター 
-            NULL,                               // インクルード ファイルを扱うインターフェイスへのポインター 
-            "PixelNormal",                      // シェーダーの実行が開始されるシェーダー エントリポイント関数の名前 
-            "ps_4_0",                           // シェーダー モデルを指定する文字列 
-            compileFlag,                        // シェーダーコンパイルフラグ 
-            0,                                  // シェーダーコンパイルフラグ 
+            SpriteShaderEffectSrc,              // メモリー内のシェーダーへのポインターです
+            strlen(SpriteShaderEffectSrc),      // メモリー内のシェーダーのサイズです
+            NULL,                               // シェーダー コードが格納されているファイルの名前
+            NULL,                               // マクロ定義の配列へのポインター
+            NULL,                               // インクルード ファイルを扱うインターフェイスへのポインター
+            "PixelNormal",                      // シェーダーの実行が開始されるシェーダー エントリポイント関数の名前
+            "ps_4_0",                           // シェーダー モデルを指定する文字列
+            compileFlag,                        // シェーダーコンパイルフラグ
+            0,                                  // シェーダーコンパイルフラグ
             &pixelBlob,
-            &pixelError);                       // エラーが出る場合はここで 
+            &pixelError);                       // エラーが出る場合はここで
         if (FAILED(hr))
         {
             LAppPal::PrintLog("Fail Compile Pixel Shader");
@@ -513,7 +513,7 @@ bool LAppDelegate::CreateShader()
             break;
         }
 
-        // この描画で使用する頂点フォーマット 
+        // この描画で使用する頂点フォーマット
         D3D11_INPUT_ELEMENT_DESC elems[] = {
             { "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
             { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -539,7 +539,7 @@ bool LAppDelegate::CreateShader()
         vertexError = NULL;
     }
 
-    // blobはもうここで不要 
+    // blobはもうここで不要
     if (pixelBlob)
     {
         pixelBlob->Release();
@@ -556,11 +556,11 @@ bool LAppDelegate::CreateShader()
         return false;
     }
 
-    // レンダリングステートオブジェクト 
+    // レンダリングステートオブジェクト
     D3D11_BLEND_DESC blendDesc;
     memset(&blendDesc, 0, sizeof(blendDesc));
     blendDesc.AlphaToCoverageEnable = FALSE;
-    blendDesc.IndependentBlendEnable = FALSE;   // falseの場合はRenderTarget[0]しか使用しなくなる 
+    blendDesc.IndependentBlendEnable = FALSE;   // falseの場合はRenderTarget[0]しか使用しなくなる
     blendDesc.RenderTarget[0].BlendEnable = TRUE;
     blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
     blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
@@ -582,11 +582,11 @@ void LAppDelegate::SetupShader()
         return;
     }
 
-    // 現在のウィンドウサイズ 
+    // 現在のウィンドウサイズ
     int windowWidth, windowHeight;
     GetClientSize(windowWidth, windowHeight);
 
-    // スプライト描画用の設定をし、シェーダセット 
+    // スプライト描画用の設定をし、シェーダセット
     float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
     _deviceContext->OMSetBlendState(_blendState, blendFactor, 0xffffffff);
 
@@ -642,45 +642,45 @@ void LAppDelegate::StartFrame()
     レンダーターゲットクリアなど
     */
 
-    // デバイス未設定 
+    // デバイス未設定
     if (!_device || !_deviceContext)
     {
         return;
     }
 
-    // バックバッファのクリア 
+    // バックバッファのクリア
     float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
     _deviceContext->OMSetRenderTargets(1, &_renderTargetView, _depthStencilView);
     _deviceContext->ClearRenderTargetView(_renderTargetView, clearColor);
     _deviceContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-    // Z無効 
+    // Z無効
     _deviceContext->OMSetDepthStencilState(_depthState, 0);
 }
 
 void LAppDelegate::EndFrame()
 {
-    // 画面反映 
+    // 画面反映
     HRESULT hr = _swapChain->Present(1, 0);
     if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET)
-    {// デバイスロストチェック 
+    {// デバイスロストチェック
         _deviceStep = DeviceStep_Lost;
     }
 
-    // ウィンドウサイズ変更対応 
+    // ウィンドウサイズ変更対応
     if (_deviceStep == DeviceStep_Size)
     {
         ResizeDevice();
     }
 
     if(_deviceStep == DeviceStep_Lost)
-    {// ロストした 
+    {// ロストした
         LAppPal::PrintLog("Device Lost Abort");
-        // アプリケーション終了 
+        // アプリケーション終了
         AppEnd();
     }
 
-    // 遅延開放監視 
+    // 遅延開放監視
     LAppLive2DManager::GetInstance()->EndFrame();
 }
 
@@ -710,18 +710,18 @@ void LAppDelegate::GetClientSize(int& rWidth, int& rHeight)
 
 void LAppDelegate::ResizeDevice()
 {
-    // 今のクライアント領域の大きさに合わせます 
+    // 今のクライアント領域の大きさに合わせます
     int nowWidth, nowHeight;
     GetClientSize(nowWidth, nowHeight);
 
-    // デバイス設定 
-    if (nowWidth == 0 || nowHeight == 0)// サイズが0の際は最小化されていると思われる 
+    // デバイス設定
+    if (nowWidth == 0 || nowHeight == 0)// サイズが0の際は最小化されていると思われる
     {
-        // NOP サイズが戻ったら再チャレンジ 
+        // NOP サイズが戻ったら再チャレンジ
     }
     else
     {
-        // ターゲットがあるなら削除 
+        // ターゲットがあるなら削除
         if (_renderTargetView)
         {
             _renderTargetView->Release();
@@ -743,7 +743,7 @@ void LAppDelegate::ResizeDevice()
 
         if (_swapChain)
         {
-            // サイズを変更 
+            // サイズを変更
             HRESULT hr = _swapChain->ResizeBuffers(
                 _presentParameters.BufferCount,
                 static_cast<UINT>(nowWidth),
@@ -752,28 +752,28 @@ void LAppDelegate::ResizeDevice()
                 0
             );
 
-            // ResizeBuffersでもロストチェックをした方が良いとMSDNにある 
+            // ResizeBuffersでもロストチェックをした方が良いとMSDNにある
             if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET)
-            {// デバイスがロスト 
+            {// デバイスがロスト
                 _deviceStep = DeviceStep_Lost;
             }
             else
             {
-                // RenderTargetView/DepthStencilViewの再作成 
+                // RenderTargetView/DepthStencilViewの再作成
                 if (CreateRenderTarget(static_cast<UINT>(nowWidth), static_cast<UINT>(nowHeight)))
                 {
                     if (_view)
                     {
-                        // パラメータ、スプライトサイズなど再設定 
+                        // パラメータ、スプライトサイズなど再設定
                         _view->Initialize();
                         _view->ResizeSprite();
                         _view->DestroyOffscreenFrame();
                     }
 
-                    // マネージャにサイズ変更通知 
+                    // マネージャにサイズ変更通知
                     LAppLive2DManager::GetInstance()->ResizedWindow();
 
-                    // 通常に戻る 
+                    // 通常に戻る
                     _deviceStep = DeviceStep_None;
                 }
             }
@@ -785,18 +785,18 @@ LRESULT WINAPI LAppDelegate::MsgProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM l
 {
     switch (msg)
     {
-    case WM_DESTROY:    // 終了 
+    case WM_DESTROY:    // 終了
         PostQuitMessage(0);
         return 0;
 
-    case WM_PAINT:  // ウインドウ描画時 
+    case WM_PAINT:  // ウインドウ描画時
         ValidateRect(wnd, NULL);
         return 0;
 
-    case WM_SIZE:   // ウィンドウサイズ変更 
+    case WM_SIZE:   // ウィンドウサイズ変更
         if(s_instance != NULL && s_instance->_view!=NULL && s_instance->_device && s_instance->_deviceStep!=DeviceStep_Lost)
-        {// _device作成前にCreateWindowをやった時もここに来るので、_deviceのNullチェックは必須 
-            // Resize指示を出す 
+        {// _device作成前にCreateWindowをやった時もここに来るので、_deviceのNullチェックは必須
+            // Resize指示を出す
             s_instance->_deviceStep = DeviceStep_Size;
         }
         return 0;

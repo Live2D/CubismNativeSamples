@@ -1,8 +1,8 @@
-/*
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "SampleScene.h"
@@ -53,7 +53,7 @@ bool SampleScene::init()
         return false;
     }
 
-    // Live2DManager実体化の前に必要となる 
+    // Live2DManager実体化の前に必要となる
     instance = this;
 
     Size winSize = Director::getInstance()->getWinSize();
@@ -100,7 +100,7 @@ bool SampleScene::init()
     _pView = LAppView::createDrawNode();
     this->addChild(_pView);
 
-    // Live2DManager実体化 
+    // Live2DManager実体化
     LAppLive2DManager::GetInstance();
 
     if (LAppDefine::DebugLogEnable)
@@ -153,8 +153,8 @@ void SampleScene::onExit()
 {
     Node::onExit();
 
-    // LAppModelがRenderingSpriteを使用していることがある。これはCocosのExit以降に開放することが出来ないので、 
-    // モデルはここですべて消えてもらう 
+    // LAppModelがRenderingSpriteを使用していることがある。これはCocosのExit以降に開放することが出来ないので、
+    // モデルはここですべて消えてもらう
     LAppLive2DManager::GetInstance()->ReleaseAllModel();
 }
 

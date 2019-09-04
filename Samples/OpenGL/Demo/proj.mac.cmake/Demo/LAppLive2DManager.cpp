@@ -1,8 +1,8 @@
-/*
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "LAppLive2DManager.hpp"
@@ -98,7 +98,7 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
     {
         if (_models[i]->HitTest(HitAreaNameHead, x, y))
         {
-            if (DebugLogEnable) 
+            if (DebugLogEnable)
             {
                 LAppPal::PrintLog("[APP]hit area: [%s]", HitAreaNameHead);
             }
@@ -117,7 +117,7 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
 
 void LAppLive2DManager::OnUpdate() const
 {
-    CubismMatrix44 projection;    
+    CubismMatrix44 projection;
     int width, height;
     glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
     projection.Scale(1.0f, static_cast<float>(width) / static_cast<float>(height));
@@ -135,10 +135,10 @@ void LAppLive2DManager::OnUpdate() const
         projection = saveProjection;
 
         LAppDelegate::GetInstance()->GetView()->PreModelDraw(*model);
-        
+
         model->Update();
         model->Draw(projection);///< 参照渡しなのでprojectionは変質する
-        
+
         LAppDelegate::GetInstance()->GetView()->PostModelDraw(*model);
     }
 }
@@ -168,7 +168,7 @@ void LAppLive2DManager::ChangeScene(Csm::csmInt32 index)
     ReleaseAllModel();
     _models.PushBack(new LAppModel());
     _models[0]->LoadAssets(modelPath.c_str(), modelJsonName.c_str());
-    
+
     /*
      * モデル半透明表示を行うサンプルを提示する。
      * ここでUSE_RENDER_TARGET、USE_MODEL_RENDER_TARGETが定義されている場合
@@ -185,18 +185,18 @@ void LAppLive2DManager::ChangeScene(Csm::csmInt32 index)
         // デフォルトのメインフレームバッファへレンダリングする(通常)
         LAppView::SelectTarget useRenderTarget = LAppView::SelectTarget_None;
 #endif
-        
+
 #if defined(USE_RENDER_TARGET) || defined(USE_MODEL_RENDER_TARGET)
         // モデル個別にαを付けるサンプルとして、もう1体モデルを作成し、少し位置をずらす
         _models.PushBack(new LAppModel());
         _models[1]->LoadAssets(modelPath.c_str(), modelJsonName.c_str());
         _models[1]->GetModelMatrix()->TranslateX(0.2f);
 #endif
-        
+
         float clearColor[3] = { 1.0f, 1.0f, 1.0f };
-        
+
         LAppDelegate::GetInstance()->GetView()->SwitchRenderingTarget(useRenderTarget);
-        
+
         if(useRenderTarget)
         {
             LAppDelegate::GetInstance()->GetView()->SwitchRenderingTarget(useRenderTarget);

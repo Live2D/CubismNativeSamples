@@ -1,14 +1,14 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 #include "LAppPal.hpp"
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>  
+#include <stdarg.h>
 #include <sys/stat.h>
 #include <time.h>
 #include <iostream>
@@ -30,7 +30,7 @@ double LAppPal::s_deltaTime = 0.0;
 
 csmByte* LAppPal::LoadFileAsBytes(const string filePath, csmSizeInt* outSize)
 {
-    //filePath;// 
+    //filePath;//
     const char* path = filePath.c_str();
 
     // file buffer

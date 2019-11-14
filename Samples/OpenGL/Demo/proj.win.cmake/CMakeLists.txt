@@ -6,6 +6,10 @@ set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "limited configs" FOR
 # Suppress generation of ZERO_CHECK project.
 set(CMAKE_SUPPRESS_REGENERATION TRUE)
 
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
 # Set project name.
 project(Demo)
 
@@ -16,16 +20,11 @@ set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Demo)
 if(CMAKE_GENERATOR MATCHES "^Visual Studio")
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR})
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR})
+else()
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
-# Make sure the linker flag for architecture detection.
-if(CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64")
-    set(WIN_64 TRUE)
-elseif(CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:X86")
-    set(WIN_64 FALSE)
-else()
-    message(FATAL_ERROR "[CubismNativeSamples] Invalid linker flag.")
-endif()
+option(CORE_CRL_MD "Use Cubism Core that is multithread-specific and DLL-specific version" OFF)
 
 # Set library directory paths.
 set(CORE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Core)
@@ -33,18 +32,15 @@ set(FRAMEWORK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Framework)
 set(THIRDPARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdParty)
 set(STB_DIR ${THIRDPARTY_DIR}/stb)
 set(GLEW_DIR ${THIRDPARTY_DIR}/glew-2.1.0)
-if(${WIN_64})
-    set(GLFW_DIR ${THIRDPARTY_DIR}/glfw-3.3.bin.WIN64)
+set(GLFW_DIR ${THIRDPARTY_DIR}/glfw-3.3)
 
+# Make sure the linker flag for architecture detection.
+if(CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64")
     set(CORE_LIB_DIR ${CORE_DIR}/lib/windows/x86_64)
-    set(GLEW_LIB_DIR ${GLEW_DIR}/lib/Release/x64)
-    set(GLFW_LIB_DIR ${GLFW_DIR})
-else()
-    set(GLFW_DIR ${THIRDPARTY_DIR}/glfw-3.3.bin.WIN32)
-
+elseif(CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:X86")
     set(CORE_LIB_DIR ${CORE_DIR}/lib/windows/x86)
-    set(GLEW_LIB_DIR ${GLEW_DIR}/lib/Release/Win32)
-    set(GLFW_LIB_DIR ${GLFW_DIR})
+else()
+    message(FATAL_ERROR "[CubismNativeSamples] Invalid linker flag.")
 endif()
 
 # Add the sourcecodes for this project.
@@ -71,8 +67,12 @@ set(FRAMEWORK_GLFW_PATH ${GLFW_DIR}/include)
 # Add CubismNativeFramework.
 add_subdirectory(${FRAMEWORK_DIR} ${CMAKE_CURRENT_BINARY_DIR}/Framework)
 
+# Add GLEW and GLFW
+add_subdirectory(${GLFW_DIR} ${CMAKE_CURRENT_BINARY_DIR}/glfw)
+add_subdirectory(${GLEW_DIR}/build/cmake ${CMAKE_CURRENT_BINARY_DIR}/GLEW)
+
 # Add preprocessor definition.
-add_definitions(-DCSM_TARGET_WIN_GL -DGLEW_STATIC)
+add_definitions(-DCSM_TARGET_WIN_GL)
 
 # When this flag is turned on, the renderer will draw for each texture that has LAppModel.
 # Otherwise, will draw to the main framebuffer.
@@ -92,27 +92,21 @@ include_directories(
 # Add library paths.
 if(MSVC_VERSION MATCHES 1800)
     # Visual Studio 2013
-    link_directories(
-        ${CORE_LIB_DIR}/120
-        ${GLEW_LIB_DIR}
-        ${GLFW_LIB_DIR}/lib-vc2013)
+    link_directories(${CORE_LIB_DIR}/120)
 elseif(MSVC_VERSION MATCHES 1900)
     # Visual Studio 2015
-    link_directories(
-        ${CORE_LIB_DIR}/140
-        ${GLEW_LIB_DIR}
-        ${GLFW_LIB_DIR}/lib-vc2015)
+    link_directories(${CORE_LIB_DIR}/140)
 elseif(MSVC_VERSION GREATER_EQUAL 1910 AND MSVC_VERSION LESS 1920)
     # Visual Studio 2017
-    link_directories(
-        ${CORE_LIB_DIR}/141
-        ${GLEW_LIB_DIR}
-        ${GLFW_LIB_DIR}/lib-vc2017)
+    link_directories(${CORE_LIB_DIR}/141)
 elseif(MSVC)
     message(FATAL_ERROR "[CubismNativeSamples] Unsupported Visual C++ compiler used.")
 else()
     message(FATAL_ERROR "[CubismNativeSamples] Unsupported compiler used.")
 endif()
+
+# Add parallel build flag.
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 
 # Solve the MSVCRT confliction.
 set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:libcmtd.lib")
@@ -127,8 +121,16 @@ set_target_properties(Demo PROPERTIES OUTPUT_NAME_DEBUG "Demo_Debug")
 # Set libraries for linking.
 target_link_libraries(Demo
                       Framework
-                      glew32s.lib
-                      glfw3.lib
-                      opengl32.lib
-                      debug Live2DCubismCore_MTd.lib
-                      optimized Live2DCubismCore_MT.lib)
+                      glfw
+                      glew_s
+                      opengl32.lib)
+
+if(CORE_CRL_MD)
+    target_link_libraries(Demo
+                          debug Live2DCubismCore_MDd.lib
+                          optimized Live2DCubismCore_MD.lib)
+else()
+    target_link_libraries(Demo
+                          debug Live2DCubismCore_MTd.lib
+                          optimized Live2DCubismCore_MT.lib)
+endif()

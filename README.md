@@ -1,8 +1,14 @@
-﻿# Cubism Native Samples
+# Cubism Native Samples
 
 Live2D Cubism 4 Editorで出力したモデルを表示するアプリケーションのサンプル実装です。
 
 Cubism Native FrameworkおよびCubism Coreライブラリと組み合わせて使用します。
+
+
+## 注意事項
+本SDKを使用する前に、注意事項をご確認ください。
+
+[こちら](./NOTICE.md)
 
 
 ## ディレクトリ構成
@@ -64,12 +70,14 @@ Cubism Native FrameworkおよびCubism Coreライブラリと組み合わせて�
 
 | 開発ツール | バージョン |
 | --- | --- |
-| Android Studio | 3.5 |
-| CMake | 3.15.2 |
+| Android Studio | 3.5.2 |
+| CMake | 3.15.4 |
+| GCC | 9.2.1 |
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.15 |
-| XCode | 10.3 |
+| Visual Studio 2017 | 15.9.17 |
+| Visual Studio 2019 | 16.3.6 |
+| XCode | 11.1 |
 
 | Android SDK Tools | バージョン |
 | --- | --- |
@@ -81,9 +89,10 @@ Cubism Native FrameworkおよびCubism Coreライブラリと組み合わせて�
 
 | プラットフォーム | バージョン |
 | --- | --- |
-| Android | 9 |
-| iOS | 12.4.1 |
-| macOS | 10.14.6 |
+| Android | 10 |
+| iOS | 13.2 |
+| Linux | Ubuntu 19.10 / CentOS 8 |
+| macOS | 10.15.1 |
 | Windows 10 | 1903 |
 
 

@@ -1,148 +1,127 @@
-﻿cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
 
-# 次の行を追加するとMinSizeRelとRelWithDebInfoの選択肢を生成することが抑制できます。
-SET(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "limited configs" FORCE)
+# Suppress the generation of MinSizeRel and RelWithDebInfo.
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "limited configs" FORCE)
 
-# ZERO_CHECKプロジェクトの生成を抑制
-set(CMAKE_SUPPRESS_REGENERATION true) 
+# Suppress generation of ZERO_CHECK project.
+set(CMAKE_SUPPRESS_REGENERATION ON)
 
-# Frameworkのファイル設定 
-set(FRAMEWORK_SOURCE "D3D9")
-
-# プロジェクト名
+# Set project name.
 project(Demo)
 
-# 作成したプロジェクトをスタートアッププロジェクトに変更する
-set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Demo )
+# Mark as Startup project.
+set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Demo)
 
-# 出力フォルダの指定
-if (CMAKE_GENERATOR STREQUAL "NMake Makefiles")
-    #デフォルトのまま
-else ()
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-endif ()
+# Set output directory paths.
+if(CMAKE_GENERATOR MATCHES "^Visual Studio")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR})
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR})
+else()
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+endif()
 
-# ここにプロジェクトに追加するソースファイルを追加
-set(Demo
+option(CORE_CRL_MD "Use Cubism Core that is multithread-specific and DLL-specific version" OFF)
+
+# Set library directory paths.
+set(CORE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Core)
+set(FRAMEWORK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Framework)
+set(THIRDPARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdParty)
+if(CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64")
+    set(CORE_LIB_DIR ${CORE_DIR}/lib/windows/x86_64)
+    set(DIRECTX_LIB_DIR x64)
+elseif(CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:X86")
+    set(CORE_LIB_DIR ${CORE_DIR}/lib/windows/x86)
+    set(DIRECTX_LIB_DIR x86)
+else()
+    message(FATAL_ERROR "[CubismNativeSamples] Invalid linker flag.")
+endif()
+
+# Add the sourcecodes for this project.
+set(SOURCES
     Demo/LAppAllocator.cpp
-    Demo/LAppAllocator.hpp
     Demo/LAppDefine.cpp
-    Demo/LAppDefine.hpp
     Demo/LAppDelegate.cpp
-    Demo/LAppDelegate.hpp
     Demo/LAppPal.cpp
-    Demo/LAppPal.hpp
     Demo/LAppSprite.cpp
-    Demo/LAppSprite.hpp
     Demo/LAppTextureManager.cpp
-    Demo/LAppTextureManager.hpp
     Demo/LAppView.cpp
-    Demo/LAppView.hpp
     Demo/LAppLive2DManager.cpp
-    Demo/LAppLive2DManager.hpp
     Demo/LAppModel.cpp
-    Demo/LAppModel.hpp
     Demo/TouchManager.cpp
-    Demo/TouchManager.hpp
-    Demo/main.cpp
-)
+    Demo/main.cpp)
 
-set(FRAMEWORK_DX9_INCLUDE_PATH "$ENV{DXSDK_FOR_CUBISM_D3D9}/Include")
+set(FRAMEWORK_SOURCE D3D9)
+set(FRAMEWORK_DX9_INCLUDE_PATH $ENV{DXSDK_DIR}/Include)
 
-# Frameworkの追加
-add_subdirectory(../../../../Framework ${CMAKE_CURRENT_BINARY_DIR}/Framework)
-
+# Add CubismNativeFramework.
+add_subdirectory(${FRAMEWORK_DIR} ${CMAKE_CURRENT_BINARY_DIR}/Framework)
 
 # includeパスの追加
-include_directories(../../../../Framework/src)
-include_directories(../../../../Core/include)
+include_directories(
+    ${FRAMEWORK_DIR}/src
+    ${CORE_DIR}/include
+    ${FRAMEWORK_DX9_INCLUDE_PATH})
 
-include_directories("${FRAMEWORK_DX9_INCLUDE_PATH}")
-
-# ここを有効にすると、Cubismモデルをメインフレームバッファではなく各LAppModelが独自に確保するテクスチャへ描画する 
+# When this flag is turned on, the renderer will draw for each texture that has LAppModel.
+# Otherwise, will draw to the main framebuffer.
 #add_definitions(-DUSE_MODEL_RENDER_TARGET)
-# ここを有効にすると、CubismモデルをメインフレームバッファではなくLAppViewが一つだけ確保するテクスチャへ描画する なおDUSE_MODEL_RENDER_TARGETより優先される 
+# When this flag is turned on, the renderer will draw to the texture. The texture only has LAppView.
+# This flag has higher priority than DUSE_MODEL_RENDER_TARGET.
 #add_definitions(-DUSE_RENDER_TARGET)
 
+# Add include paths.
+include_directories(
+    ${CORE_DIR}/include
+    ${FRAMEWORK_DIR}/src)
 
-# ライブラリパスの追加
+#Add library paths.
+link_directories($ENV{DXSDK_DIR}/Lib/${DIRECTX_LIB_DIR})
+if(MSVC_VERSION MATCHES 1800)
+    # Visual Studio 2013
+    link_directories(${CORE_LIB_DIR}/120)
+elseif(MSVC_VERSION MATCHES 1900)
+    # Visual Studio 2015
+    link_directories(${CORE_LIB_DIR}/140)
+elseif(MSVC_VERSION GREATER_EQUAL 1910 AND MSVC_VERSION LESS 1920)
+    # Visual Studio 2017
+    link_directories(${CORE_LIB_DIR}/141)
+elseif(MSVC_VERSION GREATER_EQUAL 1920 AND MSVC_VERSION LESS 1930)
+    # Visual Studio 2019
+    link_directories(${CORE_LIB_DIR}/142)
+elseif(MSVC)
+    message(FATAL_ERROR "[CubismNativeSamples] Unsupported Visual C++ compiler used.")
+else()
+    message(FATAL_ERROR "[CubismNativeSamples] Unsupported compiler used.")
+endif()
 
-# Visual Studioのソリューション生成
-if (CMAKE_GENERATOR_PLATFORM STREQUAL "x64" AND CMAKE_GENERATOR MATCHES "Visual Studio 15 2017")
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/141)
-    link_directories("$ENV{DXSDK_FOR_CUBISM_D3D9}/Lib/x64")
+# Add parallel build flag.
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 
-elseif (CMAKE_GENERATOR_PLATFORM STREQUAL "x64" AND CMAKE_GENERATOR MATCHES "Visual Studio 14 2015")
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/140)
-    link_directories("$ENV{DXSDK_FOR_CUBISM_D3D9}/Lib/x64")
-
-elseif (CMAKE_GENERATOR_PLATFORM STREQUAL "x64" AND CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/120)
-    link_directories("$ENV{DXSDK_FOR_CUBISM_D3D9}/Lib/x64")
-
-elseif (CMAKE_GENERATOR_PLATFORM STREQUAL "Win32" AND CMAKE_GENERATOR MATCHES "Visual Studio 15 2017")
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/141)
-    link_directories("$ENV{DXSDK_FOR_CUBISM_D3D9}/Lib/x86")
-
-elseif (CMAKE_GENERATOR_PLATFORM STREQUAL "Win32" AND CMAKE_GENERATOR MATCHES "Visual Studio 14 2015")
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/140)
-    link_directories("$ENV{DXSDK_FOR_CUBISM_D3D9}/Lib/x86")
-
-elseif (CMAKE_GENERATOR_PLATFORM STREQUAL "Win32" AND CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/120)
-    link_directories("$ENV{DXSDK_FOR_CUBISM_D3D9}/Lib/x86")
-
-
-# NMake MakeFiles指定
-elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION GREATER 1910 AND CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64" )
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/141)
-    link_directories("$ENV{DXSDK_FOR_CUBISM_D3D9}/Lib/x64")
-
-elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION GREATER 1910 )
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/141)
-    link_directories("$ENV{DXSDK_FOR_CUBISM_D3D9}/Lib/x86")
-
-elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION MATCHES 1900 AND CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64" )
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/140)
-    link_directories("$ENV{DXSDK_FOR_CUBISM_D3D9}/Lib/x64")
-
-elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION MATCHES 1900 )
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/140)
-    link_directories("$ENV{DXSDK_FOR_CUBISM_D3D9}/Lib/x86")
-
-elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION MATCHES 1800 AND CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64" )
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86_64/120)
-    link_directories("$ENV{DXSDK_FOR_CUBISM_D3D9}/Lib/x64")
-
-elseif (CMAKE_GENERATOR MATCHES "NMake Makefiles" AND MSVC_VERSION MATCHES 1800 )
-    link_directories(${CMAKE_SOURCE_DIR}/../../../../Core/lib/windows/x86/120)
-    link_directories("$ENV{DXSDK_FOR_CUBISM_D3D9}/Lib/x86")
-endif ()
-
-# ソースの追加
-add_executable(Demo ${Demo})
-
-# WinMainを使用
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
-# CMakeの設定によっては/SUBSYSTEM:consoleがセットされてしまうので消す 
+# Solve the MSVCRT confliction.
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:libcmtd.lib /SUBSYSTEM:WINDOWS")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:libcmt.lib /SUBSYSTEM:WINDOWS")
+# Remove /SUBSYSTEM:console
 set(CMAKE_CREATE_CONSOLE_EXE "")
 
-# 出力ファイル名の指定1
-if (CMAKE_GENERATOR_PLATFORM STREQUAL "x64" OR CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64")
-    SET_TARGET_PROPERTIES(Demo PROPERTIES OUTPUT_NAME "Demo_x64")
-endif ()
+# Set sourcecodes.
+add_executable(Demo ${SOURCES})
 
-# ライブラリの追加
-target_link_libraries(Demo d3d9.lib)
-target_link_libraries(Demo d3dx9.lib)
+# Set output file name.
+set_target_properties(Demo PROPERTIES OUTPUT_NAME_DEBUG "Demo_Debug")
 
-if (CMAKE_BUILD_TYPE MATCHES "Release" )
-target_link_libraries(Demo Live2DCubismCore_MD.lib)
-elseif (CMAKE_BUILD_TYPE MATCHES "Debug" )
-target_link_libraries(Demo Live2DCubismCore_MDd.lib)
-else ()
-target_link_libraries(Demo debug Live2DCubismCore_MDd.lib)
-target_link_libraries(Demo optimized Live2DCubismCore_MD.lib)
-endif ()
 
-target_link_libraries(Demo Framework)
+# Set libraries for linking.
+target_link_libraries(Demo
+                      Framework
+                      d3d9.lib
+                      d3dx9.lib)
+
+if(CORE_CRL_MD)
+    target_link_libraries(Demo
+                          debug Live2DCubismCore_MDd.lib
+                          optimized Live2DCubismCore_MD.lib)
+else()
+    target_link_libraries(Demo
+                          debug Live2DCubismCore_MTd.lib
+                          optimized Live2DCubismCore_MT.lib)
+endif()

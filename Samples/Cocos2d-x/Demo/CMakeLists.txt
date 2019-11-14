@@ -109,7 +109,7 @@ elseif(IOS)
 
 elseif(MACOSX OR APPLE)
     set(PLATFORM_SPECIFIC_SRC proj.ios_mac/mac/main.cpp)
-    
+
     set(MACOSX_BUNDLE_BUNDLE_NAME "\${PRODUCT_NAME}")
     set(MACOSX_BUNDLE_INFO_PLIST proj.ios_mac/mac/Info.plist)
     set(MACOSX_BUNDLE_ICON_FILE Icon)
@@ -189,7 +189,7 @@ if(MSVC)
     add_custom_command(TARGET ${APP_NAME} PRE_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_CURRENT_SOURCE_DIR}/Resources ${APP_BIN_DIR})
-        
+
     # create a list of dlls to copy
     file(GLOB THIRD_PARTY_DLLS
         "${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/gles/prebuilt/glew32.dll"
@@ -202,14 +202,14 @@ if(MSVC)
         "${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/icon/prebuilt/iconv.dll"
         "${COCOS2D_ROOT}/external/tiff/prebuilt/${PLATFORM_FOLDER}/libtiff.dll"
     )
-    
+
     list(SORT THIRD_PARTY_DLLS)
 
     # do the copying
     foreach( file_i ${THIRD_PARTY_DLLS})
         add_custom_command(TARGET ${APP_NAME} PRE_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy
-            ${file_i} 
+            ${file_i}
             ${APP_BIN_DIR}
         )
     endforeach( file_i )

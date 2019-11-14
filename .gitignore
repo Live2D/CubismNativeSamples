@@ -1,10 +1,11 @@
 # Sample build directories
 /Samples/**/nmake_*_*/
 /Samples/**/proj_*_*/
+/Samples/**/build_*/
 
 # Cubism Core
 /Core/*
-!/Core/Please_copy_cubism_core
+!/Core/Please_copy_cubism_core_for_native
 
 # Cocos2d-x Samples
 /Samples/Cocos2d-x/cocos2d/*
@@ -14,12 +15,11 @@
 
 # DirectX 11 Samples
 /Samples/D3D11/thirdParty/DirectXTK/*
-!/Samples/D3D11/thirdParty/DirectXTK/Please_copy_DirectXTK_and_build_each_target
 
 # OpenGL Samples
-/Samples/OpenGL/thirdParty/
+/Samples/OpenGL/thirdParty/*
 !/Samples/OpenGL/thirdParty/stb/
-!/Samples/OpenGL/thirdParty/setup_*.*
+!/Samples/OpenGL/thirdParty/setup.*
 /Samples/OpenGL/Demo/proj.mac.cmake/build/
 
 # Built application files
@@ -39,7 +39,6 @@ out/
 
 # Gradle files
 .gradle/
-build/
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -246,7 +245,7 @@ DocProject/Help/Html2
 DocProject/Help/html
 
 # Click-Once directory
-publish/
+/Samples/**/publish/
 
 # Publish Web Output
 *.[Pp]ublish.xml
@@ -404,7 +403,6 @@ ASALocalRun/
 *.binlog
 
 # Xcode (from gitignore.io)
-build/
 *.pbxuser
 !default.pbxuser
 *.mode1v3

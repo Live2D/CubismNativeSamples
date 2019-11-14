@@ -1,4 +1,4 @@
-﻿# Cubism Native Samples for Cocos2d-x
+# Cubism Native Samples for Cocos2d-x
 
 Cocos2d-xで実装したアプリケーションのサンプル実装です。
 
@@ -28,7 +28,7 @@ Cocos2d-x
 
 ## cocos2d
 
-サンプルプロジェクトで使用するCocos2d-xライブラリ用のディレクトリです。 
+サンプルプロジェクトで使用するCocos2d-xライブラリ用のディレクトリです。
 [公式サイトのダウンロードページ]もしくは[GitHubの公開リリース]からライブラリをダウンロードして、
 本ディレクトリで展開したのち`download-deps.py`を実行して依存ライブラリのダウンロードを行ってください。
 
@@ -63,6 +63,23 @@ Note: 本ディレクトリ名は最新のCocos2d-xで生成されるプロジ�
 ### proj.ios_mac
 
 iOSおよびmacOS用のXcodeプロジェクトが含まれます。
+
+4-beta.2 現在、Xcode 11 でビルドした際、下記のようなエラーが発生した場合は、
+Cocos2d-x のソースコードの修正が必要になります。
+
+`error : Argument value 10880 is outside the valid range [0, 255] btVector3.h`
+
+その場合 `btVector3.h` の下記のコードを変更してください。
+
+```c
+// 修正前
+#define BT_SHUFFLE(x,y,z,w) ((w)<<6 | (z)<<4 | (y)<<2 | (x))
+
+// 修正後
+#define BT_SHUFFLE(x,y,z,w) (((w)<<6 | (z)<<4 | (y)<<2 | (x)) & 0xff)
+```
+
+参照: https://discuss.cocos2d-x.org/t/xcode-11-ios-13-cocos-not-running/46825/5
 
 ### proj.win32
 

@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [4-beta.2.1] - 2019-11-19
+
+This change is only for Cubism Core.
+See [Core Changelog] for details.
+
+[Core Changelog]: /Core/CHANGELOG.md
+
+
 ## [4-beta.2] - 2019-11-14
 
 ### Added
@@ -45,5 +53,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[4-beta.2.1]: https://github.com/Live2D/CubismNativeSamples/compare/4-beta.2...4-beta.2.1
 [4-beta.2]: https://github.com/Live2D/CubismNativeSamples/compare/4-beta.1...4-beta.2
 [4-beta.1]: https://github.com/Live2D/CubismNativeSamples/compare/9a61d9374317b30f99c5e0ad3e58b675a0a39a32...4-beta.1

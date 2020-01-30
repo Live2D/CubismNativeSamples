@@ -1,98 +1,104 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.16)
 
-# Suppress the generation of MinSizeRel and RelWithDebInfo.
-set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "limited configs" FORCE)
+# Set app name.
+set(APP_NAME Demo)
+# Set directory paths.
+set(SDK_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../../..)
+set(CORE_PATH ${SDK_ROOT_PATH}/Core)
+set(FRAMEWORK_PATH ${SDK_ROOT_PATH}/Framework)
+set(THIRD_PARTY_PATH ${SDK_ROOT_PATH}/Samples/OpenGL/thirdParty)
+set(STB_PATH ${THIRD_PARTY_PATH}/stb)
+set(GLEW_PATH ${THIRD_PARTY_PATH}/glew)
+set(GLFW_PATH ${THIRD_PARTY_PATH}/glfw)
+set(RES_PATH ${SDK_ROOT_PATH}/Samples/Resources)
 
+# Set project.
+project(${APP_NAME})
+
+# Define output directory.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/${APP_NAME})
+# Set configuration (Release and Debug only).
+set(CMAKE_CONFIGURATION_TYPES Debug Release
+  CACHE STRING "Configurations" FORCE
+)
 # Suppress generation of ZERO_CHECK project.
-set(CMAKE_SUPPRESS_REGENERATION true)
+set(CMAKE_SUPPRESS_REGENERATION ON)
 
-# Specify version of compiler.
-set(CMAKE_CXX_STANDARD 14)
-
+# Surpress GLEW and GLFW process.
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+set(BUILD_UTILS OFF CACHE BOOL "" FORCE)
 
-# Set project name.
-project(Demo)
+# Specify version of compiler.
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Set output directory paths.
-if(CMAKE_GENERATOR MATCHES "Xcode")
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR})
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR})
-else()
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-endif()
+# Add Cubism Core.
+# Import as static library.
+add_library(Live2DCubismCore STATIC IMPORTED)
+# Set library path and inlude path.
+set_target_properties(Live2DCubismCore
+  PROPERTIES
+    IMPORTED_LOCATION ${CORE_PATH}/lib/macos/libLive2DCubismCore.a
+    INTERFACE_INCLUDE_DIRECTORIES ${CORE_PATH}/include
+)
 
-# Set directory paths.
-set(CORE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Core)
-set(FRAMEWORK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Framework)
-set(THIRD_PARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdParty)
-set(STB_DIR ${THIRD_PARTY_DIR}/stb)
-set(GLEW_DIR ${THIRD_PARTY_DIR}/glew-2.1.0)
-set(GLFW_DIR ${THIRD_PARTY_DIR}/glfw-3.3)
+# Add GLEW ,GLFW.
+add_subdirectory(${GLEW_PATH}/build/cmake ${CMAKE_CURRENT_BINARY_DIR}/glew)
+add_subdirectory(${GLFW_PATH} ${CMAKE_CURRENT_BINARY_DIR}/glfw)
 
-# Add the sourcecodes for this project.
-set(Demo
-    Demo/main.cpp
-    Demo/LAppAllocator.cpp
-    Demo/LAppDefine.cpp
-    Demo/LAppDelegate.cpp
-    Demo/LAppLive2DManager.cpp
-    Demo/LAppModel.cpp
-    Demo/LAppPal.cpp
-    Demo/LAppSprite.cpp
-    Demo/LAppTextureManager.cpp
-    Demo/LAppView.cpp
-    Demo/TouchManager.cpp)
+# Specify Cubism Framework rendering.
+set(FRAMEWORK_SOURCE OpenGL)
+# Add Cubism Native Framework.
+add_subdirectory(${FRAMEWORK_PATH} ${CMAKE_CURRENT_BINARY_DIR}/Framework)
+# Add rendering definition to framework.
+target_compile_definitions(Framework PUBLIC CSM_TARGET_MAC_GL)
+# Add include path of GLEW to framework.
+target_include_directories(Framework PUBLIC ${GLEW_PATH}/include)
+# Link libraries to framework.
+target_link_libraries(Framework Live2DCubismCore glew_s)
 
-# Set preprocessor definitions for CubismNativeFramework.
-set(FRAMEWORK_DEFINITIOINS -DCSM_TARGET_MAC_GL)
-
-# Give the thirdparty OpenGL library include paths to CubismNativeFramework.
-set(FRAMEWORK_GLEW_PATH ${GLEW_DIR}/include)
-set(FRAMEWORK_GLFW_PATH ${GLFW_DIR}/include)
-
-add_definitions(-DCSM_TARGET_MAC_GL)
-
-# Add GLEW ,GLFW and CubismFramework.
-add_subdirectory(${GLFW_DIR} ${CMAKE_CURRENT_BINARY_DIR}/glfw)
-add_subdirectory(${GLEW_DIR}/build/cmake ${CMAKE_CURRENT_BINARY_DIR}/GLEW)
-add_subdirectory(${FRAMEWORK_DIR} ${CMAKE_CURRENT_BINARY_DIR}/Framework)
-
-# When this flag is turned on, the renderer will draw for each texture that has LAppModel.
-# Otherwise, will draw to the main framebuffer.
-#add_definitions(-DUSE_MODEL_RENDER_TARGET)
-# When this flag is turned on, the renderer will draw to the texture. The texture only has LAppView.
-# This flag has higher priority than DUSE_MODEL_RENDER_TARGET.
-#add_definitions(-DUSE_RENDER_TARGET)
-
-# Add include paths.
-include_directories(
-    ${CORE_DIR}/include
-    ${FRAMEWORK_DIR}/src
-    ${STB_DIR}/include
-    ${GLEW_DIR}/include
-    ${GLFW_DIR}/include)
-
-# Add library paths.
-find_library(Live2DCubismCore
-             NAMES Live2DCubismCore
-             PATHS ${CORE_DIR}/lib/macos
-             PATH_SUFFIXES lib
-             NO_DEFAULT_PATH)
-
-# Set sourcecodes.
-add_executable(Demo ${Demo})
-
-# Set output file name.
-set_target_properties(Demo PROPERTIES OUTPUT_NAME_DEBUG Demo_Debug)
-
-# Set libraries for linking.
+# Find opengl libraries.
 find_package(OpenGL REQUIRED)
-target_link_libraries(Demo
-                      Framework
-                      glew_s
-                      glfw
-                      ${Live2DCubismCore}
-                      ${OPENGL_LIBRARIES})
+
+# Make executable app.
+add_executable(${APP_NAME})
+# Add source files.
+add_subdirectory(src)
+# Link libraries to app.
+target_link_libraries(${APP_NAME}
+  Framework
+  glfw
+  ${OPENGL_LIBRARIES}
+)
+# Specify include directories.
+target_include_directories(${APP_NAME} PRIVATE ${STB_PATH})
+
+# Copy resource directory to build directory.
+add_custom_command(
+  TARGET ${APP_NAME}
+  POST_BUILD
+  COMMAND
+    ${CMAKE_COMMAND} -E
+      copy_directory ${RES_PATH} $<TARGET_FILE_DIR:${APP_NAME}>/Resources
+)
+
+# You can change target that renderer draws by enabling following definition.
+#
+# * USE_RENDER_TARGET
+#   Renderer draws to target of LAppView.
+# * USE_MODEL_RENDER_TARGET
+#   Renderer draws to target of each LAppModel.
+# * default
+#   Renderer draws to default main framebuffer.
+#
+# INFO: USE_RENDER_TARGET has higher priority than USE_MODEL_RENDER_TARGET.
+#
+# target_compile_definitions(${APP_NAME}
+#   PRIVATE
+#     USE_RENDER_TARGET
+#     USE_MODEL_RENDER_TARGET
+# )

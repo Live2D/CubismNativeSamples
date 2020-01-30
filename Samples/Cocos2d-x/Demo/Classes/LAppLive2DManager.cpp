@@ -26,7 +26,12 @@ using namespace LAppDefine;
 USING_NS_CC;
 
 namespace {
-LAppLive2DManager* s_instance = NULL;
+    LAppLive2DManager* s_instance = NULL;
+
+    void FinishedMotion(ACubismMotion* self)
+    {
+        LAppPal::PrintLog("Motion Finished: %x", self);
+    }
 }
 
 LAppLive2DManager* LAppLive2DManager::GetInstance()
@@ -175,7 +180,7 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
         else if (_models[i]->HitTest(HitAreaNameBody, x, y))
         {
             if (DebugLogEnable) LAppPal::PrintLog("[APP]hit area: [%s]", HitAreaNameBody);
-            _models[i]->StartRandomMotion(MotionGroupTapBody, PriorityNormal);
+            _models[i]->StartRandomMotion(MotionGroupTapBody, PriorityNormal, FinishedMotion);
         }
     }
 }

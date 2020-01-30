@@ -7,7 +7,7 @@ DirectX 9.0c で実装したアプリケーションのサンプル実装です�
 
 | 開発キット | バージョン |
 | --- | --- |
-| DirectX SDK | 9.0c (June2010) |
+| [DirectX SDK] | 9.0c (June2010) |
 
 その他の開発環境・動作確認環境はトップディレクトリにある [README.md](/README.md) を参照してください。
 
@@ -15,7 +15,7 @@ DirectX 9.0c で実装したアプリケーションのサンプル実装です�
 ## ディレクトリ構造
 
 ```
-D3D9
+.
 └─ Demo
    └─ proj.d3d9.cmake   # CMake project using DirectX 9.0c
 ```
@@ -35,8 +35,8 @@ D3D9
 
 ソースファイルと CMake ファイル、及びバッチファイルが含まれます。
 
-- `nmake_xxx.bat`を実行すると実行可能なアプリケーションが作成されます。
-- `proj_xxx.bat`を実行するとVisual Studioプロジェクトが作成されます。
+* `scripts/nmake_xxx.bat` を実行すると `build` ディレクトリに実行可能なアプリケーションが生成されます。
+* `scripts/proj_xxx.bat` を実行すると `build` ディレクトリにVisual Studioプロジェクトが生成されます。
 
 [DirectX SDK] を利用しているため、事前にインストールが必要です。
 

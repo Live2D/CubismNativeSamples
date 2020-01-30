@@ -1,10 +1,7 @@
-import org.apache.tools.ant.taskdefs.condition.Os
-
 apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion PROP_COMPILE_SDK_VERSION.toInteger()
-    buildToolsVersion '29.0.2'
 
     defaultConfig {
         applicationId "com.live2d.demo"
@@ -14,38 +11,16 @@ android {
         versionName "1.0"
 
         externalNativeBuild {
-            ndkBuild {
-                if (!project.hasProperty("PROP_NDK_MODE") || PROP_NDK_MODE.compareTo('none') != 0) {
-                    // skip the NDK Build step if PROP_NDK_MODE is none
-                    targets 'MyGame'
-                    arguments 'NDK_TOOLCHAIN_VERSION=clang'
-                    arguments 'APP_PLATFORM=android-'+PROP_APP_PLATFORM
-
-                    def module_paths = [project.file("../../../cocos2d").absolutePath,
-                                        project.file("../../../cocos2d/cocos").absolutePath,
-                                        project.file("../../../cocos2d/external").absolutePath]
-                    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                        // should use '/'
-                        module_paths = module_paths.collect {it.replaceAll('\\\\', '/')}
-                        arguments 'NDK_MODULE_PATH=' + module_paths.join(";")
-                    }
-                    else {
-                        arguments 'NDK_MODULE_PATH=' + module_paths.join(':')
-                    }
-
-                    arguments '-j' + Runtime.runtime.availableProcessors()
-                    abiFilters.addAll(PROP_APP_ABI.split(':').collect{it as String})
-
-                    // A workaround too long path problem on Windows
-                    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                        def driveLetter = project.buildDir.absolutePath[0]
-                        def objDir = "${driveLetter}:/temp/obj"
-                        objDir = objDir.replaceAll('\\\\', '/')
-                        println "NDK_OUT=${objDir}"
-                        arguments 'NDK_OUT=' + objDir
-                    }
-                }
+            cmake {
+                targets 'Demo'
+                arguments "-DCMAKE_FIND_ROOT_PATH=", "-DANDROID_STL=c++_static", "-DANDROID_TOOLCHAIN=clang", "-DANDROID_ARM_NEON=TRUE"
+                cppFlags "-frtti -fexceptions -fsigned-char"
             }
+        }
+
+        ndk {
+            abiFilters = []
+            abiFilters.addAll(PROP_APP_ABI.split(':').collect{it as String})
         }
     }
 
@@ -53,21 +28,19 @@ android {
         java.srcDir "src"
         res.srcDir "res"
         manifest.srcFile "AndroidManifest.xml"
-        assets.srcDirs = ["../../../../Res", "../../Resources"]
+        assets.srcDirs "../../../../Resources", "../../Resources"
     }
 
     externalNativeBuild {
-        ndkBuild {
-            if (!project.hasProperty("PROP_NDK_MODE") || PROP_NDK_MODE.compareTo('none') != 0) {
-                // skip the NDK Build step if PROP_NDK_MODE is none
-                path "jni/Android.mk"
-            }
+        cmake {
+            path "../../CMakeLists.txt"
+            version "3.10.2"
         }
     }
 
     signingConfigs {
 
-       release {
+        release {
             if (project.hasProperty("RELEASE_STORE_FILE")) {
                 storeFile file(RELEASE_STORE_FILE)
                 storePassword RELEASE_STORE_PASSWORD
@@ -79,27 +52,41 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            debuggable false
+            jniDebuggable false
+            renderscriptDebuggable false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             if (project.hasProperty("RELEASE_STORE_FILE")) {
                 signingConfig signingConfigs.release
             }
-
-            externalNativeBuild {
-                ndkBuild {
-                    arguments 'NDK_DEBUG=0'
-                }
-            }
         }
 
         debug {
-            externalNativeBuild {
-                ndkBuild {
-                    arguments 'NDK_DEBUG=1'
-                }
-            }
+            debuggable true
+            jniDebuggable true
+            renderscriptDebuggable true
         }
     }
+}
+
+android.applicationVariants.all { variant ->
+    def dest_assets_folder = "${projectDir}/assets"
+
+    // delete previous files first
+    delete dest_assets_folder
+    def targetName = variant.name.capitalize()
+    def copyTaskName = "copy${targetName}ResourcesToAssets"
+
+    tasks.register(copyTaskName) {
+        copy {
+            from "${buildDir}/../../../Resources", "${buildDir}/../../../../../Res"
+            into "${buildDir}/intermediates/assets/${variant.dirName}"
+            exclude "**/*.gz"
+        }
+    }
+    tasks.getByName("pre${targetName}Build").dependsOn copyTaskName
 }
 
 dependencies {

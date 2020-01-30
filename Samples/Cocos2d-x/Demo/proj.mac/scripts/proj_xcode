@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+set -ue
+
+SCRIPT_PATH=$(cd "$(dirname "$0")" && pwd)
+CMAKE_PATH=$SCRIPT_PATH/../..
+BUILD_PATH=$SCRIPT_PATH/../build/proj_xcode
+
+# Run CMake.
+cmake -S "$CMAKE_PATH" \
+  -B "$BUILD_PATH" \
+  -G Xcode

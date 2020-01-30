@@ -3,24 +3,22 @@ root = true
 [*]
 charset = utf-8
 end_of_line = lf
-indent_size = 4
+indent_size = 2
 indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[*.{yml,bat,sh}]
+[/Samples/**/src/**]
+indent_size = 4
+
+[*.gradle]
+indent_size = 4
+
+[CMakeLists.txt]
 indent_size = 2
 
-[*.{c,cpp,h,hpp}]
-charset = utf-8-bom
-
-[*.rc]
-end_of_line = crlf
-
-[*.{sln,vcxproj,filters}]
-charset = utf-8-bom
+[*.{bat,rc}]
 end_of_line = crlf
 
 [*.bat]
 charset = unset
-end_of_line = crlf

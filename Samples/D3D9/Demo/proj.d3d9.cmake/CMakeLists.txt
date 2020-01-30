@@ -1,127 +1,143 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.16)
 
-# Suppress the generation of MinSizeRel and RelWithDebInfo.
-set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "limited configs" FORCE)
+option(
+  CORE_CRL_MD
+  "Use Cubism Core that is multithread-specific and DLL-specific version"
+  OFF
+)
 
+# Set app name.
+set(APP_NAME Demo)
+# Set directory paths.
+set(SDK_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../../..)
+set(CORE_PATH ${SDK_ROOT_PATH}/Core)
+set(FRAMEWORK_PATH ${SDK_ROOT_PATH}/Framework)
+set(RES_PATH ${SDK_ROOT_PATH}/Samples/Resources)
+
+# Set project.
+project(${APP_NAME})
+
+# Set Visual Studio startup project.
+set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT ${APP_NAME})
+
+# Define output directory.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/${APP_NAME})
+# Set configuration (Release and Debug only).
+set(CMAKE_CONFIGURATION_TYPES Debug Release
+  CACHE STRING "Configurations" FORCE
+)
 # Suppress generation of ZERO_CHECK project.
 set(CMAKE_SUPPRESS_REGENERATION ON)
 
-# Set project name.
-project(Demo)
+# Specify version of compiler.
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Mark as Startup project.
-set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Demo)
-
-# Set output directory paths.
-if(CMAKE_GENERATOR MATCHES "^Visual Studio")
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR})
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR})
-else()
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-endif()
-
-option(CORE_CRL_MD "Use Cubism Core that is multithread-specific and DLL-specific version" OFF)
-
-# Set library directory paths.
-set(CORE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Core)
-set(FRAMEWORK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Framework)
-set(THIRDPARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdParty)
+# Detect architecture.
 if(CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64")
-    set(CORE_LIB_DIR ${CORE_DIR}/lib/windows/x86_64)
-    set(DIRECTX_LIB_DIR x64)
+  set(ARCH x86_64)
+  set(DX_ARCH x64)
 elseif(CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:X86")
-    set(CORE_LIB_DIR ${CORE_DIR}/lib/windows/x86)
-    set(DIRECTX_LIB_DIR x86)
+  set(ARCH x86)
+  set(DX_ARCH x86)
 else()
-    message(FATAL_ERROR "[CubismNativeSamples] Invalid linker flag.")
+  message(FATAL_ERROR "[${APP_NAME}] Invalid linker flag ${CMAKE_EXE_LINKER_FLAGS}.")
 endif()
-
-# Add the sourcecodes for this project.
-set(SOURCES
-    Demo/LAppAllocator.cpp
-    Demo/LAppDefine.cpp
-    Demo/LAppDelegate.cpp
-    Demo/LAppPal.cpp
-    Demo/LAppSprite.cpp
-    Demo/LAppTextureManager.cpp
-    Demo/LAppView.cpp
-    Demo/LAppLive2DManager.cpp
-    Demo/LAppModel.cpp
-    Demo/TouchManager.cpp
-    Demo/main.cpp)
-
-set(FRAMEWORK_SOURCE D3D9)
-set(FRAMEWORK_DX9_INCLUDE_PATH $ENV{DXSDK_DIR}/Include)
-
-# Add CubismNativeFramework.
-add_subdirectory(${FRAMEWORK_DIR} ${CMAKE_CURRENT_BINARY_DIR}/Framework)
-
-# includeパスの追加
-include_directories(
-    ${FRAMEWORK_DIR}/src
-    ${CORE_DIR}/include
-    ${FRAMEWORK_DX9_INCLUDE_PATH})
-
-# When this flag is turned on, the renderer will draw for each texture that has LAppModel.
-# Otherwise, will draw to the main framebuffer.
-#add_definitions(-DUSE_MODEL_RENDER_TARGET)
-# When this flag is turned on, the renderer will draw to the texture. The texture only has LAppView.
-# This flag has higher priority than DUSE_MODEL_RENDER_TARGET.
-#add_definitions(-DUSE_RENDER_TARGET)
-
-# Add include paths.
-include_directories(
-    ${CORE_DIR}/include
-    ${FRAMEWORK_DIR}/src)
-
-#Add library paths.
-link_directories($ENV{DXSDK_DIR}/Lib/${DIRECTX_LIB_DIR})
+# Detect compiler.
 if(MSVC_VERSION MATCHES 1800)
-    # Visual Studio 2013
-    link_directories(${CORE_LIB_DIR}/120)
+  # Visual Studio 2013
+  set(COMPILER 120)
 elseif(MSVC_VERSION MATCHES 1900)
-    # Visual Studio 2015
-    link_directories(${CORE_LIB_DIR}/140)
+  # Visual Studio 2015
+  set(COMPILER 140)
 elseif(MSVC_VERSION GREATER_EQUAL 1910 AND MSVC_VERSION LESS 1920)
-    # Visual Studio 2017
-    link_directories(${CORE_LIB_DIR}/141)
+  # Visual Studio 2017
+  set(COMPILER 141)
 elseif(MSVC_VERSION GREATER_EQUAL 1920 AND MSVC_VERSION LESS 1930)
-    # Visual Studio 2019
-    link_directories(${CORE_LIB_DIR}/142)
+  # Visual Studio 2019
+  set(COMPILER 142)
 elseif(MSVC)
-    message(FATAL_ERROR "[CubismNativeSamples] Unsupported Visual C++ compiler used.")
+  message(FATAL_ERROR "[${APP_NAME}] Unsupported Visual C++ compiler used.")
 else()
-    message(FATAL_ERROR "[CubismNativeSamples] Unsupported compiler used.")
+  message(FATAL_ERROR "[${APP_NAME}] Unsupported compiler used.")
 endif()
-
-# Add parallel build flag.
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-
-# Solve the MSVCRT confliction.
-set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:libcmtd.lib /SUBSYSTEM:WINDOWS")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:libcmt.lib /SUBSYSTEM:WINDOWS")
-# Remove /SUBSYSTEM:console
-set(CMAKE_CREATE_CONSOLE_EXE "")
-
-# Set sourcecodes.
-add_executable(Demo ${SOURCES})
-
-# Set output file name.
-set_target_properties(Demo PROPERTIES OUTPUT_NAME_DEBUG "Demo_Debug")
-
-
-# Set libraries for linking.
-target_link_libraries(Demo
-                      Framework
-                      d3d9.lib
-                      d3dx9.lib)
-
+# Detect core crt.
 if(CORE_CRL_MD)
-    target_link_libraries(Demo
-                          debug Live2DCubismCore_MDd.lib
-                          optimized Live2DCubismCore_MD.lib)
+  set(CRT MD)
 else()
-    target_link_libraries(Demo
-                          debug Live2DCubismCore_MTd.lib
-                          optimized Live2DCubismCore_MT.lib)
+  set(CRT MT)
 endif()
+
+# Add Cubism Core.
+# Import as static library.
+add_library(Live2DCubismCore STATIC IMPORTED)
+# Find library path.
+set(CORE_LIB_SUFFIX ${CORE_PATH}/lib/windows/${ARCH}/${COMPILER})
+set_target_properties(Live2DCubismCore
+  PROPERTIES
+    IMPORTED_LOCATION_DEBUG
+      ${CORE_LIB_SUFFIX}/Live2DCubismCore_${CRT}d.lib
+    IMPORTED_LOCATION_RELEASE
+      ${CORE_LIB_SUFFIX}/Live2DCubismCore_${CRT}.lib
+    INTERFACE_INCLUDE_DIRECTORIES ${CORE_PATH}/include
+)
+
+# Specify Cubism Framework rendering.
+set(FRAMEWORK_SOURCE D3D9)
+# Add Cubism Native Framework.
+add_subdirectory(${FRAMEWORK_PATH} ${CMAKE_CURRENT_BINARY_DIR}/Framework)
+# Add include path to framework.
+target_include_directories(Framework PUBLIC $ENV{DXSDK_DIR}/Include)
+# Link libraries to framework.
+target_link_libraries(Framework
+  Live2DCubismCore
+  $ENV{DXSDK_DIR}/Lib/${DX_ARCH}/d3d9.lib
+  $ENV{DXSDK_DIR}/Lib/${DX_ARCH}/d3dx9.lib
+)
+
+# Make executable app.
+add_executable(${APP_NAME} WIN32)
+# Add source files.
+add_subdirectory(src)
+# Link libraries to app.
+target_link_libraries(${APP_NAME}
+  Framework
+  # Solve the MSVCRT confliction.
+  debug -NODEFAULTLIB:libcmtd.lib
+  optimized -NODEFAULTLIB:libcmt.lib
+)
+# Build in multi-process.
+target_compile_options(${APP_NAME} PRIVATE /MP)
+
+# Copy resource directory to build directory.
+add_custom_command(
+  TARGET ${APP_NAME}
+  POST_BUILD
+  COMMAND
+    ${CMAKE_COMMAND} -E
+      copy_directory ${RES_PATH} $<TARGET_FILE_DIR:${APP_NAME}>/Resources
+)
+
+# Set project properties.
+set_target_properties(${APP_NAME} PROPERTIES
+  VS_DEBUGGER_WORKING_DIRECTORY
+    ${CMAKE_CURRENT_BINARY_DIR}/bin/${APP_NAME}/${CMAKE_CFG_INTDIR}
+)
+
+# You can change target that renderer draws by enabling following definition.
+#
+# * USE_RENDER_TARGET
+#   Renderer draws to target of LAppView.
+# * USE_MODEL_RENDER_TARGET
+#   Renderer draws to target of each LAppModel.
+# * default
+#   Renderer draws to default main framebuffer.
+#
+# INFO: USE_RENDER_TARGET has higher priority than USE_MODEL_RENDER_TARGET.
+#
+# target_compile_definitions(${APP_NAME}
+#   PRIVATE
+#     USE_RENDER_TARGET
+#     USE_MODEL_RENDER_TARGET
+# )

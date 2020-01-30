@@ -27,17 +27,7 @@ SampleScene::SampleScene()
 
 Scene* SampleScene::createScene()
 {
-    // 'scene' is an autorelease object
-    auto scene = Scene::create();
-
-    // 'layer' is an autorelease object
-    auto layer = SampleScene::create();
-
-    // add layer as a child to scene
-    scene->addChild(layer);
-
-    // return the scene
-    return scene;
+    return SampleScene::create();
 }
 
 SampleScene * SampleScene::getInstance()
@@ -45,10 +35,19 @@ SampleScene * SampleScene::getInstance()
     return instance;
 }
 
+// Print useful error message instead of segfaulting when files are not there.
+static void problemLoading(const char* filename)
+{
+    printf("Error while loading: %s\n", filename);
+    printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in SampleSceneScene.cpp\n");
+}
+
 // on "init" you need to initialize your instance
 bool SampleScene::init()
 {
-    if (!Layer::init())
+    //////////////////////////////
+    // 1. super init first
+    if (!Scene::init())
     {
         return false;
     }
@@ -56,45 +55,82 @@ bool SampleScene::init()
     // Live2DManager実体化の前に必要となる
     instance = this;
 
-    Size winSize = Director::getInstance()->getWinSize();
-    Size visibleSize = Director::getInstance()->getVisibleSize();
-    Point origin = Director::getInstance()->getVisibleOrigin();
+    auto winSize = Director::getInstance()->getWinSize();
+    auto visibleSize = Director::getInstance()->getVisibleSize();
+    Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+    /////////////////////////////
+    // 2. add a menu item with "X" image, which is clicked to quit the program
+    //    you may modify it.
 
     // add a "close" icon to exit the progress. it's an autorelease object
     _closeItem = MenuItemImage::create(
         "CloseNormal.png",
         "CloseSelected.png",
-        CC_CALLBACK_1(SampleScene::menuCloseCallback, this));
+        CC_CALLBACK_1(SampleScene::menuCloseCallback, this)
+    );
 
-    _closeItem->setPosition(Point(origin.x + visibleSize.width - _closeItem->getContentSize().width / 2,
-                                 origin.y + _closeItem->getContentSize().height / 2));
+    if (_closeItem == nullptr ||
+        _closeItem->getContentSize().width <= 0 ||
+        _closeItem->getContentSize().height <= 0)
+    {
+        problemLoading("'CloseNormal.png' and 'CloseSelected.png'");
+    }
+    else
+    {
+        float x = origin.x + visibleSize.width - _closeItem->getContentSize().width / 2;
+        float y = origin.y + _closeItem->getContentSize().height / 2;
+        _closeItem->setPosition(Vec2(x,y));
+    }
 
     // create menu, it's an autorelease object
-    auto menu = Menu::create(_closeItem, NULL);
-    menu->setPosition(Point::ZERO);
-    this->addChild(menu, 1);
-
-    Sprite* pSprite = Sprite::create(LAppDefine::BackImageName);
-
-    // position the sprite on the center of the screen
-    pSprite->setPosition(Point(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-    pSprite->setScale(2);
-
-    // add the sprite as a child to this layer
-    this->addChild(pSprite, 0);
+    auto closeMenu = Menu::create(_closeItem, NULL);
+    closeMenu->setPosition(Vec2::ZERO);
+    this->addChild(closeMenu, 1);
 
     _changeItem = MenuItemImage::create(
         "icon_gear.png",
         "icon_gear.png",
-        CC_CALLBACK_1(SampleScene::menuChangeCallback, this));
+        CC_CALLBACK_1(SampleScene::menuChangeCallback, this)
+    );
 
-    _changeItem->setPosition(Point(origin.x + visibleSize.width - _changeItem->getContentSize().width / 2,
-                                   getContentSize().height - _changeItem->getContentSize().height / 2));
+    if (_changeItem == nullptr ||
+        _changeItem->getContentSize().width <= 0 ||
+        _changeItem->getContentSize().height <= 0)
+    {
+        problemLoading("'icon_gear.png'");
+    }
+    else
+    {
+        float x = origin.x + visibleSize.width - _changeItem->getContentSize().width/2;
+        float y = getContentSize().height - _changeItem->getContentSize().height / 2;
+        _changeItem->setPosition(Vec2(x,y));
+    }
 
     // create menu, it's an autorelease object
-    Menu* pChangeMenu = Menu::create(_changeItem, NULL);
-    pChangeMenu->setPosition(Point::ZERO);
-    this->addChild(pChangeMenu, 1);
+    auto changeMenu = Menu::create(_changeItem, NULL);
+    changeMenu->setPosition(Point::ZERO);
+    this->addChild(changeMenu, 1);
+
+    /////////////////////////////
+    // 3. add your codes below...
+
+    // add "SampleScene" splash screen"
+
+    auto sprite = Sprite::create(LAppDefine::BackImageName);
+    if (sprite == nullptr)
+    {
+        problemLoading(LAppDefine::BackImageName);
+    }
+    else
+    {
+        // position the sprite on the center of the screen
+        sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+        sprite->setScale(2);
+
+        // add the sprite as a child to this layer
+        this->addChild(sprite, 0);
+    }
 
     // add "Live2DModel"
     _pView = LAppView::createDrawNode();
@@ -117,9 +153,6 @@ bool SampleScene::init()
         _pView->setDebugRectsNode(pDebugRects);
     }
 
-    // initialize random seed.
-    srand(static_cast<unsigned int>(time(NULL)));
-
     // update有効
     this->scheduleUpdate();
 
@@ -131,20 +164,22 @@ void SampleScene::update(float delta)
     Node::update(delta);
 
     {
-        Size winSize = Director::getInstance()->getWinSize();
-        Size visibleSize = Director::getInstance()->getVisibleSize();
-        Point origin = Director::getInstance()->getVisibleOrigin();
+        auto winSize = Director::getInstance()->getWinSize();
+        auto visibleSize = Director::getInstance()->getVisibleSize();
+        Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
         if (_changeItem)
         {
-            _changeItem->setPosition(Point(origin.x + visibleSize.width - _changeItem->getContentSize().width / 2,
-                getContentSize().height - _changeItem->getContentSize().height / 2));
+            float x = origin.x + visibleSize.width - _changeItem->getContentSize().width/2;
+            float y = getContentSize().height - _changeItem->getContentSize().height / 2;
+            _changeItem->setPosition(Vec2(x,y));
         }
 
         if (_closeItem)
         {
-            _closeItem->setPosition(Point(origin.x + visibleSize.width - _closeItem->getContentSize().width / 2,
-                origin.y + _closeItem->getContentSize().height / 2));
+            float x = origin.x + visibleSize.width - _closeItem->getContentSize().width/2;
+            float y = origin.y + _closeItem->getContentSize().height/2;
+            _closeItem->setPosition(Vec2(x,y));
         }
     }
 }

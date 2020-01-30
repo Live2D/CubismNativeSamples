@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+
+set -ue
+
+SCRIPT_PATH=$(cd "$(dirname "$0")" && pwd)
+COCOS2D_DIR=$SCRIPT_PATH/../../../thirdParty/cocos2d
+
+cd $SCRIPT_PATH
+curl -fsSL -o cocos-3rd.zip \
+  https://github.com/cocos2d/cocos2d-x-3rd-party-libs-src/archive/v3.zip
+unzip -oq cocos-3rd.zip
+cd cocos2d-*/build/
+./build.sh -p=linux --libs=freetype --arch=x86_64 --mode=release
+mv linux/freetype/prebuilt/x86_64/libfreetype.a \
+  $COCOS2D_DIR/external/freetype2/prebuilt/linux/64-bit/libfreetype.a
+cd $SCRIPT_PATH
+rm -rf cocos*
+
+cd $COCOS2D_DIR/external/linux-specific/fmod/prebuilt/64-bit/
+ln -sf libfmod.so libfmod.so.6

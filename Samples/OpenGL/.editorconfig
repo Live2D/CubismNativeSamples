@@ -1,0 +1,2 @@
+[/Demo/proj.win.cmake/src/**/*.{cpp,hpp}]
+charset = utf-8-bom

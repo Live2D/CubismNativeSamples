@@ -1,28 +1,32 @@
 # Cubism Native Samples
 
-Live2D Cubism 4 Editorで出力したモデルを表示するアプリケーションのサンプル実装です。
+Live2D Cubism 4 Editor で出力したモデルを表示するアプリケーションのサンプル実装です。
 
-Cubism Native FrameworkおよびCubism Coreライブラリと組み合わせて使用します。
+Cubism Native Framework および Live2D Cubism Core と組み合わせて使用します。
+
+
+## ライセンス
+
+本 SDK を使用する前に[ライセンス](LICENSE.md)をご確認ください。
 
 
 ## 注意事項
-本SDKを使用する前に、注意事項をご確認ください。
 
-[こちら](./NOTICE.md)
+本 SDK を使用する前に [注意事項](NOTICE.md)をご確認ください。
 
 
 ## ディレクトリ構成
 
 ```
 .
-├─ Core             # Coreライブラリが含まれるディレクトリ
+├─ Core             # Live2D Cubism Core が含まれるディレクトリ
 ├─ Framework        # レンダリングやアニメーション機能などのソースコードが含まれるディレクトリ
 └─ Samples
-   ├─ Cocos2d-x     # Cocos2d-xのサンプルプロジェクトが含まれるディレクトリ
-   ├─ D3D9          # DirectX 9.0cのサンプルプロジェクトが含まれるディレクトリ
-   ├─ D3D11         # DirectX 11のサンプルプロジェクトが含まれるディレクトリ
-   ├─ OpenGL        # OpenGLのサンプルプロジェクトが含まれるディレクトリ
-   └─ Res           # モデルのファイルや画像などのリソースが含まれるディレクトリ
+   ├─ Cocos2d-x     # Cocos2d-x のサンプルプロジェクトが含まれるディレクトリ
+   ├─ D3D9          # DirectX 9.0c のサンプルプロジェクトが含まれるディレクトリ
+   ├─ D3D11         # DirectX 11 のサンプルプロジェクトが含まれるディレクトリ
+   ├─ OpenGL        # OpenGL のサンプルプロジェクトが含まれるディレクトリ
+   └─ Resources     # モデルのファイルや画像などのリソースが含まれるディレクトリ
 ```
 
 
@@ -30,30 +34,48 @@ Cubism Native FrameworkおよびCubism Coreライブラリと組み合わせて�
 
 モデルを表示、操作するための各種機能を提供します。
 
-[Cubism Native Framework](https://github.com/Live2D/CubismNativeFramework)は、当リポジトリのサブモジュールとして含まれています。
+[Cubism Native Framework] は、当リポジトリのサブモジュールとして含まれています。
 当リポジトリをクローンした後、サブモジュールのクローンを実行することでファイルが追加されます。
+
+[Cubism Native Framework]: (https://github.com/Live2D/CubismNativeFramework)
 
 
 ## Live2D Cubism Core for Native
 
 モデルをロードするためのライブラリです。
-当リポジトリにはLive2D Cubism Core for Nativeは同梱されていません。
+当リポジトリには Live2D Cubism Core for Native は同梱されていません。
 
 ダウンロードするには[こちら](https://www.live2d.com/download/cubism-sdk/download-native/)のページを参照ください。
-ダウンロードしたZipファイルの中身を当リポジトリの`Core`ディレクトリにコピーし、プログラムにリンクさせてください。
+ダウンロードした Zip ファイルの中身を当リポジトリの `Core` ディレクトリにコピーし、プログラムにリンクさせてください。
 
 
 ## ビルド方法
 
 ビルド方法についてはサンプルプロジェクトによって異なります。
-各サンプルプロジェクトに同梱された`README.md`を参照ください。
+各サンプルプロジェクトに同梱された `README.md` を参照ください。
+
+### サンプルプロジェクトの成果物の生成場所
+
+本サンプルでは、Android を除く CMake プロジェクトの成果物は `bin` ディレクトリに生成されます。
+
+例）OpenGL サンプルの macOS プロジェクトのビルドを `make_gcc` スクリプトを使用して行なった場合
+```
+Demo
+└─ proj.mac.cmake
+   └─ build
+      └─ make_gcc
+         └─ bin
+            └─ Demo
+               ├─ Resources    # Samples/Resources と同じ
+               └─ Demo         # 実行可能なアプリケーション
+```
 
 
 ## コンパイルオプション
 
 プロジェクトにおいて、マクロ `USE_RENDER_TARGET` または `USE_MODEL_RENDER_TARGET` が有効な場合、
 モデルがテクスチャへレンダリングされるようになります。
-詳細はサンプルディレクトリ内の`LAppLive2DManager.cpp`を参照ください。
+詳細はサンプルディレクトリ内の `LAppLive2DManager.cpp` を参照ください。
 
 
 ## SDKマニュアル
@@ -63,68 +85,75 @@ Cubism Native FrameworkおよびCubism Coreライブラリと組み合わせて�
 
 ## 変更履歴
 
-当リポジトリの変更履歴については[CHANGELOG.md](/CHANGELOG.md)を参照ください。
+当リポジトリの変更履歴については [CHANGELOG.md](CHANGELOG.md) を参照ください。
 
 
 ## 開発環境
 
 | 開発ツール | バージョン |
 | --- | --- |
-| Android Studio | 3.5.2 |
-| CMake | 3.15.4 |
-| GCC | 9.2.1 |
+| Android Studio | 3.5.3 |
+| CMake | 3.16.3 |
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.17 |
-| Visual Studio 2019 | 16.3.6 |
-| XCode | 11.1 |
+| Visual Studio 2017 | 15.9.19 |
+| Visual Studio 2019 | 16.4.3 |
+| XCode | 11.3.1 |
+
+### Android
 
 | Android SDK Tools | バージョン |
 | --- | --- |
-| Android NDK | r20 |
+| Android NDK | 21.0.6113669 |
 | Android SDK | 29.0.2 |
-| CMake | 3.10.2 |
+| CMake | 3.10.2.4988404 |
+
+### Linux
+
+| 系統 | Docker イメージ | GCC |
+| --- | --- | --- |
+| Red Hat | `amazonlinux:1` | 6.3.1 ([devtoolset-6]) |
+| Red Hat | `amazonlinux:2` | 7.3.1 |
+| Red Hat | `centos:6` | 6.3.1 ([devtoolset-6]) |
+| Red Hat | `centos:7` | 4.8.5 |
+| Red Hat | `centos:8` | 8.3.1 |
+| Debian | `ubuntu:16.04` | 5.4.0 |
+| Debian | `ubuntu:18.04` | 7.4.0 |
+| Debian | `ubuntu:19.10` | 9.2.1 |
+
+#### Mesa ライブラリ
+
+* Red Hat
+  * `mesa-libGL-devel`
+  * `mesa-libGLU-devel`
+* Debian
+  * `libgl1-mesa-dev`
+  * `libglu1-mesa-dev`
+
+NOTE: `amazonlinux:1` と `centos:6` はデフォルトの GCC のバージョンでビルドを行えないため [devtoolset-6] などを用いて新しいバージョンの GCC を使用する必要があります。
+
+[devtoolset-6]: https://www.softwarecollections.org/en/scls/rhscl/devtoolset-6/
+
 
 ## 動作確認環境
 
 | プラットフォーム | バージョン |
 | --- | --- |
-| Android | 10 |
-| iOS | 13.2 |
-| Linux | Ubuntu 19.10 / CentOS 8 |
+| iOS / iPadOS | 13.3 |
 | macOS | 10.15.1 |
 | Windows 10 | 1903 |
 
+### Android
 
-## ライセンス
+| バージョン | デバイス | Tegra |
+| --- | --- | --- |
+| 10 | Pixel 3a | |
+| 4.1.2 | Nexus 7 (2012) | ✔︎ |
 
-Cubism Native Samples および Cubism Native Framework は Live2D Open Software License で提供しています。
-- Live2D Open Software License
+### Linux
 
-  [日本語](https://www.live2d.com/eula/live2d-open-software-license-agreement_jp.html)
-  [English](https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html)
-
-Live2D Cubism Core for Native は Live2D Proprietary Software License で提供しています。
--  Live2D Proprietary Software License
-
-   [日本語](https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_jp.html)
-   [English](https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html)
-
-Live2D のサンプルモデルは Free Material License で提供しています。
-- Free Material License
-
-  [日本語](https://www.live2d.com/eula/live2d-free-material-license-agreement_jp.html)
-  [English](https://www.live2d.com/eula/live2d-free-material-license-agreement_en.html)
-  -  `./Samples/Res/Haru`
-  -  `./Samples/Res/Hiyori`
-  -  `./Samples/Res/Mark`
-  -  `./Samples/Res/Natori`
-  -  `./Samples/Res/Rice`
-
-上記のモデルをご利用になられる場合、[こちら](https://docs.live2d.com/cubism-editor-manual/sample-model/)で各モデルに設定された利用条件に同意して頂く必要がございます。
-
-直近会計年度の売上高が 1000 万円以上の事業者様がご利用になる場合は、SDKリリース(出版許諾)ライセンスに同意していただく必要がございます。
-- [SDKリリース(出版許諾)ライセンス](https://www.live2d.com/ja/products/releaselicense)
-
-*All business* users must obtain a Publication License. "Business" means an entity with the annual gross revenue more than ten million (10,000,000) JPY for the most recent fiscal year.
-- [SDK Release (Publication) License](https://www.live2d.com/en/products/releaselicense)
+| 系統 | ディストリビューション | バージョン |
+| --- | --- | --- |
+| Red Hat | Amazon Linux | 2 |
+| Red Hat | CentOS | 8 |
+| Debian | Ubuntu | 18.04 |

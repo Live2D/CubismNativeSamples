@@ -1,0 +1,24 @@
+target_sources(${APP_NAME}
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/AppDelegate.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/AppDelegate.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppAllocator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppAllocator.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppDefine.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppDefine.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppLive2DManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppLive2DManager.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppModel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppModel.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppPal.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppPal.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppSprite.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppSprite.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppTextureManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppTextureManager.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/main.m
+    ${CMAKE_CURRENT_SOURCE_DIR}/TouchManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/TouchManager.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/ViewController.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ViewController.mm
+)

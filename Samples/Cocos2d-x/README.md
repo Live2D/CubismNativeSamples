@@ -7,41 +7,41 @@ Cocos2d-xで実装したアプリケーションのサンプル実装です。
 
 | フレームワーク | バージョン |
 | --- | --- |
-| Cocos2d-x | 3.17.2 |
+| [Cocos2d-x] | 3.17.2 |
 
-その他の開発環境・動作確認環境はトップディレクトリにある[README.md](/README.md)を参照してください。
+その他の開発環境・動作確認環境はトップディレクトリにある [README.md](../../README.md) を参照してください。
+
+また、[Cocos2d-x ドキュメントの前提条件]も確認してください。
+
+[Cocos2d-x ドキュメントの前提条件]: https://docs.cocos2d-x.org/cocos2d-x/v3/en/installation/prerequisites.html
+
+### Cocos2d-x v4.x に関して
+
+Cocos2d-x v4.0 から Metal API の対応に伴い、Renderer の構成が変更され、OpenGLES の API を直接使用することが出来なくなりました。
+詳しくは [Cocos2d-x のドキュメント](https://docs.cocos2d-x.org/cocos2d-x/v4/en/upgradeGuide/) を参照してください。
+
+この変更に伴い Cocos2d-x v4.x 系では Cubism Framework の Rendering API を用いることができないため、サポート対象外となります。
 
 
 ## ディレクトリ構造
 
 ```
-Cocos2d-x
-├─ cocos2d              # Cocos2d-x libraries
-└─ Demo
-   ├─ Classes           # Sources for sample projects
-   ├─ proj.android      # Android Studio project
-   ├─ proj.ios_mac      # Xcode project for iOS and macOS
-   ├─ proj.win32        # Visual Studio project for Windows
-   └─ Resources         # Resources of cocos2d-x template project
+.
+├─ Demo
+│  ├─ Classes       # Sources for sample projects
+│  ├─ proj.android  # Android Studio project
+│  ├─ proj.ios      # Additional files and build scripts for iOS
+│  ├─ proj.linux    # Additional files and build scripts for Linux
+│  ├─ proj.mac      # Additional files and build scripts for macOS
+│  ├─ proj.win      # Additional files and build scripts for Windows
+│  └─ Resources     # Resources of cocos2d-x template project
+└─ thirdParty       # Third party libraries and scripts
 ```
-
-
-## cocos2d
-
-サンプルプロジェクトで使用するCocos2d-xライブラリ用のディレクトリです。
-[公式サイトのダウンロードページ]もしくは[GitHubの公開リリース]からライブラリをダウンロードして、
-本ディレクトリで展開したのち`download-deps.py`を実行して依存ライブラリのダウンロードを行ってください。
-
-[公式サイトのダウンロードページ]: https://cocos2d-x.org/download/version
-[GitHubの公開リリース]: https://github.com/cocos2d/cocos2d-x/releases
-
-Note: 本ディレクトリ名は最新のCocos2d-xで生成されるプロジェクトの命名規則に合わせて
-`cocos2d-x`から変更しました。
 
 
 ## Demo
 
-[Cubism Native Framework]の各機能を一通り利用したサンプルです。
+[Cubism Native Framework] の各機能を一通り利用したサンプルです。
 モーションの再生、表情の設定、ポーズの切り替え、物理演算の設定などを行います。
 メニューボタンからモデルを切り替えることができます。
 
@@ -55,36 +55,94 @@ Note: 本ディレクトリ名は最新のCocos2d-xで生成されるプロジ�
 
 ### proj.android
 
-Android用のAndroid Studioプロジェクトが含まれます。
+Android 用の Android Studio プロジェクトが含まれます。
 
-Note: 本ディレクトリ名は最新のCocos2d-xで生成されるプロジェクトの命名規則に合わせて
-`proj.android-studio`から変更しました。
+NOTE: 事前に下記の SDK のダウンロードが必要です
 
-### proj.ios_mac
+* Android SDK Build-Tools
+* NDK
+* CMake
 
-iOSおよびmacOS用のXcodeプロジェクトが含まれます。
+### proj.ios
 
-4-beta.2 現在、Xcode 11 でビルドした際、下記のようなエラーが発生した場合は、
-Cocos2d-x のソースコードの修正が必要になります。
+iOS 用の CMake プロジェクトです。
 
-`error : Argument value 10880 is outside the valid range [0, 255] btVector3.h`
+`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
 
-その場合 `btVector3.h` の下記のコードを変更してください。
+| スクリプト名 | 生成物 |
+| --- | --- |
+| `proj_xcode` | Xcode プロジェクト |
 
-```c
-// 修正前
-#define BT_SHUFFLE(x,y,z,w) ((w)<<6 | (z)<<4 | (y)<<2 | (x))
+NOTICE: Cubism Core は i386 アーキテクチャをサポートしていないため、**iPhone Simulator 向けのビルドは行えません。**
 
-// 修正後
-#define BT_SHUFFLE(x,y,z,w) (((w)<<6 | (z)<<4 | (y)<<2 | (x)) & 0xff)
-```
+### proj.linux
 
-参照: https://discuss.cocos2d-x.org/t/xcode-11-ios-13-cocos-not-running/46825/5
+Linux 用の CMake プロジェクトです。
 
-### proj.win32
+`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
 
-Windows(x86)用のVisual Studio 2017プロジェクトが含まれます。
+| スクリプト名 | 生成物 |
+| --- | --- |
+| `make_gcc` | 実行可能なアプリケーション |
+
+ビルド前に下記の手順を行なってください。
+
+1. [Dependencies that you need] ドキュメントを参照して必要なパッケージをダウンロードします
+2. `scripts/fix_libs` を実行してライブラリの修正を行います
+
+[Dependencies that you need]: https://docs.cocos2d-x.org/cocos2d-x/v3/en/installation/Linux.html#dependencies-that-you-need
+
+NOTICE: 本プロジェクトは **Ubuntu 18.04 以上**のみのサポートとなります。
+
+### proj.mac
+
+macOS 用の CMake プロジェクトです。
+
+`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
+
+| スクリプト名 | 生成物 |
+| --- | --- |
+| `make_xcode` | 実行可能なアプリケーション |
+| `proj_xcode` | Xcode プロジェクト |
+
+### proj.win
+
+Windows 用の CMake プロジェクトです。
+
+`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
+
+| スクリプト名 | 生成物 |
+| --- | --- |
+| `proj_msvcXXXX.bat` | Visual Studio プロジェクト |
+
+NOTICE: nmake を使用したビルドは Cocos2d-x のエラーが発生するため対応していません。
 
 ### Resources
 
 Cocos2d-xのテンプレートプロジェクトで参照しているリソースが含まれます。
+
+### CMakeLists.txt
+
+CMake 用の設定ファイルです。
+
+各プラットフォームのビルド設定が記載されています。
+
+
+## thirdParty
+
+サンプルプロジェクトで利用するサードパーティライブラリとビルドスクリプトが含まれます。
+
+### Cocos2d-x のセットアップ
+
+`script` ディレクトリ内のスクリプトを実行することで Cocos2d-x のダウンロードを行います。
+
+| プラットフォーム | スクリプト名 |
+| --- | --- |
+| Linux / macOS | `setup_cocos2d` |
+| Windows | `setup_cocos2d.bat` |
+
+スクリプト内の `COCOS_VERSION` を変更することでライブラリのバージョンを指定することが出来ます。
+
+ダウンロード後は `thirdParty/cocos2d` というディレクトリ名で展開されます。
+
+[Cocos2d-x]: https://cocos2d-x.org/

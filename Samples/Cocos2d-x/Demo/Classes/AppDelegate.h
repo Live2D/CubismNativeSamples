@@ -1,11 +1,19 @@
-﻿#ifndef  _APP_DELEGATE_H_
+﻿/**
+ * Copyright(c) Live2D Inc. All rights reserved.
+ *
+ * Use of this source code is governed by the Live2D Open Software license
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ */
+
+#ifndef  _APP_DELEGATE_H_
 #define  _APP_DELEGATE_H_
 
 #include "cocos2d.h"
 #include "LAppAllocator.hpp"
 #include <CubismFramework.hpp>
 
-class EventListenerCustom;
+// #define USE_AUDIO_ENGINE 1
+// #define USE_SIMPLE_AUDIO_ENGINE 1
 
 /**
 @brief    The cocos2d Application.
@@ -42,8 +50,8 @@ public:
 private:
     cocos2d::EventListenerCustom* _recreatedEventlistener;
 
-    LAppAllocator                  _cubismAllocator;
-    Csm::CubismFramework::Option   _cubismOption;
+    LAppAllocator _cubismAllocator;
+    Csm::CubismFramework::Option _cubismOption;
 };
 
 #endif // _APP_DELEGATE_H_

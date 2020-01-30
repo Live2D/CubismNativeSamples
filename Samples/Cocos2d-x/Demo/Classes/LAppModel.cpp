@@ -20,17 +20,23 @@
 #include "SampleScene.h"
 
 //cocos2d
-#include "SimpleAudioEngine.h"
 #include "base/CCDirector.h"
 #include "renderer/CCTexture2D.h"
 #include "renderer/CCTextureCache.h"
 
-using namespace CocosDenshion;
 using namespace std;
 using namespace Csm;
 using namespace Csm::Constant;
 using namespace Csm::DefaultParameterId;
 using namespace LAppDefine;
+
+#if USE_AUDIO_ENGINE
+#include "audio/include/AudioEngine.h"
+using namespace cocos2d::experimental;
+#elif USE_SIMPLE_AUDIO_ENGINE
+#include "audio/include/SimpleAudioEngine.h"
+using namespace CocosDenshion;
+#endif
 
 USING_NS_CC;
 
@@ -303,7 +309,11 @@ void LAppModel::PreloadMotionGroup(const csmChar* group)
             csmString path = voice;
             path = _modelHomeDir + path;
 
+#if USE_AUDIO_ENGINE
+            AudioEngine::preload(path.GetRawString());
+#elif USE_SIMPLE_AUDIO_ENGINE
             SimpleAudioEngine::getInstance()->preloadEffect(path.GetRawString());
+#endif
         }
     }
 }
@@ -319,7 +329,11 @@ void LAppModel::ReleaseMotionGroup(const csmChar* group) const
             csmString path = voice;
             path = _modelHomeDir + path;
 
+#if USE_AUDIO_ENGINE
+            AudioEngine::uncache(path.GetRawString());
+#elif USE_SIMPLE_AUDIO_ENGINE
             SimpleAudioEngine::getInstance()->unloadEffect(path.GetRawString());
+#endif
         }
     }
 }
@@ -441,7 +455,7 @@ void LAppModel::Update()
 
 }
 
-CubismMotionQueueEntryHandle LAppModel::StartMotion(const csmChar* group, csmInt32 no, csmInt32 priority)
+CubismMotionQueueEntryHandle LAppModel::StartMotion(const csmChar* group, csmInt32 no, csmInt32 priority, ACubismMotion::FinishedMotionCallback onFinishedMotionHandler)
 {
     if (priority == PriorityForce)
     {
@@ -468,7 +482,7 @@ CubismMotionQueueEntryHandle LAppModel::StartMotion(const csmChar* group, csmInt
         csmByte* buffer;
         csmSizeInt size;
         buffer = CreateBuffer(path.GetRawString(), &size);
-        motion = static_cast<CubismMotion*>(LoadMotion(buffer, size, NULL));
+        motion = static_cast<CubismMotion*>(LoadMotion(buffer, size, NULL, onFinishedMotionHandler));
         csmFloat32 fadeTime = _modelSetting->GetMotionFadeInTimeValue(group, no);
         if (fadeTime >= 0.0f)
         {
@@ -485,6 +499,10 @@ CubismMotionQueueEntryHandle LAppModel::StartMotion(const csmChar* group, csmInt
 
         DeleteBuffer(buffer, path.GetRawString());
     }
+    else
+    {
+        motion->SetFinishedMotionHandler(onFinishedMotionHandler);
+    }
 
     //voice
     csmString voice = _modelSetting->GetMotionSoundFileName(group, no);
@@ -492,14 +510,18 @@ CubismMotionQueueEntryHandle LAppModel::StartMotion(const csmChar* group, csmInt
     {
         csmString path = voice;
         path = _modelHomeDir + path;
+#if USE_AUDIO_ENGINE
+        AudioEngine::play2d(path.GetRawString());
+#elif USE_SIMPLE_AUDIO_ENGINE
         SimpleAudioEngine::getInstance()->playEffect(path.GetRawString());
+#endif
     }
 
     if (_debugMode)LAppPal::PrintLog("[APP]start motion: [%s_%d]", group, no);
     return  _motionManager->StartMotionPriority(motion, autoDelete, priority);
 }
 
-CubismMotionQueueEntryHandle LAppModel::StartRandomMotion(const csmChar* group, csmInt32 priority)
+CubismMotionQueueEntryHandle LAppModel::StartRandomMotion(const csmChar* group, csmInt32 priority, ACubismMotion::FinishedMotionCallback onFinishedMotionHandler)
 {
     if (_modelSetting->GetMotionCount(group) == 0)
     {
@@ -508,7 +530,7 @@ CubismMotionQueueEntryHandle LAppModel::StartRandomMotion(const csmChar* group, 
 
     csmInt32 no = rand() % _modelSetting->GetMotionCount(group);
 
-    return StartMotion(group, no, priority);
+    return StartMotion(group, no, priority, onFinishedMotionHandler);
 }
 
 void LAppModel::DoDraw()

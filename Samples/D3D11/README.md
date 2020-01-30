@@ -7,8 +7,8 @@ DirectX 11 で実装したアプリケーションのサンプル実装です。
 
 | 開発キット | Visual Studio | バージョン |
 | --- | --- | --- |
-| DirectXTK | 2013 | April 23, 2018 |
-| DirectXTK | 2015 / 2017 / 2019 | October 17, 2019 |
+| [DirectXTK] | 2013 | April 23, 2018 |
+| [DirectXTK] | 2015 / 2017 / 2019 | December 17, 2019 |
 
 その他の開発環境・動作確認環境はトップディレクトリにある [README.md](/README.md) を参照してください。
 
@@ -16,9 +16,9 @@ DirectX 11 で実装したアプリケーションのサンプル実装です。
 ## ディレクトリ構造
 
 ```
-D3D11
+.
 ├─ Demo
-│  └─ proj.d3d11.cmake  # CMake project using DirectX 11
+│  └─ proj.d3d11.cmake  # CMake project
 └─ thirdParty           # Third party libraries and scripts
 ```
 
@@ -35,24 +35,34 @@ D3D11
 
 ### proj.d3d11.cmake
 
-ソースファイルと CMake ファイル、及びバッチファイルが含まれます。
+CMake プロジェクトです。
 
-- `nmake_xxx.bat` を実行すると実行可能なアプリケーションが作成されます。
-- `proj_xxx.bat` を実行するとVisual Studioプロジェクトが作成されます。
+`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
 
-DirectXTK を利用しているため、事前に thirdParty ディレクトリに展開しておく必要があります。
-詳細は下記の [thirdParty](README.md#thirdParty) の項目を参照してください。
+| スクリプト名 | 生成物 |
+| --- | --- |
+| `nmake_msvcXXXX.bat` | 実行可能なアプリケーション |
+| `proj_msvcXXXX.bat` | Visual Studio プロジェクト |
+
+開発キットとして [DirectXTK] を利用しています。
+[thirdParty](README.md#thirdParty) の項目を参照して事前にダウンロードを行なってください。
 
 
 ## thirdParty
 
 サンプルプロジェクトで利用するサードパーティライブラリとビルドスクリプトが含まれます。
 
-### DirectXTK
+### DirectXTK のセットアップ
 
-サンプルプロジェクトで利用する DirectXTK の自動展開スクリプトが含まれます。
+`script` ディレクトリ内のスクリプトを実行することで DirectXTK のダウンロード及びライブラリのビルドを行います。
 
-`setup_[利用する Visual Studio のバージョン].bat` を実行することで、
-プロジェクトで利用する DirectXTK のソースファイルのダウンロードとビルドを行います。
+| Visual Studio | スクリプト名 |
+| --- | --- |
+| 2013 | `setup_msvc2013.bat` |
+| 2015 | `setup_msvc2015.bat` |
+| 2017 | `setup_msvc2017.bat` |
+| 2019 | `setup_msvc2019.bat` |
 
 スクリプト内の `XTK_VERSION` を変更することでライブラリのバージョンを指定することが出来ます。
+
+[DirectXTK]: https://github.com/Microsoft/DirectXTK

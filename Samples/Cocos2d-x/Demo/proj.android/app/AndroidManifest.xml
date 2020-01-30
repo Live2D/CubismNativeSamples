@@ -3,6 +3,8 @@
     package="com.live2d.demo"
     android:installLocation="auto">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+    
     <uses-feature android:glEsVersion="0x00020000" />
     
     <application
@@ -12,14 +14,16 @@
         
         <!-- Tell Cocos2dxActivity the name of our .so -->
         <meta-data android:name="android.app.lib_name"
-                   android:value="MyGame" />
+                   android:value="Demo" />
 
         <activity
             android:name="org.cocos2dx.cpp.AppActivity"
             android:screenOrientation="landscape"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:launchMode="singleTask"
+            android:taskAffinity=""  >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,6 +32,4 @@
         </activity>
     </application>
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    
 </manifest>

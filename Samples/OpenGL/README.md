@@ -5,10 +5,12 @@ OpenGL で実装したアプリケーションのサンプル実装です。
 
 ## 開発環境
 
-| ライブラリ | バージョン |
+| サードパーティ | バージョン |
 | --- | --- |
-| GLEW | 2.1.0 |
-| GLFW | 3.3 |
+| [GLEW] | 2.1.0 |
+| [GLFW] | 3.3.2 |
+| [ios-cmake] | 3.1.2 |
+| [stb_image.h] | 2.23 |
 
 その他の開発環境・動作確認環境はトップディレクトリにある [README.md](/README.md) を参照してください。
 
@@ -16,20 +18,20 @@ OpenGL で実装したアプリケーションのサンプル実装です。
 ## ディレクトリ構造
 
 ```
-OpenGL
+.
 ├─ Demo
-│  ├─ proj.android      # Android Studio project
-│  ├─ proj.ios          # Xcode project for iOS
-│  ├─ proj.linux.cmake  # CMake project for Linux
-│  ├─ proj.mac.cmake    # CMake project for macOS
-│  └─ proj.win.cmake    # CMake project for Windows
-└─ thirdParty           # Third party libraries and scripts
+│  ├─ proj.android.cmake    # Android Studio project
+│  ├─ proj.ios.cmake        # CMake project for iOS
+│  ├─ proj.linux.cmake      # CMake project for Linux
+│  ├─ proj.mac.cmake        # CMake project for macOS
+│  └─ proj.win.cmake        # CMake project for Windows
+└─ thirdParty               # Third party libraries and scripts
 ```
 
 
 ## Demo
 
-[Cubism Native Framework] の各機能を一通り利用したサンプルです。
+[Cubism Native Framework] の各機能を一通り使用したサンプルです。
 モーションの再生、表情の設定、ポーズの切り替え、物理演算の設定などを行います。
 メニューボタンからモデルを切り替えることができます。
 
@@ -37,51 +39,97 @@ OpenGL
 
 このディレクトリ内に含まれるものは以下の通りです。
 
-### proj.android
+### proj.android.cmake
 
 Android 用の Android Studio プロジェクトが含まれます。
 
-### proj.ios
+NOTE: 事前に下記の SDK のダウンロードが必要です
 
-iOS 用の Xcode プロジェクトが含まれます。
+* Android SDK Build-Tools
+* NDK
+* CMake
+
+### proj.ios.cmake
+
+iOS 用の CMake プロジェクトです。
+
+`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
+
+| スクリプト名 | 生成物 |
+| --- | --- |
+| `proj_xcode` | Xcode プロジェクト |
+
+CMake のツールチェーンとして [ios-cmake] を使用しています。
+[thirdParty](README.md#thirdParty) の項目を参照して事前にダウンロードを行なってください。
+
+[ios-cmake]: https://github.com/leetal/ios-cmake
 
 ### proj.linux.cmake
 
-Linux 用のソースファイルと CMake ファイル、及びシェルスクリプトが含まれます。
+Linux 用の CMake プロジェクトです。
 
-- `make_gcc.sh` を実行すると実行可能なアプリケーションが作成されます。
+`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
 
-GLEW と GLFW を利用しているため、事前に thirdParty ディレクトリに展開しておく必要があります。
-詳細は下記の [thirdParty](README.md#thirdParty) の項目を参照してください。
+| スクリプト名 | 生成物 |
+| --- | --- |
+| `make_gcc` | 実行可能なアプリケーション |
+
+追加ライブラリとして [GLEW] と [GLFW] を使用しています。
+[thirdParty](README.md#thirdParty) の項目を参照して事前にダウンロードを行なってください。
 
 ### proj.mac.cmake
 
-macOS 用のソースファイルと CMake ファイル、及びシェルスクリプトが含まれます。
+macOS 用の CMake プロジェクトです。
 
-- `make_xcode.sh` を実行すると実行可能なアプリケーションが作成されます。
-- `proj_xcode.sh` を実行すると Xcode プロジェクトが作成されます。
+`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
 
-GLEW と GLFW を利用しているため、事前にthirdPartyディレクトリに展開しておく必要があります。
-詳細は下記の [thirdParty](README.md#thirdParty) の項目を参照してください。
+| スクリプト名 | 生成物 |
+| --- | --- |
+| `make_xcode` | 実行可能なアプリケーション |
+| `proj_xcode` | Xcode プロジェクト |
+
+追加ライブラリとして [GLEW] と [GLFW] を使用しています。
+[thirdParty](README.md#thirdParty) の項目を参照して事前にダウンロードを行なってください。
 
 ### proj.win.cmake
 
-Windows 用のソースファイルとCMakeファイル、及びバッチファイルが含まれます。
+Windows 用の CMake プロジェクトです。
 
-- `nmake_msvcXXXX.bat` を実行すると実行可能なアプリケーションが作成されます。
-- `proj_msvcXXXX.bat` を実行すると Visual Studio プロジェクトが作成されます。
+`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
 
-GLEW と GLFW を利用しているため、事前に thirdParty ディレクトリに展開しておく必要があります。
-詳細は下記の [thirdParty](README.md#thirdParty) の項目を参照してください。
+| スクリプト名 | 生成物 |
+| --- | --- |
+| `nmake_msvcXXXX.bat` | 実行可能なアプリケーション |
+| `proj_msvcXXXX.bat` | Visual Studio プロジェクト |
 
-Visual Studio 2019 でのビルドは、GLEW が対応していないためサポートしておりません。
+追加ライブラリとして [GLEW] と [GLFW] を使用しています。
+[thirdParty](README.md#thirdParty) の項目を参照して事前にダウンロードを行なってください。
+
+NOICE: Visual Studio 2019 でのビルドは、GLEW が対応していないためサポートしておりません。
 
 
 ## thirdParty
 
-サンプルプロジェクトで利用するサードパーティライブラリと自動展開スクリプトが含まれます。
+サンプルプロジェクトで使用するサードパーティライブラリと自動展開スクリプトが含まれます。
 
-`setup.bat` (Windows) または `setup.sh` (macOS / Linux) を実行することで、
-プロジェクトで利用する GLEW と GLFW のソースファイルのダウンロードを行います。
+### GLEW / GLFW のセットアップ
 
-スクリプト内の `GLEW_VERSION` と `GLFW_VERSION` を変更することでライブラリのバージョンを指定することが出来ます。
+`script` ディレクトリ内のスクリプトを実行することで GLEW と GLFW のダウンロードを行います。
+
+| プラットフォーム | スクリプト名 |
+| --- | --- |
+| Linux / macOS | `setup_glew_glfw` |
+| Windows | `setup_glew_glfw.bat` |
+
+スクリプト内の `GLEW_VERSION` 及び `GLFW_VERSION` を変更することで、ダウンロードするバージョンを変更できます。
+
+## ios-cmake のセットアップ
+
+`script` ディレクトリ内の `setup_ios_cmake` を実行することで ios-cmake のダウンロードを行います。
+
+スクリプト内の `IOS_CMAKE_VERSION` を変更することで、ダウンロードするバージョンを変更できます。
+
+[GLEW]: https://github.com/nigels-com/glew
+[GLFW]: https://github.com/glfw/glfw
+[ios-cmake]: https://github.com/leetal/ios-cmake
+[stb_image.h]: https://github.com/nothings/stb/blob/master/stb_image.h

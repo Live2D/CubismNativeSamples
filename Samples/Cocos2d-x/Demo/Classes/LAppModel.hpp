@@ -14,6 +14,7 @@
 #include <Type/csmRectF.hpp>
 #include <Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp>
 #include "LAppDefine.hpp"
+#include "AppDelegate.h"
 
 /**
  * @brief ユーザーが実際に使用するモデルの実装クラス<br>
@@ -62,21 +63,23 @@ public:
     /**
      * @brief   引数で指定したモーションの再生を開始する。
      *
-     * @param[in]   group           モーショングループ名
-     * @param[in]   no              グループ内の番号
-     * @param[in]   priority        優先度
-     * @return                      開始したモーションの識別番号を返す。個別のモーションが終了したか否かを判定するIsFinished()の引数で使用する。開始できない時は「-1」
+     * @param[in]   group                       モーショングループ名
+     * @param[in]   no                          グループ内の番号
+     * @param[in]   priority                    優先度
+     * @param[in]   onFinishedMotionHandler     モーション再生終了時に呼び出されるコールバック関数。NULLの場合、呼び出されない。
+     * @return                                  開始したモーションの識別番号を返す。個別のモーションが終了したか否かを判定するIsFinished()の引数で使用する。開始できない時は「-1」
      */
-    Csm::CubismMotionQueueEntryHandle StartMotion(const Csm::csmChar* group, Csm::csmInt32 no, Csm::csmInt32 priority);
+    Csm::CubismMotionQueueEntryHandle StartMotion(const Csm::csmChar* group, Csm::csmInt32 no, Csm::csmInt32 priority, Csm::ACubismMotion::FinishedMotionCallback onFinishedMotionHandler = NULL);
 
     /**
      * @brief   ランダムに選ばれたモーションの再生を開始する。
      *
-     * @param[in]   group           モーショングループ名
-     * @param[in]   priority        優先度
-     * @return                      開始したモーションの識別番号を返す。個別のモーションが終了したか否かを判定するIsFinished()の引数で使用する。開始できない時は「-1」
+     * @param[in]   group                       モーショングループ名
+     * @param[in]   priority                    優先度
+     * @param[in]   onFinishedMotionHandler     モーション再生終了時に呼び出されるコールバック関数。NULLの場合、呼び出されない。
+     * @return                                  開始したモーションの識別番号を返す。個別のモーションが終了したか否かを判定するIsFinished()の引数で使用する。開始できない時は「-1」
      */
-    Csm::CubismMotionQueueEntryHandle StartRandomMotion(const Csm::csmChar* group, Csm::csmInt32 priority);
+    Csm::CubismMotionQueueEntryHandle StartRandomMotion(const Csm::csmChar* group, Csm::csmInt32 priority, Csm::ACubismMotion::FinishedMotionCallback onFinishedMotionHandler = NULL);
 
     /**
      * @brief   引数で指定した表情モーションをセットする
@@ -184,7 +187,7 @@ private:
     Csm::csmString _modelHomeDir;                   ///< モデルセッティングが置かれたディレクトリ
     Csm::csmFloat32 _userTimeSeconds;               ///< デルタ時間の積算値[秒]
 
-    Csm::csmVector<Csm::CubismIdHandle> _eyeBlinkIds; ///<　モデルに設定されたまばたき機能用パラメータID
+    Csm::csmVector<Csm::CubismIdHandle> _eyeBlinkIds; ///< モデルに設定されたまばたき機能用パラメータID
     Csm::csmVector<Csm::CubismIdHandle> _lipSyncIds;  ///< モデルに設定されたリップシンク機能用パラメータID
 
     Csm::csmMap<Csm::csmString, Csm::ACubismMotion*>   _motions;       ///< 読み込まれているモーションのリスト

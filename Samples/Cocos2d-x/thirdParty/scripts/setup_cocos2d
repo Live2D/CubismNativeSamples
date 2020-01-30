@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+
+set -ue
+
+COCOS_VERSION=3.17.2
+
+SCRIPT_PATH=$(cd $(dirname $0) && pwd)
+
+cd $SCRIPT_PATH/..
+
+#################
+# Setup Cocos2d #
+#################
+
+# Download and extract the archive.
+echo - Setup Cocos2d
+echo Downloading...
+curl -fsSL -o cocos2d.zip \
+  https://digitalocean.cocos2d-x.org/Cocos2D-X/cocos2d-x-$COCOS_VERSION.zip
+echo Extracting...
+unzip -oq cocos2d.zip
+mv -f cocos2d-x-* cocos2d
+rm cocos2d.zip

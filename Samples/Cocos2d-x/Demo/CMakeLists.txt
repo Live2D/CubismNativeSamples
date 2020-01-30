@@ -1,239 +1,290 @@
-#/****************************************************************************
-# Copyright (c) 2013-2014 cocos2d-x.org
-# Copyright (c) 2015-2017 Chukong Technologies Inc.
-#
-# http://www.cocos2d-x.org
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
+cmake_minimum_required(VERSION 3.10)
 
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-# ****************************************************************************/
-cmake_policy(SET CMP0017 NEW)
-
-cmake_minimum_required(VERSION 3.1)
-
-set(APP_NAME MyGame)
-project (${APP_NAME})
-
-set(COCOS2D_ROOT ${CMAKE_SOURCE_DIR}/cocos2d)
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${COCOS2D_ROOT}/cmake/Modules/")
-include(CocosBuildHelpers)
-
-
-# Some macro definitions
-if(WINDOWS)
-  if(BUILD_SHARED_LIBS)
-    ADD_DEFINITIONS (-D_USRDLL -D_EXPORT_DLL_ -D_USEGUIDLL -D_USREXDLL -D_USRSTUDIODLL)
-  else()
-    ADD_DEFINITIONS (-DCC_STATIC)
-  endif()
-
-  ADD_DEFINITIONS (-DCOCOS2DXWIN32_EXPORTS -D_WINDOWS -DWIN32 -D_WIN32)
-  set(PLATFORM_FOLDER win32)
-elseif(MACOSX OR APPLE)
-  ADD_DEFINITIONS (-DCC_TARGET_OS_MAC)
-  ADD_DEFINITIONS (-DUSE_FILE32API)
-  set(PLATFORM_FOLDER mac)
-elseif(LINUX)
-  ADD_DEFINITIONS(-DLINUX)
-  set(PLATFORM_FOLDER linux)
-elseif(ANDROID)
-  ADD_DEFINITIONS (-DUSE_FILE32API)
-  set(PLATFORM_FOLDER android)
-else()
-  message( FATAL_ERROR "Unsupported platform, CMake will exit" )
-endif()
-
-
-# Compiler options
-if(MSVC)
-  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:msvcrt /NODEFAULTLIB:libcmt")
-  else()
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:libcmt")
-  endif()
-  ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS
-                  -wd4251 -wd4244 -wd4334 -wd4005 -wd4820 -wd4710
-                  -wd4514 -wd4056 -wd4996 -wd4099)
-else()
-  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    ADD_DEFINITIONS(-DCOCOS2D_DEBUG=1)
-  endif()
-  set(CMAKE_C_FLAGS_DEBUG "-g -Wall")
-  set(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wno-deprecated-declarations -Wno-reorder")
-  if(CLANG)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-  endif()
-endif(MSVC)
-
-# libcocos2d
-set(BUILD_CPP_EMPTY_TEST OFF CACHE BOOL "turn off build cpp-empty-test")
-set(BUILD_CPP_TESTS OFF CACHE BOOL "turn off build cpp-tests")
-set(BUILD_LUA_LIBS OFF CACHE BOOL "turn off build lua related targets")
-set(BUILD_JS_LIBS OFF CACHE BOOL "turn off build js related targets")
-add_subdirectory(${COCOS2D_ROOT})
-
-if(ANDROID)
-    set(PLATFORM_SPECIFIC_SRC proj.android/jni/main.cpp)
-    set(RES_PREFIX "/Resources")
-elseif(WINDOWS)
-    set(PLATFORM_SPECIFIC_SRC proj.win32/main.cpp)
-    set(PLATFORM_SPECIFIC_HEADERS
-            proj.win32/main.h
-            proj.win32/resource.h
-            )
-    set(RES_PREFIX "")
-elseif(IOS)
-    set(PLATFORM_SPECIFIC_SRC
-            proj.ios_mac/ios/main.m
-            proj.ios_mac/ios/AppController.mm
-            proj.ios_mac/ios/RootViewController.mm
-            )
-
-elseif(MACOSX OR APPLE)
-    set(PLATFORM_SPECIFIC_SRC proj.ios_mac/mac/main.cpp)
-
-    set(MACOSX_BUNDLE_BUNDLE_NAME "\${PRODUCT_NAME}")
-    set(MACOSX_BUNDLE_INFO_PLIST proj.ios_mac/mac/Info.plist)
-    set(MACOSX_BUNDLE_ICON_FILE Icon)
-    set(MACOSX_BUNDLE_GUI_IDENTIFIER org.cocos2dx.hellocpp)
-    set(MACOSX_BUNDLE_SHORT_VERSION_STRING 1.0)
-    set(MACOSX_BUNDLE_BUNDLE_VERSION 1)
-    set(MACOSX_BUNDLE_COPYRIGHT "Copyright © 2017. All rights reserved.")
-
-    file(GLOB_RECURSE RES_FILES Resources/*)
-    cocos_mark_resources(FILES ${RES_FILES} BASEDIR Resources)
-    file(GLOB_RECURSE RES_ICON proj.ios_mac/mac/Icon.icns)
-    cocos_mark_resources(FILES ${RES_ICON} BASEDIR proj.ios_mac/mac)
-
-    list(APPEND PLATFORM_SPECIFIC_SRC ${RES_FILES} ${RES_ICON})
-
-elseif(LINUX)
-    set(PLATFORM_SPECIFIC_SRC proj.linux/main.cpp)
-    set(RES_PREFIX "/Resources")
-else()
-    message( FATAL_ERROR "Unsupported platform, CMake will exit" )
-
-endif()
-
-include_directories(
-    /usr/local/include/GLFW
-    /usr/include/GLFW
-    ${COCOS2D_ROOT}
-    ${COCOS2D_ROOT}/cocos
-    ${COCOS2D_ROOT}/external
-    ${COCOS2D_ROOT}/cocos/platform
-    ${COCOS2D_ROOT}/cocos/audio/include/
-    Classes
+option(
+  CORE_CRL_MD
+  "Use Cubism Core that is multithread-specific and DLL-specific version"
+  OFF
 )
-if ( WINDOWS )
-    include_directories(
-            ${COCOS2D_ROOT}/external/glfw3/include/${PLATFORM_FOLDER}
-            ${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/gles/include/OGLES
-    )
-elseif ( MACOSX OR APPLE )
-    include_directories(
-            ${COCOS2D_ROOT}/external/glfw3/include/mac
-    )
-endif ()
 
-set(GAME_SRC
-        ${PLATFORM_SPECIFIC_SRC}
-        Classes/AppDelegate.cpp
-        Classes/HelloWorldScene.cpp
-        )
+# Set app name.
+set(APP_NAME Demo)
+# Set directory paths.
+set(COCOS2DX_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../thirdParty/cocos2d)
+set(CMAKE_MODULE_PATH ${COCOS2DX_ROOT_PATH}/cmake/Modules)
+set(SDK_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../..)
+set(CORE_PATH ${SDK_ROOT_PATH}/Core)
+set(FRAMEWORK_PATH ${SDK_ROOT_PATH}/Framework)
+set(CLASSES_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Classes)
+set(RES_PATH ${SDK_ROOT_PATH}/Samples/Resources)
 
-set(GAME_HEADERS
-        ${PLATFORM_SPECIFIC_HEADERS}
-        Classes/AppDelegate.h
-        Classes/HelloWorldScene.h
-        )
+# Set project.
+project(${APP_NAME})
 
-# add the executable
+# Set Visual Studio startup project.
+set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT ${APP_NAME})
+
+# Define output directory.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/${APP_NAME})
+# Set configuration (Release and Debug only).
+set(CMAKE_CONFIGURATION_TYPES Debug Release
+  CACHE STRING "Configurations" FORCE
+)
+# Suppress generation of ZERO_CHECK project.
+set(CMAKE_SUPPRESS_REGENERATION ON)
+
+# Specify version of compiler.
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Add cocos libs.
+include(CocosBuildSet)
+add_subdirectory(
+  ${COCOS2DX_ROOT_PATH}/cocos
+  ${ENGINE_BINARY_PATH}/cocos/core
+)
+
+# Record sources, headers, resources...
+set(GAME_SOURCE)
+set(GAME_HEADER)
+
+# Add resource directories.
+set(GAME_RES_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/Resources ${RES_PATH})
+if(APPLE OR WINDOWS)
+  cocos_mark_multi_resources(common_res_files
+    RES_TO Resources FOLDERS ${GAME_RES_FOLDER}
+  )
+endif()
+
+# Add cross-platforms source files and header files.
+list(APPEND GAME_SOURCE
+  ${CLASSES_PATH}/AppDelegate.cpp
+  ${CLASSES_PATH}/LAppAllocator.cpp
+  ${CLASSES_PATH}/LAppDefine.cpp
+  ${CLASSES_PATH}/LAppLive2DManager.cpp
+  ${CLASSES_PATH}/LAppModel.cpp
+  ${CLASSES_PATH}/LAppPal.cpp
+  ${CLASSES_PATH}/LAppSprite.cpp
+  ${CLASSES_PATH}/LAppView.cpp
+  ${CLASSES_PATH}/SampleScene.cpp
+  ${CLASSES_PATH}/TouchManager.cpp
+)
+
+list(APPEND GAME_HEADER
+  ${CLASSES_PATH}/AppDelegate.h
+  ${CLASSES_PATH}/AppMacros.h
+  ${CLASSES_PATH}/LAppAllocator.hpp
+  ${CLASSES_PATH}/LAppDefine.hpp
+  ${CLASSES_PATH}/LAppLive2DManager.hpp
+  ${CLASSES_PATH}/LAppModel.hpp
+  ${CLASSES_PATH}/LAppPal.hpp
+  ${CLASSES_PATH}/LAppSprite.hpp
+  ${CLASSES_PATH}/LAppView.hpp
+  ${CLASSES_PATH}/SampleScene.h
+  ${CLASSES_PATH}/TouchManager.h
+)
+
+# Add Cubism Core as static library.
+add_library(Live2DCubismCore STATIC IMPORTED)
+# Specify Cubism Core library path for each platform and add source files.
 if(ANDROID)
-    add_library(${APP_NAME} SHARED ${GAME_SRC} ${GAME_HEADERS})
-    IF(CMAKE_BUILD_TYPE STREQUAL "Release")
-        ADD_CUSTOM_COMMAND(TARGET ${APP_NAME} POST_BUILD COMMAND ${CMAKE_STRIP} lib${APP_NAME}.so)
-    ENDIF()
-elseif(MSVC)
-    add_executable(${APP_NAME} ${GAME_SRC} ${GAME_HEADERS} proj.win32/game.rc)
-else()
-    add_executable(${APP_NAME} ${GAME_SRC} ${GAME_HEADERS})
-endif()
+  list(APPEND GAME_SOURCE
+    proj.android/app/jni/demo/main.cpp
+  )
+  set_target_properties(Live2DCubismCore
+    PROPERTIES
+      IMPORTED_LOCATION
+        ${CORE_PATH}/lib/android/${ANDROID_ABI}/libLive2DCubismCore.a
+  )
 
-target_link_libraries(${APP_NAME} cocos2d)
+elseif(LINUX)
+  list(APPEND GAME_SOURCE
+    proj.linux/src/main.cpp)
+  set_target_properties(Live2DCubismCore
+    PROPERTIES
+      IMPORTED_LOCATION
+        ${CORE_PATH}/lib/linux/x86_64/libLive2DCubismCore.a
+  )
 
+elseif(WINDOWS)
+  list(APPEND GAME_HEADER
+    proj.win/src/main.h
+    proj.win/src/resource.h
+  )
+  list(APPEND GAME_SOURCE
+    proj.win/src/main.cpp
+    proj.win/src/game.rc
+    ${common_res_files}
+  )
 
-if(MSVC)
+  # Detect compiler.
+  if(MSVC_VERSION MATCHES 1900)
+    # Visual Studio 2015
+    set(MSVC_NUM 140)
+  elseif(MSVC_VERSION GREATER_EQUAL 1910 AND MSVC_VERSION LESS 1920)
+    # Visual Studio 2017
+    set(MSVC_NUM 141)
+  elseif(MSVC_VERSION GREATER_EQUAL 1920 AND MSVC_VERSION LESS 1930)
+    # Visual Studio 2019
+    set(MSVC_NUM 142)
+  elseif(MSVC)
+    message(FATAL_ERROR "[${APP_NAME}] Unsupported Visual C++ compiler used.")
+  else()
+    message(FATAL_ERROR "[${APP_NAME}] Unsupported compiler used.")
+  endif()
 
-    set(APP_BIN_DIR "${CMAKE_BINARY_DIR}/bin/${PLATFORM_FOLDER}/$<CONFIG>")
+  # Detect core crt.
+  if(CORE_CRL_MD)
+    set(CRT MD)
+  else()
+    set(CRT MT)
+  endif()
 
-    #get our resources
-    add_custom_command(TARGET ${APP_NAME} PRE_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_CURRENT_SOURCE_DIR}/Resources ${APP_BIN_DIR})
+  set_target_properties(Live2DCubismCore
+    PROPERTIES
+      IMPORTED_LOCATION_DEBUG
+        ${CORE_PATH}/lib/windows/x86/${MSVC_NUM}/Live2DCubismCore_${CRT}d.lib
+      IMPORTED_LOCATION_RELEASE
+        ${CORE_PATH}/lib/windows/x86/${MSVC_NUM}/Live2DCubismCore_MD.lib
+  )
 
-    # create a list of dlls to copy
-    file(GLOB THIRD_PARTY_DLLS
-        "${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/gles/prebuilt/glew32.dll"
-        "${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/zlib/prebuilt/zlib1.dll"
-        "${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/OggDecoder/prebuilt/libogg.dll"
-        "${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/OggDecoder/prebuilt/libvorbis.dll"
-        "${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/OggDecoder/prebuilt/libvorbisfile.dll"
-        "${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/MP3Decoder/prebuilt/libmpg123.dll"
-        "${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/OpenalSoft/prebuilt/OpenAL32.dll"
-        "${COCOS2D_ROOT}/external/${PLATFORM_FOLDER}-specific/icon/prebuilt/iconv.dll"
-        "${COCOS2D_ROOT}/external/tiff/prebuilt/${PLATFORM_FOLDER}/libtiff.dll"
+elseif(APPLE)
+  if(IOS)
+    list(APPEND GAME_HEADER
+      proj.ios/src/AppController.h
+      proj.ios/src/RootViewController.h
+    )
+    set(APP_UI_RES
+      proj.ios/src/LaunchScreen.storyboard
+      proj.ios/src/LaunchScreenBackground.png
+      proj.ios/src/Images.xcassets
+    )
+    list(APPEND GAME_SOURCE
+      proj.ios/src/main.m
+      proj.ios/src/AppController.mm
+      proj.ios/src/RootViewController.mm
+      proj.ios/src/Prefix.pch
+      ${APP_UI_RES}
     )
 
-    list(SORT THIRD_PARTY_DLLS)
+    # iPhone Simulator (i386) is not support on Cubism Core.
+    if(IOS_PLATFORM STREQUAL "SIMULATOR")
+      message(FATAL_ERROR
+        "[CubismNativeSamples] Cubism Core does not support i386 iOS architecture."
+      )
+    endif()
 
-    # do the copying
-    foreach( file_i ${THIRD_PARTY_DLLS})
-        add_custom_command(TARGET ${APP_NAME} PRE_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy
-            ${file_i}
-            ${APP_BIN_DIR}
-        )
-    endforeach( file_i )
+    set_target_properties(Live2DCubismCore
+      PROPERTIES
+        IMPORTED_LOCATION_DEBUG
+          ${CORE_PATH}/lib/ios/Debug-iphoneos/libLive2DCubismCore.a
+        IMPORTED_LOCATION_RELEASE
+          ${CORE_PATH}/lib/ios/Release-iphoneos/libLive2DCubismCore.a
+    )
 
-    #Visual Studio Defaults to wrong type
-    set_target_properties(${APP_NAME} PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS"
-                                    RUNTIME_OUTPUT_DIRECTORY  "${APP_BIN_DIR}")
+  elseif(MACOSX)
+    set(APP_UI_RES
+      proj.mac/src/Icon.icns
+      proj.mac/src/Info.plist
+    )
+    list(APPEND GAME_SOURCE
+      proj.mac/src/main.cpp
+      proj.mac/src/Prefix.pch
+      ${APP_UI_RES}
+    )
+    set_target_properties(Live2DCubismCore
+      PROPERTIES
+        IMPORTED_LOCATION
+          ${CORE_PATH}/lib/macos/libLive2DCubismCore.a
+    )
 
-elseif(MACOSX OR APPLE)
-    set_target_properties(${APP_NAME} PROPERTIES
-            MACOSX_BUNDLE 1
-            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/$<CONFIG>"
-            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/$<CONFIG>"
-            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$<CONFIG>"
-            )
-
-else()
-
-    set(APP_BIN_DIR "${CMAKE_BINARY_DIR}/bin")
-
-    set_target_properties(${APP_NAME} PROPERTIES
-            RUNTIME_OUTPUT_DIRECTORY  "${APP_BIN_DIR}")
-    add_custom_command(TARGET ${APP_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/Resources $<TARGET_FILE_DIR:${APP_NAME}>${RES_PREFIX}
-            )
-
+  endif()
+  list(APPEND GAME_SOURCE ${common_res_files})
 endif()
+# Set core include directory.
+set_target_properties(Live2DCubismCore
+  PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES ${CORE_PATH}/include
+)
+
+# Specify Cubism Framework rendering.
+set(FRAMEWORK_SOURCE OpenGL)
+# Add Cubism Framework.
+add_subdirectory(${FRAMEWORK_PATH} ${CMAKE_CURRENT_BINARY_DIR}/Framework)
+# Add definitions for Cubism Framework.
+target_compile_definitions(Framework PUBLIC CSM_TARGET_COCOS)
+
+# Mark app complie info and libs info.
+set(all_code_files ${GAME_HEADER} ${GAME_SOURCE})
+if(NOT ANDROID)
+  add_executable(${APP_NAME} ${all_code_files})
+else()
+  add_library(${APP_NAME} SHARED ${all_code_files})
+  add_subdirectory(
+    ${COCOS2DX_ROOT_PATH}/cocos/platform/android
+    ${ENGINE_BINARY_PATH}/cocos/platform
+  )
+  target_link_libraries(${APP_NAME}
+    -Wl,--whole-archive
+    cpp_android_spec
+    -Wl,--no-whole-archive
+  )
+endif()
+
+# Link libraries.
+target_link_libraries(${APP_NAME} Framework Live2DCubismCore cocos2d)
+# Specify include directories.
+target_include_directories(${APP_NAME} PRIVATE ${CLASSES_PATH})
+
+# Mark app resources and add definitions for Cubism Framework.
+setup_cocos_app_config(${APP_NAME})
+if(APPLE)
+  set_target_properties(${APP_NAME} PROPERTIES RESOURCE "${APP_UI_RES}")
+  if(MACOSX)
+    set_target_properties(${APP_NAME}
+      PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST
+          "${CMAKE_CURRENT_SOURCE_DIR}/proj.mac/src/Info.plist"
+    )
+    target_compile_definitions(Framework PUBLIC CSM_TARGET_MAC_GL)
+  elseif(IOS)
+    # Add information aboud XCode project.
+    cocos_pak_xcode(${APP_NAME} INFO_PLIST iOSBundleInfo.plist.in)
+    set_xcode_property(${APP_NAME} ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon")
+    set_xcode_property(${APP_NAME} DEVELOPMENT_TEAM "")
+    set_xcode_property(${APP_NAME} CODE_SIGN_IDENTITY "iPhone Developer")
+    set_xcode_property(${APP_NAME} PRODUCT_BUNDLE_IDENTIFIER "com.live2d.demo")
+    set_xcode_property(${APP_NAME} TARGETED_DEVICE_FAMILY "1,2")
+    set_xcode_property(${APP_NAME} ONLY_ACTIVE_ARCH "NO")
+    set_xcode_property(${APP_NAME} ARCHS "arm64")
+    target_compile_definitions(Framework PUBLIC CSM_TARGET_IPHONE_ES2)
+  endif()
+elseif(WINDOWS)
+  cocos_copy_target_dll(${APP_NAME})
+  target_compile_definitions(Framework PUBLIC CSM_TARGET_WIN_GL)
+  # Specify glew directories for Cubism Framework.
+  set(COCOS_GLEW ${COCOS2DX_ROOT_PATH}/external/win32-specific/gles)
+  target_include_directories(Framework PUBLIC ${COCOS_GLEW}/include/OGLES)
+elseif(ANDROID)
+  target_compile_definitions(Framework PUBLIC CSM_TARGET_ANDROID_ES2)
+  target_compile_definitions(${APP_NAME} PRIVATE CSM_TARGET_ANDROID_ES2)
+elseif(LINUX)
+  target_compile_definitions(Framework PUBLIC CSM_TARGET_LINUX_GL)
+endif()
+
+# Copy resources.
+if(LINUX OR WINDOWS)
+  set(APP_RES_DIR $<TARGET_FILE_DIR:${APP_NAME}>/Resources)
+  cocos_copy_target_res(${APP_NAME}
+    COPY_TO ${APP_RES_DIR} FOLDERS ${GAME_RES_FOLDER}
+  )
+endif()
+
+# When this flag is turned on, the renderer will draw for each texture that has LAppModel.
+# Otherwise, will draw to the main framebuffer.
+# target_compile_definitions(${APP_NAME} PRIVATE USE_MODEL_RENDER_TARGET)
+
+# When this flag is turned on, the renderer will draw to the texture.
+# The texture only has LAppView.
+# This flag has higher priority than USE_MODEL_RENDER_TARGET.
+# target_compile_definitions(${APP_NAME} PRIVATE USE_RENDER_TARGET)

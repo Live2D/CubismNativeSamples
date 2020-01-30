@@ -1,0 +1,5 @@
+[/Demo/Classes/**/*.{h,cpp,hpp}]
+charset = utf-8-bom
+
+[/Demo/proj.win/src/**/*.{h,cpp}]
+charset = utf-8-bom

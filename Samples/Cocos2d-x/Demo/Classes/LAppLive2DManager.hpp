@@ -137,7 +137,7 @@ private:
     virtual ~LAppLive2DManager();
 
     /**
-     * @brief　シェーダーを登録する。
+     * @brief シェーダーを登録する。
      */
     void CreateShader();
 

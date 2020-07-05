@@ -7,10 +7,10 @@
 
 #pragma once
 
+#include <vector>
 #include <string>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "Type/csmVector.hpp"
 #include "LAppAllocator.hpp"
 
 class LAppView;
@@ -130,7 +130,7 @@ private:
     /**
      * @brief   文字列を指定の文字で切り分ける
      */
-    Csm::csmVector<std::string> Split(const std::string& baseString, char delim);
+    std::vector<std::string> Split(const std::string& baseString, char delim);
 
     LAppAllocator _cubismAllocator;              ///< Cubism3 Allocator
     Csm::CubismFramework::Option _cubismOption;  ///< Cubism3 Option

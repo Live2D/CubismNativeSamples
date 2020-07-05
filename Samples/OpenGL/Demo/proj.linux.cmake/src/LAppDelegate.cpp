@@ -312,11 +312,11 @@ void LAppDelegate::SetRootDirectory()
     std::string pathString(path);
 
     pathString = pathString.substr(0, pathString.rfind("Demo"));
-    Csm::csmVector<string> splitStrings = this->Split(pathString, '/');
+    std::vector<string> splitStrings = this->Split(pathString, '/');
 
     this->_rootDirectory = "";
 
-    for(int i = 0; i < splitStrings.GetSize(); i++)
+    for(int i = 0; i < splitStrings.size(); i++)
     {
         this->_rootDirectory = this->_rootDirectory + "/" +splitStrings[i];
     }
@@ -324,9 +324,9 @@ void LAppDelegate::SetRootDirectory()
     this->_rootDirectory += "/";
 }
 
-Csm::csmVector<string> LAppDelegate::Split(const std::string& baseString, char delimiter)
+std::vector<string> LAppDelegate::Split(const std::string& baseString, char delimiter)
 {
-    Csm::csmVector<string> elems;
+    std::vector<string> elems;
     stringstream ss(baseString);
     string item;
 
@@ -334,7 +334,7 @@ Csm::csmVector<string> LAppDelegate::Split(const std::string& baseString, char d
     {
         if(!item.empty())
         {
-            elems.PushBack(item);
+            elems.push_back(item);
         }
     }
 

@@ -118,6 +118,11 @@ public:
      */
     void ResizedWindow();
 
+    /**
+     * @brief   viewMatrixをセットする
+     */
+    void SetViewMatrix(Live2D::Cubism::Framework::CubismMatrix44* m);
+
 private:
     /**
     * @brief  コンストラクタ

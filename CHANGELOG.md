@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+* Adjust size calculation for models displayed in a window and fix to use a view matrix.
+
 
 ## [4-r.1] - 2020-01-30
 

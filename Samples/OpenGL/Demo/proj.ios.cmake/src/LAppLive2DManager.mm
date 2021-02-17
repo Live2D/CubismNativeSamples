@@ -57,6 +57,8 @@ void FinishedMotion(Csm::ACubismMotion* self)
         _viewMatrix = nil;
         _sceneIndex = 0;
 
+        _viewMatrix = new Csm::CubismMatrix44();
+
         [self changeScene:_sceneIndex];
     }
     return self;
@@ -128,24 +130,31 @@ void FinishedMotion(Csm::ACubismMotion* self)
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     int width = screenRect.size.width;
     int height = screenRect.size.height;
-    Csm::CubismMatrix44 projection;
-
-    projection.Scale(1.0f, static_cast<float>(width) / static_cast<float>(height));
-
-    if (_viewMatrix != nil)
-    {
-        projection.MultiplyByMatrix(_viewMatrix);
-    }
 
     AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
     ViewController* view = [delegate viewController];
 
-    Csm::CubismMatrix44    saveProjection = projection;
+    Csm::CubismMatrix44 projection;
     Csm::csmUint32 modelCount = _models.GetSize();
     for (Csm::csmUint32 i = 0; i < modelCount; ++i)
     {
         LAppModel* model = [self getModel:i];
-        projection = saveProjection;
+        if (model->GetModel()->GetCanvasWidth() > 1.0f && width < height)
+        {
+          // 横に長いモデルを縦長ウィンドウに表示する際モデルの横サイズでscaleを算出する
+          model->GetModelMatrix()->SetWidth(2.0f);
+          projection.Scale(1.0f, static_cast<float>(width) / static_cast<float>(height));
+        }
+        else
+        {
+          projection.Scale(static_cast<float>(height) / static_cast<float>(width), 1.0f);
+        }
+
+        // 必要があればここで乗算
+        if (_viewMatrix != NULL)
+        {
+          projection.MultiplyByMatrix(_viewMatrix);
+        }
 
         [view PreModelDraw:*model];
 
@@ -221,6 +230,13 @@ void FinishedMotion(Csm::ACubismMotion* self)
 - (Csm::csmUint32)GetModelNum;
 {
     return _models.GetSize();
+}
+
+- (void)SetViewMatrix:(Csm::CubismMatrix44*)m;
+{
+    for (int i = 0; i < 16; i++) {
+        _viewMatrix->GetArray()[i] = m->GetArray()[i];
+    }
 }
 
 @end

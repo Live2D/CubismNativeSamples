@@ -115,17 +115,28 @@ using namespace LAppDefine;
     int width = screenRect.size.width;
     int height = screenRect.size.height;
 
-    float ratio = static_cast<float>(height) / static_cast<float>(width);
-    float left = ViewLogicalLeft;
-    float right = ViewLogicalRight;
-    float bottom = -ratio;
-    float top = ratio;
+    // 縦サイズを基準とする
+    float ratio = static_cast<float>(width) / static_cast<float>(height);
+    float left = -ratio;
+    float right = ratio;
+    float bottom = ViewLogicalLeft;
+    float top = ViewLogicalRight;
 
     // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
     _viewMatrix->SetScreenRect(left, right, bottom, top);
+    _viewMatrix->Scale(ViewScale, ViewScale);
 
-    float screenW = fabsf(left - right);
-    _deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
+    _deviceToScreen->LoadIdentity(); // サイズが変わった際などリセット必須
+    if (width > height)
+    {
+      float screenW = fabsf(right - left);
+      _deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
+    }
+    else
+    {
+      float screenH = fabsf(top - bottom);
+      _deviceToScreen->ScaleRelative(screenH / height, -screenH / height);
+    }
     _deviceToScreen->TranslateRelative(-width * 0.5f, -height * 0.5f);
 
     // 表示範囲の設定
@@ -158,6 +169,7 @@ using namespace LAppDefine;
         [_power render:_vertexBufferId fragmentBufferID:_fragmentBufferId];
 
         LAppLive2DManager* Live2DManager = [LAppLive2DManager getInstance];
+        [Live2DManager SetViewMatrix:_viewMatrix];
         [Live2DManager onUpdate];
 
         // 各モデルが持つ描画ターゲットをテクスチャとする場合はスプライトへの描画はここ

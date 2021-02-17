@@ -83,6 +83,11 @@
  */
 - (Csm::csmUint32)GetModelNum;
 
+/**
+ * @brief   viewMatrixをセットする
+ */
+- (void)SetViewMatrix:(Csm::CubismMatrix44*)m;
+
 @end
 
 

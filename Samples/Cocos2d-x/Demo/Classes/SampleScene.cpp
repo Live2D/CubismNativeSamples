@@ -76,12 +76,6 @@ bool SampleScene::init()
     {
         problemLoading("'CloseNormal.png' and 'CloseSelected.png'");
     }
-    else
-    {
-        float x = origin.x + visibleSize.width - _closeItem->getContentSize().width / 2;
-        float y = origin.y + _closeItem->getContentSize().height / 2;
-        _closeItem->setPosition(Vec2(x,y));
-    }
 
     // create menu, it's an autorelease object
     auto closeMenu = Menu::create(_closeItem, NULL);
@@ -99,12 +93,6 @@ bool SampleScene::init()
         _changeItem->getContentSize().height <= 0)
     {
         problemLoading("'icon_gear.png'");
-    }
-    else
-    {
-        float x = origin.x + visibleSize.width - _changeItem->getContentSize().width/2;
-        float y = getContentSize().height - _changeItem->getContentSize().height / 2;
-        _changeItem->setPosition(Vec2(x,y));
     }
 
     // create menu, it's an autorelease object
@@ -167,18 +155,20 @@ void SampleScene::update(float delta)
         auto winSize = Director::getInstance()->getWinSize();
         auto visibleSize = Director::getInstance()->getVisibleSize();
         Vec2 origin = Director::getInstance()->getVisibleOrigin();
+        // 端に隙間なく位置すると端末によっては描画されないことがあるのでマージンを設ける
+        Vec2 margin = Vec2(20, 20);
 
         if (_changeItem)
         {
-            float x = origin.x + visibleSize.width - _changeItem->getContentSize().width/2;
-            float y = getContentSize().height - _changeItem->getContentSize().height / 2;
+            float x = origin.x + visibleSize.width - _changeItem->getContentSize().width / 2 - margin.x;
+            float y = getContentSize().height - _changeItem->getContentSize().height / 2 - margin.y;
             _changeItem->setPosition(Vec2(x,y));
         }
 
         if (_closeItem)
         {
-            float x = origin.x + visibleSize.width - _closeItem->getContentSize().width/2;
-            float y = origin.y + _closeItem->getContentSize().height/2;
+            float x = origin.x + visibleSize.width - _closeItem->getContentSize().width / 2 - margin.x;
+            float y = origin.y + _closeItem->getContentSize().height / 2 + margin.y;
             _closeItem->setPosition(Vec2(x,y));
         }
     }

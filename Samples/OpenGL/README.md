@@ -7,7 +7,7 @@ OpenGL で実装したアプリケーションのサンプル実装です。
 
 | サードパーティ | バージョン |
 | --- | --- |
-| [GLEW] | 2.1.0 |
+| [GLEW] | 2.2.0 |
 | [GLFW] | 3.3.2 |
 | [ios-cmake] | 3.1.2 |
 | [stb_image.h] | 2.23 |
@@ -105,9 +105,6 @@ Windows 用の CMake プロジェクトです。
 追加ライブラリとして [GLEW] と [GLFW] を使用しています。
 [thirdParty](README.md#thirdParty) の項目を参照して事前にダウンロードを行なってください。
 
-NOICE: Visual Studio 2019 でのビルドは、GLEW が対応していないためサポートしておりません。
-
-
 ## thirdParty
 
 サンプルプロジェクトで使用するサードパーティライブラリと自動展開スクリプトが含まれます。
@@ -122,6 +119,9 @@ NOICE: Visual Studio 2019 でのビルドは、GLEW が対応していないた�
 | Windows | `setup_glew_glfw.bat` |
 
 スクリプト内の `GLEW_VERSION` 及び `GLFW_VERSION` を変更することで、ダウンロードするバージョンを変更できます。
+
+NOTE: `Visual Studio 2013` をご利用の際、追加対応が必要となる場合がございます。
+詳しくは [NOTICE](NOTICE.md) をご確認ください。
 
 ## ios-cmake のセットアップ
 

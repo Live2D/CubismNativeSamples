@@ -1,14 +1,19 @@
 # Core directory files
-/Core/**/*
-!/Core/**/*.md
-!/Core/**/*.txt
+/Core/**/*.a
+/Core/**/*.bundle
+/Core/**/*.dll
+/Core/**/*.dylib
+/Core/**/*.lib
+/Core/**/*.so
+
 # Sample build directories
 /Samples/**/build/
 # Sample third party files
 /Samples/**/thirdParty/*
-!/Samples/**/thirdParty/scripts/
-!/Samples/OpenGL/thirdParty/stb/
+!/Samples/**/thirdParty/scripts/*
+!/Samples/OpenGL/thirdParty/stb/*
 # Other files
+/build/
 .vs/
 .vscode/
 .idea/

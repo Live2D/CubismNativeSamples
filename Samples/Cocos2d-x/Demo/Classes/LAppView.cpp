@@ -37,16 +37,27 @@ void LAppView::onEnter()
 
     float width = size.width;
     float height = size.height;
-    float ratio = (float)height / width;
-    float left = ViewLogicalLeft;
-    float right = ViewLogicalRight;
-    float bottom = -ratio;
-    float top = ratio;
+    // 縦サイズを基準とする
+    float ratio = width / height;
+    float left = -ratio;
+    float right = ratio;
+    float bottom = ViewLogicalLeft;
+    float top = ViewLogicalRight;
 
     viewMatrix->SetScreenRect(left, right, bottom, top); // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
+    viewMatrix->Scale(ViewScale, ViewScale);
 
-    float screenW = abs(left - right);
-    deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
+    deviceToScreen->LoadIdentity(); // サイズが変わった際などリセット必須
+    if (width > height)
+    {
+      float screenW = fabsf(right - left);
+      deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
+    }
+    else
+    {
+      float screenH = fabsf(top - bottom);
+      deviceToScreen->ScaleRelative(screenH / height, -screenH / height);
+    }
     deviceToScreen->TranslateRelative(-width / 2.0f, -height / 2.0f);
 
     // 表示範囲の設定
@@ -97,6 +108,8 @@ void LAppView::onDraw(const cocos2d::Mat4& transform, uint32_t flags)
     Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, transform);
 
     LAppLive2DManager* Live2DMgr = LAppLive2DManager::GetInstance();
+
+    Live2DMgr->SetViewMatrix(viewMatrix);
 
     // Cubism更新・描画
     Live2DMgr->OnUpdate();

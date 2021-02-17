@@ -52,6 +52,8 @@ LAppLive2DManager::LAppLive2DManager()
     : _viewMatrix(NULL)
     , _sceneIndex(0)
 {
+    _viewMatrix = new CubismMatrix44();
+
     ChangeScene(_sceneIndex);
 }
 
@@ -140,26 +142,34 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
 
 void LAppLive2DManager::OnUpdate() const
 {
-    CubismMatrix44 projection;
     int width, height;
     LAppDelegate::GetInstance()->GetClientSize(width, height);
-    projection.Scale(1.0f, static_cast<float>(width) / static_cast<float>(height));
-
-    if (_viewMatrix != NULL)
-    {
-        projection.MultiplyByMatrix(_viewMatrix);
-    }
 
     // D3D9 フレーム先頭処理
     // 各フレームでの、Cubism SDK の処理前にコール
     Rendering::CubismRenderer_D3D9::StartFrame(LAppDelegate::GetInstance()->GetD3dDevice(), width, height);
 
-    const CubismMatrix44    saveProjection = projection;
+    CubismMatrix44 projection;
     csmUint32 modelCount = _models.GetSize();
     for (csmUint32 i = 0; i < modelCount; ++i)
     {
         LAppModel* model = GetModel(i);
-        projection = saveProjection;
+        if (model->GetModel()->GetCanvasWidth() > 1.0f && width < height)
+        {
+            // 横に長いモデルを縦長ウィンドウに表示する際モデルの横サイズでscaleを算出する
+            model->GetModelMatrix()->SetWidth(2.0f);
+            projection.Scale(1.0f, static_cast<float>(width) / static_cast<float>(height));
+        }
+        else
+        {
+            projection.Scale(static_cast<float>(height) / static_cast<float>(width), 1.0f);
+        }
+
+        // 必要があればここで乗算
+        if (_viewMatrix != NULL)
+        {
+            projection.MultiplyByMatrix(_viewMatrix);
+        }
 
         // モデル1体描画前コール
         LAppDelegate::GetInstance()->GetView()->PreModelDraw(*model);
@@ -278,5 +288,12 @@ void LAppLive2DManager::RestoreDeviceLost(LPDIRECT3DDEVICE9 device)
     for (csmUint32 i = 0; i < _models.GetSize(); i++)
     {
         _models[i]->ReloadRenderer();
+    }
+}
+
+void LAppLive2DManager::SetViewMatrix(CubismMatrix44* m)
+{
+    for (int i = 0; i < 16; i++) {
+        _viewMatrix->GetArray()[i] = m->GetArray()[i];
     }
 }

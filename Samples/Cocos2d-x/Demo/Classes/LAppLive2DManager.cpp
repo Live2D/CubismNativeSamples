@@ -74,6 +74,8 @@ LAppLive2DManager::LAppLive2DManager()
     // 画面全体を覆うサイズ
     _sprite = new LAppSprite(_programId);
 
+    _viewMatrix = new CubismMatrix44();
+
     // 使用するターゲット
     _renderBuffer = new Csm::Rendering::CubismOffscreenFrame_OpenGLES2;
     if (_renderBuffer)
@@ -187,21 +189,29 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
 
 void LAppLive2DManager::OnUpdate() const
 {
-    CubismMatrix44 projection;
     Director* director = Director::getInstance();
     Size window = director->getWinSize();
-    projection.Scale(1, window.width / window.height);
 
-    if (_viewMatrix != NULL)
-    {
-        projection.MultiplyByMatrix(_viewMatrix);
-    }
-
-    const CubismMatrix44    saveProjection = projection;
+    CubismMatrix44 projection;
     for (csmUint32 i = 0; i < _models.GetSize(); ++i)
     {
         LAppModel* model = GetModel(i);
-        projection = saveProjection;
+        if (model->GetModel()->GetCanvasWidth() > 1.0f && window.width < window.height)
+        {
+          // 横に長いモデルを縦長ウィンドウに表示する際モデルの横サイズでscaleを算出する
+          model->GetModelMatrix()->SetWidth(2.0f);
+          projection.Scale(1.0f, static_cast<float>(window.width) / static_cast<float>(window.height));
+        }
+        else
+        {
+          projection.Scale(static_cast<float>(window.height) / static_cast<float>(window.width), 1.0f);
+        }
+
+        // 必要があればここで乗算
+        if (_viewMatrix != NULL)
+        {
+          projection.MultiplyByMatrix(_viewMatrix);
+        }
 
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderBuffer && _sprite)
         {// レンダリングターゲット使いまわしの場合

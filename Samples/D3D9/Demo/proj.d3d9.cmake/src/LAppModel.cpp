@@ -408,7 +408,12 @@ void LAppModel::Update()
     // リップシンクの設定
     if (_lipSync)
     {
-        csmFloat32 value = 0; // リアルタイムでリップシンクを行う場合、システムから音量を取得して0〜1の範囲で値を入力します。
+        // リアルタイムでリップシンクを行う場合、システムから音量を取得して0〜1の範囲で値を入力します。
+        csmFloat32 value = 0.0f;
+
+        // 状態更新/RMS値取得
+        _wavFileHandler.Update(deltaTimeSeconds);
+        value = _wavFileHandler.GetRms();
 
         for (csmUint32 i = 0; i < _lipSyncIds.GetSize(); ++i)
         {
@@ -484,6 +489,7 @@ CubismMotionQueueEntryHandle LAppModel::StartMotion(const csmChar* group, csmInt
     {
         csmString path = voice;
         path = _modelHomeDir + path;
+        _wavFileHandler.Start(path);
     }
 
     if (_debugMode)

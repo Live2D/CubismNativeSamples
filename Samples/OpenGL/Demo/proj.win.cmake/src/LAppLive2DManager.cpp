@@ -126,7 +126,7 @@ void LAppLive2DManager::OnUpdate() const
     int width, height;
     glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
 
-	CubismMatrix44 projection;
+    CubismMatrix44 projection;
     csmUint32 modelCount = _models.GetSize();
     for (csmUint32 i = 0; i < modelCount; ++i)
     {

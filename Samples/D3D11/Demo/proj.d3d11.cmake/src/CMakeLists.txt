@@ -6,6 +6,8 @@ target_sources(${APP_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/LAppDefine.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/LAppDelegate.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/LAppDelegate.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppWavFileHandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppWavFileHandler.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/LAppLive2DManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/LAppLive2DManager.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/LAppModel.cpp

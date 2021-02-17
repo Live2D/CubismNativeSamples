@@ -5,11 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
-## [Unreleased]
+## [4-r.2] - 2021-02-17
+
+### Added
+
+* Add the sample to manipulate the lip-sync from a waveform on the audio file(.wav) into Windows, macOS, Linux.
+* Add support for Visual Studio 2019 in OpenGL Sample.
+  * When using Visual Studio 2013, see the [NOTICE.md](NOTICE.md).
+* Add sample voices to `Haru`.
+* Add a margin to adjust position of model change icon and exit button on smartphones and other devices for Cocos2d-x Sample.
+
+### Changed
+
+* Optimize processing in setup scripts for third-party libraries on Windows.
 
 ### Fixed
 
 * Adjust size calculation for models displayed in a window and fix to use a view matrix.
+
+### Removed
+
+* End support for Amazon Linux AMI.
 
 
 ## [4-r.1] - 2020-01-30
@@ -90,7 +106,7 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
-[Unreleased]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.1...HEAD
+[4-r.2]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.1...4-r.2
 [4-r.1]: https://github.com/Live2D/CubismNativeSamples/compare/4-beta.2.1...4-r.1
 [4-beta.2.1]: https://github.com/Live2D/CubismNativeSamples/compare/4-beta.2...4-beta.2.1
 [4-beta.2]: https://github.com/Live2D/CubismNativeSamples/compare/4-beta.1...4-beta.2

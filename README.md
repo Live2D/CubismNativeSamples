@@ -92,34 +92,32 @@ Demo
 
 | 開発ツール | バージョン |
 | --- | --- |
-| Android Studio | 3.5.3 |
-| CMake | 3.16.3 |
+| Android Studio | 4.1.1 |
+| CMake | 3.19.3 |
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.19 |
-| Visual Studio 2019 | 16.4.3 |
-| XCode | 11.3.1 |
+| Visual Studio 2017 | 15.9.31 |
+| Visual Studio 2019 | 16.8.4 |
+| XCode | 12.3 |
 
 ### Android
 
-| Android SDK Tools | バージョン |
+| Android SDK tools | バージョン |
 | --- | --- |
-| Android NDK | 21.0.6113669 |
-| Android SDK | 29.0.2 |
+| Android NDK | 22.0.7026061 |
+| Android SDK | 30.05 |
 | CMake | 3.10.2.4988404 |
 
 ### Linux
 
 | 系統 | Docker イメージ | GCC |
 | --- | --- | --- |
-| Red Hat | `amazonlinux:1` | 6.3.1 ([devtoolset-6]) |
 | Red Hat | `amazonlinux:2` | 7.3.1 |
-| Red Hat | `centos:6` | 6.3.1 ([devtoolset-6]) |
 | Red Hat | `centos:7` | 4.8.5 |
 | Red Hat | `centos:8` | 8.3.1 |
 | Debian | `ubuntu:16.04` | 5.4.0 |
 | Debian | `ubuntu:18.04` | 7.4.0 |
-| Debian | `ubuntu:19.10` | 9.2.1 |
+| Debian | `ubuntu:20.04` | 8.3.1 |
 
 #### Mesa ライブラリ
 
@@ -130,25 +128,21 @@ Demo
   * `libgl1-mesa-dev`
   * `libglu1-mesa-dev`
 
-NOTE: `amazonlinux:1` と `centos:6` はデフォルトの GCC のバージョンでビルドを行えないため [devtoolset-6] などを用いて新しいバージョンの GCC を使用する必要があります。
-
-[devtoolset-6]: https://www.softwarecollections.org/en/scls/rhscl/devtoolset-6/
-
 
 ## 動作確認環境
 
 | プラットフォーム | バージョン |
 | --- | --- |
-| iOS / iPadOS | 13.3 |
-| macOS | 10.15.1 |
-| Windows 10 | 1903 |
+| iOS / iPadOS | 14.3 |
+| macOS | 10.15.7 |
+| Windows 10 | 2004 / 20H2 |
 
 ### Android
 
 | バージョン | デバイス | Tegra |
 | --- | --- | --- |
-| 10 | Pixel 3a | |
-| 4.1.2 | Nexus 7 (2012) | ✔︎ |
+| 11 | Pixel 3a | |
+| 7.1.1 | Nexus 9 | ✔︎ |
 
 ### Linux
 
@@ -156,4 +150,4 @@ NOTE: `amazonlinux:1` と `centos:6` はデフォルトの GCC のバージョ�
 | --- | --- | --- |
 | Red Hat | Amazon Linux | 2 |
 | Red Hat | CentOS | 8 |
-| Debian | Ubuntu | 18.04 |
+| Debian | Ubuntu | 20.04 |

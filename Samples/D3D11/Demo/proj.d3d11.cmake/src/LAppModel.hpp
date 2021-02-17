@@ -13,6 +13,9 @@
 #include <Type/csmRectF.hpp>
 #include <Rendering/D3D11/CubismOffscreenSurface_D3D11.hpp>
 
+#include "LAppWavFileHandler.hpp"
+
+
 /**
  * @brief ユーザーが実際に使用するモデルの実装クラス<br>
  *         モデル生成、機能コンポーネント生成、更新処理とレンダリングの呼び出しを行う。
@@ -190,6 +193,8 @@ private:
     const Csm::CubismId* _idParamEyeBallY; ///< パラメータID: ParamEyeBallXY
 
     Csm::csmVector<Csm::csmUint64> _bindTextureId; ///< テクスチャID
+
+    LAppWavFileHandler _wavFileHandler; ///< wavファイルハンドラ
 
     bool _deleteModel;  ///< 実体消滅予定フラグ Drawを呼ばない
 

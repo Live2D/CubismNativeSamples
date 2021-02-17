@@ -68,17 +68,27 @@ void LAppView::Initialize()
         return;
     }
 
-    float ratio = static_cast<float>(height) / static_cast<float>(width);
-    float left = ViewLogicalLeft;
-    float right = ViewLogicalRight;
-    float bottom = -ratio;
-    float top = ratio;
+    // 縦サイズを基準とする
+    float ratio = static_cast<float>(width) / static_cast<float>(height);
+    float left = -ratio;
+    float right = ratio;
+    float bottom = ViewLogicalLeft;
+    float top = ViewLogicalRight;
 
     _viewMatrix->SetScreenRect(left, right, bottom, top); // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
+    _viewMatrix->Scale(ViewScale, ViewScale);
 
-    float screenW = fabsf(left - right);
     _deviceToScreen->LoadIdentity();
-    _deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
+    if (width > height)
+    {
+        float screenW = fabsf(right - left);
+        _deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
+    }
+    else
+    {
+        float screenH = fabsf(top - bottom);
+        _deviceToScreen->ScaleRelative(screenH / height, -screenH / height);
+    }
     _deviceToScreen->TranslateRelative(-width * 0.5f, -height * 0.5f);
 
     // 表示範囲の設定
@@ -102,6 +112,8 @@ void LAppView::Render()
 
 
     LAppLive2DManager* Live2DManager = LAppLive2DManager::GetInstance();
+
+    Live2DManager->SetViewMatrix(_viewMatrix);
 
     // Cubism更新・描画
     Live2DManager->OnUpdate();

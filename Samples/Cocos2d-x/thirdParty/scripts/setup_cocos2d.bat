@@ -14,15 +14,13 @@ cd %SCRIPT_PATH%\..
 echo - Setup Cocos2d
 echo Downloading...
 curl -fsSL -o cocos2d.zip ^
-  https://digitalocean.cocos2d-x.org/Cocos2D-X/cocos2d-x-%COCOS_VERSION%.zip
+  "https://digitalocean.cocos2d-x.org/Cocos2D-X/cocos2d-x-%COCOS_VERSION%.zip"
 if %errorlevel% neq 0 pause & exit /b %errorlevel%
 echo Extracting...
 powershell "$progressPreference = 'silentlyContinue'; expand-archive -force cocos2d.zip ."
 if %errorlevel% neq 0 pause & exit /b %errorlevel%
-mkdir cocos2d >nul 2>&1
-pushd cocos2d-* && xcopy /y /e /q * ..\cocos2d\ >nul && popd
+ren cocos2d-x-%COCOS_VERSION% cocos2d
 del cocos2d.zip
-for /f %%a in ('dir /ad /b /w cocos2d-*') do (rd /s /q %%a)
 
 echo.
 pause

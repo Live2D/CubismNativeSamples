@@ -2,7 +2,7 @@
 
 set -ue
 
-COCOS_VERSION=3.17.2
+COCOS_COMMIT_HASH=95e5d868ce5958c0dadfc485bdda52f1bc404fe0
 
 SCRIPT_PATH=$(cd $(dirname $0) && pwd)
 
@@ -13,11 +13,14 @@ cd $SCRIPT_PATH/..
 #################
 
 # Download and extract the archive.
-echo - Setup Cocos2d
-echo Downloading...
-curl -fsSL -o cocos2d.zip \
-  https://digitalocean.cocos2d-x.org/Cocos2D-X/cocos2d-x-$COCOS_VERSION.zip
-echo Extracting...
-unzip -oq cocos2d.zip
-mv -f cocos2d-x-* cocos2d
-rm cocos2d.zip
+echo - Setup Cocos2D
+mkdir cocos2d
+cd cocos2d
+git init
+git remote add origin https://github.com/cocos2d/cocos2d-x.git
+git fetch --depth 1 origin ${COCOS_COMMIT_HASH}
+git reset --hard FETCH_HEAD
+python download-deps.py --remove-download yes
+git submodule update --init
+rm -rf .git/
+cd ..

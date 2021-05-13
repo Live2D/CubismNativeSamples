@@ -1,8 +1,12 @@
-# Cubism Native Samples
+# \[Beta Version\] Cubism Native Samples
 
 Live2D Cubism 4 Editor で出力したモデルを表示するアプリケーションのサンプル実装です。
 
 Cubism Native Framework および Live2D Cubism Core と組み合わせて使用します。
+
+**本 SDK は、 Beta バージョンとなります。先行して新機能を取り込んでいるため、不安定な挙動を示す場合がございます。安定した製品をお求めの方は、公式サイトから配布されている正式版のパッケージ又は `develop` `master` ブランチをご利用ください。**
+
+**\[Beta Version\] の SDK の不具合、各種ご意見等に関しましては、 Live2D コミュニティ にてご連絡ください。直接のコードに対する指摘、修正等は、直接 Pull requests としてご投稿ください。**
 
 
 ## ライセンス
@@ -92,20 +96,20 @@ Demo
 
 | 開発ツール | バージョン |
 | --- | --- |
-| Android Studio | 4.1.1 |
-| CMake | 3.19.3 |
+| Android Studio | 4.1.3 |
+| CMake | 3.20.1 |
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.31 |
-| Visual Studio 2019 | 16.8.4 |
-| XCode | 12.3 |
+| Visual Studio 2017 | 15.9.35 |
+| Visual Studio 2019 | 16.9.4 |
+| XCode | 12.4 |
 
 ### Android
 
 | Android SDK tools | バージョン |
 | --- | --- |
-| Android NDK | 22.0.7026061 |
-| Android SDK | 30.05 |
+| Android NDK | 22.1.7171670 |
+| Android SDK | 31.0.0 |
 | CMake | 3.10.2.4988404 |
 
 ### Linux
@@ -117,7 +121,7 @@ Demo
 | Red Hat | `centos:8` | 8.3.1 |
 | Debian | `ubuntu:16.04` | 5.4.0 |
 | Debian | `ubuntu:18.04` | 7.4.0 |
-| Debian | `ubuntu:20.04` | 8.3.1 |
+| Debian | `ubuntu:20.04` | 9.3.0 |
 
 #### Mesa ライブラリ
 
@@ -133,9 +137,9 @@ Demo
 
 | プラットフォーム | バージョン |
 | --- | --- |
-| iOS / iPadOS | 14.3 |
-| macOS | 10.15.7 |
-| Windows 10 | 2004 / 20H2 |
+| iOS / iPadOS | 14.5.1 |
+| macOS | 11.3.1 |
+| Windows 10 | 20H2 |
 
 ### Android
 

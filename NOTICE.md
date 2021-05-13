@@ -1,3 +1,23 @@
+## [制限事項] Apple製品及びmacOS Big Surへの対応状況について (2021-04-15)
+
+本 Cubism SDK につきまして、 `macOS Big Sur 11.2.3` 環境にてビルドが通過できることを確認しております。
+Apple Sillicon版のmacにつきましては、引き続き全ての Cubism 製品において対応しておりません。ご了承ください。
+
+
+## [制限事項] Cocos2d-x v4.0 の Linux(Ubuntu)サンプルビルドについて (2021-04-15)
+
+Cocos2d-x v4.0 は `Ubuntu 20.04` ビルドに対応しておりません。
+使用する際は以下の回避方法を確認し、いずれかを適用してご利用いただきますようお願いいたします。
+
+### 回避方法
+
+* `Ubuntu 16.04` または `Ubuntu 18.04` を使用する
+
+* 以下issueを確認し、`Cocos2d-x v4.0` で使用されている `libchipmunk` ライブラリを差し替える
+  * [cocos2d/cocos2d-x linking error when integrating with libchipmunk on linux#20471](https://github.com/cocos2d/cocos2d-x/issues/20471)
+  * WARNING: この回避方法を使用してビルドしたプロジェクトはいかなる場合でも保守いたしかねます
+
+
 ## [注意事項] Visual Studio 2013 ご利用時の OpenGL サンプルビルドについて (2021-02-17)
 
 `Visual Studio 2013` を使用した `OpenGL` サンプルビルドでは、`setup_glew_glfw.bat` をそのまま使用してビルドすると `GLEW` にてリンクエラーが発生します。
@@ -11,16 +31,6 @@
 
 * `GLEW 2.1.0` を使用する場合
   * `setup_glew_glfw_vs2013.bat` を使用して `thirdParty` のセットアップを行う
-
-
-## [制限事項] macOS 11.0 Big Surへの対応状況について (2021-01-12)
-
-現在公開中のCubism SDKは、macOS 11.0 Big Surには対応しておりません。
-正常に動作できない可能性がありますので、OSのアップグレードをお控えいただきご利用いただきますようお願いいたします。
-現在対応検討中となりますが、対応バージョンや時期につきましては改めてお知らせいたします。
-
-またApple Sillicon版のmacにつきましても、全てのCubism 製品において対応しておりませんのでこちらも合わせてご了承ください。
-
 
 
 ## Cubism Core

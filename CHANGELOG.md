@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4-r.3] - 2021-06-10
+
+## [4-r.3-beta.1] - 2021-05-13
+
+### Added
+
+* Add the sample for Cocos2d-x v4.0.
+
+### Removed
+
+* Obsolete the sample for Cocos2d-x v3.x.
+
+### Fixed
+
+* Fix setup scripts for Cocos2d-x.
+  * Changed from xcopy to robocopy and improved to be able to place in a deep hierarchy.
+* Fixed initial window size display misalignment when scaling is set in D3D11.
+
 
 ## [4-r.2] - 2021-02-17
 
@@ -106,6 +124,8 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[4-r.3]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.3-beta.1...4-r.3
+[4-r.3-beta.1]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.2...4-r.3-beta.1
 [4-r.2]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.1...4-r.2
 [4-r.1]: https://github.com/Live2D/CubismNativeSamples/compare/4-beta.2.1...4-r.1
 [4-beta.2.1]: https://github.com/Live2D/CubismNativeSamples/compare/4-beta.2...4-beta.2.1

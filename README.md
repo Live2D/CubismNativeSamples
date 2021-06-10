@@ -92,21 +92,21 @@ Demo
 
 | 開発ツール | バージョン |
 | --- | --- |
-| Android Studio | 4.1.1 |
-| CMake | 3.19.3 |
+| Android Studio | 4.2.1 |
+| CMake | 3.20.1 |
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.31 |
-| Visual Studio 2019 | 16.8.4 |
-| XCode | 12.3 |
+| Visual Studio 2017 | 15.9.35 |
+| Visual Studio 2019 | 16.9.4 |
+| XCode | 12.5 |
 
 ### Android
 
 | Android SDK tools | バージョン |
 | --- | --- |
-| Android NDK | 22.0.7026061 |
-| Android SDK | 30.05 |
-| CMake | 3.10.2.4988404 |
+| Android NDK | 22.1.7171670 |
+| Android SDK | 30.0.3 |
+| CMake | 3.18.1 |
 
 ### Linux
 
@@ -117,7 +117,7 @@ Demo
 | Red Hat | `centos:8` | 8.3.1 |
 | Debian | `ubuntu:16.04` | 5.4.0 |
 | Debian | `ubuntu:18.04` | 7.4.0 |
-| Debian | `ubuntu:20.04` | 8.3.1 |
+| Debian | `ubuntu:20.04` | 9.3.0 |
 
 #### Mesa ライブラリ
 
@@ -133,9 +133,9 @@ Demo
 
 | プラットフォーム | バージョン |
 | --- | --- |
-| iOS / iPadOS | 14.3 |
-| macOS | 10.15.7 |
-| Windows 10 | 2004 / 20H2 |
+| iOS / iPadOS | 14.5.1 |
+| macOS | 11.3.1 |
+| Windows 10 | 20H2 |
 
 ### Android
 

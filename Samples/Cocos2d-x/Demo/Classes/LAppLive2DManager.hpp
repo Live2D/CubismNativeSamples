@@ -103,7 +103,7 @@ public:
      * @brief   画面を更新するときの処理
      *          モデルの更新処理および描画処理を行う
      */
-    void OnUpdate() const;
+    void OnUpdate(Csm::Rendering::CubismCommandBuffer_Cocos2dx* commandBuffer) const;
 
     /**
      * @brief   次のシーンに切り替える<br>
@@ -141,19 +141,15 @@ private:
      */
     void CreateShader();
 
-    /**
-     * @brief   CreateShader内部関数
-     */
-    bool CheckShader(GLuint shaderId);
-
     Csm::CubismMatrix44*        _viewMatrix;    ///< モデル描画に用いるView行列
     Csm::csmVector<LAppModel*>  _models;        ///< モデルインスタンスのコンテナ
     Csm::csmInt32               _sceneIndex;    ///< 表示するシーンのインデックス値
 
     // レンダリング先を別ターゲットにする方式の場合に使用
     SelectTarget _renderTarget;                 ///< レンダリング先の選択肢
-    GLuint _programId;                          ///< プリミティブを描画するためのシェーダID
     LAppSprite* _sprite;                        ///< テクスチャの単純描画クラス
-    Csm::Rendering::CubismOffscreenFrame_OpenGLES2* _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング
+    Csm::Rendering::CubismOffscreenFrame_Cocos2dx* _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング
     float _clearColor[4];                       ///< レンダリングターゲットのクリアカラー
+    cocos2d::backend::ProgramState* _programState;
+
 };

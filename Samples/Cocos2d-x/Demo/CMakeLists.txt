@@ -145,7 +145,7 @@ elseif(WINDOWS)
       IMPORTED_LOCATION_DEBUG
         ${CORE_PATH}/lib/windows/x86/${MSVC_NUM}/Live2DCubismCore_${CRT}d.lib
       IMPORTED_LOCATION_RELEASE
-        ${CORE_PATH}/lib/windows/x86/${MSVC_NUM}/Live2DCubismCore_MD.lib
+        ${CORE_PATH}/lib/windows/x86/${MSVC_NUM}/Live2DCubismCore_${CRT}.lib
   )
 
 elseif(APPLE)
@@ -208,11 +208,13 @@ set_target_properties(Live2DCubismCore
 )
 
 # Specify Cubism Framework rendering.
-set(FRAMEWORK_SOURCE OpenGL)
+set(FRAMEWORK_SOURCE Cocos2d)
 # Add Cubism Framework.
 add_subdirectory(${FRAMEWORK_PATH} ${CMAKE_CURRENT_BINARY_DIR}/Framework)
 # Add definitions for Cubism Framework.
 target_compile_definitions(Framework PUBLIC CSM_TARGET_COCOS)
+use_cocos2dx_compile_define(Framework)
+use_cocos2dx_compile_options(Framework)
 
 # Mark app complie info and libs info.
 set(all_code_files ${GAME_HEADER} ${GAME_SOURCE})
@@ -241,15 +243,14 @@ setup_cocos_app_config(${APP_NAME})
 if(APPLE)
   set_target_properties(${APP_NAME} PROPERTIES RESOURCE "${APP_UI_RES}")
   if(MACOSX)
-    set_target_properties(${APP_NAME}
-      PROPERTIES
-        MACOSX_BUNDLE_INFO_PLIST
-          "${CMAKE_CURRENT_SOURCE_DIR}/proj.mac/src/Info.plist"
-    )
+    set_xcode_property(${APP_NAME} INFOPLIST_FILE "${COCOS2DX_ROOT_PATH}/templates/cpp-template-default/proj.ios_mac/mac/Info.plist")
     target_compile_definitions(Framework PUBLIC CSM_TARGET_MAC_GL)
+    set(COCOS_GLFW3 ${COCOS2DX_ROOT_PATH}/external/glfw3)
+    target_include_directories(Framework PUBLIC ${COCOS_GLFW3}/include/Mac)
+    target_include_directories(Framework PUBLIC ${COCOS2DX_ROOT_PATH}/cocos)
   elseif(IOS)
     # Add information aboud XCode project.
-    cocos_pak_xcode(${APP_NAME} INFO_PLIST iOSBundleInfo.plist.in)
+    set_xcode_property(${APP_NAME} INFOPLIST_FILE "${COCOS2DX_ROOT_PATH}/templates/cpp-template-default/proj.ios_mac/ios/Info.plist")
     set_xcode_property(${APP_NAME} ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon")
     set_xcode_property(${APP_NAME} DEVELOPMENT_TEAM "")
     set_xcode_property(${APP_NAME} CODE_SIGN_IDENTITY "iPhone Developer")
@@ -258,25 +259,32 @@ if(APPLE)
     set_xcode_property(${APP_NAME} ONLY_ACTIVE_ARCH "NO")
     set_xcode_property(${APP_NAME} ARCHS "arm64")
     target_compile_definitions(Framework PUBLIC CSM_TARGET_IPHONE_ES2)
+    target_include_directories(Framework PUBLIC ${COCOS2DX_ROOT_PATH}/cocos)
   endif()
 elseif(WINDOWS)
   cocos_copy_target_dll(${APP_NAME})
   target_compile_definitions(Framework PUBLIC CSM_TARGET_WIN_GL)
   # Specify glew directories for Cubism Framework.
   set(COCOS_GLEW ${COCOS2DX_ROOT_PATH}/external/win32-specific/gles)
+  set(COCOS_GLFW3 ${COCOS2DX_ROOT_PATH}/external/glfw3)
   target_include_directories(Framework PUBLIC ${COCOS_GLEW}/include/OGLES)
+  target_include_directories(Framework PUBLIC ${COCOS_GLFW3}/include/win32)
+  target_include_directories(Framework PUBLIC ${COCOS2DX_ROOT_PATH}/cocos)
 elseif(ANDROID)
   target_compile_definitions(Framework PUBLIC CSM_TARGET_ANDROID_ES2)
-  target_compile_definitions(${APP_NAME} PRIVATE CSM_TARGET_ANDROID_ES2)
+  target_include_directories(Framework PUBLIC ${COCOS2DX_ROOT_PATH}/cocos)
 elseif(LINUX)
+  set(COCOS_GLFW3 ${COCOS2DX_ROOT_PATH}/external/glfw3)
+  target_include_directories(Framework PUBLIC ${COCOS_GLFW3}/include/linux)
   target_compile_definitions(Framework PUBLIC CSM_TARGET_LINUX_GL)
+  target_include_directories(Framework PUBLIC ${COCOS2DX_ROOT_PATH}/cocos)
 endif()
 
 # Copy resources.
 if(LINUX OR WINDOWS)
-  set(APP_RES_DIR $<TARGET_FILE_DIR:${APP_NAME}>/Resources)
+  cocos_get_resource_path(APP_RES_DIR ${APP_NAME})
   cocos_copy_target_res(${APP_NAME}
-    COPY_TO ${APP_RES_DIR} FOLDERS ${GAME_RES_FOLDER}
+    LINK_TO ${APP_RES_DIR} FOLDERS ${GAME_RES_FOLDER}
   )
 endif()
 

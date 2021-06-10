@@ -13,7 +13,7 @@
 #include <Motion/CubismMotion.hpp>
 #include <Physics/CubismPhysics.hpp>
 #include <CubismDefaultParameterId.hpp>
-#include <Rendering/OpenGL/CubismRenderer_OpenGLES2.hpp>
+#include <Rendering/Cocos2d/CubismRenderer_Cocos2dx.hpp>
 #include <Utils/CubismString.hpp>
 #include <Id/CubismIdManager.hpp>
 #include "Motion/CubismMotionQueueEntry.hpp"
@@ -29,6 +29,7 @@ using namespace Csm;
 using namespace Csm::Constant;
 using namespace Csm::DefaultParameterId;
 using namespace LAppDefine;
+using namespace cocos2d::backend;
 
 #if USE_AUDIO_ENGINE
 #include "audio/include/AudioEngine.h"
@@ -537,29 +538,33 @@ void LAppModel::DoDraw()
 {
     if (_model == NULL)return;
 
-    GetRenderer<Rendering::CubismRenderer_OpenGLES2>()->DrawModel();
+    GetRenderer<Rendering::CubismRenderer_Cocos2dx>()->DrawModel();
 }
 
 void LAppModel::Draw(CubismMatrix44& matrix)
 {
     if (_model == NULL)return;
 
+    GetRenderer<Rendering::CubismRenderer_Cocos2dx>()->GetCommandBuffer()->PushCommandGroup();
+
     if (_renderBuffer.IsValid())
     {
-        _renderBuffer.BeginDraw();
-        _renderBuffer.Clear(_clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]);
+        _renderBuffer.BeginDraw(GetRenderer<Rendering::CubismRenderer_Cocos2dx>()->GetCommandBuffer(), NULL);
+        _renderBuffer.Clear(GetRenderer<Rendering::CubismRenderer_Cocos2dx>()->GetCommandBuffer(), _clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]);
     }
 
     matrix.MultiplyByMatrix(_modelMatrix);
 
-    GetRenderer<Rendering::CubismRenderer_OpenGLES2>()->SetMvpMatrix(&matrix);
+    GetRenderer<Rendering::CubismRenderer_Cocos2dx>()->SetMvpMatrix(&matrix);
 
     DoDraw();
 
     if (_renderBuffer.IsValid())
     {
-        _renderBuffer.EndDraw();
+        _renderBuffer.EndDraw(GetRenderer<Rendering::CubismRenderer_Cocos2dx>()->GetCommandBuffer());
     }
+
+    GetRenderer<Rendering::CubismRenderer_Cocos2dx>()->GetCommandBuffer()->PopCommandGroup();
 }
 
 csmBool LAppModel::HitTest(const csmChar* hitAreaName, csmFloat32 x, csmFloat32 y)
@@ -621,12 +626,12 @@ void LAppModel::ReloadRnederer()
 
 void LAppModel::SetupTextures()
 {
+    _loadedTextures.Clear();
     for (csmInt32 modelTextureNumber = 0; modelTextureNumber < _modelSetting->GetTextureCount(); modelTextureNumber++)
     {
         // テクスチャ名が空文字だった場合はロード・バインド処理をスキップ
         if (strcmp(_modelSetting->GetTextureFileName(modelTextureNumber), "") == 0) continue;
 
-        //OpenGLのテクスチャユニットにテクスチャをロードする
         csmString texturePath = _modelSetting->GetTextureFileName(modelTextureNumber);
         texturePath = _modelHomeDir + texturePath;
 
@@ -637,16 +642,21 @@ void LAppModel::SetupTextures()
         // テクスチャが読めていなければバインド処理をスキップ
         if(!texture) continue;
 
-        const csmInt32 glTextueNumber = texture->getName();
-        const Texture2D::TexParams texParams = { GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE };
+        const SamplerDescriptor texParams = {
+          SamplerFilter::LINEAR_MIPMAP_LINEAR,
+          SamplerFilter::LINEAR,
+          SamplerAddressMode::CLAMP_TO_EDGE,
+          SamplerAddressMode::CLAMP_TO_EDGE
+        };
         texture->setTexParameters(texParams);
         texture->generateMipmap();
+        _loadedTextures.PushBack(texture);
 
-        //OpenGL
-        GetRenderer<Rendering::CubismRenderer_OpenGLES2>()->BindTexture(modelTextureNumber, glTextueNumber);
+        //Cocos2d
+        GetRenderer<Rendering::CubismRenderer_Cocos2dx>()->BindTexture(modelTextureNumber, texture);
     }
 
-    GetRenderer<Rendering::CubismRenderer_OpenGLES2>()->IsPremultipliedAlpha(true);
+    GetRenderer<Rendering::CubismRenderer_Cocos2dx>()->IsPremultipliedAlpha(true);
 
 }
 
@@ -754,7 +764,7 @@ void LAppModel::MakeRenderingTarget()
         Size visibleSize = Director::getInstance()->getVisibleSize();
         Point origin = Director::getInstance()->getVisibleOrigin();
 
-        _renderSprite = RenderTexture::create(visibleSize.width, visibleSize.height);
+        _renderSprite = RenderTexture::create(frameW, frameH, cocos2d::backend::PixelFormat::RGBA8888);
         _renderSprite->setPosition(Point(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
         _renderSprite->getSprite()->getTexture()->setAntiAliasTexParameters();
         _renderSprite->getSprite()->setBlendFunc(BlendFunc::ALPHA_NON_PREMULTIPLIED);
@@ -764,16 +774,17 @@ void LAppModel::MakeRenderingTarget()
         _renderSprite->setVisible(true);
 
         // _renderSpriteのテクスチャを作成する
-        GLuint colorBuf = _renderSprite->getSprite()->getTexture()->getName();
-        glBindTexture(GL_TEXTURE_2D, colorBuf);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, frameW, frameH, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        _renderSprite->getSprite()->getTexture()->setTexParameters(
+          cocos2d::Texture2D::TexParams(
+            cocos2d::backend::SamplerFilter::LINEAR,                    // MagFilter
+            cocos2d::backend::SamplerFilter::LINEAR,                    // MinFilter
+            cocos2d::backend::SamplerAddressMode::CLAMP_TO_EDGE,      // AddressingMode S
+            cocos2d::backend::SamplerAddressMode::CLAMP_TO_EDGE       // AddressingMode T
+          )
+        );
+
         // レンダリングバッファの描画先をそのテクスチャにする
-        _renderBuffer.CreateOffscreenFrame(frameW, frameH, colorBuf);
+        _renderBuffer.CreateOffscreenFrame(frameW, frameH, _renderSprite->getSprite()->getTexture());
     }
 }
 
@@ -781,7 +792,7 @@ void LAppModel::SetSpriteColor(float r, float g, float b, float a)
 {
     if (_renderSprite != NULL)
     {
-        _renderSprite->getSprite()->setColor(Color3B(static_cast<GLubyte>(255.0f * r), static_cast<GLubyte>(255.0f * g), static_cast<GLubyte>(255.0f * b)));
-        _renderSprite->getSprite()->setOpacity(static_cast<GLubyte>(255.0f * a));
+        _renderSprite->getSprite()->setColor(Color3B(static_cast<unsigned char>(255.0f * r), static_cast<unsigned char>(255.0f * g), static_cast<unsigned char>(255.0f * b)));
+        _renderSprite->getSprite()->setOpacity(static_cast<unsigned char>(255.0f * a));
     }
 }

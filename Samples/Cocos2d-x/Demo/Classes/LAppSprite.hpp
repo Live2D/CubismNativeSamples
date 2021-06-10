@@ -7,7 +7,11 @@
 
 #pragma once
 
-#include "Rendering/OpenGL/CubismRenderer_OpenGLES2.hpp"
+#include "Rendering/Cocos2d/CubismRenderer_Cocos2dx.hpp"
+#include "Rendering/Cocos2d/CubismCommandBuffer_Cocos2dx.hpp"
+#include "cocos2d.h"
+
+USING_NS_CC;
 
 /**
 * @brief スプライトを実装するクラス。
@@ -40,7 +44,7 @@ public:
     * @param[in]       textureId    テクスチャID
     * @param[in]       programId    シェーダID
     */
-    LAppSprite(GLuint programId);
+    LAppSprite(backend::ProgramState* programState);
 
     /**
     * @brief デストラクタ
@@ -51,7 +55,7 @@ public:
     * @brief テクスチャIDを指定して描画する
     *
     */
-    void RenderImmidiate(GLuint textureId, const GLfloat uvVertex[8]) const;
+    void RenderImmidiate(Csm::Rendering::CubismCommandBuffer_Cocos2dx* commandBuffer, Texture2D* texture, float uvVertex[8]) const;
 
     /**
      * @brief 色設定
@@ -67,9 +71,11 @@ private:
 
     int _positionLocation;  ///< 位置アトリビュート
     int _uvLocation;        ///< UVアトリビュート
-    int _textureLocation;   ///< テクスチャアトリビュート
-    int _colorLocation;     ///< カラーアトリビュート
+    backend::UniformLocation _textureLocation;   ///< テクスチャアトリビュート
+    backend::UniformLocation _colorLocation;     ///< カラーアトリビュート
 
     float _spriteColor[4];  ///< 表示カラー
+
+    Csm::Rendering::CubismCommandBuffer_Cocos2dx::DrawCommandBuffer* _drawCommand;
 };
 

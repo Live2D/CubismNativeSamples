@@ -95,15 +95,14 @@ void LAppView::onExit()
 
 void LAppView::draw(cocos2d::Renderer* renderer, const cocos2d::Mat4& transform, uint32_t flags)
 {
+    onDraw(transform, flags);
     DrawNode::draw(renderer, transform, flags);
-
-    _customCommand.init(_globalZOrder);
-    _customCommand.func = CC_CALLBACK_0(LAppView::onDraw, this, transform, flags);
-    renderer->addCommand(&_customCommand);
 }
 
 void LAppView::onDraw(const cocos2d::Mat4& transform, uint32_t flags)
 {
+    _commandBuffer.PushCommandGroup();
+
     Director::getInstance()->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
     Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, transform);
 
@@ -112,7 +111,7 @@ void LAppView::onDraw(const cocos2d::Mat4& transform, uint32_t flags)
     Live2DMgr->SetViewMatrix(viewMatrix);
 
     // Cubism更新・描画
-    Live2DMgr->OnUpdate();
+    Live2DMgr->OnUpdate(&_commandBuffer);
 
     if (_debugRects)
     {
@@ -120,6 +119,8 @@ void LAppView::onDraw(const cocos2d::Mat4& transform, uint32_t flags)
     }
 
     Director::getInstance()->popMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
+
+    _commandBuffer.PopCommandGroup();
 }
 
 void LAppView::onTouchesBegan(const std::vector<Touch*>& touches, Event* event)

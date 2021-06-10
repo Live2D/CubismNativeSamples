@@ -14,11 +14,12 @@
 #include "LAppSprite.hpp"
 #include <Rendering/CubismRenderer.hpp>
 #ifdef CSM_TARGET_ANDROID_ES2
-#include <Rendering/OpenGL/CubismRenderer_OpenGLES2.hpp>
+#include <Rendering/Cocos2d/CubismRenderer_Cocos2dx.hpp>
 #endif
 
 //cocos2d
 #include "base/CCDirector.h"
+#include "renderer/backend/Device.h"
 
 using namespace Csm;
 using namespace LAppDefine;
@@ -58,7 +59,7 @@ LAppLive2DManager::LAppLive2DManager()
     : _sceneIndex(0)
     , _viewMatrix(NULL)
     , _renderTarget(SelectTarget_None)
-    , _programId(0)
+    , _programState(NULL)
     , _sprite(NULL)
     , _renderBuffer(NULL)
 {
@@ -72,12 +73,12 @@ LAppLive2DManager::LAppLive2DManager()
     int height = static_cast<int>(cocos2d::Director::getInstance()->getOpenGLView()->getFrameSize().height);
 
     // 画面全体を覆うサイズ
-    _sprite = new LAppSprite(_programId);
+    _sprite = new LAppSprite(_programState);
 
     _viewMatrix = new CubismMatrix44();
 
     // 使用するターゲット
-    _renderBuffer = new Csm::Rendering::CubismOffscreenFrame_OpenGLES2;
+    _renderBuffer = new Csm::Rendering::CubismOffscreenFrame_Cocos2dx;
     if (_renderBuffer)
     {// 描画ターゲット作成
 
@@ -92,9 +93,9 @@ LAppLive2DManager::LAppLive2DManager()
     }
 
 #ifdef CSM_TARGET_ANDROID_ES2
-    char *exts = (char*)glGetString(GL_EXTENSIONS);
+    char *exts = (char*)backend::Device::getInstance()->getDeviceInfo()->getExtension();
     if(strstr(exts, "GL_NV_shader_framebuffer_fetch ")){
-        Rendering::CubismRenderer_OpenGLES2::SetExtShaderMode( true , true );
+        Rendering::CubismRenderer_Cocos2dx::SetExtShaderMode( true , true );
     }
 #endif
 
@@ -187,7 +188,7 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
     }
 }
 
-void LAppLive2DManager::OnUpdate() const
+void LAppLive2DManager::OnUpdate(Csm::Rendering::CubismCommandBuffer_Cocos2dx* commandBuffer) const
 {
     Director* director = Director::getInstance();
     Size window = director->getWinSize();
@@ -216,8 +217,8 @@ void LAppLive2DManager::OnUpdate() const
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderBuffer && _sprite)
         {// レンダリングターゲット使いまわしの場合
             // レンダリング開始
-            _renderBuffer->BeginDraw();
-            _renderBuffer->Clear(_clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]); // 背景クリアカラー
+            _renderBuffer->BeginDraw(commandBuffer, NULL);
+            _renderBuffer->Clear(commandBuffer, _clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]); // 背景クリアカラー
         }
 
         model->Update();
@@ -226,9 +227,9 @@ void LAppLive2DManager::OnUpdate() const
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderBuffer && _sprite)
         {// レンダリングターゲット使いまわしの場合
             // レンダリング終了
-            _renderBuffer->EndDraw();
+            _renderBuffer->EndDraw(commandBuffer);
 
-            const GLfloat uvVertex[] =
+            float uvVertex[] =
             {
                 1.0f, 1.0f,
                 0.0f, 1.0f,
@@ -237,16 +238,13 @@ void LAppLive2DManager::OnUpdate() const
             };
 
             // program退避
-            GLint lastProgram;
-            glGetIntegerv(GL_CURRENT_PROGRAM, &lastProgram);
+            Csm::Rendering::CubismCommandBuffer_Cocos2dx* lastCommandBuffer = commandBuffer;
 
-            // GL系関数で直接描画
-            glUseProgram(_programId);
             _sprite->SetColor(1.0f, 1.0f, 1.0f, 0.25f + (float)i*0.5f);
-            _sprite->RenderImmidiate(_renderBuffer->GetColorBuffer(), uvVertex);
+            _sprite->RenderImmidiate(commandBuffer, _renderBuffer->GetColorBuffer(), uvVertex);
 
             // 元に戻す
-            glUseProgram(lastProgram);
+            commandBuffer = lastCommandBuffer;
         }
     }
 }
@@ -313,8 +311,6 @@ void LAppLive2DManager::ChangeScene(Csm::csmInt32 index)
 
 void LAppLive2DManager::CreateShader()
 {
-    //バーテックスシェーダのコンパイル
-    GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
     const char* vertexShader =
         "attribute vec3 position;"
         "attribute vec2 uv;"
@@ -323,15 +319,7 @@ void LAppLive2DManager::CreateShader()
         "    gl_Position = vec4(position, 1.0);"
         "    vuv = uv;"
         "}";
-    glShaderSource(vertexShaderId, 1, &vertexShader, NULL);
-    glCompileShader(vertexShaderId);
-    if(!CheckShader(vertexShaderId))
-    {
-        return;
-    }
 
-    //フラグメントシェーダのコンパイル
-    GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
     const char* fragmentShader =
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
         "precision mediump float;"
@@ -346,47 +334,10 @@ void LAppLive2DManager::CreateShader()
         "    gl_FragColor = texture2D(texture, vuv) * baseColor;"
         "    gl_FragColor = vec4(gl_FragColor.rgb * gl_FragColor.a,  gl_FragColor.a);"
         "}";
-    glShaderSource(fragmentShaderId, 1, &fragmentShader, NULL);
-    glCompileShader(fragmentShaderId);
-    if (!CheckShader(fragmentShaderId))
-    {
-        return;
-    }
 
-    //プログラムオブジェクトの作成
-    GLuint programId = glCreateProgram();
-    glAttachShader(programId, vertexShaderId);
-    glAttachShader(programId, fragmentShaderId);
+    auto program = cocos2d::backend::Device::getInstance()->newProgram(vertexShader, fragmentShader);
+    _programState = new backend::ProgramState(program);
 
-    // リンク
-    glLinkProgram(programId);
-
-    glUseProgram(programId);
-
-    _programId = programId;
-}
-
-bool LAppLive2DManager::CheckShader(GLuint shaderId)
-{
-    GLint status;
-    GLint logLength;
-    glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &logLength);
-    if (logLength > 0)
-    {
-        GLchar* log = reinterpret_cast<GLchar*>(CSM_MALLOC(logLength));
-        glGetShaderInfoLog(shaderId, logLength, &logLength, log);
-        CubismLogError("Shader compile log: %s", log);
-        CSM_FREE(log);
-    }
-
-    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &status);
-    if (status == GL_FALSE)
-    {
-        glDeleteShader(shaderId);
-        return false;
-    }
-
-    return true;
 }
 
 void LAppLive2DManager::SetRenderTargetClearColor(float r, float g, float b)

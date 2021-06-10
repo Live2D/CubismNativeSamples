@@ -47,8 +47,7 @@ private:
     TouchManager* touchMgr;
     Csm::CubismMatrix44* deviceToScreen;
     Csm::CubismViewMatrix* viewMatrix;
+    Csm::Rendering::CubismCommandBuffer_Cocos2dx _commandBuffer;
     DrawNode* _debugRects;
 
-protected:
-    cocos2d::CustomCommand _customCommand;
 };

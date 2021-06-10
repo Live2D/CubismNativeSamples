@@ -84,12 +84,15 @@ bool LAppDelegate::Initialize()
     ShowWindow(_windowHandle, SW_SHOWDEFAULT);
     UpdateWindow(_windowHandle);
 
+    // 現在のウィンドウサイズ
+    int windowWidth, windowHeight;
+    GetClientSize(windowWidth, windowHeight);
 
     // デバイス設定
     memset(&_presentParameters, 0, sizeof(_presentParameters));
     _presentParameters.BufferCount = BackBufferNum;
-    _presentParameters.BufferDesc.Width = LAppDefine::RenderTargetWidth;
-    _presentParameters.BufferDesc.Height = LAppDefine::RenderTargetHeight;
+    _presentParameters.BufferDesc.Width = windowWidth;
+    _presentParameters.BufferDesc.Height = windowHeight;
     _presentParameters.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     _presentParameters.BufferDesc.RefreshRate.Numerator = 60;
     _presentParameters.BufferDesc.RefreshRate.Denominator = 1;

@@ -9,32 +9,39 @@
 #include "base/CCDirector.h"
 #include "LAppPal.hpp"
 
-LAppSprite::LAppSprite(GLuint programId)
+LAppSprite::LAppSprite(backend::ProgramState* programState)
 {
+    _drawCommand = new Csm::Rendering::CubismCommandBuffer_Cocos2dx::DrawCommandBuffer();
+
     // 何番目のattribute変数か
-    _positionLocation = glGetAttribLocation(programId, "position");
-    _uvLocation      = glGetAttribLocation(programId, "uv");
-    _textureLocation = glGetUniformLocation(programId, "texture");
-    _colorLocation = glGetUniformLocation(programId, "baseColor");
+    _positionLocation = programState->getAttributeLocation("position");
+    _uvLocation      = programState->getAttributeLocation( "uv");
+    _textureLocation = programState->getUniformLocation("texture");
+    _colorLocation = programState->getUniformLocation("baseColor");
 
     _spriteColor[0] = 1.0f;
     _spriteColor[1] = 1.0f;
     _spriteColor[2] = 1.0f;
     _spriteColor[3] = 1.0f;
+
+    _drawCommand->GetCommandDraw()->GetPipelineDescriptor()->programState = programState;
+
+    _drawCommand->CreateVertexBuffer(sizeof(float) * 8, 8 * 2);
+    _drawCommand->GetCommandDraw()->GetCommand()->setDrawType(cocos2d::CustomCommand::DrawType::ARRAY);
+    _drawCommand->GetCommandDraw()->GetCommand()->setPrimitiveType(cocos2d::backend::PrimitiveType::TRIANGLE_STRIP);
 }
 
 LAppSprite::~LAppSprite()
 {
 }
 
-void LAppSprite::RenderImmidiate(GLuint textureId, const GLfloat uvVertex[8]) const
+void LAppSprite::RenderImmidiate(Csm::Rendering::CubismCommandBuffer_Cocos2dx* commandBuffer, Texture2D* texture, float uvVertex[8]) const
 {
-    // attribute属性を有効にする
-    glEnableVertexAttribArray(_positionLocation);
-    glEnableVertexAttribArray(_uvLocation);
+    auto programState = _drawCommand->GetCommandDraw()->GetPipelineDescriptor()->programState;
+    auto vertexLayout = programState->getVertexLayout();
 
     // uniform属性の登録
-    glUniform1i(_textureLocation, 0);
+    programState->setTexture(_textureLocation, 0, texture->getBackendTexture());
 
     // 画面サイズを取得する
     cocos2d::Size visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
@@ -49,14 +56,20 @@ void LAppSprite::RenderImmidiate(GLuint textureId, const GLfloat uvVertex[8]) co
         visibleSize.width / winSize.width,-visibleSize.height / winSize.height,
     };
 
+    _drawCommand->UpdateVertexBuffer(positionVertex, uvVertex, 8);
+
     // attribute属性を登録
-    glVertexAttribPointer(_positionLocation, 2, GL_FLOAT, false, 0, positionVertex);
-    glVertexAttribPointer(_uvLocation, 2, GL_FLOAT, false, 0, uvVertex);
-    glUniform4f(_colorLocation, _spriteColor[0], _spriteColor[1], _spriteColor[2], _spriteColor[3]);
+    vertexLayout->setAttribute("position", _positionLocation, backend::VertexFormat::FLOAT2, sizeof(float), false);
+    vertexLayout->setAttribute("uv", _uvLocation, backend::VertexFormat::FLOAT2, sizeof(float), false);
+    programState->setUniform(_colorLocation, _spriteColor, sizeof(float) * 4);
+
+    vertexLayout->setLayout(sizeof(float) * 8);
 
     // モデルの描画
-    glBindTexture(GL_TEXTURE_2D, textureId);
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    texture->setRenderTarget(true);
+
+    commandBuffer->AddDrawCommand(_drawCommand->GetCommandDraw());
+
 }
 
 void LAppSprite::SetColor(float r, float g, float b, float a)

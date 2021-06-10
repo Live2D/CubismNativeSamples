@@ -7,8 +7,8 @@ Cocos2d-xで実装したアプリケーションのサンプル実装です。
 
 | フレームワーク | バージョン |
 | --- | --- |
-| [XCode] | 12.1 |
-| [Cocos2d-x] | 3.17.2 |
+| [XCode] | 12.4 |
+| [Cocos2d-x] | 4.0 (`95e5d868ce5958c0dadfc485bdda52f1bc404fe0`) |
 
 その他の開発環境・動作確認環境はトップディレクトリにある [README.md](../../README.md) を参照してください。
 
@@ -21,7 +21,7 @@ Cocos2d-xで実装したアプリケーションのサンプル実装です。
 Cocos2d-x v4.0 から Metal API の対応に伴い、Renderer の構成が変更され、OpenGLES の API を直接使用することが出来なくなりました。
 詳しくは [Cocos2d-x のドキュメント](https://docs.cocos2d-x.org/cocos2d-x/v4/en/upgradeGuide/) を参照してください。
 
-この変更に伴い Cocos2d-x v4.x 系では Cubism Framework の Rendering API を用いることができないため、サポート対象外となります。
+この変更に伴い Cocos2d-x v4.x 系では Cubism Framework の Renderer に Cocos2d-x　専用の物を用意いたしました。現在は、各プラットフォームで共通の Renderer を使用しており、 macOS, Windows, Linux, iOS, Android と横断的にクロスコンパイルを通すことが可能です。
 
 
 ## ディレクトリ構造
@@ -74,6 +74,10 @@ iOS 用の CMake プロジェクトです。
 | --- | --- |
 | `proj_xcode` | Xcode プロジェクト |
 
+ビルド時に下記の手順を行なってください。
+
+1. XCode の `Project設定 - TARGETS - Demo - Packaging - Info.plist File`　に記載されている `Info.plist` 内の `Executable file` を `$(EXECUTABLE_NAME)` または`Demo`（アプリ名）に書き換えてください
+
 NOTICE: Cubism Core は i386 アーキテクチャをサポートしていないため、**iPhone Simulator 向けのビルドは行えません。**
 
 ### proj.linux
@@ -89,11 +93,10 @@ Linux 用の CMake プロジェクトです。
 ビルド前に下記の手順を行なってください。
 
 1. [Dependencies that you need] ドキュメントを参照して必要なパッケージをダウンロードします
-2. `scripts/fix_libs` を実行してライブラリの修正を行います
 
-[Dependencies that you need]: https://docs.cocos2d-x.org/cocos2d-x/v3/en/installation/Linux.html#dependencies-that-you-need
+[Dependencies that you need]: https://docs.cocos2d-x.org/cocos2d-x/v4/en/installation/Linux.html#dependencies-that-you-need
 
-NOTICE: 本プロジェクトは **Ubuntu 18.04 以上**のみのサポートとなります。
+NOTICE: Linuxビルドには制限があります。使用する際は必ずトップディレクトリにある[NOTICE.md](../../NOTICE.md)をご確認ください。
 
 ### proj.mac
 
@@ -105,6 +108,12 @@ macOS 用の CMake プロジェクトです。
 | --- | --- |
 | `make_xcode` | 実行可能なアプリケーション |
 | `proj_xcode` | Xcode プロジェクト |
+
+WARNING: macOSビルドにつきまして、`Cocos2d-x V4.0` に起因する不具合のために正常にビルドができない状態となっております。対処方法につきましては、以下の Issue をご確認ください。
+
+* [cocos2d/cocos2d-x error: Objective-C was disabled in PCH file but is currently enabled
+#20607
+](https://github.com/cocos2d/cocos2d-x/issues/20607#issuecomment-780266298)
 
 ### proj.win
 
@@ -142,7 +151,7 @@ CMake 用の設定ファイルです。
 | Linux / macOS | `setup_cocos2d` |
 | Windows | `setup_cocos2d.bat` |
 
-スクリプト内の `COCOS_VERSION` を変更することでライブラリのバージョンを指定することが出来ます。
+スクリプト内の `COCOS_COMMIT_HASH` を変更することで、使用する Cocos2d-x の SCM 上のバージョンをコミットハッシュで指定することが出来ます。
 
 ダウンロード後は `thirdParty/cocos2d` というディレクトリ名で展開されます。
 

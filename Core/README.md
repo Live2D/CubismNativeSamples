@@ -29,10 +29,12 @@ Core
 | Android | ARM64 | ✓ | ✓ | android/arm64-v8a |   |
 | Android | ARMv7 | ✓ | ✓ | android/armeabi-v7a |   |
 | Android | x86 | ✓ | ✓ | android/x86 |   |
+| Android | x86_64 | ✓ | ✓ | android/x86_64 |   |
 | iOS | ARM64 |   | ✓ | ios/xxx-iphoneos | iOS Devices |
 | iOS | x86_64 |   | ✓ | ios/xxx-iphonesimulator | iOS Simulator |
 | Linux | x86_64 | ✓ | ✓ | linux/x86_64 |   |
-| macOS | x86_64 | ✓ | ✓ | macos |   |
+| macOS | ARM64 | ✓ | ✓ | macos/arm64 |   |
+| macOS | x86_64 | ✓ | ✓ | macos/x86_64 |   |
 | Raspberry Pi | ARM | ✓ | ✓ | experimental/rpi |   |
 | UWP | ARM | ✓ |   | experimental/uwp/arm |   |
 | UWP | ARM64 | ✓ |   | experimental/uwp/arm64 |   |

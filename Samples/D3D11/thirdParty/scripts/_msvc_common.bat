@@ -10,6 +10,9 @@ if "%VARIABLE_EXISTS%" equ "FALSE" (
 )
 endlocal
 
+set XTK_VERSION=%1
+echo XTK version uses %XTK_VERSION%.
+
 cd %~dp0
 
 rem Make sure toolchain exists.
@@ -27,12 +30,19 @@ cd ..\DirectXTK
 call "%VCVARSALL%" x86
 if %errorlevel% neq 0 exit /b %errorlevel%
 
+if "%MSVC_VERSION%" geq "2017" (
+msbuild "DirectXTK_Desktop_%MSVC_VERSION%.sln" /v:m /t:build /p:Platform=X86;Configuration=Debug
+if %errorlevel% neq 0 exit /b %errorlevel%
+
+msbuild "DirectXTK_Desktop_%MSVC_VERSION%.sln" /v:m /t:build /p:Platform=X86;Configuration=Release
+if %errorlevel% neq 0 exit /b %errorlevel%
+) else (
 msbuild "DirectXTK_Desktop_%MSVC_VERSION%.sln" /v:m /t:build /p:Platform=Win32;Configuration=Debug
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 msbuild "DirectXTK_Desktop_%MSVC_VERSION%.sln" /v:m /t:build /p:Platform=Win32;Configuration=Release
 if %errorlevel% neq 0 exit /b %errorlevel%
-
+)
 
 call "%VCVARSALL%" x64
 if %errorlevel% neq 0 exit /b %errorlevel%

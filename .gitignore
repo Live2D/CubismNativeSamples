@@ -12,6 +12,7 @@
 /Samples/**/thirdParty/*
 !/Samples/**/thirdParty/scripts/*
 !/Samples/OpenGL/thirdParty/stb/*
+!/Samples/Metal/thirdParty/stb/*
 # Other files
 /build/
 .vs/

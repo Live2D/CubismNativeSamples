@@ -49,5 +49,4 @@ private:
     Csm::CubismViewMatrix* viewMatrix;
     Csm::Rendering::CubismCommandBuffer_Cocos2dx _commandBuffer;
     DrawNode* _debugRects;
-
 };

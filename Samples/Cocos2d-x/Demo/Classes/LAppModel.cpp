@@ -78,6 +78,10 @@ LAppModel::LAppModel()
     _clearColor[1] = 1.0f;
     _clearColor[2] = 1.0f;
     _clearColor[3] = 0.0f;
+
+    _renderBuffer = new Csm::Rendering::CubismOffscreenFrame_Cocos2dx;
+
+    _groupCommand.init(0.0);
 }
 
 LAppModel::~LAppModel()
@@ -90,7 +94,7 @@ LAppModel::~LAppModel()
         _renderSprite->removeFromParentAndCleanup(true);
         _renderSprite = NULL;
     }
-    _renderBuffer.DestroyOffscreenFrame();
+    _renderBuffer->DestroyOffscreenFrame();
 
     ReleaseMotions();
     ReleaseExpressions();
@@ -541,16 +545,18 @@ void LAppModel::DoDraw()
     GetRenderer<Rendering::CubismRenderer_Cocos2dx>()->DrawModel();
 }
 
-void LAppModel::Draw(CubismMatrix44& matrix)
+void LAppModel::Draw(Csm::Rendering::CubismCommandBuffer_Cocos2dx* commandBuffer, CubismMatrix44& matrix)
 {
     if (_model == NULL)return;
 
-    GetRenderer<Rendering::CubismRenderer_Cocos2dx>()->GetCommandBuffer()->PushCommandGroup();
+    Csm::Rendering::CubismRenderer_Cocos2dx::StartFrame(commandBuffer);
 
-    if (_renderBuffer.IsValid())
+    //commandBuffer->PushCommandGroup();
+
+    if (_renderBuffer->IsValid())
     {
-        _renderBuffer.BeginDraw(GetRenderer<Rendering::CubismRenderer_Cocos2dx>()->GetCommandBuffer(), NULL);
-        _renderBuffer.Clear(GetRenderer<Rendering::CubismRenderer_Cocos2dx>()->GetCommandBuffer(), _clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]);
+        _renderBuffer->BeginDraw(commandBuffer, NULL);
+        _renderBuffer->Clear(commandBuffer, _clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]);
     }
 
     matrix.MultiplyByMatrix(_modelMatrix);
@@ -559,12 +565,12 @@ void LAppModel::Draw(CubismMatrix44& matrix)
 
     DoDraw();
 
-    if (_renderBuffer.IsValid())
+    if (_renderBuffer->IsValid())
     {
-        _renderBuffer.EndDraw(GetRenderer<Rendering::CubismRenderer_Cocos2dx>()->GetCommandBuffer());
+        _renderBuffer->EndDraw(commandBuffer);
     }
 
-    GetRenderer<Rendering::CubismRenderer_Cocos2dx>()->GetCommandBuffer()->PopCommandGroup();
+    //commandBuffer->PopCommandGroup();
 }
 
 csmBool LAppModel::HitTest(const csmChar* hitAreaName, csmFloat32 x, csmFloat32 y)
@@ -751,7 +757,7 @@ csmRectF LAppModel::GetDrawableArea(csmInt32 drawableIndex, const CubismMatrix44
 void LAppModel::MakeRenderingTarget()
 {
     // RenderTexture::createは描画タイミングで呼ぶとAssert扱いになるので注意すること
-    if (!_renderSprite && !_renderBuffer.IsValid())
+    if (!_renderSprite && !_renderBuffer->IsValid())
     {
         int frameW = Director::getInstance()->getOpenGLView()->getFrameSize().width, frameH = Director::getInstance()->getOpenGLView()->getFrameSize().height;
 
@@ -784,7 +790,7 @@ void LAppModel::MakeRenderingTarget()
         );
 
         // レンダリングバッファの描画先をそのテクスチャにする
-        _renderBuffer.CreateOffscreenFrame(frameW, frameH, _renderSprite->getSprite()->getTexture());
+        _renderBuffer->CreateOffscreenFrame(frameW, frameH, _renderSprite->getSprite()->getTexture());
     }
 }
 

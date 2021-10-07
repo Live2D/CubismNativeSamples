@@ -39,10 +39,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Add Cubism Core.
 # Import as static library.
 add_library(Live2DCubismCore STATIC IMPORTED)
+# Get architecture.
+EXECUTE_PROCESS( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE )
 # Set library path and inlude path.
 set_target_properties(Live2DCubismCore
   PROPERTIES
-    IMPORTED_LOCATION ${CORE_PATH}/lib/macos/libLive2DCubismCore.a
+    IMPORTED_LOCATION ${CORE_PATH}/lib/macos/${ARCHITECTURE}/libLive2DCubismCore.a
     INTERFACE_INCLUDE_DIRECTORIES ${CORE_PATH}/include
 )
 

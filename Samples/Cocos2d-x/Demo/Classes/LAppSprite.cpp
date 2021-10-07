@@ -9,26 +9,9 @@
 #include "base/CCDirector.h"
 #include "LAppPal.hpp"
 
-LAppSprite::LAppSprite(backend::ProgramState* programState)
+LAppSprite::LAppSprite(backend::Program* program)
 {
-    _drawCommand = new Csm::Rendering::CubismCommandBuffer_Cocos2dx::DrawCommandBuffer();
-
-    // 何番目のattribute変数か
-    _positionLocation = programState->getAttributeLocation("position");
-    _uvLocation      = programState->getAttributeLocation( "uv");
-    _textureLocation = programState->getUniformLocation("texture");
-    _colorLocation = programState->getUniformLocation("baseColor");
-
-    _spriteColor[0] = 1.0f;
-    _spriteColor[1] = 1.0f;
-    _spriteColor[2] = 1.0f;
-    _spriteColor[3] = 1.0f;
-
-    _drawCommand->GetCommandDraw()->GetPipelineDescriptor()->programState = programState;
-
-    _drawCommand->CreateVertexBuffer(sizeof(float) * 8, 8 * 2);
-    _drawCommand->GetCommandDraw()->GetCommand()->setDrawType(cocos2d::CustomCommand::DrawType::ARRAY);
-    _drawCommand->GetCommandDraw()->GetCommand()->setPrimitiveType(cocos2d::backend::PrimitiveType::TRIANGLE_STRIP);
+    _program = program;
 }
 
 LAppSprite::~LAppSprite()
@@ -37,11 +20,15 @@ LAppSprite::~LAppSprite()
 
 void LAppSprite::RenderImmidiate(Csm::Rendering::CubismCommandBuffer_Cocos2dx* commandBuffer, Texture2D* texture, float uvVertex[8]) const
 {
-    auto programState = _drawCommand->GetCommandDraw()->GetPipelineDescriptor()->programState;
-    auto vertexLayout = programState->getVertexLayout();
+    Csm::Rendering::CubismCommandBuffer_Cocos2dx::DrawCommandBuffer* drawCommandBuffer = CSM_NEW Csm::Rendering::CubismCommandBuffer_Cocos2dx::DrawCommandBuffer();
+    PipelineDescriptor* pipelineDescriptor = drawCommandBuffer->GetCommandDraw()->GetPipelineDescriptor();
+    backend::BlendDescriptor* blendDescriptor = drawCommandBuffer->GetCommandDraw()->GetBlendDescriptor();
+    backend::ProgramState* programState = pipelineDescriptor->programState;
 
-    // uniform属性の登録
-    programState->setTexture(_textureLocation, 0, texture->getBackendTexture());
+    drawCommandBuffer->GetCommandDraw()->GetCommand()->setDrawType(cocos2d::CustomCommand::DrawType::ELEMENT);
+    drawCommandBuffer->GetCommandDraw()->GetCommand()->setPrimitiveType(cocos2d::backend::PrimitiveType::TRIANGLE);
+    drawCommandBuffer->CreateVertexBuffer(sizeof(float) * 2, 4 * 2);
+    drawCommandBuffer->CreateIndexBuffer(6);
 
     // 画面サイズを取得する
     cocos2d::Size visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
@@ -56,19 +43,42 @@ void LAppSprite::RenderImmidiate(Csm::Rendering::CubismCommandBuffer_Cocos2dx* c
         visibleSize.width / winSize.width,-visibleSize.height / winSize.height,
     };
 
-    _drawCommand->UpdateVertexBuffer(positionVertex, uvVertex, 8);
+    short positionIndex[] =
+    {
+        0,1,2,
+        0,2,3
+    };
+
+    drawCommandBuffer->UpdateVertexBuffer(positionVertex, uvVertex, 4);
+    drawCommandBuffer->UpdateIndexBuffer(positionIndex, 6);
+    drawCommandBuffer->CommitVertexBuffer();
+
+    if (!programState)
+    {
+        programState = new cocos2d::backend::ProgramState(_program);
+    }
 
     // attribute属性を登録
-    vertexLayout->setAttribute("position", _positionLocation, backend::VertexFormat::FLOAT2, sizeof(float), false);
-    vertexLayout->setAttribute("uv", _uvLocation, backend::VertexFormat::FLOAT2, sizeof(float), false);
-    programState->setUniform(_colorLocation, _spriteColor, sizeof(float) * 4);
+    programState->getVertexLayout()->setAttribute("position", _program->getAttributeLocation("position"), backend::VertexFormat::FLOAT2, 0, false);
+    programState->getVertexLayout()->setAttribute("uv", _program->getAttributeLocation("uv"), backend::VertexFormat::FLOAT2, sizeof(float) * 2, false);
 
-    vertexLayout->setLayout(sizeof(float) * 8);
+    // uniform属性の登録
+    programState->setTexture(_program->getUniformLocation("texture"), 0, texture->getBackendTexture());
+
+    programState->setUniform(_program->getUniformLocation("baseColor"), _spriteColor, sizeof(float) * 4);
+
+    programState->getVertexLayout()->setLayout(sizeof(float) * 4);
+
+    blendDescriptor->sourceRGBBlendFactor = cocos2d::backend::BlendFactor::ONE;
+    blendDescriptor->destinationRGBBlendFactor = cocos2d::backend::BlendFactor::ONE_MINUS_SRC_ALPHA;
+    blendDescriptor->sourceAlphaBlendFactor = cocos2d::backend::BlendFactor::ONE;
+    blendDescriptor->destinationAlphaBlendFactor = cocos2d::backend::BlendFactor::ONE_MINUS_SRC_ALPHA;
+    blendDescriptor->blendEnabled = true;
+
+    pipelineDescriptor->programState = programState;
 
     // モデルの描画
-    texture->setRenderTarget(true);
-
-    commandBuffer->AddDrawCommand(_drawCommand->GetCommandDraw());
+    commandBuffer->AddDrawCommand(drawCommandBuffer->GetCommandDraw());
 
 }
 

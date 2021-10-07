@@ -1,0 +1,25 @@
+target_sources(${APP_NAME}
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/JniBridgeC.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/JniBridgeC.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppAllocator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppAllocator.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppDefine.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppDefine.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppMinimumDelegate.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppMinimumDelegate.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppMinimumLive2DManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppMinimumLive2DManager.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppMinimumModel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppMinimumModel.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppPal.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppPal.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppSprite.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppSprite.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppTextureManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppTextureManager.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppMinimumView.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppMinimumView.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TouchManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TouchManager.hpp
+)

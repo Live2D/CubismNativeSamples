@@ -20,7 +20,9 @@ OpenGL で実装したアプリケーションのサンプル実装です。
 ```
 .
 ├─ Demo
-│  ├─ proj.android.cmake    # Android Studio project
+│  ├─ proj.android.cmake
+│  │  ├─Full                # Full Demo Android Studio project
+│  │  └─Minimum             # Minimum Demo Android Studio project
 │  ├─ proj.ios.cmake        # CMake project for iOS
 │  ├─ proj.linux.cmake      # CMake project for Linux
 │  ├─ proj.mac.cmake        # CMake project for macOS
@@ -32,8 +34,17 @@ OpenGL で実装したアプリケーションのサンプル実装です。
 ## Demo
 
 [Cubism Native Framework] の各機能を一通り使用したサンプルです。
-モーションの再生、表情の設定、ポーズの切り替え、物理演算の設定などを行います。
-メニューボタンからモデルを切り替えることができます。
+
+全ての機能を利用するフルバージョンのサンプルと、最小限の機能のみが備わったミニマムバージョンのサンプルの二通りがあります。
+選択方法については各プラットフォームの項目を参照してください。
+
+その他のプラットフォーム向けのサンプルはフルバージョンのみが利用できます。
+
+フルバージョンではモーションの再生、表情の設定、ポーズの切り替え、物理演算の設定などを行います。
+また、メニューボタンからモデルを切り替えることができます。
+
+ミニマムバージョンでは単一のモデルの読み込み・表示、単一のモーションの再生、表情の設定、物理演算の設定などを行います。
+ポーズの切り替えやモデルの切り替えには対応していません。
 
 [Cubism Native Framework]: https://github.com/Live2D/CubismNativeFramework
 
@@ -41,7 +52,7 @@ OpenGL で実装したアプリケーションのサンプル実装です。
 
 ### proj.android.cmake
 
-Android 用の Android Studio プロジェクトが含まれます。
+このディレクトリにはフルバージョンとミニマムバージョンの二通りの Android Studio プロジェクトが含まれます。
 
 NOTE: 事前に下記の SDK のダウンロードが必要です
 
@@ -59,6 +70,8 @@ iOS 用の CMake プロジェクトです。
 | --- | --- |
 | `proj_xcode` | Xcode プロジェクト |
 
+これらのスクリプトを実行した際にフルバージョンのサンプルを生成するか、ミニマムバージョンのサンプルを生成するかを選択することができます。
+
 CMake のツールチェーンとして [ios-cmake] を使用しています。
 [thirdParty](README.md#thirdParty) の項目を参照して事前にダウンロードを行なってください。
 
@@ -74,6 +87,8 @@ Linux 用の CMake プロジェクトです。
 | --- | --- |
 | `make_gcc` | 実行可能なアプリケーション |
 
+これらのスクリプトを実行した際にフルバージョンのサンプルを生成するか、ミニマムバージョンのサンプルを生成するかを選択することができます。
+
 追加ライブラリとして [GLEW] と [GLFW] を使用しています。
 [thirdParty](README.md#thirdParty) の項目を参照して事前にダウンロードを行なってください。
 
@@ -88,6 +103,8 @@ macOS 用の CMake プロジェクトです。
 | `make_xcode` | 実行可能なアプリケーション |
 | `proj_xcode` | Xcode プロジェクト |
 
+これらのスクリプトを実行した際にフルバージョンのサンプルを生成するか、ミニマムバージョンのサンプルを生成するかを選択することができます。
+
 追加ライブラリとして [GLEW] と [GLFW] を使用しています。
 [thirdParty](README.md#thirdParty) の項目を参照して事前にダウンロードを行なってください。
 
@@ -101,6 +118,8 @@ Windows 用の CMake プロジェクトです。
 | --- | --- |
 | `nmake_msvcXXXX.bat` | 実行可能なアプリケーション |
 | `proj_msvcXXXX.bat` | Visual Studio プロジェクト |
+
+これらのスクリプトを実行した際にフルバージョンのサンプルを生成するか、ミニマムバージョンのサンプルを生成するかを選択することができます。
 
 追加ライブラリとして [GLEW] と [GLFW] を使用しています。
 [thirdParty](README.md#thirdParty) の項目を参照して事前にダウンロードを行なってください。

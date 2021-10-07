@@ -44,7 +44,7 @@ public:
     * @param[in]       textureId    テクスチャID
     * @param[in]       programId    シェーダID
     */
-    LAppSprite(backend::ProgramState* programState);
+    LAppSprite(backend::Program* program);
 
     /**
     * @brief デストラクタ
@@ -69,13 +69,8 @@ public:
 
 private:
 
-    int _positionLocation;  ///< 位置アトリビュート
-    int _uvLocation;        ///< UVアトリビュート
-    backend::UniformLocation _textureLocation;   ///< テクスチャアトリビュート
-    backend::UniformLocation _colorLocation;     ///< カラーアトリビュート
-
     float _spriteColor[4];  ///< 表示カラー
 
-    Csm::Rendering::CubismCommandBuffer_Cocos2dx::DrawCommandBuffer* _drawCommand;
+    cocos2d::backend::Program* _program;
 };
 

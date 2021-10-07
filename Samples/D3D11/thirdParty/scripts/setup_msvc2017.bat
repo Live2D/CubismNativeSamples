@@ -2,7 +2,7 @@
 
 setlocal
 
-set XTK_VERSION=dec2019
+set XTK_VERSION=jun2021
 
 set SCRIPT_PATH=%~dp0
 
@@ -21,7 +21,7 @@ for /f "usebackq tokens=*" %%i in (`"%VSWHERE%" -legacy -version [%_MSVC_RANGE_S
 )
 
 :: Build XTK project.
-call "%SCRIPT_PATH%_msvc_common.bat"
+call "%SCRIPT_PATH%_msvc_common.bat" %XTK_VERSION%
 if %errorlevel% neq 0 pause & exit /b %errorlevel%
 
 pause & exit /b 0

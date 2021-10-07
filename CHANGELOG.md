@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4-r.4-beta.1] - 2021-10-07
+
+### Added
+
+* Add the minimum sample into D3D9, D3D11, and all platforms OpenGL samples.
+  * This sample support to view single model, playback for single motion and the model looks at point where screen be dragging.
+* Add support for OpenGL to work on M1 Mac.
+* Add the sample for Metal API in iOS.
+  * There are some restrictions, see the [NOTICE.md](NOTICE.md).
+
+### Changed
+
+* Update Visual Studio 2017 and 2019 DirectXTK version to `jun2021`.
+* Change the console to show which version of DirectXTK is being used when downloading it.
+* Update ios-cmake library version to 4.2.0.
+
+### Fixed
+
+* Fixed a bug where the move process would affect other models while displaying multiple models. by [@catCoder](https://community.live2d.com/discussion/1043/multiple-models-when-using-translaterelative)
+* Fix renderer for Cocos2d-x v4.0.
+  * Rendering didn't work when using `USE_RENDER_TARGET`.
+* Fix the viewport setting for Linux sample.
+
+
 ## [4-r.3] - 2021-06-10
 
 ## [4-r.3-beta.1] - 2021-05-13
@@ -11,6 +35,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 * Add the sample for Cocos2d-x v4.0.
+* Add the minimum sample of OpenGL sample for Windows.
+  * This sample support to view single model, playback for single motion and the model looks at mouse cursor when mouse dragging.
 
 ### Removed
 
@@ -124,6 +150,7 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[4-r.4-beta.1]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.3...4-r.4-beta.1
 [4-r.3]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.3-beta.1...4-r.3
 [4-r.3-beta.1]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.2...4-r.3-beta.1
 [4-r.2]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.1...4-r.2

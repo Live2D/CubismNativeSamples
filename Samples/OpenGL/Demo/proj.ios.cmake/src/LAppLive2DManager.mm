@@ -134,10 +134,10 @@ void FinishedMotion(Csm::ACubismMotion* self)
     AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
     ViewController* view = [delegate viewController];
 
-    Csm::CubismMatrix44 projection;
     Csm::csmUint32 modelCount = _models.GetSize();
     for (Csm::csmUint32 i = 0; i < modelCount; ++i)
     {
+        Csm::CubismMatrix44 projection;
         LAppModel* model = [self getModel:i];
         if (model->GetModel()->GetCanvasWidth() > 1.0f && width < height)
         {

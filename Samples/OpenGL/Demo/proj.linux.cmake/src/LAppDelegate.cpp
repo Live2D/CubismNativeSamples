@@ -104,6 +104,7 @@ bool LAppDelegate::Initialize()
     glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
     _windowWidth = width;
     _windowHeight = height;
+    glViewport(0, 0, _windowWidth, _windowHeight);
 
     //AppViewの初期化
     _view->Initialize();
@@ -154,6 +155,7 @@ void LAppDelegate::Run()
             _windowWidth = width;
             _windowHeight = height;
         }
+        glViewport(0, 0, _windowWidth, _windowHeight);
 
         // 時間更新
         LAppPal::UpdateTime();

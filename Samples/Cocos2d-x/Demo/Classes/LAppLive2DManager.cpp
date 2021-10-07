@@ -59,7 +59,7 @@ LAppLive2DManager::LAppLive2DManager()
     : _sceneIndex(0)
     , _viewMatrix(NULL)
     , _renderTarget(SelectTarget_None)
-    , _programState(NULL)
+    , _program(NULL)
     , _sprite(NULL)
     , _renderBuffer(NULL)
 {
@@ -73,7 +73,7 @@ LAppLive2DManager::LAppLive2DManager()
     int height = static_cast<int>(cocos2d::Director::getInstance()->getOpenGLView()->getFrameSize().height);
 
     // 画面全体を覆うサイズ
-    _sprite = new LAppSprite(_programState);
+    _sprite = new LAppSprite(_program);
 
     _viewMatrix = new CubismMatrix44();
 
@@ -193,25 +193,27 @@ void LAppLive2DManager::OnUpdate(Csm::Rendering::CubismCommandBuffer_Cocos2dx* c
     Director* director = Director::getInstance();
     Size window = director->getWinSize();
 
-    CubismMatrix44 projection;
+    Csm::Rendering::CubismRenderer_Cocos2dx::StartFrame(commandBuffer);
+
     for (csmUint32 i = 0; i < _models.GetSize(); ++i)
     {
+        CubismMatrix44 projection;
         LAppModel* model = GetModel(i);
         if (model->GetModel()->GetCanvasWidth() > 1.0f && window.width < window.height)
         {
-          // 横に長いモデルを縦長ウィンドウに表示する際モデルの横サイズでscaleを算出する
-          model->GetModelMatrix()->SetWidth(2.0f);
-          projection.Scale(1.0f, static_cast<float>(window.width) / static_cast<float>(window.height));
+            // 横に長いモデルを縦長ウィンドウに表示する際モデルの横サイズでscaleを算出する
+            model->GetModelMatrix()->SetWidth(2.0f);
+            projection.Scale(1.0f, static_cast<float>(window.width) / static_cast<float>(window.height));
         }
         else
         {
-          projection.Scale(static_cast<float>(window.height) / static_cast<float>(window.width), 1.0f);
+            projection.Scale(static_cast<float>(window.height) / static_cast<float>(window.width), 1.0f);
         }
 
         // 必要があればここで乗算
         if (_viewMatrix != NULL)
         {
-          projection.MultiplyByMatrix(_viewMatrix);
+            projection.MultiplyByMatrix(_viewMatrix);
         }
 
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderBuffer && _sprite)
@@ -222,7 +224,7 @@ void LAppLive2DManager::OnUpdate(Csm::Rendering::CubismCommandBuffer_Cocos2dx* c
         }
 
         model->Update();
-        model->Draw(projection);///< 参照渡しなのでprojectionは変質する
+        model->Draw(commandBuffer, projection);///< 参照渡しなのでprojectionは変質する
 
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderBuffer && _sprite)
         {// レンダリングターゲット使いまわしの場合
@@ -240,7 +242,7 @@ void LAppLive2DManager::OnUpdate(Csm::Rendering::CubismCommandBuffer_Cocos2dx* c
             // program退避
             Csm::Rendering::CubismCommandBuffer_Cocos2dx* lastCommandBuffer = commandBuffer;
 
-            _sprite->SetColor(1.0f, 1.0f, 1.0f, 0.25f + (float)i*0.5f);
+            _sprite->SetColor(1.0f, 1.0f, 1.0f, 0.25f + (float)i * 0.5f);
             _sprite->RenderImmidiate(commandBuffer, _renderBuffer->GetColorBuffer(), uvVertex);
 
             // 元に戻す
@@ -336,7 +338,7 @@ void LAppLive2DManager::CreateShader()
         "}";
 
     auto program = cocos2d::backend::Device::getInstance()->newProgram(vertexShader, fragmentShader);
-    _programState = new backend::ProgramState(program);
+    _program = program;
 
 }
 

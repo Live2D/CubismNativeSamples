@@ -6,7 +6,29 @@ SCRIPT_PATH=$(cd $(dirname $0) && pwd)
 CMAKE_PATH=$SCRIPT_PATH/..
 BUILD_PATH=$SCRIPT_PATH/../build/proj_xcode
 
+MIN_DEMO=NONE
+
+if [ $# -ne 0 ]; then
+  MIN_DEMO="$1"
+else
+  PS3="Select the demo type number to use: "
+  select var in 'Full' 'Minimum'
+  do
+    case "$var" in
+      'Full' ) MIN_DEMO=OFF ;;
+      'Minimum' ) MIN_DEMO=ON ;;
+      * ) echo "Invalid option $REPLY." ;;
+    esac
+    break
+  done
+fi
+
+if [ "$MIN_DEMO" = NONE ]; then
+  exit -1
+fi
+
 # Run CMake.
 cmake -S "$CMAKE_PATH" \
   -B "$BUILD_PATH" \
+  -D CSM_MINIMUM_DEMO="$MIN_DEMO" \
   -G Xcode

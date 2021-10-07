@@ -9,6 +9,7 @@ THIRD_PARTY_PATH=$CMAKE_PATH/../../thirdParty/
 
 PLATFORM=NONE
 NAME=unknown
+MIN_DEMO=NONE
 PS3="Select the platform number to use: "
 select var in 'iphoneOS (arm64)' 'iphoneOS Simulator (x86_64)'
 do
@@ -24,9 +25,25 @@ if [ "$PLATFORM" = NONE ]; then
   exit -1
 fi
 
+PS3="Select the demo type number to use: "
+select var in 'Full' 'Minimum'
+do
+  case "$var" in
+    'Full' ) MIN_DEMO=OFF ;;
+    'Minimum' ) MIN_DEMO=ON ;;
+    * ) echo "Invalid option $REPLY." ;;
+  esac
+  break
+done
+
+if [ "$MIN_DEMO" = NONE ]; then
+  exit -1
+fi
+
 # Run CMake.
 cmake -S "$CMAKE_PATH" \
   -B "${BUILD_PATH}_${NAME}" \
   -D CMAKE_TOOLCHAIN_FILE="$THIRD_PARTY_PATH/ios-cmake/ios.toolchain.cmake" \
   -D PLATFORM=$PLATFORM \
+  -D CSM_MINIMUM_DEMO="$MIN_DEMO" \
   -G Xcode

@@ -25,6 +25,7 @@ Cubism Native Framework および Live2D Cubism Core と組み合わせて使用
    ├─ Cocos2d-x     # Cocos2d-x のサンプルプロジェクトが含まれるディレクトリ
    ├─ D3D9          # DirectX 9.0c のサンプルプロジェクトが含まれるディレクトリ
    ├─ D3D11         # DirectX 11 のサンプルプロジェクトが含まれるディレクトリ
+   ├─ Metal         # Metal のサンプルプロジェクトが含まれるディレクトリ
    ├─ OpenGL        # OpenGL のサンプルプロジェクトが含まれるディレクトリ
    └─ Resources     # モデルのファイルや画像などのリソースが含まれるディレクトリ
 ```
@@ -92,19 +93,19 @@ Demo
 
 | 開発ツール | バージョン |
 | --- | --- |
-| Android Studio | 4.2.1 |
-| CMake | 3.20.1 |
+| Android Studio | Arctic Fox 2020.3.1 |
+| CMake | 3.21.3 |
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.35 |
-| Visual Studio 2019 | 16.9.4 |
-| XCode | 12.5 |
+| Visual Studio 2017 | 15.9.39 |
+| Visual Studio 2019 | 16.11.3 |
+| XCode | 13.0 |
 
 ### Android
 
 | Android SDK tools | バージョン |
 | --- | --- |
-| Android NDK | 22.1.7171670 |
+| Android NDK | 23.0.7599858 |
 | Android SDK | 30.0.3 |
 | CMake | 3.18.1 |
 
@@ -114,7 +115,7 @@ Demo
 | --- | --- | --- |
 | Red Hat | `amazonlinux:2` | 7.3.1 |
 | Red Hat | `centos:7` | 4.8.5 |
-| Red Hat | `centos:8` | 8.3.1 |
+| Red Hat | `centos:8` | 8.4.2 |
 | Debian | `ubuntu:16.04` | 5.4.0 |
 | Debian | `ubuntu:18.04` | 7.4.0 |
 | Debian | `ubuntu:20.04` | 9.3.0 |
@@ -133,9 +134,9 @@ Demo
 
 | プラットフォーム | バージョン |
 | --- | --- |
-| iOS / iPadOS | 14.5.1 |
-| macOS | 11.3.1 |
-| Windows 10 | 20H2 |
+| iOS / iPadOS | 15.0.1 |
+| macOS | 11.6 |
+| Windows 10 | 21H1 |
 
 ### Android
 

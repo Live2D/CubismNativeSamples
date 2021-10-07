@@ -149,10 +149,10 @@ void LAppLive2DManager::OnUpdate() const
     // 各フレームでの、Cubism SDK の処理前にコール
     Rendering::CubismRenderer_D3D9::StartFrame(LAppDelegate::GetInstance()->GetD3dDevice(), width, height);
 
-    CubismMatrix44 projection;
     csmUint32 modelCount = _models.GetSize();
     for (csmUint32 i = 0; i < modelCount; ++i)
     {
+        CubismMatrix44 projection;
         LAppModel* model = GetModel(i);
         if (model->GetModel()->GetCanvasWidth() > 1.0f && width < height)
         {

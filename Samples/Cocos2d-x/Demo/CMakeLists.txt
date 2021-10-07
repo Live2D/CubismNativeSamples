@@ -192,10 +192,11 @@ elseif(APPLE)
       proj.mac/src/Prefix.pch
       ${APP_UI_RES}
     )
+    EXECUTE_PROCESS( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE )
     set_target_properties(Live2DCubismCore
       PROPERTIES
         IMPORTED_LOCATION
-          ${CORE_PATH}/lib/macos/libLive2DCubismCore.a
+          ${CORE_PATH}/lib/macos/${ARCHITECTURE}/libLive2DCubismCore.a
     )
 
   endif()

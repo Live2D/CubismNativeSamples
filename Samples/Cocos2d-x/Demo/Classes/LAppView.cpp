@@ -18,7 +18,8 @@ USING_NS_CC;
 
 LAppView::LAppView(): DrawNode()
                     , _debugRects(NULL)
-{}
+{
+}
 
 void LAppView::onEnter()
 {
@@ -95,8 +96,8 @@ void LAppView::onExit()
 
 void LAppView::draw(cocos2d::Renderer* renderer, const cocos2d::Mat4& transform, uint32_t flags)
 {
-    onDraw(transform, flags);
     DrawNode::draw(renderer, transform, flags);
+    onDraw(transform, flags);
 }
 
 void LAppView::onDraw(const cocos2d::Mat4& transform, uint32_t flags)

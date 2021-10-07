@@ -1,0 +1,209 @@
+/**
+ * Copyright(c) Live2D Inc. All rights reserved.
+ *
+ * Use of this source code is governed by the Live2D Open Software license
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ */
+
+#import "LAppSprite.h"
+#import <Foundation/Foundation.h>
+#import <CubismFramework.hpp>
+#import <Rendering/Metal/CubismRenderer_Metal.hpp>
+#import "Rendering/Metal/CubismRenderingInstanceSingleton_Metal.h"
+
+#define BUFFER_OFFSET(bytes) ((GLubyte *)NULL + (bytes))
+
+
+@interface LAppSprite()
+
+@property (nonatomic, readwrite) id <MTLTexture> texture; // テクスチャ
+@property (nonatomic) SpriteRect rect; // 矩形
+@property (nonatomic) id <MTLBuffer> vertexBuffer;
+@property (nonatomic) id <MTLBuffer> fragmentBuffer;
+
+@end
+
+@implementation LAppSprite
+
+- (id)initWithMyVar:(float)x Y:(float)y Width:(float)width Height:(float)height Texture:(id <MTLTexture>) texture
+{
+    self = [super self];
+
+    if(self != nil)
+    {
+        _rect.left = (x - width * 0.5f);
+        _rect.right = (x + width * 0.5f);
+        _rect.up = (y + height * 0.5f);
+        _rect.down = (y - height * 0.5f);
+        _texture = texture;
+
+        _spriteColorR = _spriteColorG = _spriteColorB = _spriteColorA = 1.0f;
+
+        CubismRenderingInstanceSingleton_Metal *single = [CubismRenderingInstanceSingleton_Metal sharedManager];
+        id <MTLDevice> device = [single getMTLDevice];
+
+        [self SetMTLBffer:device];
+
+        [self SetMTLRenderPipelineState:device];
+    }
+
+    return self;
+}
+
+- (void)renderImmidiate:(id<MTLRenderCommandEncoder>)renderEncoder
+{
+    CubismRenderingInstanceSingleton_Metal *single = [CubismRenderingInstanceSingleton_Metal sharedManager];
+    id <MTLDevice> device = [single getMTLDevice];
+
+    float width = _rect.right - _rect.left;
+    float height = _rect.up - _rect.down;
+
+    //テクスチャ設定
+    [renderEncoder setFragmentTexture:_texture atIndex:0];
+
+    [renderEncoder setVertexBuffer:_vertexBuffer offset:0 atIndex:0];
+    [renderEncoder setVertexBuffer:_fragmentBuffer offset:0 atIndex:1];
+
+    // パイプライン状態オブジェクトを設定する
+    [renderEncoder setRenderPipelineState:_pipelineState];
+
+    vector_float2 metalUniforms = (vector_float2){width,height};
+    [renderEncoder setVertexBytes:&metalUniforms length:sizeof(vector_float2) atIndex:2];
+
+    [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
+}
+
+- (bool)isHit:(float)pointX PointY:(float)pointY
+{
+    return (pointX >= _rect.left && pointX <= _rect.right &&
+            pointY >= _rect.down && pointY <= _rect.up);
+}
+
+- (void)SetColor:(float)r g:(float)g b:(float)b a:(float)a
+{
+    _spriteColorR = r;
+    _spriteColorG = g;
+    _spriteColorB = b;
+    _spriteColorA = a;
+}
+
+- (NSString*)GetMetalShader {
+    NSString *string =
+    @"#include <metal_stdlib>\n"
+    "using namespace metal;\n"
+    "\n"
+    "struct ColorInOut\n"
+    "{\n"
+    "    float4 position [[ position ]];\n"
+    "    float2 texCoords;\n"
+    "};\n"
+    "\n"
+    "vertex ColorInOut vertexShader(constant float4 *positions [[ buffer(0) ]],\n"
+    "                               constant float2 *texCoords [[ buffer(1) ]],\n"
+    "                                        uint    vid       [[ vertex_id ]])\n"
+    "{\n"
+    "    ColorInOut out;\n"
+    "    out.position = positions[vid];\n"
+    "    out.texCoords = texCoords[vid];\n"
+    "    return out;\n"
+    "}\n"
+    "\n"
+    "fragment float4 fragmentShader(ColorInOut       in      [[ stage_in ]],\n"
+    "                               texture2d<float> texture [[ texture(0) ]])\n"
+    "{\n"
+    "    constexpr sampler colorSampler;\n"
+    "    float4 color = texture.sample(colorSampler, in.texCoords);\n"
+    "    return color;\n"
+    "}\n";
+    return string;
+}
+
+- (void)SetMTLBffer:(id <MTLDevice>)device
+{
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    float maxWidth = screenRect.size.width;
+    float maxHeight = screenRect.size.height;
+
+    vector_float4 positionVertex[] =
+    {
+        {(_rect.left  - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f), 0, 1},
+        {(_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f), 0, 1},
+        {(_rect.left  - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.up   - maxHeight * 0.5f) / (maxHeight * 0.5f), 0, 1},
+        {(_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.up   - maxHeight * 0.5f) / (maxHeight * 0.5f), 0, 1},
+    };
+
+    vector_float2 uvVertex[] =
+    {
+        {0.0f, 1.0f},
+        {1.0f, 1.0f},
+        {0.0f, 0.0f},
+        {1.0f, 0.0f},
+    };
+
+    _vertexBuffer = [device newBufferWithBytes:positionVertex
+                                        length:sizeof(positionVertex)
+                 options:MTLResourceStorageModeShared];
+    _fragmentBuffer = [device newBufferWithBytes:uvVertex
+                                          length:sizeof(uvVertex)
+                                                options:MTLResourceStorageModeShared];
+}
+
+- (void)SetMTLRenderPipelineState:(id <MTLDevice>)device
+{
+    MTLCompileOptions* compileOptions = [MTLCompileOptions new];
+    compileOptions.languageVersion = MTLLanguageVersion2_1;
+    NSError* compileError;
+    NSString* shader = [self GetMetalShader];
+    id<MTLLibrary> shaderLib = [device newLibraryWithSource:shader options:compileOptions error:&compileError];
+    if(!shaderLib)
+    {
+        NSLog(@" ERROR: Couldnt create a Source shader library");
+        // assert here because if the shader libary isn't loading, nothing good will happen
+        return;
+    }
+    //頂点シェーダの取得
+    id <MTLFunction> vertexProgram = [shaderLib newFunctionWithName:@"vertexShader"];
+    if(!vertexProgram)
+    {
+        NSLog(@">> ERROR: Couldn't load vertex function from default library");
+        return nil;
+    }
+
+    //フラグメントシェーダの取得
+    id <MTLFunction> fragmentProgram = [shaderLib newFunctionWithName:@"fragmentShader"];
+    if(!fragmentProgram)
+    {
+        NSLog(@" ERROR: Couldn't load fragment function from default library");
+        return nil;
+    }
+
+    MTLRenderPipelineDescriptor* pipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
+    //パイプライン・ステート・オブジェクトを作成するパイプライン・ステート・ディスクリプターの作成
+
+    //デバッグ時に便利
+    pipelineDescriptor.label                           = @"SpritePipeline";
+    // Vertexステージで実行する関数を指定する
+    pipelineDescriptor.vertexFunction                  = vertexProgram;
+    // Fragmentステージで実行する関数を指定する
+    pipelineDescriptor.fragmentFunction                = fragmentProgram;
+    pipelineDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
+    pipelineDescriptor.colorAttachments[0].blendingEnabled = true;
+    pipelineDescriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
+    pipelineDescriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
+    pipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
+    pipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorSourceAlpha;
+    pipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
+    pipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
+
+    NSError *error;
+    _pipelineState = [device newRenderPipelineStateWithDescriptor:pipelineDescriptor
+                                                             error:&error];
+
+    if(!_pipelineState)
+    {
+        NSLog(@"ERROR: Failed aquiring pipeline state: %@", error);
+        return nil;
+    }
+}
+@end
+

@@ -56,6 +56,24 @@ if "%SELECTED%" equ "1" (
   exit /b 1
 )
 
+rem Demo application selection
+echo.
+echo Select which Demo to build.
+echo **************************************************
+echo 1. Full Demo
+echo 2. Minimum Demo
+echo.
+choice /c:12 /n /m ">"
+set SELECTED=%errorlevel%
+if "%SELECTED%" equ "1" (
+  set MINIMUM_DEMO=OFF
+) else if "%SELECTED%" equ "2" (
+  set MINIMUM_DEMO=ON
+) else (
+  echo [CubismNativeSamples] Invalid option.
+  exit /b 1
+)
+
 rem ========
 rem Validate
 rem ========
@@ -90,6 +108,7 @@ if "%GENERATOR%" equ "nmake" (
   cmake -S .. -B "%BUILD_PATH%" ^
     -G "NMake Makefiles" ^
     -D CMAKE_BUILD_TYPE="Release" ^
+    -D CSM_MINIMUM_DEMO=%MINIMUM_DEMO% ^
     -D CORE_CRL_MD=%CORE_CRL_MD%
   if %errorlevel% neq 0 exit /b %errorlevel%
   cd "%BUILD_PATH%" && nmake
@@ -98,6 +117,7 @@ if "%GENERATOR%" equ "nmake" (
   cmake -S .. -B "%BUILD_PATH%" ^
     -G "Visual Studio %MSVC_NUMBER% %MSVC_VERSION%" ^
     -A %CMAKE_A_OPTION% ^
+    -D CSM_MINIMUM_DEMO=%MINIMUM_DEMO% ^
     -D CORE_CRL_MD=%CORE_CRL_MD%
   if %errorlevel% neq 0 exit /b %errorlevel%
 ) else (

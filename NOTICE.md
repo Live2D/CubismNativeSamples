@@ -1,13 +1,19 @@
-## [制限事項] Metal APIの対応状況について (2021-10-07)
+## [注意事項] Metal及びCocos2d-x v4.0 の macOSサンプルビルドにおけるメモリリークについて (2021-12-09)
 
-iOSのみの対応となっております。MacOSについては現在対応中となります。
-レンダーターゲット機能及び異方性フィルタリング機能が未対応となっております。
+Metal及びCocos2d-x v4.0 の macOSサンプルビルドにおいてメモリリークが発生いたします。
+これはMetalフレームワーク内で発生するため、公式の対応をお待ち下さい。
+本件のお問い合わせについて弊社ではお答えいたしかねますので、ご了承ください。
+
+詳細については Apple Developer Forums をご確認ください。
+
+* [Apple Developer Forums - Memory leak in MTLCommandBuffer?](https://developer.apple.com/forums/thread/120931)
 
 
-## [制限事項] Apple製品の対応状況について (2021-10-07 更新)
+## [制限事項] Apple製品の対応状況について (2021-12-09 更新)
 
-Cubism SDK for Native 4-r.4-beta.1 にてApple Sillicon版のmacに対応いたしました。ぜひご利用ください。
-※Cubism Editorは現在対応しておりませんので、ご了承ください。
+macOS Monterey v12.0につきまして、Cubism 4 SDK for Native R4 (4-r.4) にて対応いたしました。
+また、Cubism 4 SDK for Native R4 Beta1 (4-r.4-beta.1) 以降のバージョンでApple Silicon版のmacに対応しております。
+※Cubism Editorは現在Apple Silicon製のMacに対応しておりません、ご了承ください。
 
 
 ## [制限事項] Cocos2d-x v4.0 の Linux(Ubuntu)サンプルビルドについて (2021-04-15)
@@ -41,7 +47,7 @@ Cocos2d-x v4.0 は `Ubuntu 20.04` ビルドに対応しておりません。
 
 ## Cubism Core
 
-### [注意事項] macOS Catalina での `.bundle` と `.dylib` の利用について
+### [注意事項] macOS Catalina 以降のバージョンでの `.bundle` と `.dylib` の利用について
 
 macOS Catalina 上で `.bundle` と `.dylib` を利用する際、公証の確認のためオンライン環境に接続している必要があります。
 

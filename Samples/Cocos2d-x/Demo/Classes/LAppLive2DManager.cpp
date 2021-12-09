@@ -318,14 +318,15 @@ void LAppLive2DManager::CreateShader()
         "attribute vec2 uv;"
         "varying vec2 vuv;"
         "void main(void){"
+#if defined(CC_USE_METAL)
+        "    gl_Position = vec4(position.x, -position.y, position.z, 1.0);"
+#else
         "    gl_Position = vec4(position, 1.0);"
+#endif
         "    vuv = uv;"
         "}";
 
     const char* fragmentShader =
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-        "precision mediump float;"
-#endif
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
         "precision mediump float;"
 #endif

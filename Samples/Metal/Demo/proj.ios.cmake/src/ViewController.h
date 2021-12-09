@@ -11,13 +11,6 @@
 
 @interface ViewController : UIViewController <MetalViewDelegate>
 
-typedef NS_ENUM(NSUInteger, SelectTarget)
-{
-    SelectTarget_None,                ///< デフォルトのフレームバッファにレンダリング
-    SelectTarget_ModelFrameBuffer,    ///< LAppModelが各自持つフレームバッファにレンダリング
-    SelectTarget_ViewFrameBuffer,     ///< LAppViewの持つフレームバッファにレンダリング
-};
-
 @property (nonatomic) bool anotherTarget;
 @property (nonatomic) float spriteColorR;
 @property (nonatomic) float spriteColorG;
@@ -27,7 +20,6 @@ typedef NS_ENUM(NSUInteger, SelectTarget)
 @property (nonatomic) float clearColorG;
 @property (nonatomic) float clearColorB;
 @property (nonatomic) float clearColorA;
-@property (nonatomic) SelectTarget renderTarget;
 @property (nonatomic) id<MTLCommandQueue> commandQueue;
 @property (nonatomic) id<MTLTexture> depthTexture;
 
@@ -40,6 +32,11 @@ typedef NS_ENUM(NSUInteger, SelectTarget)
  * @brief 解放する。
  */
 - (void)releaseView;
+
+/**
+ * @brief 画面リサイズ処理
+ */
+- (void)resizeScreen;
 
 /**
  * @brief 画像の初期化を行う。
@@ -79,18 +76,5 @@ typedef NS_ENUM(NSUInteger, SelectTarget)
  *           描画時のαを決定する
  */
 - (float)GetSpriteAlpha:(int)assign;
-
-/**
- * @brief レンダリング先を切り替える
- */
-- (void)SwitchRenderingTarget:(SelectTarget) targetType;
-
-/**
- * @brief レンダリング先をデフォルト以外に切り替えた際の背景クリア色設定
- * @param[in]   r   赤(0.0~1.0)
- * @param[in]   g   緑(0.0~1.0)
- * @param[in]   b   青(0.0~1.0)
- */
-- (void)SetRenderTargetClearColor:(float)r g:(float)g b:(float)b;
 
 @end

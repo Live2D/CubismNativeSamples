@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4-r.4] - 2021-12-09
+
+### Added
+
+* Add the rendering options on Metal:
+  * `USE_RENDER_TARGET`
+  * `USE_MODEL_RENDER_TARGET`
+* Add a sample project for Mac Catalyst.
+
+### Changed
+
+* Update sample models. (Made with Cubism Editor 4.1.02)
+
+### Fixed
+
+* Fixed a graphics bug in Cocos2d-x sample with `USE_RENDER_TARGET` on iOS and macOS.
+* Fix opacity was not being applied when using `USE_MODEL_RENDER_TARGET`.
+
+
 ## [4-r.4-beta.1] - 2021-10-07
 
 ### Added

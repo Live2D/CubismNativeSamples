@@ -25,7 +25,6 @@
 
 static LAppLive2DManager* s_instance = nil;
 
-
 void FinishedMotion(Csm::ACubismMotion* self)
 {
     LAppPal::PrintLog("Motion Finished: %x", self);
@@ -60,6 +59,13 @@ void FinishedMotion(Csm::ACubismMotion* self)
 
         _viewMatrix = new Csm::CubismMatrix44();
 
+        _renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
+        _renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+        _renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.f, 0.f, 0.f, 0.f);
+        _renderPassDescriptor.depthAttachment.loadAction = MTLLoadActionClear;
+        _renderPassDescriptor.depthAttachment.storeAction = MTLStoreActionDontCare;
+        _renderPassDescriptor.depthAttachment.clearDepth = 1.0;
+
         [self changeScene:_sceneIndex];
     }
     return self;
@@ -67,6 +73,12 @@ void FinishedMotion(Csm::ACubismMotion* self)
 
 - (void)dealloc
 {
+    if (_renderBuffer)
+    {
+        _renderBuffer->DestroyOffscreenFrame();
+        delete _renderBuffer;
+        _renderBuffer = NULL;
+    }
     [self releaseAllModel];
 }
 
@@ -128,19 +140,48 @@ void FinishedMotion(Csm::ACubismMotion* self)
 
 - (void)onUpdate:(id <MTLCommandBuffer>)commandBuffer currentDrawable:(id<CAMetalDrawable>)drawable depthTexture:(id<MTLTexture>)depthTarget;
 {
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    int width = screenRect.size.width;
-    int height = screenRect.size.height;
-
     AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
     ViewController* view = [delegate viewController];
+    float width = view.view.frame.size.width;
+    float height = view.view.frame.size.height;
 
     Csm::CubismMatrix44 projection;
     Csm::csmUint32 modelCount = _models.GetSize();
 
     CubismRenderingInstanceSingleton_Metal *single = [CubismRenderingInstanceSingleton_Metal sharedManager];
     id<MTLDevice> device = [single getMTLDevice];
-    Csm::Rendering::CubismRenderer_Metal::StartFrame(device, commandBuffer, drawable.texture, depthTarget);
+
+    _renderPassDescriptor.colorAttachments[0].texture = drawable.texture;
+    _renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionLoad;
+    _renderPassDescriptor.depthAttachment.texture = depthTarget;
+
+    if (_renderTarget != SelectTarget_None)
+    {
+        if(!_renderBuffer)
+        {
+            _renderBuffer = new Csm::Rendering::CubismOffscreenFrame_Metal;
+            _renderBuffer->SetMTLPixelFormat(MTLPixelFormatBGRA8Unorm);
+            _renderBuffer->SetClearColor(0.0, 0.0, 0.0, 0.0);
+            _renderBuffer->CreateOffscreenFrame(width, height, nil);
+
+            if (_renderTarget == SelectTarget_ViewFrameBuffer)
+            {
+                _sprite = [[LAppSprite alloc] initWithMyVar:width * 0.5f Y:height * 0.5f Width:width Height:height Texture:_renderBuffer->GetColorBuffer()];
+            }
+        }
+
+        if (_renderTarget == SelectTarget_ViewFrameBuffer)
+        {
+            _renderPassDescriptor.colorAttachments[0].texture = _renderBuffer->GetColorBuffer();
+            _renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+        }
+
+        //画面クリア
+        id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_renderBuffer->GetRenderPassDescriptor()];
+        [renderEncoder endEncoding];
+    }
+
+    Csm::Rendering::CubismRenderer_Metal::StartFrame(device, commandBuffer, _renderPassDescriptor);
 
     for (Csm::csmUint32 i = 0; i < modelCount; ++i)
     {
@@ -162,8 +203,59 @@ void FinishedMotion(Csm::ACubismMotion* self)
             projection.MultiplyByMatrix(_viewMatrix);
         }
 
+        if (_renderTarget == SelectTarget_ModelFrameBuffer)
+        {
+            Csm::Rendering::CubismOffscreenFrame_Metal& useTarget = model->GetRenderBuffer();
+
+            if (!useTarget.IsValid())
+            {// 描画ターゲット内部未作成の場合はここで作成
+                // モデル描画キャンバス
+                useTarget.SetMTLPixelFormat(MTLPixelFormatBGRA8Unorm);
+                useTarget.CreateOffscreenFrame(static_cast<LAppDefine::csmUint32>(width), static_cast<LAppDefine::csmUint32>(height));
+            }
+            _renderPassDescriptor.colorAttachments[0].texture = useTarget.GetColorBuffer();
+            _renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+
+            Csm::Rendering::CubismRenderer_Metal::StartFrame(device, commandBuffer, _renderPassDescriptor);
+        }
+
         model->Update();
         model->Draw(projection);///< 参照渡しなのでprojectionは変質する
+
+        if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderBuffer && _sprite)
+        {
+            MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
+            renderPassDescriptor.colorAttachments[0].texture = drawable.texture;
+            renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionLoad;
+            renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+            renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1);
+            id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+            [_sprite SetColor:1.0f g:1.0f b:1.0f a:0.25f + (float)i * 0.5f];
+            [_sprite renderImmidiate:renderEncoder];
+            [renderEncoder endEncoding];
+        }
+
+        // 各モデルが持つ描画ターゲットをテクスチャとする場合はスプライトへの描画はここ
+        if (_renderTarget == SelectTarget_ModelFrameBuffer)
+        {
+            if (!model)
+            {
+                return;
+            }
+
+            MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
+            renderPassDescriptor.colorAttachments[0].texture = drawable.texture;
+            renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionLoad;
+            renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+            renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1);
+            id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+
+            Csm::Rendering::CubismOffscreenFrame_Metal& useTarget = model->GetRenderBuffer();
+            LAppSprite* depthSprite = [[LAppSprite alloc] initWithMyVar:width * 0.5f Y:height * 0.5f Width:width Height:height Texture:useTarget.GetColorBuffer()];
+            [depthSprite SetColor:1.0f g:1.0f b:1.0f a:0.25f + (float)i * 0.5f];
+            [depthSprite renderImmidiate:renderEncoder];
+            [renderEncoder endEncoding];
+        }
     }
 }
 
@@ -224,8 +316,8 @@ void FinishedMotion(Csm::ACubismMotion* self)
         AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
         ViewController* view = [delegate viewController];
 
-        [view SwitchRenderingTarget:useRenderTarget];
-        [view SetRenderTargetClearColor:clearColorR g:clearColorG b:clearColorB];
+        [self SwitchRenderingTarget:useRenderTarget];
+        [self SetRenderTargetClearColor:clearColorR g:clearColorG b:clearColorB];
     }
 }
 
@@ -241,5 +333,16 @@ void FinishedMotion(Csm::ACubismMotion* self)
     }
 }
 
+- (void)SwitchRenderingTarget:(SelectTarget)targetType
+{
+    _renderTarget = targetType;
+}
+
+- (void)SetRenderTargetClearColor:(float)r g:(float)g b:(float)b
+{
+    _clearColorR = r;
+    _clearColorG = g;
+    _clearColorB = b;
+}
 @end
 

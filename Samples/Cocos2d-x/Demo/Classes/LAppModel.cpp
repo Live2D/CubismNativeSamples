@@ -790,7 +790,7 @@ void LAppModel::MakeRenderingTarget()
         );
 
         // レンダリングバッファの描画先をそのテクスチャにする
-        _renderBuffer->CreateOffscreenFrame(frameW, frameH, _renderSprite->getSprite()->getTexture());
+        _renderBuffer->CreateOffscreenFrame(frameW, frameH, _renderSprite);
     }
 }
 

@@ -21,6 +21,7 @@ under the terms of the Live2D Proprietary Software License Agreement:
 - lib/android/armeabi-v7a/libLive2DCubismCore.a
 - lib/android/x86/libLive2DCubismCore.a
 - lib/android/x86_64/libLive2DCubismCore.so
+- lib/experimental/catalyst/libLive2DCubismCore.a
 - lib/experimental/rpi/libLive2DCubismCore.a
 - lib/ios/Debug-iphoneos/libLive2DCubismCore.a
 - lib/ios/Debug-iphonesimulator/libLive2DCubismCore.a

@@ -97,16 +97,16 @@ Demo
 | CMake | 3.21.3 |
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.39 |
-| Visual Studio 2019 | 16.11.3 |
-| XCode | 13.0 |
+| Visual Studio 2017 | 15.9.41 |
+| Visual Studio 2019 | 16.11.7 |
+| XCode | 13.1 |
 
 ### Android
 
 | Android SDK tools | バージョン |
 | --- | --- |
-| Android NDK | 23.0.7599858 |
-| Android SDK | 30.0.3 |
+| Android NDK | 23.1.7779620 |
+| Android SDK | 31.0.0 |
 | CMake | 3.18.1 |
 
 ### Linux
@@ -117,7 +117,7 @@ Demo
 | Red Hat | `centos:7` | 4.8.5 |
 | Red Hat | `centos:8` | 8.4.2 |
 | Debian | `ubuntu:16.04` | 5.4.0 |
-| Debian | `ubuntu:18.04` | 7.4.0 |
+| Debian | `ubuntu:18.04` | 7.5.0 |
 | Debian | `ubuntu:20.04` | 9.3.0 |
 
 #### Mesa ライブラリ
@@ -134,9 +134,10 @@ Demo
 
 | プラットフォーム | バージョン |
 | --- | --- |
-| iOS / iPadOS | 15.0.1 |
-| macOS | 11.6 |
+| iOS / iPadOS | 15.1 |
+| macOS | 12.0.1 |
 | Windows 10 | 21H1 |
+| Windows 11 | 21H2 |
 
 ### Android
 
@@ -152,3 +153,11 @@ Demo
 | Red Hat | Amazon Linux | 2 |
 | Red Hat | CentOS | 8 |
 | Debian | Ubuntu | 20.04 |
+
+
+## コミュニティ
+
+ユーザー同士でCubism SDKの活用方法の提案や質問をしたい場合は、是非コミュニティをご活用ください。
+
+- [Live2D 公式コミュニティ](https://creatorsforum.live2d.com/)
+- [Live2D community(English)](http://community.live2d.com/)

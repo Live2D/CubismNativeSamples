@@ -7,6 +7,7 @@
 
 #import "LAppSprite.h"
 #import <Foundation/Foundation.h>
+#import "AppDelegate.h"
 #import <CubismFramework.hpp>
 #import <Rendering/Metal/CubismRenderer_Metal.hpp>
 #import "Rendering/Metal/CubismRenderingInstanceSingleton_Metal.h"
@@ -24,6 +25,12 @@
 @end
 
 @implementation LAppSprite
+
+typedef struct
+{
+    vector_float4 baseColor;
+
+} BaseColor;
 
 - (id)initWithMyVar:(float)x Y:(float)y Width:(float)width Height:(float)height Texture:(id <MTLTexture>) texture
 {
@@ -44,7 +51,7 @@
 
         [self SetMTLBffer:device];
 
-        [self SetMTLRenderPipelineState:device];
+        [self SetMTLFunction:device];
     }
 
     return self;
@@ -70,7 +77,24 @@
     vector_float2 metalUniforms = (vector_float2){width,height};
     [renderEncoder setVertexBytes:&metalUniforms length:sizeof(vector_float2) atIndex:2];
 
+    BaseColor uniform;
+    uniform.baseColor = (vector_float4){ _spriteColorR, _spriteColorG, _spriteColorB, _spriteColorA };
+    [renderEncoder setFragmentBytes:&uniform length:sizeof(BaseColor) atIndex:2];
     [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
+}
+
+- (void)resizeImmidiate:(float)x Y:(float)y Width:(float)width Height:(float)height
+{
+    _rect.left = (x - width * 0.5f);
+    _rect.right = (x + width * 0.5f);
+    _rect.up = (y + height * 0.5f);
+    _rect.down = (y - height * 0.5f);
+
+    CubismRenderingInstanceSingleton_Metal *single = [CubismRenderingInstanceSingleton_Metal sharedManager];
+    id <MTLDevice> device = [single getMTLDevice];
+    [self SetMTLBffer:device];
+
+    return self;
 }
 
 - (bool)isHit:(float)pointX PointY:(float)pointY
@@ -98,6 +122,11 @@
     "    float2 texCoords;\n"
     "};\n"
     "\n"
+    "struct BaseColor\n"
+    "{\n"
+    "    float4 color;\n"
+    "};\n"
+    "\n"
     "vertex ColorInOut vertexShader(constant float4 *positions [[ buffer(0) ]],\n"
     "                               constant float2 *texCoords [[ buffer(1) ]],\n"
     "                                        uint    vid       [[ vertex_id ]])\n"
@@ -109,10 +138,11 @@
     "}\n"
     "\n"
     "fragment float4 fragmentShader(ColorInOut       in      [[ stage_in ]],\n"
-    "                               texture2d<float> texture [[ texture(0) ]])\n"
+    "                               texture2d<float> texture [[ texture(0) ]],\n"
+    "                               constant BaseColor &uniform [[ buffer(2) ]])\n"
     "{\n"
     "    constexpr sampler colorSampler;\n"
-    "    float4 color = texture.sample(colorSampler, in.texCoords);\n"
+    "    float4 color = texture.sample(colorSampler, in.texCoords) * uniform.color;\n"
     "    return color;\n"
     "}\n";
     return string;
@@ -120,9 +150,10 @@
 
 - (void)SetMTLBffer:(id <MTLDevice>)device
 {
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    float maxWidth = screenRect.size.width;
-    float maxHeight = screenRect.size.height;
+    AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
+    ViewController* view = [delegate viewController];
+    float maxWidth = view.view.frame.size.width;
+    float maxHeight = view.view.frame.size.height;
 
     vector_float4 positionVertex[] =
     {
@@ -148,7 +179,7 @@
                                                 options:MTLResourceStorageModeShared];
 }
 
-- (void)SetMTLRenderPipelineState:(id <MTLDevice>)device
+- (void)SetMTLFunction:(id <MTLDevice>)device
 {
     MTLCompileOptions* compileOptions = [MTLCompileOptions new];
     compileOptions.languageVersion = MTLLanguageVersion2_1;
@@ -177,6 +208,11 @@
         return nil;
     }
 
+    [self SetMTLRenderPipelineDescriptor:device vertexProgram:vertexProgram fragmentProgram:fragmentProgram];
+}
+
+- (void)SetMTLRenderPipelineDescriptor:(id <MTLDevice>)device vertexProgram:(id <MTLFunction>)vertexProgram fragmentProgram:(id <MTLFunction>)fragmentProgram
+{
     MTLRenderPipelineDescriptor* pipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
     //パイプライン・ステート・オブジェクトを作成するパイプライン・ステート・ディスクリプターの作成
 
@@ -195,6 +231,11 @@
     pipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
     pipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
 
+    [self SetMTLRenderPipelineState:device pipelineDescriptor:pipelineDescriptor];
+}
+
+- (void)SetMTLRenderPipelineState:(id <MTLDevice>)device pipelineDescriptor:(MTLRenderPipelineDescriptor*)pipelineDescriptor
+{
     NSError *error;
     _pipelineState = [device newRenderPipelineStateWithDescriptor:pipelineDescriptor
                                                              error:&error];

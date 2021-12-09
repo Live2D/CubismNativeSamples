@@ -12,12 +12,27 @@
 #import <Math/CubismMatrix44.hpp>
 #import <Type/csmVector.hpp>
 #import "LAppModel.h"
+#import "LAppSprite.h"
 
 @interface LAppLive2DManager : NSObject
+
+typedef NS_ENUM(NSUInteger, SelectTarget)
+{
+    SelectTarget_None,                ///< デフォルトのフレームバッファにレンダリング
+    SelectTarget_ModelFrameBuffer,    ///< LAppModelが各自持つフレームバッファにレンダリング
+    SelectTarget_ViewFrameBuffer,     ///< LAppViewの持つフレームバッファにレンダリング
+};
 
 @property (nonatomic) Csm::CubismMatrix44 *viewMatrix; //モデル描画に用いるView行列
 @property (nonatomic) Csm::csmVector<LAppModel*> models; //モデルインスタンスのコンテナ
 @property (nonatomic) Csm::csmInt32 sceneIndex; //表示するシーンのインデックス値
+@property (nonatomic) SelectTarget renderTarget;
+@property (nonatomic) Csm::Rendering::CubismOffscreenFrame_Metal* renderBuffer;
+@property (nonatomic) LAppSprite* sprite;
+@property (nonatomic) MTLRenderPassDescriptor* renderPassDescriptor;
+@property (nonatomic) float clearColorR;
+@property (nonatomic) float clearColorG;
+@property (nonatomic) float clearColorB;
 
 /**
  * @brief クラスのインスタンスを返す。
@@ -88,7 +103,19 @@
  */
 - (void)SetViewMatrix:(Csm::CubismMatrix44*)m;
 
-@end
+/**
+ * @brief レンダリング先を切り替える
+ */
+- (void)SwitchRenderingTarget:(SelectTarget) targetType;
 
+/**
+ * @brief レンダリング先をデフォルト以外に切り替えた際の背景クリア色設定
+ * @param[in]   r   赤(0.0~1.0)
+ * @param[in]   g   緑(0.0~1.0)
+ * @param[in]   b   青(0.0~1.0)
+ */
+- (void)SetRenderTargetClearColor:(float)r g:(float)g b:(float)b;
+
+@end
 
 #endif /* LAppLive2DManager_h */

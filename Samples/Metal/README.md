@@ -8,7 +8,7 @@ Metal で実装したアプリケーションのサンプル実装です。
 
 | サードパーティ | バージョン |
 | --- | --- |
-| [ios-cmake]    | 3.1.2      |
+| [ios-cmake]    | 4.2.0      |
 | [stb_image.h]  | 2.23       |
 
 その他の開発環境・動作確認環境はトップディレクトリにある [README.md](/README.md) を参照してください。
@@ -19,7 +19,7 @@ Metal で実装したアプリケーションのサンプル実装です。
 ```
 .
 ├─ Demo
-│  └─ proj.ios.cmake        # CMake project for iOS
+│  └─ proj.ios.cmake        # CMake project for iOS or Mac Catalyst
 └─ thirdParty               # Third party libraries and scripts
 ```
 
@@ -36,13 +36,25 @@ Metal で実装したアプリケーションのサンプル実装です。
 
 ### proj.ios.cmake
 
-iOS 用の CMake プロジェクトです。
+iOS もしくは Mac Catalyst用の CMake プロジェクトです。
 
-`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
+`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます。
+
+スクリプト実行時にiOS用かMac Catalyst用か選択できます。
 
 | スクリプト名 | 生成物 |
 | --- | --- |
 | `proj_xcode` | Xcode プロジェクト |
+
+Mac Catalyst用ビルド時は下記の手順を行なってください。
+
+1. XCode の `Project設定 - TARGETS - Demo - General - Deployment Info` の `macOS` のチェックボックスをオンにしてください。
+2. XCode の `Project設定 - TARGETS - Demo` および `Framework` の `Build Settings - Architectures - Architectures` の記載を実行環境に合わせて変更してください。
+3. XCode の `Project設定 - TARGETS - Demo` および `Framework` の `Build Settings - Architectures - Base SDK` を `iOS` に変更してください。
+もしくはApple公式Tutorialsを参考ください。
+[turning-on-mac-catalyst]:https://developer.apple.com/tutorials/mac-catalyst/turning-on-mac-catalyst
+
+
 
 CMake のツールチェーンとして [ios-cmake] を使用しています。
 [thirdParty](README.md#thirdParty) の項目を参照して事前にダウンロードを行なってください。

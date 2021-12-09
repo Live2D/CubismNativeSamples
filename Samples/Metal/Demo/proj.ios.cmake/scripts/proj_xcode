@@ -9,12 +9,14 @@ THIRD_PARTY_PATH=$CMAKE_PATH/../../thirdParty/
 
 PLATFORM=NONE
 NAME=unknown
+CSM_MAC_CATALYST=OFF
 PS3="Select the platform number to use: "
-select var in 'iphoneOS (arm64)' 'iphoneOS Simulator (x86_64)'
+select var in 'iphoneOS (arm64)' 'iphoneOS Simulator (x86_64)' 'Mac Catalyst'
 do
   case "$var" in
     'iphoneOS (arm64)' ) PLATFORM=OS64; NAME=iphoneos ;;
     'iphoneOS Simulator (x86_64)' ) PLATFORM=SIMULATOR64; NAME=iphonesimulator ;;
+    'Mac Catalyst' ) PLATFORM=OS64; NAME=maccatalyst; CSM_MAC_CATALYST=ON ;;
     * ) echo "Invalid option $REPLY." ;;
   esac
   break
@@ -29,4 +31,5 @@ cmake -S "$CMAKE_PATH" \
   -B "${BUILD_PATH}_${NAME}" \
   -D CMAKE_TOOLCHAIN_FILE="$THIRD_PARTY_PATH/ios-cmake/ios.toolchain.cmake" \
   -D PLATFORM=$PLATFORM \
+  -D CSM_MAC_CATALYST=$CSM_MAC_CATALYST \
   -G Xcode

@@ -46,11 +46,9 @@
     return YES;
 }
 
-
 - (void)applicationWillResignActive:(UIApplication *)application
 {
 }
-
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
@@ -59,7 +57,6 @@
     _sceneIndex = [[LAppLive2DManager getInstance] sceneIndex];
 }
 
-
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     _textureManager = [[LAppTextureManager alloc]init];
@@ -67,12 +64,10 @@
     [[LAppLive2DManager getInstance] changeScene:_sceneIndex];
 }
 
-
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
 
 }
-
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     self.viewController = nil;

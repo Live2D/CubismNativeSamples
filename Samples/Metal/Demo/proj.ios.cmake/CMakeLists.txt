@@ -29,7 +29,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Detect platform.
 if(PLATFORM STREQUAL "OS64")
-  set(PLATFORM_NAME iphoneos)
+  if(CSM_MAC_CATALYST)
+    set(PLATFORM_NAME maccatalyst)
+  else()
+    set(PLATFORM_NAME iphoneos)
+  endif()
 elseif(PLATFORM STREQUAL "SIMULATOR64")
   set(PLATFORM_NAME iphonesimulator)
 else()
@@ -40,12 +44,31 @@ endif()
 # Import as static library.
 add_library(Live2DCubismCore STATIC IMPORTED)
 # Set library path and inlude path.
+if(CSM_MAC_CATALYST)
+    set_target_properties(Live2DCubismCore
+      PROPERTIES
+        IMPORTED_LOCATION_DEBUG
+          ${CORE_PATH}/lib/experimental/catalyst/libLive2DCubismCore.a
+        IMPORTED_LOCATION_RELEASE
+          ${CORE_PATH}/lib/experimental/catalyst/libLive2DCubismCore.a
+        INTERFACE_INCLUDE_DIRECTORIES ${CORE_PATH}/include
+    )
+else()
+    set_target_properties(Live2DCubismCore
+      PROPERTIES
+        IMPORTED_LOCATION_DEBUG
+          ${CORE_PATH}/lib/ios/Debug-${PLATFORM_NAME}/libLive2DCubismCore.a
+        IMPORTED_LOCATION_RELEASE
+          ${CORE_PATH}/lib/ios/Release-${PLATFORM_NAME}/libLive2DCubismCore.a
+        INTERFACE_INCLUDE_DIRECTORIES ${CORE_PATH}/include
+    )
+endif()
+# Get architecture.
+EXECUTE_PROCESS( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE )
+# Set library path and inlude path.
 set_target_properties(Live2DCubismCore
   PROPERTIES
-    IMPORTED_LOCATION_DEBUG
-      ${CORE_PATH}/lib/ios/Debug-${PLATFORM_NAME}/libLive2DCubismCore.a
-    IMPORTED_LOCATION_RELEASE
-      ${CORE_PATH}/lib/ios/Release-${PLATFORM_NAME}/libLive2DCubismCore.a
+    IMPORTED_LOCATION ${CORE_PATH}/lib/macos/${ARCHITECTURE}/libLive2DCubismCore.a
     INTERFACE_INCLUDE_DIRECTORIES ${CORE_PATH}/include
 )
 
@@ -86,15 +109,15 @@ target_link_libraries(${APP_NAME}
 target_include_directories(${APP_NAME} PRIVATE ${STB_PATH})
 
 # Copy resource directory to build directory.
-# NOTE: "Resources" is a reserved word of Xcode.
+# NOTE: In iOS, "Resources" is a reserved word of Xcode.
 # Therefore, copy destination directory name to "Res".
-add_custom_command(
-  TARGET ${APP_NAME}
-  POST_BUILD
-  COMMAND
-    ${CMAKE_COMMAND} -E
-      copy_directory ${RES_PATH} $<TARGET_FILE_DIR:${APP_NAME}>/Res
-)
+target_sources(${APP_NAME} PUBLIC ${RES_PATH})
+
+if(CSM_MAC_CATALYST)
+  set_source_files_properties(${RES_PATH} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+else()
+  set_source_files_properties(${RES_PATH} PROPERTIES MACOSX_PACKAGE_LOCATION Res)
+endif()
 
 # Add information aboud XCode project.
 set_xcode_property(${APP_NAME}
@@ -104,9 +127,15 @@ set_xcode_property(${APP_NAME}
 )
 set_xcode_property(${APP_NAME} DEVELOPMENT_TEAM "" "All")
 set_xcode_property(${APP_NAME} CODE_SIGN_IDENTITY "iPhone Developer" "All")
-set_xcode_property(${APP_NAME}
-  PRODUCT_BUNDLE_IDENTIFIER "com.live2d.demo" "All"
-)
+if(CSM_MAC_CATALYST)
+    set_xcode_property(${APP_NAME}
+      PRODUCT_BUNDLE_IDENTIFIER "com.live2d.demo-catalyst" "All"
+    )
+else()
+    set_xcode_property(${APP_NAME}
+      PRODUCT_BUNDLE_IDENTIFIER "com.live2d.demo" "All"
+    )
+endif()
 set_xcode_property(${APP_NAME} TARGETED_DEVICE_FAMILY "1,2" "All")
 if(PLATFORM STREQUAL "OS64")
   set_xcode_property(${APP_NAME} ARCHS "arm64" "All")

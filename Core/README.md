@@ -35,6 +35,8 @@ Core
 | Linux | x86_64 | ✓ | ✓ | linux/x86_64 |   |
 | macOS | ARM64 | ✓ | ✓ | macos/arm64 |   |
 | macOS | x86_64 | ✓ | ✓ | macos/x86_64 |   |
+| Mac Catalyst | ARM64 |   | ✓ | experimental/catalyst | Universal Binary |
+| Mac Catalyst | x86_64 |   | ✓ | experimental/catalyst | Universal Binary |
 | Raspberry Pi | ARM | ✓ | ✓ | experimental/rpi |   |
 | UWP | ARM | ✓ |   | experimental/uwp/arm |   |
 | UWP | ARM64 | ✓ |   | experimental/uwp/arm64 |   |
@@ -45,7 +47,7 @@ Core
 
 ### Experimental Library
 
-`Raspberry Pi` and `UWP` are experimental libraries.
+`Raspberry Pi`, `UWP` and `catalyst` are experimental libraries.
 
 ### Windows Static Library
 

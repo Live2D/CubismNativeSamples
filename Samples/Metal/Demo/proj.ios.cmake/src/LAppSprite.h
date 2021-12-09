@@ -49,6 +49,15 @@ typedef struct
  */
 - (void)renderImmidiate:(id<MTLRenderCommandEncoder>)renderEncoder;
 
+/**
+ * @brief 画面サイズ変更処理
+ *
+ * @param[in]       x            x座標
+ * @param[in]       y            y座標
+ * @param[in]       width        横幅
+ * @param[in]       height       高さ
+ */
+- (void)resizeImmidiate:(float)x Y:(float)y Width:(float)width Height:(float)height;
 
 /**
  * @brief コンストラクタ
@@ -67,6 +76,11 @@ typedef struct
  * @param[in]       a       α
  */
 - (void)SetColor:(float)r g:(float)g b:(float)b a:(float)a;
+
+/**
+ * @brief MTLRenderPipelineDescriptor設定
+ */
+- (void)SetMTLRenderPipelineDescriptor:(id <MTLDevice>)device vertexProgram:(id <MTLFunction>)vertexProgram fragmentProgram:(id <MTLFunction>)fragmentProgram;
 
 @end
 

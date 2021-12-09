@@ -21,7 +21,6 @@
 #import "LAppModel.h"
 #import "TouchManager.h"
 #import "MetalUIView.h"
-#import "MetalView.h"
 #import <Math/CubismMatrix44.hpp>
 #import <Math/CubismViewMatrix.hpp>
 #import "Rendering/Metal/CubismRenderingInstanceSingleton_Metal.h"
@@ -71,6 +70,13 @@ using namespace LAppDefine;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+#if TARGET_OS_MACCATALYST
+    if(AppDelegate* appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate])
+    {
+        appDelegate.window.windowScene.titlebar.titleVisibility = UITitlebarTitleVisibilityHidden;
+    }
+#endif
 
     //Fremework層でもMTLDeviceを参照するためシングルトンオブジェクトに登録
     CubismRenderingInstanceSingleton_Metal *single = [CubismRenderingInstanceSingleton_Metal sharedManager];
@@ -150,13 +156,61 @@ using namespace LAppDefine;
                                   );
 }
 
+- (void)resizeScreen
+{
+    AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
+    ViewController* view = [delegate viewController];
+    int width = view.view.frame.size.width;
+    int height = view.view.frame.size.height;
+
+    // 縦サイズを基準とする
+    float ratio = static_cast<float>(width) / static_cast<float>(height);
+    float left = -ratio;
+    float right = ratio;
+    float bottom = ViewLogicalLeft;
+    float top = ViewLogicalRight;
+
+    // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
+    _viewMatrix->SetScreenRect(left, right, bottom, top);
+    _viewMatrix->Scale(ViewScale, ViewScale);
+
+    _deviceToScreen->LoadIdentity(); // サイズが変わった際などリセット必須
+    if (width > height)
+    {
+        float screenW = fabsf(right - left);
+        _deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
+    }
+    else
+    {
+        float screenH = fabsf(top - bottom);
+        _deviceToScreen->ScaleRelative(screenH / height, -screenH / height);
+    }
+    _deviceToScreen->TranslateRelative(-width * 0.5f, -height * 0.5f);
+
+    // 表示範囲の設定
+    _viewMatrix->SetMaxScale(ViewMaxScale); // 限界拡大率
+    _viewMatrix->SetMinScale(ViewMinScale); // 限界縮小率
+
+    // 表示できる最大範囲
+    _viewMatrix->SetMaxScreenRect(
+                                  ViewLogicalMaxLeft,
+                                  ViewLogicalMaxRight,
+                                  ViewLogicalMaxBottom,
+                                  ViewLogicalMaxTop
+                                  );
+
+#if TARGET_OS_MACCATALYST
+    [self resizeSprite:width Height:height];
+#endif
+
+}
+
 - (void)initializeSprite
 {
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    int width = screenRect.size.width;
-    int height = screenRect.size.height;
-
     AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    ViewController* view = [delegate viewController];
+    float width = view.view.frame.size.width;
+    float height = view.view.frame.size.height;
 
     LAppTextureManager* textureManager = [delegate getTextureManager];
     const string resourcesPath = ResourcesPath;
@@ -166,10 +220,8 @@ using namespace LAppDefine;
     TextureInfo* backgroundTexture = [textureManager createTextureFromPngFile:resourcesPath+imageName];
     float x = width * 0.5f;
     float y = height * 0.5f;
-    float fWidth = 300.0f;
-    float fHeight = 300.0f;
-    fWidth = static_cast<float>(width * 0.75f);
-    fHeight = static_cast<float>(height * 0.95f);
+    float fWidth = static_cast<float>(backgroundTexture->width * 2.0f);
+    float fHeight = static_cast<float>(height) * 0.95f;
     _back = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight Texture:backgroundTexture->id];
 
     //モデル変更ボタン
@@ -189,6 +241,30 @@ using namespace LAppDefine;
     fWidth = static_cast<float>(powerTexture->width);
     fHeight = static_cast<float>(powerTexture->height);
     _power = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight Texture:powerTexture->id];
+}
+
+- (void)resizeSprite:(float)width Height:(float)height
+{
+    //背景
+    float x = width * 0.5f;
+    float y = height * 0.5f;
+    float fWidth = static_cast<float>(_back.GetTextureId.width * 2.0f);
+    float fHeight = static_cast<float>(height) * 0.95f;
+    [_back resizeImmidiate:x Y:y Width:fWidth Height:fHeight];
+
+    //モデル変更ボタン
+    x = static_cast<float>(width - _gear.GetTextureId.width * 0.5f);
+    y = static_cast<float>(height - _gear.GetTextureId.height * 0.5f);
+    fWidth = static_cast<float>(_gear.GetTextureId.width);
+    fHeight = static_cast<float>(_gear.GetTextureId.height);
+    [_gear resizeImmidiate:x Y:y Width:fWidth Height:fHeight];
+
+    //電源ボタン
+    x = static_cast<float>(width - _power.GetTextureId.width * 0.5f);
+    y = static_cast<float>(_power.GetTextureId.height * 0.5f);
+    fWidth = static_cast<float>(_power.GetTextureId.width);
+    fHeight = static_cast<float>(_power.GetTextureId.height);
+    [_power resizeImmidiate:x Y:y Width:fWidth Height:fHeight];
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
@@ -233,6 +309,7 @@ using namespace LAppDefine;
         {
             LAppPal::PrintLog("[APP]touchesEnded x:%.2f y:%.2f", x, y);
         }
+
         [live2DManager onTap:x floatY:y];
 
         // 歯車にタップしたか
@@ -246,7 +323,6 @@ using namespace LAppDefine;
         {
             AppDelegate *delegate = (AppDelegate *) [[UIApplication sharedApplication] delegate];
             [delegate finishApplication];
-
         }
     }
 }
@@ -275,21 +351,10 @@ using namespace LAppDefine;
 
 - (float)transformTapY:(float)deviceY
 {
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    int height = screenRect.size.height;
+    AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    ViewController* view = [delegate viewController];
+    float height = view.view.frame.size.height;
     return deviceY * -1 + height;
-}
-
-- (void)SwitchRenderingTarget:(SelectTarget)targetType
-{
-    _renderTarget = targetType;
-}
-
-- (void)SetRenderTargetClearColor:(float)r g:(float)g b:(float)b
-{
-    _clearColorR = r;
-    _clearColorG = g;
-    _clearColorB = b;
 }
 
 - (void)drawableResize:(CGSize)size
@@ -301,6 +366,8 @@ using namespace LAppDefine;
     CubismRenderingInstanceSingleton_Metal *single = [CubismRenderingInstanceSingleton_Metal sharedManager];
     id <MTLDevice> device = [single getMTLDevice];
     _depthTexture = [device newTextureWithDescriptor:depthTextureDescriptor];
+
+    [self resizeScreen];
 }
 
 

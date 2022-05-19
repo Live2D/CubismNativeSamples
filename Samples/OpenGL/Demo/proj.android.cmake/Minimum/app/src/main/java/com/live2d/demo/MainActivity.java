@@ -13,6 +13,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 
 public class MainActivity extends Activity {
 
@@ -31,16 +33,24 @@ public class MainActivity extends Activity {
         _glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         setContentView(_glSurfaceView);
 
-        getWindow().getDecorView().setSystemUiVisibility(
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT
-                        ? View.SYSTEM_UI_FLAG_LOW_PROFILE
-                        : View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
-        );
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT
+                    ? View.SYSTEM_UI_FLAG_LOW_PROFILE
+                    : View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+            );
+        }
+        else {
+            getWindow().getInsetsController().hide(WindowInsets.Type.navigationBars()
+                | WindowInsets.Type.statusBars());
+
+            getWindow().getInsetsController().setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        }
     }
 
     @Override

@@ -1,3 +1,20 @@
+## [注意事項] Cocos2d-xセットアップのエラーについて (2022-03-15)
+
+Cocos2d-xサンプルプロジェクトのセットアップ時に実行するsetup-cocos2dバッチにおいてエラーが発生いたします。
+これはGitHubがGitプロトコルセキュリティを改善したことに起因し、GitにてCocos2d-xのsubmodule取得が失敗するためです。
+具体的には`git://`経由での接続ができなくなったためエラーが発生しています。
+
+詳しくはGitHub公式ブログをご確認ください。
+
+* [GitHub 公式ブログ](https://github.blog/2021-09-01-improving-git-protocol-security-github/)
+
+### 回避方法
+
+* ターミナルもしくはコマンドプロンプトにて以下のコマンドを実行することで、`git://`を用いた接続を`https://`に置き換える
+  * `git config --global url."https://github.com/".insteadOf git://github.com/`
+    * このコマンドは実行端末の全ユーザのgitconfigに影響します。ご了承ください。
+
+
 ## [注意事項] Metal及びCocos2d-x v4.0 の macOSサンプルビルドにおけるメモリリークについて (2021-12-09)
 
 Metal及びCocos2d-x v4.0 の macOSサンプルビルドにおいてメモリリークが発生いたします。

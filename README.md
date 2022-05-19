@@ -93,32 +93,33 @@ Demo
 
 | 開発ツール | バージョン |
 | --- | --- |
-| Android Studio | Arctic Fox 2020.3.1 |
-| CMake | 3.21.3 |
+| Android Studio | Chipmunk 2021.2.1 |
+| CMake | 3.23.0 |
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.41 |
-| Visual Studio 2019 | 16.11.7 |
-| XCode | 13.1 |
+| Visual Studio 2017 | 15.9.45 |
+| Visual Studio 2019 | 16.11.11 |
+| XCode | 13.3 |
 
 ### Android
 
 | Android SDK tools | バージョン |
 | --- | --- |
-| Android NDK | 23.1.7779620 |
-| Android SDK | 31.0.0 |
+| Android NDK | 24.0.08215888 |
+| Android SDK | 33.0.0 |
 | CMake | 3.18.1 |
 
 ### Linux
 
-| 系統 | Docker イメージ | GCC |
-| --- | --- | --- |
-| Red Hat | `amazonlinux:2` | 7.3.1 |
-| Red Hat | `centos:7` | 4.8.5 |
-| Red Hat | `centos:8` | 8.4.2 |
-| Debian | `ubuntu:16.04` | 5.4.0 |
-| Debian | `ubuntu:18.04` | 7.5.0 |
-| Debian | `ubuntu:20.04` | 9.3.0 |
+| 系統 | ディストリビューション・バージョン | Docker イメージ | GCC |
+| --- | --- | --- | --- |
+| Red Hat | Amazon Linux 2 |  `amazonlinux:2` | 7.3.1 |
+| Red Hat | CentOS 7 | `centos:7` | 4.8.5 |
+| Red Hat | CentOS Stream 8 *1 | `centos:latest` | 8.5.0 |
+| Debian | Ubuntu 18.04 | `ubuntu:18.04` | 7.5.0 |
+| Debian | Ubuntu 20.04 | `ubuntu:20.04` | 9.4.0 |
+
+*1 CentOS 8はサポートしておりません
 
 #### Mesa ライブラリ
 
@@ -134,9 +135,9 @@ Demo
 
 | プラットフォーム | バージョン |
 | --- | --- |
-| iOS / iPadOS | 15.1 |
-| macOS | 12.0.1 |
-| Windows 10 | 21H1 |
+| iOS / iPadOS | 15.4.1 |
+| macOS | 12.3.1 |
+| Windows 10 | 21H2 |
 | Windows 11 | 21H2 |
 
 ### Android
@@ -151,7 +152,7 @@ Demo
 | 系統 | ディストリビューション | バージョン |
 | --- | --- | --- |
 | Red Hat | Amazon Linux | 2 |
-| Red Hat | CentOS | 8 |
+| Red Hat | CentOS Stream | 8 |
 | Debian | Ubuntu | 20.04 |
 
 
@@ -160,4 +161,4 @@ Demo
 ユーザー同士でCubism SDKの活用方法の提案や質問をしたい場合は、是非コミュニティをご活用ください。
 
 - [Live2D 公式コミュニティ](https://creatorsforum.live2d.com/)
-- [Live2D community(English)](http://community.live2d.com/)
+- [Live2D community(English)](https://community.live2d.com/)

@@ -87,6 +87,9 @@ using namespace LAppDefine;
     [super viewDidLoad];
     GLKView *view = (GLKView*)self.view;
 
+    // GL描画周期を60FPSに設定
+    self.preferredFramesPerSecond = 60;
+
     // OpenGL ES2を指定
     view.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 

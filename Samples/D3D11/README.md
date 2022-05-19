@@ -9,7 +9,7 @@ DirectX 11 で実装したアプリケーションのサンプル実装です。
 | --- | --- | --- |
 | [DirectXTK] | 2013 | April 23, 2018 |
 | [DirectXTK] | 2015 | December 17, 2019 |
-| [DirectXTK] | 2017 / 2019 | June 9, 2021 |
+| [DirectXTK] | 2017 / 2019 | March 24, 2022 |
 
 その他の開発環境・動作確認環境はトップディレクトリにある [README.md](/README.md) を参照してください。
 
@@ -75,3 +75,6 @@ CMake プロジェクトです。
 スクリプト内の `XTK_VERSION` を変更することでライブラリのバージョンを指定することが出来ます。
 
 [DirectXTK]: https://github.com/Microsoft/DirectXTK
+
+x64のリリースビルドを行うには.NET Framework 4.7.2のインストールが必要となります。
+[DirectXTK Release Notes]: https://github.com/microsoft/DirectXTK#release-notes

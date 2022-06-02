@@ -4,12 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+
+## [4-r.5-beta.2] - 2022-06-02
+
+### Fixed
+
+* Fixed a bug that caused Multiply Color / Screen Color of different objects to be applied.
+  * See `CHANGELOG.md` in Core.
+  * No modifications to Samples and Framework.
+
+
 ## [4-r.5-beta.1] - 2022-05-19
 
 ### Changed
 
 * Change iOS sample to work at 60FPS.
-* Support multiply colors and screen colors added in Cubism 4.2.
+* Support Multiply Color / Screen Color added in Cubism 4.2.
   * See Framework and Core.
 * Change to avoid features deprecated since API 30.
 * Update libraries used in Android samples.
@@ -181,6 +191,7 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[4-r.5-beta.2]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.5-beta.1...4-r.5-beta.2
 [4-r.5-beta.1]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.4...4-r.5-beta.1
 [4-r.4]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.4-beta.1...4-r.4
 [4-r.4-beta.1]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.3...4-r.4-beta.1

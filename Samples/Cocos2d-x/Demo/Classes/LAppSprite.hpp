@@ -55,7 +55,7 @@ public:
     * @brief テクスチャIDを指定して描画する
     *
     */
-    void RenderImmidiate(Csm::Rendering::CubismCommandBuffer_Cocos2dx* commandBuffer, Texture2D* texture, float uvVertex[8]) const;
+    void RenderImmidiate(Csm::Rendering::CubismCommandBuffer_Cocos2dx* commandBuffer, Texture2D* texture, float uvVertex[8]);
 
     /**
      * @brief 色設定
@@ -72,5 +72,6 @@ private:
     float _spriteColor[4];  ///< 表示カラー
 
     cocos2d::backend::Program* _program;
+    Csm::Rendering::CubismCommandBuffer_Cocos2dx::DrawCommandBuffer* _drawCommandBuffer;
 };
 

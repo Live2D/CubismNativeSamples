@@ -93,13 +93,13 @@ Demo
 
 | 開発ツール | バージョン |
 | --- | --- |
-| Android Studio | Chipmunk 2021.2.1 |
+| Android Studio | Chipmunk 2021.2.1 Patch 1 |
 | CMake | 3.23.0 |
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
 | Visual Studio 2017 | 15.9.45 |
 | Visual Studio 2019 | 16.11.11 |
-| XCode | 13.3 |
+| XCode | 13.4.1 |
 
 ### Android
 
@@ -135,8 +135,8 @@ Demo
 
 | プラットフォーム | バージョン |
 | --- | --- |
-| iOS / iPadOS | 15.4.1 |
-| macOS | 12.3.1 |
+| iOS / iPadOS | 15.5 |
+| macOS | 12.4.1 |
 | Windows 10 | 21H2 |
 | Windows 11 | 21H2 |
 

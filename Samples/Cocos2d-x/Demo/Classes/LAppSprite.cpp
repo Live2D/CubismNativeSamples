@@ -12,23 +12,32 @@
 LAppSprite::LAppSprite(backend::Program* program)
 {
     _program = program;
+    _drawCommandBuffer = NULL;
 }
 
 LAppSprite::~LAppSprite()
 {
+    if (_drawCommandBuffer != NULL)
+    {
+        CSM_FREE(_drawCommandBuffer);
+    }
 }
 
-void LAppSprite::RenderImmidiate(Csm::Rendering::CubismCommandBuffer_Cocos2dx* commandBuffer, Texture2D* texture, float uvVertex[8]) const
+void LAppSprite::RenderImmidiate(Csm::Rendering::CubismCommandBuffer_Cocos2dx* commandBuffer, Texture2D* texture, float uvVertex[8])
 {
-    Csm::Rendering::CubismCommandBuffer_Cocos2dx::DrawCommandBuffer* drawCommandBuffer = CSM_NEW Csm::Rendering::CubismCommandBuffer_Cocos2dx::DrawCommandBuffer();
-    PipelineDescriptor* pipelineDescriptor = drawCommandBuffer->GetCommandDraw()->GetPipelineDescriptor();
-    backend::BlendDescriptor* blendDescriptor = drawCommandBuffer->GetCommandDraw()->GetBlendDescriptor();
+    if (_drawCommandBuffer == NULL)
+    {
+        _drawCommandBuffer = CSM_NEW Csm::Rendering::CubismCommandBuffer_Cocos2dx::DrawCommandBuffer();
+    }
+
+    PipelineDescriptor* pipelineDescriptor = _drawCommandBuffer->GetCommandDraw()->GetPipelineDescriptor();
+    backend::BlendDescriptor* blendDescriptor = _drawCommandBuffer->GetCommandDraw()->GetBlendDescriptor();
     backend::ProgramState* programState = pipelineDescriptor->programState;
 
-    drawCommandBuffer->GetCommandDraw()->GetCommand()->setDrawType(cocos2d::CustomCommand::DrawType::ELEMENT);
-    drawCommandBuffer->GetCommandDraw()->GetCommand()->setPrimitiveType(cocos2d::backend::PrimitiveType::TRIANGLE);
-    drawCommandBuffer->CreateVertexBuffer(sizeof(float) * 2, 4 * 2);
-    drawCommandBuffer->CreateIndexBuffer(6);
+    _drawCommandBuffer->GetCommandDraw()->GetCommand()->setDrawType(cocos2d::CustomCommand::DrawType::ELEMENT);
+    _drawCommandBuffer->GetCommandDraw()->GetCommand()->setPrimitiveType(cocos2d::backend::PrimitiveType::TRIANGLE);
+    _drawCommandBuffer->CreateVertexBuffer(sizeof(float) * 2, 4 * 2);
+    _drawCommandBuffer->CreateIndexBuffer(6);
 
     // 画面サイズを取得する
     cocos2d::Size visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
@@ -49,9 +58,9 @@ void LAppSprite::RenderImmidiate(Csm::Rendering::CubismCommandBuffer_Cocos2dx* c
         0,2,3
     };
 
-    drawCommandBuffer->UpdateVertexBuffer(positionVertex, uvVertex, 4);
-    drawCommandBuffer->UpdateIndexBuffer(positionIndex, 6);
-    drawCommandBuffer->CommitVertexBuffer();
+    _drawCommandBuffer->UpdateVertexBuffer(positionVertex, uvVertex, 4);
+    _drawCommandBuffer->UpdateIndexBuffer(positionIndex, 6);
+    _drawCommandBuffer->CommitVertexBuffer();
 
     if (!programState)
     {
@@ -78,7 +87,7 @@ void LAppSprite::RenderImmidiate(Csm::Rendering::CubismCommandBuffer_Cocos2dx* c
     pipelineDescriptor->programState = programState;
 
     // モデルの描画
-    commandBuffer->AddDrawCommand(drawCommandBuffer->GetCommandDraw());
+    commandBuffer->AddDrawCommand(_drawCommandBuffer->GetCommandDraw());
 
 }
 

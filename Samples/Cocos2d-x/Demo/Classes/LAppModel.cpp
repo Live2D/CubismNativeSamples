@@ -95,6 +95,7 @@ LAppModel::~LAppModel()
         _renderSprite = NULL;
     }
     _renderBuffer->DestroyOffscreenFrame();
+    delete _renderBuffer;
 
     ReleaseMotions();
     ReleaseExpressions();
@@ -107,7 +108,11 @@ LAppModel::~LAppModel()
     CSM_DELETE(_modelSetting);
 
     //cocos2d
-    Director::getInstance()->getTextureCache()->removeAllTextures();
+    for (csmInt32 i = 0; i < _loadedTextures.GetSize(); i++)
+    {
+        Director::getInstance()->getTextureCache()->removeTexture(_loadedTextures[i]);
+    }
+    _loadedTextures.Clear();
 }
 
 void LAppModel::LoadAssets(const csmChar* dir, const csmChar* fileName)

@@ -39,7 +39,6 @@
     [self releaseTextures];
 }
 
-
 - (TextureInfo*) createTextureFromPngFile:(std::string)fileName
 {
 
@@ -81,7 +80,7 @@
 #endif
     }
 
-    MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
+    MTLTextureDescriptor *textureDescriptor = [[[MTLTextureDescriptor alloc] init] autorelease];
 
     // Indicate that each pixel has a blue, green, red, and alpha channel, where each channel is
     // an 8-bit unsigned normalized value (i.e. 0 maps to 0.0 and 255 maps to 1.0)
@@ -130,8 +129,9 @@
 
     NSError *error;
     id<MTLTexture> texture = [loader newTextureWithContentsOfURL:url options:nil error:&error];
+    [loader release];
 
-    if(!texture)
+    if (!texture)
     {
         NSLog(@"Failed to create the texture from %@", url.absoluteString);
         return nil;
@@ -152,7 +152,9 @@
 {
     for (Csm::csmUint32 i = 0; i < _textures.GetSize(); i++)
     {
+        [ _textures[i]->id release];
         delete _textures[i];
+        _textures.Remove(i);
     }
 
     _textures.Clear();
@@ -166,6 +168,7 @@
         {
             continue;
         }
+        [ _textures[i]->id release];
         delete _textures[i];
         _textures.Remove(i);
         break;
@@ -178,6 +181,7 @@
     {
         if (_textures[i]->fileName == fileName)
         {
+            [ _textures[i]->id release];
             delete _textures[i];
             _textures.Remove(i);
             break;

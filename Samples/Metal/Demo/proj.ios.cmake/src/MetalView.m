@@ -16,7 +16,7 @@
 - (instancetype) initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
-    if(self)
+    if (self)
     {
         [self initCommon];
     }
@@ -61,14 +61,14 @@
     newSize.width *= scaleFactor;
     newSize.height *= scaleFactor;
 
-    if(newSize.width <= 0 || newSize.width <= 0)
+    if (newSize.width <= 0 || newSize.width <= 0)
     {
         return;
     }
 
 #if RENDER_ON_MAIN_THREAD
 
-    if(newSize.width == _metalLayer.drawableSize.width &&
+    if (newSize.width == _metalLayer.drawableSize.width &&
        newSize.height == _metalLayer.drawableSize.height)
     {
         return;
@@ -83,7 +83,7 @@
     // a synchronized block to ensure that resize notifications on the delegate are atomic
     @synchronized(_metalLayer)
     {
-        if(newSize.width == _metalLayer.drawableSize.width &&
+        if (newSize.width == _metalLayer.drawableSize.width &&
            newSize.height == _metalLayer.drawableSize.height)
         {
             return;

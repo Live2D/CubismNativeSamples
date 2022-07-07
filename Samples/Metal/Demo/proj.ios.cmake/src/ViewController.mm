@@ -46,6 +46,9 @@ using namespace LAppDefine;
 - (void)releaseView
 {
     _renderSprite = nil;
+    [_gear release];
+    [_back release];
+    [_power release];
     _gear = nil;
     _back = nil;
     _power = nil;
@@ -62,7 +65,8 @@ using namespace LAppDefine;
 }
 
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
-- (void)loadView {
+- (void)loadView
+{
     MetalUIView *metalUiView = [[MetalUIView alloc] init];
     [self setView:metalUiView];
 }
@@ -72,7 +76,7 @@ using namespace LAppDefine;
     [super viewDidLoad];
 
 #if TARGET_OS_MACCATALYST
-    if(AppDelegate* appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate])
+    if (AppDelegate* appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate])
     {
         appDelegate.window.windowScene.titlebar.titleVisibility = UITitlebarTitleVisibilityHidden;
     }
@@ -387,9 +391,7 @@ using namespace LAppDefine;
     id <MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
     id<CAMetalDrawable> currentDrawable = [layer nextDrawable];
 
-    MTLRenderPassDescriptor *renderPassDescriptor
-                                   = [MTLRenderPassDescriptor renderPassDescriptor];
-
+    MTLRenderPassDescriptor *renderPassDescriptor = [[[MTLRenderPassDescriptor alloc] init] autorelease];
     renderPassDescriptor.colorAttachments[0].texture = currentDrawable.texture;
     renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
     renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
@@ -410,4 +412,8 @@ using namespace LAppDefine;
     [commandBuffer commit];
 }
 
+- (void)dealloc
+{
+    [super dealloc];
+}
 @end

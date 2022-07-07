@@ -143,6 +143,14 @@ elseif(PLATFORM STREQUAL "SIMULATOR64")
   set_xcode_property(${APP_NAME} ARCHS "x86_64" "All")
 endif()
 
+# Disable ARC
+set_target_properties(
+    ${APP_NAME}
+    PROPERTIES
+    MACOSX_BUNDLE YES
+    XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC NO
+)
+
 # You can change target that renderer draws by enabling following definition.
 #
 # * USE_RENDER_TARGET

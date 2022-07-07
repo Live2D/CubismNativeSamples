@@ -34,7 +34,7 @@ void FinishedMotion(Csm::ACubismMotion* self)
 {
     @synchronized(self)
     {
-        if(s_instance == nil)
+        if (s_instance == nil)
         {
             s_instance = [[LAppLive2DManager alloc] init];
         }
@@ -44,8 +44,9 @@ void FinishedMotion(Csm::ACubismMotion* self)
 
 + (void)releaseInstance
 {
-    if(s_instance != nil)
+    if (s_instance != nil)
     {
+        [s_instance release];
         s_instance = nil;
     }
 }
@@ -54,12 +55,14 @@ void FinishedMotion(Csm::ACubismMotion* self)
 {
     self = [super init];
     if ( self ) {
+        _renderBuffer = nil;
+        _sprite = nil;
         _viewMatrix = nil;
         _sceneIndex = 0;
 
         _viewMatrix = new Csm::CubismMatrix44();
 
-        _renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
+        _renderPassDescriptor = [[MTLRenderPassDescriptor alloc] init];
         _renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
         _renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.f, 0.f, 0.f, 0.f);
         _renderPassDescriptor.depthAttachment.loadAction = MTLLoadActionClear;
@@ -79,7 +82,21 @@ void FinishedMotion(Csm::ACubismMotion* self)
         delete _renderBuffer;
         _renderBuffer = NULL;
     }
+
+    if (_renderPassDescriptor != nil)
+    {
+        [_renderPassDescriptor release];
+        _renderPassDescriptor = nil;
+    }
+
+    if (_sprite != nil)
+    {
+        [_sprite release];
+        _sprite = nil;
+    }
+
     [self releaseAllModel];
+    [super dealloc];
 }
 
 - (void)releaseAllModel
@@ -119,7 +136,7 @@ void FinishedMotion(Csm::ACubismMotion* self)
 
     for (Csm::csmUint32 i = 0; i < _models.GetSize(); i++)
     {
-        if(_models[i]->HitTest(LAppDefine::HitAreaNameHead,x,y))
+        if (_models[i]->HitTest(LAppDefine::HitAreaNameHead,x,y))
         {
             if (LAppDefine::DebugLogEnable)
             {
@@ -157,7 +174,7 @@ void FinishedMotion(Csm::ACubismMotion* self)
 
     if (_renderTarget != SelectTarget_None)
     {
-        if(!_renderBuffer)
+        if (!_renderBuffer)
         {
             _renderBuffer = new Csm::Rendering::CubismOffscreenFrame_Metal;
             _renderBuffer->SetMTLPixelFormat(MTLPixelFormatBGRA8Unorm);
@@ -224,7 +241,7 @@ void FinishedMotion(Csm::ACubismMotion* self)
 
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderBuffer && _sprite)
         {
-            MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
+            MTLRenderPassDescriptor *renderPassDescriptor = [[[MTLRenderPassDescriptor alloc] init] autorelease];
             renderPassDescriptor.colorAttachments[0].texture = drawable.texture;
             renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionLoad;
             renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
@@ -243,7 +260,7 @@ void FinishedMotion(Csm::ACubismMotion* self)
                 return;
             }
 
-            MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
+            MTLRenderPassDescriptor *renderPassDescriptor = [[[MTLRenderPassDescriptor alloc] init] autorelease];
             renderPassDescriptor.colorAttachments[0].texture = drawable.texture;
             renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionLoad;
             renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
@@ -255,6 +272,7 @@ void FinishedMotion(Csm::ACubismMotion* self)
             [depthSprite SetColor:1.0f g:1.0f b:1.0f a:0.25f + (float)i * 0.5f];
             [depthSprite renderImmidiate:renderEncoder];
             [renderEncoder endEncoding];
+            [depthSprite dealloc];
         }
     }
 }

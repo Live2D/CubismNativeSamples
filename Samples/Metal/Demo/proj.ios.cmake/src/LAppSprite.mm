@@ -36,7 +36,7 @@ typedef struct
 {
     self = [super self];
 
-    if(self != nil)
+    if (self != nil)
     {
         _rect.left = (x - width * 0.5f);
         _rect.right = (x + width * 0.5f);
@@ -45,6 +45,10 @@ typedef struct
         _texture = texture;
 
         _spriteColorR = _spriteColorG = _spriteColorB = _spriteColorA = 1.0f;
+
+        _pipelineState = nil;
+        _vertexBuffer = nil;
+        _fragmentBuffer = nil;
 
         CubismRenderingInstanceSingleton_Metal *single = [CubismRenderingInstanceSingleton_Metal sharedManager];
         id <MTLDevice> device = [single getMTLDevice];
@@ -55,6 +59,29 @@ typedef struct
     }
 
     return self;
+}
+
+- (void)dealloc
+{
+    if (_pipelineState != nil)
+    {
+        [_pipelineState release];
+        _pipelineState = nil;
+    }
+
+    if (_vertexBuffer != nil)
+    {
+        [_vertexBuffer release];
+        _vertexBuffer = nil;
+    }
+
+    if (_fragmentBuffer != nil)
+    {
+        [_fragmentBuffer release];
+        _fragmentBuffer = nil;
+    }
+
+    [super dealloc];
 }
 
 - (void)renderImmidiate:(id<MTLRenderCommandEncoder>)renderEncoder
@@ -183,10 +210,10 @@ typedef struct
 {
     MTLCompileOptions* compileOptions = [MTLCompileOptions new];
     compileOptions.languageVersion = MTLLanguageVersion2_1;
-    NSError* compileError;
     NSString* shader = [self GetMetalShader];
+    NSError* compileError;
     id<MTLLibrary> shaderLib = [device newLibraryWithSource:shader options:compileOptions error:&compileError];
-    if(!shaderLib)
+    if (!shaderLib)
     {
         NSLog(@" ERROR: Couldnt create a Source shader library");
         // assert here because if the shader libary isn't loading, nothing good will happen
@@ -194,7 +221,7 @@ typedef struct
     }
     //頂点シェーダの取得
     id <MTLFunction> vertexProgram = [shaderLib newFunctionWithName:@"vertexShader"];
-    if(!vertexProgram)
+    if (!vertexProgram)
     {
         NSLog(@">> ERROR: Couldn't load vertex function from default library");
         return nil;
@@ -202,13 +229,17 @@ typedef struct
 
     //フラグメントシェーダの取得
     id <MTLFunction> fragmentProgram = [shaderLib newFunctionWithName:@"fragmentShader"];
-    if(!fragmentProgram)
+    if (!fragmentProgram)
     {
         NSLog(@" ERROR: Couldn't load fragment function from default library");
         return nil;
     }
 
     [self SetMTLRenderPipelineDescriptor:device vertexProgram:vertexProgram fragmentProgram:fragmentProgram];
+    [compileOptions release];
+    [shaderLib release];
+    [vertexProgram release];
+    [fragmentProgram release];
 }
 
 - (void)SetMTLRenderPipelineDescriptor:(id <MTLDevice>)device vertexProgram:(id <MTLFunction>)vertexProgram fragmentProgram:(id <MTLFunction>)fragmentProgram
@@ -232,15 +263,19 @@ typedef struct
     pipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
 
     [self SetMTLRenderPipelineState:device pipelineDescriptor:pipelineDescriptor];
+    [pipelineDescriptor release];
 }
 
 - (void)SetMTLRenderPipelineState:(id <MTLDevice>)device pipelineDescriptor:(MTLRenderPipelineDescriptor*)pipelineDescriptor
 {
     NSError *error;
-    _pipelineState = [device newRenderPipelineStateWithDescriptor:pipelineDescriptor
-                                                             error:&error];
+    if (_pipelineState == nil)
+    {
+        _pipelineState = [device newRenderPipelineStateWithDescriptor:pipelineDescriptor
+                                                                 error:&error];
+    }
 
-    if(!_pipelineState)
+    if (!_pipelineState)
     {
         NSLog(@"ERROR: Failed aquiring pipeline state: %@", error);
         return nil;

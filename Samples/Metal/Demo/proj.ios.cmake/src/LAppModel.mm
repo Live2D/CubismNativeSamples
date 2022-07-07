@@ -76,6 +76,24 @@ LAppModel::~LAppModel()
         const csmChar* group = _modelSetting->GetMotionGroupName(i);
         ReleaseMotionGroup(group);
     }
+
+    AppDelegate *delegate = (AppDelegate *) [[UIApplication sharedApplication] delegate];
+    LAppTextureManager *textureManager = [delegate getTextureManager];
+
+    for (csmInt32 modelTextureNumber = 0; modelTextureNumber < _modelSetting->GetTextureCount(); modelTextureNumber++)
+    {
+        // テクスチャ名が空文字だった場合は削除処理をスキップ
+        if (!strcmp(_modelSetting->GetTextureFileName(modelTextureNumber), ""))
+        {
+            continue;
+        }
+
+        //テクスチャ管理クラスからモデルテクスチャを削除する
+        csmString texturePath = _modelSetting->GetTextureFileName(modelTextureNumber);
+        texturePath = _modelHomeDir + texturePath;
+        [textureManager releaseTextureByName:texturePath.GetRawString()];
+    }
+
     delete _modelSetting;
 }
 
@@ -587,7 +605,7 @@ void LAppModel::SetupTextures()
     for (csmInt32 modelTextureNumber = 0; modelTextureNumber < _modelSetting->GetTextureCount(); modelTextureNumber++)
         {
             // テクスチャ名が空文字だった場合はロード・バインド処理をスキップ
-            if (strcmp(_modelSetting->GetTextureFileName(modelTextureNumber), "") == 0)
+            if (!strcmp(_modelSetting->GetTextureFileName(modelTextureNumber), ""))
             {
                 continue;
             }

@@ -71,10 +71,4 @@
  */
 - (float)transformScreenY:(float)deviceY;
 
-/**
- * @brief   別レンダリングターゲットにモデルを描画するサンプルで
- *           描画時のαを決定する
- */
-- (float)GetSpriteAlpha:(int)assign;
-
 @end

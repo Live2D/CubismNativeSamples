@@ -35,7 +35,7 @@
     [super didMoveToWindow];
 
 #if ANIMATION_RENDERING
-    if(self.window == nil)
+    if (self.window == nil)
     {
         // If moving off of a window destroy the display link.
         [_displayLink invalidate];

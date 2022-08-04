@@ -203,6 +203,13 @@ void FinishedMotion(Csm::ACubismMotion* self)
     for (Csm::csmUint32 i = 0; i < modelCount; ++i)
     {
         LAppModel* model = [self getModel:i];
+
+        if (model->GetModel() == NULL)
+        {
+            LAppPal::PrintLog("Failed to model->GetModel().");
+            continue;
+        }
+
         if (model->GetModel()->GetCanvasWidth() > 1.0f && width < height)
         {
             // 横に長いモデルを縦長ウィンドウに表示する際モデルの横サイズでscaleを算出する

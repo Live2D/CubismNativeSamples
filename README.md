@@ -98,7 +98,7 @@ Demo
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
 | Visual Studio 2017 | 15.9.49 |
-| Visual Studio 2019 | 16.11.16 |
+| Visual Studio 2019 | 16.11.17 |
 | XCode | 13.4.1 |
 
 ### Android
@@ -136,7 +136,7 @@ Demo
 | プラットフォーム | バージョン |
 | --- | --- |
 | iOS / iPadOS | 15.5 |
-| macOS | 12.4 |
+| macOS | 12.5 |
 | Windows 10 | 21H2 |
 | Windows 11 | 21H2 |
 

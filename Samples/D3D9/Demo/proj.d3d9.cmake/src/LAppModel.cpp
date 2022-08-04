@@ -105,6 +105,12 @@ void LAppModel::LoadAssets(const csmChar* dir, const csmChar* fileName)
 
     SetupModel(setting);
 
+    if (_model == NULL)
+    {
+        LAppPal::PrintLog("Failed to LoadAssets().");
+        return;
+    }
+
     CreateRenderer();
 
     SetupTextures();
@@ -230,6 +236,12 @@ void LAppModel::SetupModel(ICubismModelSetting* setting)
         {
             _lipSyncIds.PushBack(_modelSetting->GetLipSyncParameterId(i));
         }
+    }
+
+    if (_modelSetting == NULL || _modelMatrix == NULL)
+    {
+        LAppPal::PrintLog("Failed to SetupModel().");
+        return;
     }
 
     //Layout

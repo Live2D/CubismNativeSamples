@@ -132,6 +132,13 @@ void LAppLive2DManager::OnUpdate() const
     {
         CubismMatrix44 projection;
         LAppModel* model = GetModel(i);
+
+        if (model->GetModel() == NULL)
+        {
+            LAppPal::PrintLog("Failed to model->GetModel().");
+            continue;
+        }
+
         if (model->GetModel()->GetCanvasWidth() > 1.0f && width < height)
         {
             // 横に長いモデルを縦長ウィンドウに表示する際モデルの横サイズでscaleを算出する

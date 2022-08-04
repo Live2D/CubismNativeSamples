@@ -154,6 +154,13 @@ void LAppLive2DManager::OnUpdate() const
     {
         CubismMatrix44 projection;
         LAppModel* model = GetModel(i);
+
+        if (model->GetModel() == NULL)
+        {
+            LAppPal::PrintLog("Failed to model->GetModel().");
+            continue;
+        }
+
         if (model->GetModel()->GetCanvasWidth() > 1.0f && width < height)
         {
             // 横に長いモデルを縦長ウィンドウに表示する際モデルの横サイズでscaleを算出する
@@ -287,6 +294,12 @@ void LAppLive2DManager::RestoreDeviceLost(LPDIRECT3DDEVICE9 device)
     // レンダラー再作成
     for (csmUint32 i = 0; i < _models.GetSize(); i++)
     {
+        if (_models[i]->GetModel() == NULL)
+        {
+            LAppPal::PrintLog("Failed to model->GetModel().");
+            continue;
+        }
+
         _models[i]->ReloadRenderer();
     }
 }

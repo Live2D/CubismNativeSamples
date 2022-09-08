@@ -2,7 +2,7 @@
 
 set -ue
 
-IOS_CMAKE_VERSION=4.2.0
+IOS_CMAKE_VERSION=4.3.0
 
 SCRIPT_PATH=$(cd $(dirname $0) && pwd)
 

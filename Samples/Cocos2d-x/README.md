@@ -1,30 +1,34 @@
+[English](README.md) / [日本語](README.ja.md)
+
+---
+
 # Cubism Native Samples for Cocos2d-x
 
-Cocos2d-xで実装したアプリケーションのサンプル実装です。
+This is a sample implementation of an application implemented with Cocos2d-x.
 
 
-## 開発環境
+## Development environment
 
-| フレームワーク | バージョン |
+| Framework | Version |
 | --- | --- |
 | [XCode] | 12.4 |
 | [Cocos2d-x] | 4.0 (`95e5d868ce5958c0dadfc485bdda52f1bc404fe0`) |
 
-その他の開発環境・動作確認環境はトップディレクトリにある [README.md](../../README.md) を参照してください。
+For other development environments and operation environments, see [README.md](../../README.md) in the top directory.
 
-また、[Cocos2d-x ドキュメントの前提条件]も確認してください。
+Please also check the [Cocos2d-x Documentation Prerequisites].
 
-[Cocos2d-x ドキュメントの前提条件]: https://docs.cocos2d-x.org/cocos2d-x/v3/en/installation/prerequisites.html
+[Cocos2d-x Documentation Prerequisites]: https://docs.cocos2d-x.org/cocos2d-x/v3/en/installation/prerequisites.html
 
-### Cocos2d-x v4.x に関して
+### Regarding Cocos2d-x v4.x
 
-Cocos2d-x v4.0 から Metal API の対応に伴い、Renderer の構成が変更され、OpenGLES の API を直接使用することが出来なくなりました。
-詳しくは [Cocos2d-x のドキュメント](https://docs.cocos2d-x.org/cocos2d-x/v4/en/upgradeGuide/) を参照してください。
+With support for the Metal API since Cocos2d-x v4.0, the configuration of the Renderer has changed to make it impossible to use the OpenGLES API directly.
+Please check the [Cocos2d-x Documentation](https://docs.cocos2d-x.org/cocos2d-x/v4/en/upgradeGuide/) for more information.
 
-この変更に伴い Cocos2d-x v4.x 系では Cubism Framework の Renderer に Cocos2d-x　専用の物を用意いたしました。現在は、各プラットフォームで共通の Renderer を使用しており、 macOS, Windows, Linux, iOS, Android と横断的にクロスコンパイルを通すことが可能です。
+Along with this change, we have prepared a dedicated Cocos2d-x Renderer for the Cubism Framework in the Cocos2d-x v4.x series. Currently, each platform uses a common Renderer, and it is possible to cross-compile across macOS, Windows, Linux, iOS, and Android.
 
 
-## ディレクトリ構造
+## Directory structure
 
 ```
 .
@@ -42,23 +46,21 @@ Cocos2d-x v4.0 から Metal API の対応に伴い、Renderer の構成が変更
 
 ## Demo
 
-[Cubism Native Framework] の各機能を一通り利用したサンプルです。
-モーションの再生、表情の設定、ポーズの切り替え、物理演算の設定などを行います。
-メニューボタンからモデルを切り替えることができます。
+A sample that uses each function of [Cubism Native Framework]. You can play motions, set facial expressions, switch poses, set physics, etc. You can switch models from the menu button.
 
 [Cubism Native Framework]: https://github.com/Live2D/CubismNativeFramework
 
-このディレクトリ内に含まれるものは以下の通りです。
+The items contained in this directory are as follows.
 
 ### Classes
 
-サンプルプロジェクトで使用するソースコードが含まれます。
+Contains the source code used in the sample project.
 
 ### proj.android
 
-Android 用の Android Studio プロジェクトが含まれます。
+Contains Android Studio projects for Android.
 
-NOTE: 事前に下記の SDK のダウンロードが必要です
+NOTE: You need to download the following SDKs in advance.
 
 * Android SDK Build-Tools
 * NDK
@@ -66,93 +68,91 @@ NOTE: 事前に下記の SDK のダウンロードが必要です
 
 ### proj.ios
 
-iOS 用の CMake プロジェクトです。
+CMake project for iOS.
 
-`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
+Running the script in the `script` directory will generate a CMake deliverable in the `build` directory.
 
-| スクリプト名 | 生成物 |
+| Script name | Product |
 | --- | --- |
-| `proj_xcode` | Xcode プロジェクト |
+| `proj_xcode` | Xcode project |
 
-ビルド時に下記の手順を行なってください。
+Follow the steps below when building.
 
-1. XCode の `Project設定 - TARGETS - Demo - Packaging - Info.plist File`　に記載されている `Info.plist` 内の `Executable file` を `$(EXECUTABLE_NAME)` または`Demo`（アプリ名）に書き換えてください
+1. Rewrite the `Executable file` in `Info.plist` stated in XCode's `Project Settings - TARGETS - Demo - Packaging - Info.plist File` to `$(EXECUTABLE_NAME)` or `Demo` (app name).
 
-NOTICE: Cubism Core は i386 アーキテクチャをサポートしていないため、**iPhone Simulator 向けのビルドは行えません。**
+NOTICE: Cubism Core does not support the i386 architecture, so **it is not possible to build for iPhone Simulator.**
 
 ### proj.linux
 
-Linux 用の CMake プロジェクトです。
+CMake project for Linux.
 
-`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
+Running the script in the `script` directory will generate a CMake deliverable in the `build` directory.
 
-| スクリプト名 | 生成物 |
+| Script name | Product |
 | --- | --- |
-| `make_gcc` | 実行可能なアプリケーション |
+| `make_gcc` | Executable application |
 
-ビルド前に下記の手順を行なってください。
+Follow the steps below before building.
 
-1. [Dependencies that you need] ドキュメントを参照して必要なパッケージをダウンロードします
+1. Refer to the [Dependencies that you need] documentation to download the required packages.
 
 [Dependencies that you need]: https://docs.cocos2d-x.org/cocos2d-x/v4/en/installation/Linux.html#dependencies-that-you-need
 
-NOTICE: Linuxビルドには制限があります。使用する際は必ずトップディレクトリにある[NOTICE.md](../../NOTICE.md)をご確認ください。
+NOTICE: Linux builds have restrictions. Please be sure to check [NOTICE.md](../../NOTICE.md) in the top directory when using it.
 
 ### proj.mac
 
-macOS 用の CMake プロジェクトです。
+CMake project for macOS.
 
-`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
+Running the script in the `script` directory will generate a CMake deliverable in the `build` directory.
 
-| スクリプト名 | 生成物 |
+| Script name | Product |
 | --- | --- |
-| `make_xcode` | 実行可能なアプリケーション |
-| `proj_xcode` | Xcode プロジェクト |
+| `make_xcode` | Executable application |
+| `proj_xcode` | Xcode project |
 
-WARNING: macOSビルドにつきまして、`Cocos2d-x V4.0` に起因する不具合のために正常にビルドができない状態となっております。対処方法につきましては、以下の Issue をご確認ください。
+WARNING: Regarding macOS build, it is not possible to build normally due to a problem caused by `Cocos2d-x V4.0`. Please check the following Issue for the workaround.
 
-* [cocos2d/cocos2d-x error: Objective-C was disabled in PCH file but is currently enabled
-#20607
-](https://github.com/cocos2d/cocos2d-x/issues/20607#issuecomment-780266298)
+* [cocos2d/cocos2d-x error: Objective-C was disabled in PCH file but is currently enabled#20607](https://github.com/cocos2d/cocos2d-x/issues/20607#issuecomment-780266298)
 
 ### proj.win
 
-Windows 用の CMake プロジェクトです。
+CMake project for Windows.
 
-`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
+Running the script in the `script` directory will generate a CMake deliverable in the `build` directory.
 
-| スクリプト名 | 生成物 |
+| Script name | Product |
 | --- | --- |
-| `proj_msvcXXXX.bat` | Visual Studio プロジェクト |
+| `proj_msvcXXXX.bat` | Visual Studio project |
 
-NOTICE: nmake を使用したビルドは Cocos2d-x のエラーが発生するため対応していません。
+NOTICE: Builds using nmake are not supported due to Cocos2d-x errors.
 
 ### Resources
 
-Cocos2d-xのテンプレートプロジェクトで参照しているリソースが含まれます。
+Contains the resources referenced in the Cocos2d-x template project.
 
 ### CMakeLists.txt
 
-CMake 用の設定ファイルです。
+Configuration file for CMake.
 
-各プラットフォームのビルド設定が記載されています。
+The build settings for each platform are listed.
 
 
 ## thirdParty
 
-サンプルプロジェクトで利用するサードパーティライブラリとビルドスクリプトが含まれます。
+Contains third-party libraries and build scripts used in the sample project.
 
-### Cocos2d-x のセットアップ
+### Cocos2d-x setup
 
-`script` ディレクトリ内のスクリプトを実行することで Cocos2d-x のダウンロードを行います。
+Download Cocos2d-x by running the script in the `script` directory.
 
-| プラットフォーム | スクリプト名 |
+| Platform | Script name |
 | --- | --- |
 | Linux / macOS | `setup_cocos2d` |
 | Windows | `setup_cocos2d.bat` |
 
-スクリプト内の `COCOS_COMMIT_HASH` を変更することで、使用する Cocos2d-x の SCM 上のバージョンをコミットハッシュで指定することが出来ます。
+You can specify the version of Cocos2d-x on the SCM to be used with a commit hash by changing `COCOS_COMMIT_HASH` in the script.
 
-ダウンロード後は `thirdParty/cocos2d` というディレクトリ名で展開されます。
+After downloading, it will be expanded with the directory name `thirdParty/cocos2d`.
 
 [Cocos2d-x]: https://cocos2d-x.org/

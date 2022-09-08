@@ -63,6 +63,10 @@ elseif(MSVC_VERSION GREATER_EQUAL 1920 AND MSVC_VERSION LESS 1930)
   # Visual Studio 2019
   set(COMPILER 142)
   set(MSVC_YEAR 2019)
+elseif(MSVC_VERSION GREATER_EQUAL 1930 AND MSVC_VERSION LESS 1940)
+  # Visual Studio 2022
+  set(COMPILER 143)
+  set(MSVC_YEAR 2022)
 elseif(MSVC)
   message(FATAL_ERROR "[${APP_NAME}] Unsupported Visual C++ compiler used.")
 else()

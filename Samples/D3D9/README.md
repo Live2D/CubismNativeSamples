@@ -1,18 +1,22 @@
+[English](README.md) / [日本語](README.ja.md)
+
+---
+
 # Cubism Native Samples for DirectX 9.0c
 
-DirectX 9.0c で実装したアプリケーションのサンプル実装です。
+This is a sample implementation of an application implemented with DirectX 9.0c.
 
 
-## 開発環境
+## Development environment
 
-| 開発キット | バージョン |
+| Development kit | Version |
 | --- | --- |
 | [DirectX SDK] | 9.0c (June2010) |
 
-その他の開発環境・動作確認環境はトップディレクトリにある [README.md](/README.md) を参照してください。
+For other development environments and operation environments, see [README.md](/README.md) in the top directory.
 
 
-## ディレクトリ構造
+## Directory structure
 
 ```
 .
@@ -23,34 +27,34 @@ DirectX 9.0c で実装したアプリケーションのサンプル実装です�
 
 ## Demo
 
-[Cubism Native Framework] の各機能を一通り利用したサンプルです。
+A sample that uses each function of [Cubism Native Framework].
 
-全ての機能を利用するフルバージョンのサンプルと最小限の機能のみが備わったミニマムバージョンのサンプルの二通りがあります。
+There are two types of samples: the full version that uses all the features, and the minimum version that has only minimal features.
 
-フルバージョンではモーションの再生、表情の設定、ポーズの切り替え、物理演算の設定などを行います。
-また、メニューボタンからモデルを切り替えることができます。
+In the full version, you can play motions, set facial expressions, switch poses, set physics, etc.
+You can also switch models from the menu button.
 
-ミニマムバージョンでは単一のモデルの読み込み・表示、単一のモーションの再生、表情の設定、物理演算の設定などを行います。
-ポーズの切り替えやモデルの切り替えには対応していません。
+In the minimum version, you can load and display a single model, play a single motion, set facial expressions, set physics, etc.
+Switching poses and models are not supported.
 
 [Cubism Native Framework]: https://github.com/Live2D/CubismNativeFramework
 
-このディレクトリ内に含まれるものは以下の通りです。
+The items contained in this directory are as follows.
 
 ### proj.d3d9.cmake
 
-ソースファイルと CMake ファイル、及びバッチファイルが含まれます。
+Contains source files, CMake files, and batch files.
 
-* `scripts/nmake_xxx.bat` を実行すると `build` ディレクトリに実行可能なアプリケーションが生成されます。
-* `scripts/proj_xxx.bat` を実行すると `build` ディレクトリにVisual Studioプロジェクトが生成されます。
-* これらのスクリプトを実行した際にフルバージョンのサンプルを生成するか、ミニマムバージョンのサンプルを生成するかを選択することができます。
+* Running `scripts/nmake_xxx.bat` will generate an executable application in the `build` directory.
+* Running `scripts/proj_xxx.bat` will generate a Visual Studio project in the `build` directory.
+* When you run these scripts, you can choose to generate the full version or the minimum version of the sample.
 
-[DirectX SDK] を利用しているため、事前にインストールが必要です。
+Since [DirectX SDK] is used, it needs to be installed in advance.
 
-インストール時に `S1023` エラーが出た場合は、[マイクロソフトのサポート技術情報]を参考にしてください
+If you get a `S1023` error during installation, see [Microsoft Knowledge Base].
 
-インストール時に SDK がインストールされたパスが環境変数 `DXSDK_DIR` が設定されます。
-ビルド時に環境変数未設定エラーが発生した場合は手動で上記の環境変数を設定してください。
+The environment variable `DXSDK_DIR` is set to the path where the SDK was installed during installation.
+If an environment variable unset error occurs during build, set the above environment variable manually.
 
 [DirectX SDK]: https://www.microsoft.com/en-us/download/details.aspx?id=6812
-[マイクロソフトのサポート技術情報]: https://blogs.msdn.microsoft.com/windows_multimedia_jp/2013/09/05/kbdirectx-sdk
+[Microsoft Knowledge Base]: https://blogs.msdn.microsoft.com/windows_multimedia_jp/2013/09/05/kbdirectx-sdk

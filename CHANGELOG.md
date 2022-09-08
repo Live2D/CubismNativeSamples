@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
+## [4-r.5] - 2022-09-08
+
+### Added
+
+* Add support for Visual Studio 2022.
+* Add the multilingual supported documents.
+
+### Changed
+
+* Update third-party libraries.
+
+### Fixed
+
+* Fix an issue where the window title for the minimum sample of D3D9 was that of D3D11.
+
+
 ## [4-r.5-beta.5] - 2022-08-04
 
 ### Changed
@@ -230,6 +246,7 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[4-r.5]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.5-beta.5...4-r.5
 [4-r.5-beta.5]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.5-beta.4.1...4-r.5-beta.5
 [4-r.5-beta.4.1]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.5-beta.4...4-r.5-beta.4.1
 [4-r.5-beta.4]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.5-beta.3...4-r.5-beta.4

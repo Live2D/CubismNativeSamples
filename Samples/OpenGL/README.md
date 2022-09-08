@@ -1,21 +1,25 @@
+[English](README.md) / [日本語](README.ja.md)
+
+---
+
 # Cubism Native Samples for OpenGL
 
-OpenGL で実装したアプリケーションのサンプル実装です。
+This is a sample implementation of an application implemented with OpenGL.
 
 
-## 開発環境
+## Development environment
 
-| サードパーティ | バージョン |
+| Third Party | Version |
 | --- | --- |
 | [GLEW] | 2.2.0 |
-| [GLFW] | 3.3.6 |
-| [ios-cmake] | 4.2.0 |
+| [GLFW] | 3.3.8 |
+| [ios-cmake] | 4.3.0 |
 | [stb_image.h] | 2.27 |
 
-その他の開発環境・動作確認環境はトップディレクトリにある [README.md](/README.md) を参照してください。
+For other development environments and operation environments, see [README.md](/README.md) in the top directory.
 
 
-## ディレクトリ構造
+## Directory structure
 
 ```
 .
@@ -33,28 +37,28 @@ OpenGL で実装したアプリケーションのサンプル実装です。
 
 ## Demo
 
-[Cubism Native Framework] の各機能を一通り使用したサンプルです。
+A sample that uses each function of [Cubism Native Framework].
 
-全ての機能を利用するフルバージョンのサンプルと、最小限の機能のみが備わったミニマムバージョンのサンプルの二通りがあります。
-選択方法については各プラットフォームの項目を参照してください。
+There are two types of samples: the full version that uses all the features, and the minimum version that has only minimal features.
+Please refer to the sections of each platform for the selection method.
 
-その他のプラットフォーム向けのサンプルはフルバージョンのみが利用できます。
+Samples for other platforms are only available in the full version.
 
-フルバージョンではモーションの再生、表情の設定、ポーズの切り替え、物理演算の設定などを行います。
-また、メニューボタンからモデルを切り替えることができます。
+In the full version, you can play motions, set facial expressions, switch poses, set physics, etc.
+You can also switch models from the menu button.
 
-ミニマムバージョンでは単一のモデルの読み込み・表示、単一のモーションの再生、表情の設定、物理演算の設定などを行います。
-ポーズの切り替えやモデルの切り替えには対応していません。
+In the minimum version, you can load and display a single model, play a single motion, set facial expressions, set physics, etc.
+Switching poses and models are not supported.
 
 [Cubism Native Framework]: https://github.com/Live2D/CubismNativeFramework
 
-このディレクトリ内に含まれるものは以下の通りです。
+The items contained in this directory are as follows.
 
 ### proj.android.cmake
 
-このディレクトリにはフルバージョンとミニマムバージョンの二通りの Android Studio プロジェクトが含まれます。
+This directory contains two Android Studio projects: the full version and the minimum version.
 
-NOTE: 事前に下記の SDK のダウンロードが必要です
+NOTE: You need to download the following SDKs in advance.
 
 * Android SDK Build-Tools
 * NDK
@@ -62,91 +66,93 @@ NOTE: 事前に下記の SDK のダウンロードが必要です
 
 ### proj.ios.cmake
 
-iOS 用の CMake プロジェクトです。
+CMake project for iOS.
 
-`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
+Running the script in the `script` directory will generate a CMake deliverable in the `build` directory.
 
-| スクリプト名 | 生成物 |
+| Script name | Product |
 | --- | --- |
-| `proj_xcode` | Xcode プロジェクト |
+| `proj_xcode` | Xcode project |
 
-これらのスクリプトを実行した際にフルバージョンのサンプルを生成するか、ミニマムバージョンのサンプルを生成するかを選択することができます。
+When you run these scripts, you can choose to generate the full version or the minimum version of the sample.
 
-CMake のツールチェーンとして [ios-cmake] を使用しています。
-[thirdParty](README.md#thirdParty) の項目を参照して事前にダウンロードを行なってください。
+[ios-cmake] is used as a toolchain for CMake.
+Please refer to the [thirdParty](#thirdParty) section and download in advance.
 
 [ios-cmake]: https://github.com/leetal/ios-cmake
 
 ### proj.linux.cmake
 
-Linux 用の CMake プロジェクトです。
+CMake project for Linux.
 
-`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
+Running the script in the `script` directory will generate a CMake deliverable in the `build` directory.
 
-| スクリプト名 | 生成物 |
+| Script name | Product |
 | --- | --- |
-| `make_gcc` | 実行可能なアプリケーション |
+| `make_gcc` | Executable application |
 
-これらのスクリプトを実行した際にフルバージョンのサンプルを生成するか、ミニマムバージョンのサンプルを生成するかを選択することができます。
+When you run these scripts, you can choose to generate the full version or the minimum version of the sample.
 
-追加ライブラリとして [GLEW] と [GLFW] を使用しています。
-[thirdParty](README.md#thirdParty) の項目を参照して事前にダウンロードを行なってください。
+[GLEW] and [GLFW] are used as additional libraries.
+Please refer to the [thirdParty](#thirdParty) section and download in advance.
 
 ### proj.mac.cmake
 
-macOS 用の CMake プロジェクトです。
+CMake project for macOS.
 
-`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
+Running the script in the `script` directory will generate a CMake deliverable in the `build` directory.
 
-| スクリプト名 | 生成物 |
+| Script name | Product |
 | --- | --- |
-| `make_xcode` | 実行可能なアプリケーション |
-| `proj_xcode` | Xcode プロジェクト |
+| `make_xcode` | Executable application |
+| `proj_xcode` | Xcode project |
 
-これらのスクリプトを実行した際にフルバージョンのサンプルを生成するか、ミニマムバージョンのサンプルを生成するかを選択することができます。
+When you run these scripts, you can choose to generate the full version or the minimum version of the sample.
 
-追加ライブラリとして [GLEW] と [GLFW] を使用しています。
-[thirdParty](README.md#thirdParty) の項目を参照して事前にダウンロードを行なってください。
+[GLEW] and [GLFW] are used as additional libraries.
+Please refer to the [thirdParty](#thirdParty) section and download in advance.
 
 ### proj.win.cmake
 
-Windows 用の CMake プロジェクトです。
+CMake project for Windows.
 
-`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
+Running the script in the `script` directory will generate a CMake deliverable in the `build` directory.
 
-| スクリプト名 | 生成物 |
+| Script name | Product |
 | --- | --- |
-| `nmake_msvcXXXX.bat` | 実行可能なアプリケーション |
-| `proj_msvcXXXX.bat` | Visual Studio プロジェクト |
+| `nmake_msvcXXXX.bat` | Executable application |
+| `proj_msvcXXXX.bat` | Visual Studio project |
 
-これらのスクリプトを実行した際にフルバージョンのサンプルを生成するか、ミニマムバージョンのサンプルを生成するかを選択することができます。
+When you run these scripts, you can choose to generate the full version or the minimum version of the sample.
 
-追加ライブラリとして [GLEW] と [GLFW] を使用しています。
-[thirdParty](README.md#thirdParty) の項目を参照して事前にダウンロードを行なってください。
+[GLEW] and [GLFW] are used as additional libraries.
+Please refer to the [thirdParty](#thirdParty) section and download in advance.
 
 ## thirdParty
 
-サンプルプロジェクトで使用するサードパーティライブラリと自動展開スクリプトが含まれます。
+Contains third-party libraries and auto-deployment scripts used in the sample project.
 
-### GLEW / GLFW のセットアップ
+### GLEW / GLFW setup
 
-`script` ディレクトリ内のスクリプトを実行することで GLEW と GLFW のダウンロードを行います。
+Download GLEW and GLFW by running the script in the `script` directory.
 
-| プラットフォーム | スクリプト名 |
+| Platform | Script name |
 | --- | --- |
-| Linux / macOS | `setup_glew_glfw` |
-| Windows | `setup_glew_glfw.bat` |
+| Linux *1 / macOS | `setup_glew_glfw` |
+| Windows *2 | `setup_glew_glfw.bat` |
 
-スクリプト内の `GLEW_VERSION` 及び `GLFW_VERSION` を変更することで、ダウンロードするバージョンを変更できます。
+You can change the version to download by changing `GLEW_VERSION` and `GLFW_VERSION` in the script.
 
-NOTE: `Visual Studio 2013` をご利用の際、追加対応が必要となる場合がございます。
-詳しくは [NOTICE](NOTICE.md) をご確認ください。
+*1 On Linux, it may be necessary to install libraries on which GLFW depends. Please refer to the official page to install all libraries on which GLFW depends.
+[GLFW.org Dependencies for X11 on Unix-like systems](https://www.glfw.org/docs/latest/compile_guide.html#compile_deps_x11)
+*2 Additional support may be required when using `Visual Studio 2013`.
+See [NOTICE.md](/NOTICE.md) for details.
 
-## ios-cmake のセットアップ
+## ios-cmake setup
 
-`script` ディレクトリ内の `setup_ios_cmake` を実行することで ios-cmake のダウンロードを行います。
+Download ios-cmake by running `setup_ios_cmake` in the `script` directory.
 
-スクリプト内の `IOS_CMAKE_VERSION` を変更することで、ダウンロードするバージョンを変更できます。
+You can change the version to download by changing `IOS_CMAKE_VERSION` in the script.
 
 [GLEW]: https://github.com/nigels-com/glew
 [GLFW]: https://github.com/glfw/glfw

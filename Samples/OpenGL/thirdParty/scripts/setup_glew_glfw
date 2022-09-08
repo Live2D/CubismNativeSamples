@@ -3,7 +3,7 @@
 set -ue
 
 GLEW_VERSION=2.2.0
-GLFW_VERSION=3.3.6
+GLFW_VERSION=3.3.8
 
 SCRIPT_PATH=$(cd $(dirname $0) && pwd)
 

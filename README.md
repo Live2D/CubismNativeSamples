@@ -1,65 +1,69 @@
+[English](README.md) / [日本語](README.ja.md)
+
+---
+
 # Cubism Native Samples
 
-Live2D Cubism 4 Editor で出力したモデルを表示するアプリケーションのサンプル実装です。
+This is a sample implementation of an application that displays models output by Live2D Cubism 4 Editor.
 
-Cubism Native Framework および Live2D Cubism Core と組み合わせて使用します。
-
-
-## ライセンス
-
-本 SDK を使用する前に[ライセンス](LICENSE.md)をご確認ください。
+It is used in conjunction with Cubism Native Framework and Live2D Cubism Core.
 
 
-## 注意事項
+## License
 
-本 SDK を使用する前に [注意事項](NOTICE.md)をご確認ください。
+Please check the [license](LICENSE.md) before using this SDK.
 
 
-## ディレクトリ構成
+## Notices
+
+Please check the [notices](NOTICE.md) before using this SDK.
+
+
+## Directory structure
 
 ```
 .
-├─ Core             # Live2D Cubism Core が含まれるディレクトリ
-├─ Framework        # レンダリングやアニメーション機能などのソースコードが含まれるディレクトリ
+├─ Core             # Directory containing Live2D Cubism Core
+├─ Framework        # Directory containing source code for rendering and animation functions
 └─ Samples
-   ├─ Cocos2d-x     # Cocos2d-x のサンプルプロジェクトが含まれるディレクトリ
-   ├─ D3D9          # DirectX 9.0c のサンプルプロジェクトが含まれるディレクトリ
-   ├─ D3D11         # DirectX 11 のサンプルプロジェクトが含まれるディレクトリ
-   ├─ Metal         # Metal のサンプルプロジェクトが含まれるディレクトリ
-   ├─ OpenGL        # OpenGL のサンプルプロジェクトが含まれるディレクトリ
-   └─ Resources     # モデルのファイルや画像などのリソースが含まれるディレクトリ
+   ├─ Cocos2d-x     # Directory containing the Cocos2d-x sample project
+   ├─ D3D9          # Directory containing the DirectX 9.0c sample project
+   ├─ D3D11         # Directory containing the DirectX 11 sample project
+   ├─ Metal         # Directory containing the Metal sample project
+   ├─ OpenGL        # Directory containing the OpenGL sample project
+   └─ Resources     # Directory containing resources such as model files and images
 ```
 
 
 ## Cubism Native Framework
 
-モデルを表示、操作するための各種機能を提供します。
+Provides various functions for displaying and manipulating the model.
 
-[Cubism Native Framework] は、当リポジトリのサブモジュールとして含まれています。
-当リポジトリをクローンした後、サブモジュールのクローンを実行することでファイルが追加されます。
+[Cubism Native Framework] is included as a submodule of this repository.
+After cloning this repository, the files will be added by cloning the submodule.
 
 [Cubism Native Framework]: (https://github.com/Live2D/CubismNativeFramework)
 
 
 ## Live2D Cubism Core for Native
 
-モデルをロードするためのライブラリです。
-当リポジトリには Live2D Cubism Core for Native は同梱されていません。
+A library for loading the model.
+Live2D Cubism Core for Native is not included in this repository.
 
-ダウンロードするには[こちら](https://www.live2d.com/download/cubism-sdk/download-native/)のページを参照ください。
-ダウンロードした Zip ファイルの中身を当リポジトリの `Core` ディレクトリにコピーし、プログラムにリンクさせてください。
+To download, please refer to [this](https://www.live2d.com/download/cubism-sdk/download-native/) page.
+Copy the contents of the downloaded ZIP file to the `Core` directory of this repository and link it to the program.
 
 
-## ビルド方法
+## How to build
 
-ビルド方法についてはサンプルプロジェクトによって異なります。
-各サンプルプロジェクトに同梱された `README.md` を参照ください。
+The build method depends on the sample project.
+Please refer to the `README.md` included with each sample project.
 
-### サンプルプロジェクトの成果物の生成場所
+### Where to generate the sample project deliverables
 
-本サンプルでは、Android を除く CMake プロジェクトの成果物は `bin` ディレクトリに生成されます。
+In this sample, the deliverables of CMake projects except Android are generated in the `bin` directory.
 
-例）OpenGL サンプルの macOS プロジェクトのビルドを `make_gcc` スクリプトを使用して行なった場合
+E.g. When building a macOS project of the OpenGL sample using the `make_gcc` script
 ```
 Demo
 └─ proj.mac.cmake
@@ -67,61 +71,62 @@ Demo
       └─ make_gcc
          └─ bin
             └─ Demo
-               ├─ Resources    # Samples/Resources と同じ
-               └─ Demo         # 実行可能なアプリケーション
+               ├─ Resources    # Same as Samples/Resources
+               └─ Demo         # Executable applications
 ```
 
 
-## コンパイルオプション
+## Compile options
 
-プロジェクトにおいて、マクロ `USE_RENDER_TARGET` または `USE_MODEL_RENDER_TARGET` が有効な場合、
-モデルがテクスチャへレンダリングされるようになります。
-詳細はサンプルディレクトリ内の `LAppLive2DManager.cpp` を参照ください。
+If the macro `USE_RENDER_TARGET` or `USE_MODEL_RENDER_TARGET` is enabled in your project, the model will be rendered to the texture.
+Please refer to 'LAppLive2DManager.cpp' in the sample directory for details.
 
 
-## SDKマニュアル
+## SDK manual
 
 [Cubism SDK Manual](https://docs.live2d.com/cubism-sdk-manual/top/)
 
 
-## 変更履歴
+## Changelog
 
-当リポジトリの変更履歴については [CHANGELOG.md](CHANGELOG.md) を参照ください。
+Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repository.
 
 
-## 開発環境
+## Development environment
 
-| 開発ツール | バージョン |
+| Development Tool | Version |
 | --- | --- |
-| Android Studio | Chipmunk 2021.2.1 Patch 1 |
-| CMake | 3.23.0 |
+| Android Studio | Chipmunk 2021.2.1 Patch 2 |
+| CMake | 3.24.1 |
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.49 |
-| Visual Studio 2019 | 16.11.17 |
+| Visual Studio 2017 | 15.9.50 |
+| Visual Studio 2019 | 16.11.18 |
+| Visual Studio 2022 | 17.3.2 |
 | XCode | 13.4.1 |
 
 ### Android
 
-| Android SDK tools | バージョン |
+| Android SDK tools | Version |
 | --- | --- |
-| Android NDK | 24.0.08215888 |
+| Android NDK | 25.1.8937393 |
 | Android SDK | 33.0.0 |
-| CMake | 3.18.1 |
+| CMake | 3.22.1 |
 
 ### Linux
 
-| 系統 | ディストリビューション・バージョン | Docker イメージ | GCC |
+| System | Distribution version | Docker image | GCC |
 | --- | --- | --- | --- |
 | Red Hat | Amazon Linux 2 |  `amazonlinux:2` | 7.3.1 |
 | Red Hat | CentOS 7 | `centos:7` | 4.8.5 |
 | Red Hat | CentOS Stream 8 *1 | `centos:latest` | 8.5.0 |
+| Red Hat | CentOS Stream 9 | - | 11.3.1 |
 | Debian | Ubuntu 18.04 | `ubuntu:18.04` | 7.5.0 |
-| Debian | Ubuntu 20.04 | `ubuntu:20.04` | 9.4.0 |
+| Debian | Ubuntu 22.04 | `ubuntu:22.04` | 11.2.0 |
 
-*1 CentOS 8はサポートしておりません
+*1 CentOS 8 is not supported
 
-#### Mesa ライブラリ
+#### Mesa library
 
 * Red Hat
   * `mesa-libGL-devel`
@@ -131,34 +136,50 @@ Demo
   * `libglu1-mesa-dev`
 
 
-## 動作確認環境
+## Operation environment
 
-| プラットフォーム | バージョン |
+| Platform | Version |
 | --- | --- |
-| iOS / iPadOS | 15.5 |
-| macOS | 12.5 |
+| iOS / iPadOS | 15.6.1 |
+| macOS | 12.5.1 |
 | Windows 10 | 21H2 |
 | Windows 11 | 21H2 |
 
 ### Android
 
-| バージョン | デバイス | Tegra |
+| Version | Device | Tegra |
 | --- | --- | --- |
-| 11 | Pixel 3a | |
+| 12 | Pixel 6a | |
 | 7.1.1 | Nexus 9 | ✔︎ |
 
 ### Linux
 
-| 系統 | ディストリビューション | バージョン |
+| System | Distribution | Version |
 | --- | --- | --- |
 | Red Hat | Amazon Linux | 2 |
 | Red Hat | CentOS Stream | 8 |
-| Debian | Ubuntu | 20.04 |
+| Red Hat | CentOS Stream | 9 |
+| Debian | Ubuntu | 22.04 |
 
+## Contributing
 
-## コミュニティ
+There are many ways to contribute to the project: logging bugs, submitting pull requests on this GitHub, and reporting issues and making suggestions in Live2D Community.
 
-ユーザー同士でCubism SDKの活用方法の提案や質問をしたい場合は、是非コミュニティをご活用ください。
+### Forking And Pull Requests
 
-- [Live2D 公式コミュニティ](https://creatorsforum.live2d.com/)
-- [Live2D community(English)](https://community.live2d.com/)
+We very much appreciate your pull requests, whether they bring fixes, improvements, or even new features. Note, however, that the wrapper is designed to be as lightweight and shallow as possible and should therefore only be subject to bug fixes and memory/performance improvements. To keep the main repository as clean as possible, create a personal fork and feature branches there as needed.
+
+### Bugs
+
+We are regularly checking issue-reports and feature requests at Live2D Community. Before filing a bug report, please do a search in Live2D Community to see if the issue-report or feature request has already been posted. If you find your issue already exists, make relevant comments and add your reaction.
+
+### Suggestions
+
+We're also interested in your feedback for the future of the SDK. You can submit a suggestion or feature request at Live2D Community. To make this process more effective, we're asking that you include more information to help define them more clearly.
+
+## Community
+
+If you want to suggest or ask questions about how to use the Cubism SDK between users, please use the community.
+
+- [Live2D community](https://community.live2d.com/)
+- [Live2D 公式コミュニティ (Japanese)](https://creatorsforum.live2d.com/)

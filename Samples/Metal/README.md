@@ -1,20 +1,24 @@
+[English](README.md) / [日本語](README.ja.md)
+
+---
+
 # Cubism Native Samples for Metal
 
-Metal で実装したアプリケーションのサンプル実装です。
-制限事項があります、トップディレクトリにある [NOTICE.md](/NOTICE.md) を参照してください。
+This is a sample implementation of an application implemented with Metal.
+There are restrictions. Please check [NOTICE.md](/NOTICE.md) in the top directory.
 
 
-## 開発環境
+## Development environment
 
-| サードパーティ | バージョン |
+| Third Party | Version |
 | --- | --- |
-| [ios-cmake]    | 4.2.0      |
+| [ios-cmake]    | 4.3.0      |
 | [stb_image.h]  | 2.27      |
 
-その他の開発環境・動作確認環境はトップディレクトリにある [README.md](/README.md) を参照してください。
+For other development environments and operation environments, see [README.md](/README.md) in the top directory.
 
 
-## ディレクトリ構造
+## Directory structure
 
 ```
 .
@@ -26,38 +30,37 @@ Metal で実装したアプリケーションのサンプル実装です。
 
 ## Demo
 
-[Cubism Native Framework] の各機能を一通り使用したサンプルです。
-モーションの再生、表情の設定、ポーズの切り替え、物理演算の設定などを行います。
-メニューボタンからモデルを切り替えることができます。
+A sample that uses each function of [Cubism Native Framework].
+You can play motions, set facial expressions, switch poses, set physics, etc.
+You can switch models from the menu button.
 
 [Cubism Native Framework]: https://github.com/Live2D/CubismNativeFramework
 
-このディレクトリ内に含まれるものは以下の通りです。
+The items contained in this directory are as follows.
 
 ### proj.ios.cmake
 
-iOS もしくは Mac Catalyst用の CMake プロジェクトです。
+CMake project for iOS or Mac Catalyst.
 
-`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます。
+Running the script in the `script` directory will generate a CMake deliverable in the `build` directory.
 
-スクリプト実行時にiOS用かMac Catalyst用か選択できます。
+You can choose between iOS and Mac Catalyst when running the script.
 
-| スクリプト名 | 生成物 |
+| Script name | Product |
 | --- | --- |
-| `proj_xcode` | Xcode プロジェクト |
+| `proj_xcode` | Xcode project |
 
-Mac Catalyst用ビルド時は下記の手順を行なってください。
+Follow the steps below when building for Mac Catalyst.
 
-1. XCode の `Project設定 - TARGETS - Demo - General - Deployment Info` の `macOS` のチェックボックスをオンにしてください。
-2. XCode の `Project設定 - TARGETS - Demo` および `Framework` の `Build Settings - Architectures - Architectures` の記載を実行環境に合わせて変更してください。
-3. XCode の `Project設定 - TARGETS - Demo` および `Framework` の `Build Settings - Architectures - Base SDK` を `iOS` に変更してください。
-もしくはApple公式Tutorialsを参考ください。
-[turning-on-mac-catalyst]:https://developer.apple.com/tutorials/mac-catalyst/turning-on-mac-catalyst
-
+1. Check the box for `macOS` in XCode's `Project Settings - TARGETS - Demo - General - Deployment Info`.
+2. Change the description of XCode's `Project Settings - TARGETS - Demo` and `Framework`'s `Build Settings - Architectures - Architectures` according to the execution environment.
+3. Change XCode's `Project Settings - TARGETS - Demo` and `Framework`'s `Build Settings - Architectures - Base SDK` to `iOS`, or refer to the Apple official tutorials.
+[turning-on-mac-catalyst]: https://developer.apple.com/tutorials/mac-catalyst/turning-on-mac-catalyst
 
 
-CMake のツールチェーンとして [ios-cmake] を使用しています。
-[thirdParty](README.md#thirdParty) の項目を参照して事前にダウンロードを行なってください。
+
+[ios-cmake] is used as a toolchain for CMake.
+Please refer to the [thirdParty](README.md#thirdParty) section and download in advance.
 
 [ios-cmake]: https://github.com/leetal/ios-cmake
 
@@ -65,14 +68,13 @@ CMake のツールチェーンとして [ios-cmake] を使用しています。
 
 ## thirdParty
 
-サンプルプロジェクトで使用するサードパーティライブラリと自動展開スクリプトが含まれます。
+Contains third-party libraries and auto-deployment scripts used in the sample project.
 
-## ios-cmake のセットアップ
+## ios-cmake setup
 
-`script` ディレクトリ内の `setup_ios_cmake` を実行することで ios-cmake のダウンロードを行います。
+Download ios-cmake by running `setup_ios_cmake` in the `script` directory.
 
-スクリプト内の `IOS_CMAKE_VERSION` を変更することで、ダウンロードするバージョンを変更できます。
+You can change the version to download by changing `IOS_CMAKE_VERSION` in the script.
 
 [ios-cmake]: https://github.com/leetal/ios-cmake
 [stb_image.h]: https://github.com/nothings/stb/blob/master/stb_image.h
-

@@ -1,20 +1,25 @@
+[English](README.md) / [日本語](README.ja.md)
+
+---
+
 # Cubism Native Samples for DirectX 11
 
-DirectX 11 で実装したアプリケーションのサンプル実装です。
+This is a sample implementation of an application implemented with DirectX 11.
 
 
-## 開発環境
+## Development environment
 
-| 開発キット | Visual Studio | バージョン |
+| Development Kit | Visual Studio | Version |
 | --- | --- | --- |
 | [DirectXTK] | 2013 | April 23, 2018 |
 | [DirectXTK] | 2015 | December 17, 2019 |
-| [DirectXTK] | 2017 / 2019 | March 24, 2022 |
+| [DirectXTK] | 2017 | March 24, 2022 |
+| [DirectXTK] | 2019 / 2022 | july 31, 2022 |
 
-その他の開発環境・動作確認環境はトップディレクトリにある [README.md](/README.md) を参照してください。
+For other development environments and operation environments, see [README.md](/README.md) in the top directory.
 
 
-## ディレクトリ構造
+## Directory structure
 
 ```
 .
@@ -26,55 +31,56 @@ DirectX 11 で実装したアプリケーションのサンプル実装です。
 
 ## Demo
 
-[Cubism Native Framework] の各機能を一通り利用したサンプルです。
+A sample that uses each function of [Cubism Native Framework].
 
-全ての機能を利用するフルバージョンのサンプルと最小限の機能のみが備わったミニマムバージョンのサンプルの二通りがあります。
+There are two types of samples: the full version that uses all the features, and the minimum version that has only minimal features.
 
-フルバージョンではモーションの再生、表情の設定、ポーズの切り替え、物理演算の設定などを行います。
-また、メニューボタンからモデルを切り替えることができます。
+In the full version, you can play motions, set facial expressions, switch poses, set physics, etc.
+You can also switch models from the menu button.
 
-ミニマムバージョンでは単一のモデルの読み込み・表示、単一のモーションの再生、表情の設定、物理演算の設定などを行います。
-ポーズの切り替えやモデルの切り替えには対応していません。
+In the minimum version, you can load and display a single model, play a single motion, set facial expressions, set physics, etc.
+Switching poses and models are not supported.
 
 [Cubism Native Framework]: https://github.com/Live2D/CubismNativeFramework
 
-このディレクトリ内に含まれるものは以下の通りです。
+The items contained in this directory are as follows.
 
 ### proj.d3d11.cmake
 
-CMake プロジェクトです。
+CMake project.
 
-`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
+Running the script in the `script` directory will generate a CMake deliverable in the `build` directory.
 
-| スクリプト名 | 生成物 |
+| Script name | Product |
 | --- | --- |
-| `nmake_msvcXXXX.bat` | 実行可能なアプリケーション |
-| `proj_msvcXXXX.bat` | Visual Studio プロジェクト |
+| `nmake_msvcXXXX.bat` | Executable application |
+| `proj_msvcXXXX.bat` | Visual Studio project |
 
-これらのスクリプトを実行した際にフルバージョンのサンプルを生成するか、ミニマムバージョンのサンプルを生成するかを選択することができます。
+When you run these scripts, you can choose to generate the full version or the minimum version of the sample.
 
-開発キットとして [DirectXTK] を利用しています。
-[thirdParty](README.md#thirdParty) の項目を参照して事前にダウンロードを行なってください。
+[DirectXTK] is used as a development kit.
+Please refer to the [thirdParty](README.md#thirdParty) section and download in advance.
 
 
 ## thirdParty
 
-サンプルプロジェクトで利用するサードパーティライブラリとビルドスクリプトが含まれます。
+Contains third-party libraries and build scripts used in the sample project.
 
-### DirectXTK のセットアップ
+### DirectXTK setup
 
-`script` ディレクトリ内のスクリプトを実行することで DirectXTK のダウンロード及びライブラリのビルドを行います。
+Download DirectXTK and build the library by running the script in the `script` directory.
 
-| Visual Studio | スクリプト名 |
+| Visual Studio | Script Name |
 | --- | --- |
 | 2013 | `setup_msvc2013.bat` |
 | 2015 | `setup_msvc2015.bat` |
 | 2017 | `setup_msvc2017.bat` |
 | 2019 | `setup_msvc2019.bat` |
+| 2022 | `setup_msvc2022.bat` |
 
-スクリプト内の `XTK_VERSION` を変更することでライブラリのバージョンを指定することが出来ます。
+You can specify the library version by changing `XTK_VERSION` in the script.
 
 [DirectXTK]: https://github.com/Microsoft/DirectXTK
 
-x64のリリースビルドを行うには.NET Framework 4.7.2のインストールが必要となります。
+.NET Framework 4.7.2 must be installed to do an x64 release build.
 [DirectXTK Release Notes]: https://github.com/microsoft/DirectXTK#release-notes

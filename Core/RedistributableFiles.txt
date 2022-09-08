@@ -46,6 +46,10 @@ under the terms of the Live2D Proprietary Software License Agreement:
 - lib/windows/x86/142/Live2DCubismCore_MDd.lib
 - lib/windows/x86/142/Live2DCubismCore_MT.lib
 - lib/windows/x86/142/Live2DCubismCore_MTd.lib
+- lib/windows/x86/143/Live2DCubismCore_MD.lib
+- lib/windows/x86/143/Live2DCubismCore_MDd.lib
+- lib/windows/x86/143/Live2DCubismCore_MT.lib
+- lib/windows/x86/143/Live2DCubismCore_MTd.lib
 - lib/windows/x86_64/120/Live2DCubismCore_MD.lib
 - lib/windows/x86_64/120/Live2DCubismCore_MDd.lib
 - lib/windows/x86_64/120/Live2DCubismCore_MT.lib
@@ -62,3 +66,7 @@ under the terms of the Live2D Proprietary Software License Agreement:
 - lib/windows/x86_64/142/Live2DCubismCore_MDd.lib
 - lib/windows/x86_64/142/Live2DCubismCore_MT.lib
 - lib/windows/x86_64/142/Live2DCubismCore_MTd.lib
+- lib/windows/x86_64/143/Live2DCubismCore_MD.lib
+- lib/windows/x86_64/143/Live2DCubismCore_MDd.lib
+- lib/windows/x86_64/143/Live2DCubismCore_MT.lib
+- lib/windows/x86_64/143/Live2DCubismCore_MTd.lib

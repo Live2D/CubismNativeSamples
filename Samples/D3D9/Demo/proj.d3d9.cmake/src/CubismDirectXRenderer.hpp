@@ -93,7 +93,7 @@ public:
     */
     bool CheckFullScreen(D3DFORMAT format, UINT width, UINT height);
 
-    const LPCSTR ClassName = "Cubism DirectX11 Sample";
+    const LPCSTR ClassName = "Cubism DirectX9 Sample";
     const csmInt32 BackBufferNum = 1; // バックバッファ枚数
 
     enum LostStep

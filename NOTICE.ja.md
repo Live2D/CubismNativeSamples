@@ -1,4 +1,4 @@
-[English](NOTICE.md) / [日本語](NOTOICE.ja.md)
+[English](NOTICE.md) / [日本語](NOTICE.ja.md)
 
 ---
 

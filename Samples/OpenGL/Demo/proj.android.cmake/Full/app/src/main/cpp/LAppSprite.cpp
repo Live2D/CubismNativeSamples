@@ -43,7 +43,6 @@ void LAppSprite::ReSize(float x, float y, float width, float height)
 
 void LAppSprite::Render() const
 {
-    glEnable(GL_TEXTURE_2D);
     const GLfloat uvVertex[] =
     {
         1.0f, 0.0f,
@@ -86,8 +85,6 @@ void LAppSprite::Render() const
 
 void LAppSprite::RenderImmidiate(GLuint textureId, const GLfloat uvVertex[8]) const
 {
-    glEnable(GL_TEXTURE_2D);
-
     // attribute属性を有効にする
     glEnableVertexAttribArray(_positionLocation);
     glEnableVertexAttribArray(_uvLocation);

@@ -2,6 +2,8 @@
 
 ---
 
+![image](logor.png)
+
 # Cubism Native Samples
 
 This is a sample implementation of an application that displays models output by Live2D Cubism 4 Editor.
@@ -96,21 +98,21 @@ Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repositor
 
 | Development Tool | Version |
 | --- | --- |
-| Android Studio | Chipmunk 2021.2.1 Patch 2 |
-| CMake | 3.24.1 |
+| Android Studio | Electric Eel 2022.1.1 Patch 1 |
+| CMake | 3.25.2 |
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.50 |
-| Visual Studio 2019 | 16.11.18 |
-| Visual Studio 2022 | 17.3.2 |
-| XCode | 13.4.1 |
+| Visual Studio 2017 | 15.9.51 |
+| Visual Studio 2019 | 16.11.23 |
+| Visual Studio 2022 | 17.4.4 |
+| XCode | 14.2 |
 
 ### Android
 
 | Android SDK tools | Version |
 | --- | --- |
-| Android NDK | 25.1.8937393 |
-| Android SDK | 33.0.0 |
+| Android NDK | 25.2.9519653 |
+| Android SDK | 33.0.2 |
 | CMake | 3.22.1 |
 
 ### Linux
@@ -122,7 +124,7 @@ Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repositor
 | Red Hat | CentOS Stream 8 *1 | `centos:latest` | 8.5.0 |
 | Red Hat | CentOS Stream 9 | - | 11.3.1 |
 | Debian | Ubuntu 18.04 | `ubuntu:18.04` | 7.5.0 |
-| Debian | Ubuntu 22.04 | `ubuntu:22.04` | 11.2.0 |
+| Debian | Ubuntu 22.04.1 | `ubuntu:22.04.1` | 11.3.0 |
 
 *1 CentOS 8 is not supported
 
@@ -140,8 +142,8 @@ Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repositor
 
 | Platform | Version |
 | --- | --- |
-| iOS / iPadOS | 15.6.1 |
-| macOS | 12.5.1 |
+| iOS / iPadOS | 16.3 |
+| macOS | 13.2 |
 | Windows 10 | 21H2 |
 | Windows 11 | 21H2 |
 
@@ -149,7 +151,7 @@ Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repositor
 
 | Version | Device | Tegra |
 | --- | --- | --- |
-| 12 | Pixel 6a | |
+| 13 | Pixel 6a | |
 | 7.1.1 | Nexus 9 | ✔︎ |
 
 ### Linux
@@ -159,7 +161,7 @@ Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repositor
 | Red Hat | Amazon Linux | 2 |
 | Red Hat | CentOS Stream | 8 |
 | Red Hat | CentOS Stream | 9 |
-| Debian | Ubuntu | 22.04 |
+| Debian | Ubuntu | 22.04.1 |
 
 ## Contributing
 
@@ -183,3 +185,6 @@ If you want to suggest or ask questions about how to use the Cubism SDK between 
 
 - [Live2D community](https://community.live2d.com/)
 - [Live2D 公式コミュニティ (Japanese)](https://creatorsforum.live2d.com/)
+
+
+![image](logos.png)

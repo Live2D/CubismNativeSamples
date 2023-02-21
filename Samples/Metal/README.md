@@ -13,7 +13,7 @@ There are restrictions. Please check [NOTICE.md](/NOTICE.md) in the top director
 | Third Party | Version |
 | --- | --- |
 | [ios-cmake]    | 4.3.0      |
-| [stb_image.h]  | 2.27      |
+| [stb_image.h]  | 2.28      |
 
 For other development environments and operation environments, see [README.md](/README.md) in the top directory.
 

@@ -14,7 +14,7 @@ This is a sample implementation of an application implemented with DirectX 11.
 | [DirectXTK] | 2013 | April 23, 2018 |
 | [DirectXTK] | 2015 | December 17, 2019 |
 | [DirectXTK] | 2017 | March 24, 2022 |
-| [DirectXTK] | 2019 / 2022 | july 31, 2022 |
+| [DirectXTK] | 2019 / 2022 | February 6, 2023 |
 
 For other development environments and operation environments, see [README.md](/README.md) in the top directory.
 

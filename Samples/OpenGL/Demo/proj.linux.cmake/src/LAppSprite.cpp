@@ -44,7 +44,6 @@ void LAppSprite::Render() const
         return;
     }
 
-    glEnable(GL_TEXTURE_2D);
     const GLfloat uvVertex[] =
     {
         1.0f, 0.0f,
@@ -90,8 +89,6 @@ void LAppSprite::RenderImmidiate(GLuint textureId, const GLfloat uvVertex[8]) co
     {
         return;
     }
-
-    glEnable(GL_TEXTURE_2D);
 
     // attribute属性を有効にする
     glEnableVertexAttribArray(_positionLocation);

@@ -14,7 +14,7 @@ This is a sample implementation of an application implemented with OpenGL.
 | [GLEW] | 2.2.0 |
 | [GLFW] | 3.3.8 |
 | [ios-cmake] | 4.3.0 |
-| [stb_image.h] | 2.27 |
+| [stb_image.h] | 2.28 |
 
 For other development environments and operation environments, see [README.md](/README.md) in the top directory.
 

@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
+## [4-r.6.1] - 2023-03-10
+
+### Added
+
+* Add funciton to validate MOC3 files.
+  * See `CHANGELOG.md` in Core and Framework.
+
+
 ## [4-r.6] - 2023-02-21
 
 ### Fixed
@@ -265,6 +273,7 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[4-r.6.1]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.6...4-r.6.1
 [4-r.6]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.5.1...4-r.6
 [4-r.5.1]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.5...4-r.5.1
 [4-r.5]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.5-beta.5...4-r.5

@@ -22,6 +22,9 @@ namespace {
     LAppDelegate* s_instance = NULL;
 
     const LPCSTR ClassName = "Cubism DirectX9 Sample";
+
+    // デフォルトバックバッファ作成枚数
+    const csmInt32 BackBufferNum = 1;
 }
 
 LAppDelegate* LAppDelegate::GetInstance()
@@ -86,9 +89,6 @@ bool LAppDelegate::Initialize()
         LAppPal::PrintLog("Fail Direct3D Initialize");
         return false;
     }
-
-    // デフォルトバックバッファ作成枚数
-    const csmInt32 BackBufferNum = 1;
 
     // デバイス設定
     memset(&_presentParameters, 0, sizeof(_presentParameters));
@@ -230,7 +230,7 @@ void LAppDelegate::InitializeCubism()
     CubismFramework::Initialize();
 
     // モデルロード前に必ず呼び出す必要がある
-    Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D9::InitializeConstantSettings(1, _device);
+    Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D9::InitializeConstantSettings(BackBufferNum, _device);
 
     //load model
     LAppLive2DManager::GetInstance();
@@ -481,7 +481,7 @@ void LAppDelegate::EndFrame()
             else
             {
                 // デバイスが変わったことを通知
-                Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D9::InitializeConstantSettings(1, _device);
+                Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D9::InitializeConstantSettings(BackBufferNum, _device);
 
                 // 描画のパラメータをウィンドウサイズに合わせて新設定
                 _view->Initialize();

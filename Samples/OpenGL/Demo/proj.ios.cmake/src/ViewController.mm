@@ -188,10 +188,10 @@ using namespace LAppDefine;
 
             for(csmUint32 i=0; i<[Live2DManager GetModelNum]; i++)
             {
-                float a = [self GetSpriteAlpha:i]; // サンプルとしてαに適当な差をつける
+                LAppModel* model = [Live2DManager getModel:i];
+                float a = i < 1 ? 1.0f : model->GetOpacity(); // 片方のみ不透明度を取得できるようにする
                 [_renderSprite SetColor:1.0f g:1.0f b:1.0f a:a];
 
-                LAppModel* model = [Live2DManager getModel:i];
                 if (model)
                 {
                     Csm::Rendering::CubismOffscreenFrame_OpenGLES2& useTarget = model->GetRenderBuffer();

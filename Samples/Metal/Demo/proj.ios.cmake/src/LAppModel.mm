@@ -51,6 +51,11 @@ LAppModel::LAppModel()
 , _modelSetting(NULL)
 , _userTimeSeconds(0.0f)
 {
+    if (MocConsistencyValidationEnable)
+    {
+        _mocConsistency = true;
+    }
+
     if (DebugLogEnable)
     {
         _debugMode = true;
@@ -149,7 +154,7 @@ void LAppModel::SetupModel(ICubismModelSetting* setting)
         }
 
         buffer = CreateBuffer(path.GetRawString(), &size);
-        LoadModel(buffer, size);
+        LoadModel(buffer, size, _mocConsistency);
         DeleteBuffer(buffer, path.GetRawString());
     }
 
@@ -376,6 +381,9 @@ void LAppModel::Update()
     }
     _model->SaveParameters(); // 状態を保存
     //-----------------------------------------------------------------
+
+    // 不透明度
+    _opacity = _model->GetModelOpacity();
 
     // まばたき
     if (!motionUpdated)
@@ -643,4 +651,31 @@ void LAppModel::MotionEventFired(const csmString& eventValue)
 Csm::Rendering::CubismOffscreenFrame_Metal& LAppModel::GetRenderBuffer()
 {
     return _renderBuffer;
+}
+
+csmBool LAppModel::HasMocConsistencyFromFile(const csmChar* mocFileName)
+{
+    CSM_ASSERT(strcmp(mocFileName, ""));
+
+    csmByte* buffer;
+    csmSizeInt size;
+
+    csmString path = mocFileName;
+    path = _modelHomeDir + path;
+
+    buffer = CreateBuffer(path.GetRawString(), &size);
+
+    csmBool consistency = CubismMoc::HasMocConsistencyFromUnrevivedMoc(buffer, size);
+    if (!consistency)
+    {
+        CubismLogInfo("Inconsistent MOC3.");
+    }
+    else
+    {
+        CubismLogInfo("Consistent MOC3.");
+    }
+
+    DeleteBuffer(buffer);
+
+    return consistency;
 }

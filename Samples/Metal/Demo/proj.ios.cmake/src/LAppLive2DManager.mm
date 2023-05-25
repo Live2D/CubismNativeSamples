@@ -254,7 +254,7 @@ void FinishedMotion(Csm::ACubismMotion* self)
             renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
             renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1);
             id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
-            [_sprite SetColor:1.0f g:1.0f b:1.0f a:0.25f + (float)i * 0.5f];
+            [_sprite SetColor:1.0f g:1.0f b:1.0f a:0.25f];
             [_sprite renderImmidiate:renderEncoder];
             [renderEncoder endEncoding];
         }
@@ -276,7 +276,8 @@ void FinishedMotion(Csm::ACubismMotion* self)
 
             Csm::Rendering::CubismOffscreenFrame_Metal& useTarget = model->GetRenderBuffer();
             LAppSprite* depthSprite = [[LAppSprite alloc] initWithMyVar:width * 0.5f Y:height * 0.5f Width:width Height:height Texture:useTarget.GetColorBuffer()];
-            [depthSprite SetColor:1.0f g:1.0f b:1.0f a:0.25f + (float)i * 0.5f];
+            float a = i < 1 ? 1.0f : model->GetOpacity(); // 片方のみ不透明度を取得できるようにする
+            [depthSprite SetColor:1.0f g:1.0f b:1.0f a:a];
             [depthSprite renderImmidiate:renderEncoder];
             [renderEncoder endEncoding];
             [depthSprite dealloc];

@@ -98,14 +98,14 @@ Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repositor
 
 | Development Tool | Version |
 | --- | --- |
-| Android Studio | Electric Eel 2022.1.1 Patch 1 |
-| CMake | 3.25.2 |
+| Android Studio | Flamingo 2022.2.1 Patch 1 |
+| CMake | 3.26.3 |
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.51 |
-| Visual Studio 2019 | 16.11.23 |
-| Visual Studio 2022 | 17.4.4 |
-| XCode | 14.2 |
+| Visual Studio 2017 | 15.9.54 |
+| Visual Studio 2019 | 16.11.26 |
+| Visual Studio 2022 | 17.5.5 |
+| XCode | 14.3 |
 
 ### Android
 
@@ -142,10 +142,10 @@ Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repositor
 
 | Platform | Version |
 | --- | --- |
-| iOS / iPadOS | 16.3 |
-| macOS | 13.2 |
-| Windows 10 | 21H2 |
-| Windows 11 | 21H2 |
+| iOS / iPadOS | 16.4.1 |
+| macOS | 13.3 |
+| Windows 10 | 22H2 |
+| Windows 11 | 22H2 |
 
 ### Android
 

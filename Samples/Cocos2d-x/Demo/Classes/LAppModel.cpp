@@ -62,6 +62,11 @@ LAppModel::LAppModel()
     , _userTimeSeconds(0.0f)
     , _renderSprite(NULL)
 {
+    if (MocConsistencyValidationEnable)
+    {
+        _mocConsistency = true;
+    }
+
     if (DebugLogEnable)
     {
         _debugMode = true;
@@ -161,7 +166,7 @@ void LAppModel::SetupModel(ICubismModelSetting* setting)
         if (_debugMode)LAppPal::PrintLog("[APP]create model: %s", setting->GetModelFileName());
 
         buffer = CreateBuffer(path.GetRawString(), &size);
-        LoadModel(buffer, size);
+        LoadModel(buffer, size, _mocConsistency);
         DeleteBuffer(buffer, path.GetRawString());
 
     }
@@ -415,6 +420,9 @@ void LAppModel::Update()
     }
     _model->SaveParameters(); // 状態を保存
     //-----------------------------------------------------------------
+
+    // 不透明度
+    _opacity = _model->GetModelOpacity();
 
     // まばたき
     if (!motionUpdated)
@@ -818,4 +826,31 @@ void LAppModel::SetSpriteColor(float r, float g, float b, float a)
         _renderSprite->getSprite()->setColor(Color3B(static_cast<unsigned char>(255.0f * r), static_cast<unsigned char>(255.0f * g), static_cast<unsigned char>(255.0f * b)));
         _renderSprite->getSprite()->setOpacity(static_cast<unsigned char>(255.0f * a));
     }
+}
+
+csmBool LAppModel::HasMocConsistencyFromFile(const csmChar* mocFileName)
+{
+    CSM_ASSERT(strcmp(mocFileName, ""));
+
+    csmByte* buffer;
+    csmSizeInt size;
+
+    csmString path = mocFileName;
+    path = _modelHomeDir + path;
+
+    buffer = CreateBuffer(path.GetRawString(), &size);
+
+    csmBool consistency = CubismMoc::HasMocConsistencyFromUnrevivedMoc(buffer, size);
+    if (!consistency)
+    {
+        CubismLogInfo("Inconsistent MOC3.");
+    }
+    else
+    {
+        CubismLogInfo("Consistent MOC3.");
+    }
+
+    DeleteBuffer(buffer);
+
+    return consistency;
 }

@@ -233,6 +233,16 @@ void LAppLive2DManager::OnUpdate(Csm::Rendering::CubismCommandBuffer_Cocos2dx* c
         model->Update();
         model->Draw(commandBuffer, projection);///< 参照渡しなのでprojectionは変質する
 
+        // 各モデルが持つ描画ターゲットをテクスチャとする場合
+        if (_renderTarget == SelectTarget_ModelFrameBuffer)
+        {
+          // レンダリング先とスプライトを作成
+          model->MakeRenderingTarget();
+          // αを付ける
+          float alpha = i < 1 ? 1.0f : model->GetOpacity(); // 片方のみ不透明度を取得できるようにする
+          model->SetSpriteColor(1.0f, 1.0f, 1.0f, alpha);
+        }
+
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderBuffer && _sprite)
         {// レンダリングターゲット使いまわしの場合
             // レンダリング終了
@@ -311,8 +321,10 @@ void LAppLive2DManager::ChangeScene(Csm::csmInt32 index)
             {
                 // レンダリング先とスプライトを作成
                 _models[i]->MakeRenderingTarget();
-                // 適当なαを付ける
-                _models[i]->SetSpriteColor(1.0f, 1.0f, 1.0f, 0.25f + 0.5f*(float)i);
+                // αを付ける
+                LAppModel* model = _models[i];
+                float alpha = i < 1 ? 1.0f : model->GetOpacity(); // 片方のみ不透明度を取得できるようにする
+                _models[i]->SetSpriteColor(1.0f, 1.0f, 1.0f, alpha);
             }
         }
     }

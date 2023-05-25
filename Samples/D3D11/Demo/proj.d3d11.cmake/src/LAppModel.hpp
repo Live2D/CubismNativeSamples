@@ -122,6 +122,13 @@ public:
      */
     Csm::Rendering::CubismOffscreenFrame_D3D11& GetRenderBuffer();
 
+    /**
+     * @brief   .moc3ファイルの整合性をチェックする
+     *
+     * @param[in]   mocName MOC3ファイル名
+     * @return      MOC3に整合性があれば'true'、そうでなければ'false'。
+     */
+    Csm::csmBool HasMocConsistencyFromFile(const Csm::csmChar* mocFileName);
 
 protected:
     /**

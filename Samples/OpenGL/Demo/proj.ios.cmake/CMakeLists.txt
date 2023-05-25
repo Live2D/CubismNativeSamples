@@ -105,7 +105,7 @@ set_xcode_property(${APP_NAME}
 set_xcode_property(${APP_NAME} DEVELOPMENT_TEAM "" "All")
 set_xcode_property(${APP_NAME} CODE_SIGN_IDENTITY "iPhone Developer" "All")
 set_xcode_property(${APP_NAME}
-  PRODUCT_BUNDLE_IDENTIFIER "com.live2d.demo" "All"
+  PRODUCT_BUNDLE_IDENTIFIER "com.live2d.demo-4-r7" "All"
 )
 set_xcode_property(${APP_NAME} TARGETED_DEVICE_FAMILY "1,2" "All")
 if(PLATFORM STREQUAL "OS64")

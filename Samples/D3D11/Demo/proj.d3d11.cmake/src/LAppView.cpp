@@ -136,10 +136,10 @@ void LAppView::Render()
     {
         for(csmUint32 i=0; i<live2DManager->GetModelNum(); i++)
         {
-            float alpha = GetSpriteAlpha(i); // サンプルとしてαに適当な差をつける
+            LAppModel* model = live2DManager->GetModel(i);
+            float alpha = i < 1 ? 1.0f : model->GetOpacity(); // サンプルとしてαに適当な差をつける
             _renderSprite->SetColor(1.0f, 1.0f, 1.0f, alpha);
 
-            LAppModel *model = live2DManager->GetModel(i);
             if (model)
             {
                 _renderSprite->RenderImmidiate(width, height, model->GetRenderBuffer().GetTextureView());

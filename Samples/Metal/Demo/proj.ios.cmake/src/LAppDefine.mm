@@ -68,6 +68,9 @@ namespace LAppDefine {
     const csmInt32 PriorityNormal = 2;
     const csmInt32 PriorityForce = 3;
 
+    // MOC3の整合性検証オプション
+    const csmBool MocConsistencyValidationEnable = true;
+
     // デバッグ用ログの表示オプション
     const csmBool DebugLogEnable = true;
     const csmBool DebugTouchLogEnable = false;

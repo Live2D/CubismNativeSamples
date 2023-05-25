@@ -133,7 +133,7 @@ if(CSM_MAC_CATALYST)
     )
 else()
     set_xcode_property(${APP_NAME}
-      PRODUCT_BUNDLE_IDENTIFIER "com.live2d.demo" "All"
+      PRODUCT_BUNDLE_IDENTIFIER "com.live2d.demo-4-r7" "All"
     )
 endif()
 set_xcode_property(${APP_NAME} TARGETED_DEVICE_FAMILY "1,2" "All")

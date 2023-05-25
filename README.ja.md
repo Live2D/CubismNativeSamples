@@ -99,14 +99,14 @@ Demo
 
 | 開発ツール | バージョン |
 | --- | --- |
-| Android Studio | Electric Eel 2022.1.1 Patch 1 |
-| CMake | 3.25.2 |
+| Android Studio | Flamingo 2022.2.1 Patch 1 |
+| CMake | 3.26.3 |
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.51 |
-| Visual Studio 2019 | 16.11.23 |
-| Visual Studio 2022 | 17.4.4 |
-| XCode | 14.2 |
+| Visual Studio 2017 | 15.9.54 |
+| Visual Studio 2019 | 16.11.26 |
+| Visual Studio 2022 | 17.5.5 |
+| XCode | 14.3 |
 
 ### Android
 
@@ -125,7 +125,7 @@ Demo
 | Red Hat | CentOS Stream 8 *1 | `centos:latest` | 8.5.0 |
 | Red Hat | CentOS Stream 9 | - | 11.3.1 |
 | Debian | Ubuntu 18.04 | `ubuntu:18.04` | 7.5.0 |
-| Debian | Ubuntu 22.04.1 | `ubuntu:22.04.1` | 11.3.0 |
+| Debian | Ubuntu 22.04.2 | `ubuntu:22.04.2` | 11.3.0 |
 
 *1 CentOS 8はサポートしておりません
 
@@ -143,10 +143,10 @@ Demo
 
 | プラットフォーム | バージョン |
 | --- | --- |
-| iOS / iPadOS | 16.3 |
-| macOS | 13.2 |
-| Windows 10 | 21H2 |
-| Windows 11 | 21H2 |
+| iOS / iPadOS | 16.4.1 |
+| macOS | 13.3 |
+| Windows 10 | 22H2 |
+| Windows 11 | 22H2 |
 
 ### Android
 
@@ -162,7 +162,7 @@ Demo
 | Red Hat | Amazon Linux | 2 |
 | Red Hat | CentOS Stream | 8 |
 | Red Hat | CentOS Stream | 9 |
-| Debian | Ubuntu | 22.04.1 |
+| Debian | Ubuntu | 22.04.2 |
 
 ## プロジェクトへの貢献
 

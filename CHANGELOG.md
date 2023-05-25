@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
+## [4-r.7] - 2023-05-25
+
+### Added
+
+* Add some functions for checking consistency of MOC3 files.
+  * Add the function of checking consistency in `LAppModel::SetupModel()`.
+  * Add the function of checking consistency before loading a model. (`LAppModel::HasMocConsistencyFromFile()`)
+  * This feature is enabled by default.Please see the following manual for more information.
+    * https://docs.live2d.com/cubism-sdk-manual/moc3-consistency/
+
+### Changed
+
+* Change so that when `USE_MODEL_RENDER_TARGET` is defined, one model will apply the opacity obtained from the motion.
+
+### Fixed
+
+* Fix a problem in which `haru` motion and voice were incorrect combination.
+* Fix opacity of drawn models when using `USE_RENDER_TARGET` macro.
+
+
 ## [4-r.6.2] - 2023-03-16
 
 ### Changed
@@ -285,6 +305,7 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[4-r.7]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.6.2...4-r.7
 [4-r.6.2]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.6.1...4-r.6.2
 [4-r.6.1]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.6...4-r.6.1
 [4-r.6]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.5.1...4-r.6

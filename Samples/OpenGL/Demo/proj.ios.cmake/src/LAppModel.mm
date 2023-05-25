@@ -358,6 +358,9 @@ void LAppModel::Update()
     _model->SaveParameters(); // 状態を保存
     //-----------------------------------------------------------------
 
+    // 不透明度
+    _opacity = _model->GetModelOpacity();
+
     // まばたき
     if (!motionUpdated)
     {

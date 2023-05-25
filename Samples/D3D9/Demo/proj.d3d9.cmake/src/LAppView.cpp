@@ -144,10 +144,10 @@ void LAppView::Render()
     {
         for (csmUint32 i = 0; i < live2DManager->GetModelNum(); i++)
         {
-            float alpha = GetSpriteAlpha(i); // サンプルとしてαに適当な差をつける
+            LAppModel* model = live2DManager->GetModel(i);
+            float alpha = i < 1 ? 1.0f : model->GetOpacity(); // 片方のみ不透明度を取得できるようにする
             _renderSprite->SetColor(1.0f, 1.0f, 1.0f, alpha);
 
-            LAppModel *model = live2DManager->GetModel(i);
             if (model)
             {
                 _renderSprite->RenderImmidiate(LAppDelegate::GetInstance()->GetD3dDevice(), width, height, model->GetRenderBuffer().GetTexture());

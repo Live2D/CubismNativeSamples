@@ -6,7 +6,7 @@
 
 # Cubism Native Samples
 
-Live2D Cubism 4 Editor で出力したモデルを表示するアプリケーションのサンプル実装です。
+Live2D Cubism Editor で出力したモデルを表示するアプリケーションのサンプル実装です。
 
 Cubism Native Framework および Live2D Cubism Core と組み合わせて使用します。
 
@@ -21,6 +21,13 @@ Cubism Native Framework および Live2D Cubism Core と組み合わせて使用
 本 SDK を使用する前に [お知らせ](NOTICE.ja.md)をご確認ください。
 
 
+## Cubism 5新機能や過去バージョンとの互換性について
+
+本 SDK はCubism 5に対応した製品です。  
+Cubism 5 Editorに搭載された新機能のSDK対応については [こちら](https://docs.live2d.com/cubism-sdk-manual/cubism-5-new-functions/)をご確認ください。  
+過去バージョンのCubism SDKとの互換性については [こちら](https://docs.live2d.com/cubism-sdk-manual/compatibility-with-cubism-5/)をご確認ください。
+
+
 ## ディレクトリ構成
 
 ```
@@ -33,6 +40,7 @@ Cubism Native Framework および Live2D Cubism Core と組み合わせて使用
    ├─ D3D11         # DirectX 11 のサンプルプロジェクトが含まれるディレクトリ
    ├─ Metal         # Metal のサンプルプロジェクトが含まれるディレクトリ
    ├─ OpenGL        # OpenGL のサンプルプロジェクトが含まれるディレクトリ
+   ├─ Vulkan        # Vulkan のサンプルプロジェクトが含まれるディレクトリ
    └─ Resources     # モデルのファイルや画像などのリソースが含まれるディレクトリ
 ```
 
@@ -99,21 +107,21 @@ Demo
 
 | 開発ツール | バージョン |
 | --- | --- |
-| Android Studio | Flamingo 2022.2.1 Patch 1 |
-| CMake | 3.26.3 |
+| Android Studio | Giraffe 2022.3.1 |
+| CMake | 3.27.1 |
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.54 |
-| Visual Studio 2019 | 16.11.26 |
-| Visual Studio 2022 | 17.5.5 |
-| XCode | 14.3 |
+| Visual Studio 2017 | 15.9.56 |
+| Visual Studio 2019 | 16.11.29 |
+| Visual Studio 2022 | 17.7.0 |
+| XCode | 14.3.1 |
 
 ### Android
 
 | Android SDK tools | バージョン |
 | --- | --- |
 | Android NDK | 25.2.9519653 |
-| Android SDK | 33.0.2 |
+| Android SDK | 34.0.0 |
 | CMake | 3.22.1 |
 
 ### Linux
@@ -125,7 +133,7 @@ Demo
 | Red Hat | CentOS Stream 8 *1 | `centos:latest` | 8.5.0 |
 | Red Hat | CentOS Stream 9 | - | 11.3.1 |
 | Debian | Ubuntu 18.04 | `ubuntu:18.04` | 7.5.0 |
-| Debian | Ubuntu 22.04.2 | `ubuntu:22.04.2` | 11.3.0 |
+| Debian | Ubuntu 22.04.3 | `ubuntu:22.04.3` | 11.3.0 |
 
 *1 CentOS 8はサポートしておりません
 
@@ -143,8 +151,8 @@ Demo
 
 | プラットフォーム | バージョン |
 | --- | --- |
-| iOS / iPadOS | 16.4.1 |
-| macOS | 13.3 |
+| iOS / iPadOS | 16.6 |
+| macOS | 13.5 |
 | Windows 10 | 22H2 |
 | Windows 11 | 22H2 |
 
@@ -162,7 +170,7 @@ Demo
 | Red Hat | Amazon Linux | 2 |
 | Red Hat | CentOS Stream | 8 |
 | Red Hat | CentOS Stream | 9 |
-| Debian | Ubuntu | 22.04.2 |
+| Debian | Ubuntu | 22.04.3 |
 
 ## プロジェクトへの貢献
 

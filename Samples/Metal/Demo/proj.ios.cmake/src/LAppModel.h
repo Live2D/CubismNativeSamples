@@ -111,7 +111,7 @@ public:
     /**
      * @brief   別ターゲットに描画する際に使用するバッファの取得
      */
-    Csm::Rendering::CubismOffscreenFrame_Metal& GetRenderBuffer();
+    Csm::Rendering::CubismOffscreenSurface_Metal& GetRenderBuffer();
 
     /**
      * @brief   .moc3ファイルの整合性をチェックする
@@ -190,7 +190,7 @@ private:
     const Csm::CubismId* _idParamEyeBallX; ///< パラメータID: ParamEyeBallX
     const Csm::CubismId* _idParamEyeBallY; ///< パラメータID: ParamEyeBallXY
 
-    Live2D::Cubism::Framework::Rendering::CubismOffscreenFrame_Metal _renderBuffer;
+    Live2D::Cubism::Framework::Rendering::CubismOffscreenSurface_Metal _renderBuffer;
 };
 
 #endif /* LAppModel_h */

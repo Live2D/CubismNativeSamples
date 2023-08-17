@@ -493,7 +493,7 @@ void LAppMinimumModel::MotionEventFired(const csmString& eventValue)
     CubismLogInfo("%s is fired on LAppMinimumModel!!", eventValue.GetRawString());
 }
 
-Csm::Rendering::CubismOffscreenFrame_OpenGLES2 &LAppMinimumModel::GetRenderBuffer()
+Csm::Rendering::CubismOffscreenSurface_OpenGLES2 &LAppMinimumModel::GetRenderBuffer()
 {
     return _renderBuffer;
 }

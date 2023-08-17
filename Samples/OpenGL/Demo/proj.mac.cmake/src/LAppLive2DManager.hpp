@@ -50,6 +50,24 @@ public:
     void ReleaseAllModel();
 
     /**
+    * @brief   Resフォルダにあるモデルフォルダ名をセットする
+    *
+    */
+    void SetUpModel();
+
+    /**
+    * @brief   Resフォルダにあるモデルフォルダ名を取得する
+    *
+    */
+    Csm::csmVector<Csm::csmString> GetModelDir() const;
+
+    /**
+    * @brief   Resフォルダにあるモデルフォルダのサイズを取得する
+    *
+    */
+    Csm::csmInt32 GetModelDirSize() const;
+
+    /**
     * @brief   画面をドラッグしたときの処理
     *
     * @param[in]   x   画面のX座標
@@ -108,4 +126,6 @@ private:
     Csm::CubismMatrix44*        _viewMatrix; ///< モデル描画に用いるView行列
     Csm::csmVector<LAppModel*>  _models; ///< モデルインスタンスのコンテナ
     Csm::csmInt32               _sceneIndex; ///< 表示するシーンのインデックス値
+
+    Csm::csmVector<Csm::csmString>  _modelDir; ///< モデルディレクトリ名のコンテナ
 };

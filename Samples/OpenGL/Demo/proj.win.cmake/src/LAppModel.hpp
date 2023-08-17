@@ -112,7 +112,7 @@ public:
     /**
      * @brief   別ターゲットに描画する際に使用するバッファの取得
      */
-    Csm::Rendering::CubismOffscreenFrame_OpenGLES2& GetRenderBuffer();
+    Csm::Rendering::CubismOffscreenSurface_OpenGLES2& GetRenderBuffer();
 
     /**
      * @brief   .moc3ファイルの整合性をチェックする
@@ -193,8 +193,5 @@ private:
 
     LAppWavFileHandler _wavFileHandler; ///< wavファイルハンドラ
 
-    Csm::Rendering::CubismOffscreenFrame_OpenGLES2  _renderBuffer;   ///< フレームバッファ以外の描画先
+    Csm::Rendering::CubismOffscreenSurface_OpenGLES2  _renderBuffer;   ///< フレームバッファ以外の描画先
 };
-
-
-

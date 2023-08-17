@@ -48,7 +48,7 @@ LAppMinimumView::LAppMinimumView():
 
 LAppMinimumView::~LAppMinimumView()
 {
-    _renderBuffer.DestroyOffscreenFrame();
+    _renderBuffer.DestroyOffscreenSurface();
     delete _renderSprite;
 
     delete _viewMatrix;
@@ -209,7 +209,7 @@ float LAppMinimumView::TransformScreenY(float deviceY) const
 void LAppMinimumView::PreModelDraw(LAppMinimumModel &refModel)
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-    Csm::Rendering::CubismOffscreenFrame_OpenGLES2* useTarget = nullptr;
+    Csm::Rendering::CubismOffscreenSurface_OpenGLES2* useTarget = nullptr;
 
     if (_renderTarget != SelectTarget_None)
     {// 別のレンダリングターゲットへ向けて描画する場合
@@ -223,7 +223,7 @@ void LAppMinimumView::PreModelDraw(LAppMinimumModel &refModel)
             int height = LAppMinimumDelegate::GetInstance()->GetWindowHeight();
 
             // モデル描画キャンバス
-            useTarget->CreateOffscreenFrame(static_cast<csmUint32>(width), static_cast<csmUint32>(height));
+            useTarget->CreateOffscreenSurface(static_cast<csmUint32>(width), static_cast<csmUint32>(height));
         }
 
         // レンダリング開始
@@ -235,7 +235,7 @@ void LAppMinimumView::PreModelDraw(LAppMinimumModel &refModel)
 void LAppMinimumView::PostModelDraw(LAppMinimumModel &refModel)
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-    Csm::Rendering::CubismOffscreenFrame_OpenGLES2* useTarget = nullptr;
+    Csm::Rendering::CubismOffscreenSurface_OpenGLES2* useTarget = nullptr;
 
     if (_renderTarget != SelectTarget_None)
     {// 別のレンダリングターゲットへ向けて描画する場合

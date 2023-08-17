@@ -68,6 +68,7 @@ list(APPEND GAME_SOURCE
   ${CLASSES_PATH}/LAppView.cpp
   ${CLASSES_PATH}/SampleScene.cpp
   ${CLASSES_PATH}/TouchManager.cpp
+  ${CLASSES_PATH}/LAppLive2DManagerInternal.cpp
 )
 
 list(APPEND GAME_HEADER
@@ -82,6 +83,7 @@ list(APPEND GAME_HEADER
   ${CLASSES_PATH}/LAppView.hpp
   ${CLASSES_PATH}/SampleScene.h
   ${CLASSES_PATH}/TouchManager.h
+  ${CLASSES_PATH}/LAppLive2DManagerInternal.h
 )
 
 # Add Cubism Core as static library.
@@ -248,6 +250,7 @@ if(APPLE)
   set_target_properties(${APP_NAME} PROPERTIES RESOURCE "${APP_UI_RES}")
   if(MACOSX)
     set_xcode_property(${APP_NAME} INFOPLIST_FILE "${COCOS2DX_ROOT_PATH}/templates/cpp-template-default/proj.ios_mac/mac/Info.plist")
+    target_compile_definitions(${APP_NAME} PRIVATE CSM_TARGET_MACOSX)
     target_compile_definitions(Framework PUBLIC CSM_TARGET_MAC_GL)
     set(COCOS_GLFW3 ${COCOS2DX_ROOT_PATH}/external/glfw3)
     target_include_directories(Framework PUBLIC ${COCOS_GLFW3}/include/Mac)
@@ -262,6 +265,7 @@ if(APPLE)
     set_xcode_property(${APP_NAME} TARGETED_DEVICE_FAMILY "1,2")
     set_xcode_property(${APP_NAME} ONLY_ACTIVE_ARCH "NO")
     set_xcode_property(${APP_NAME} ARCHS "arm64")
+    target_compile_definitions(${APP_NAME} PRIVATE CSM_TARGET_IOS)
     target_compile_definitions(Framework PUBLIC CSM_TARGET_IPHONE_ES2)
     target_include_directories(Framework PUBLIC ${COCOS2DX_ROOT_PATH}/cocos)
   endif()

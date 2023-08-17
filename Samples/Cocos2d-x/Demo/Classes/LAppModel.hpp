@@ -210,12 +210,9 @@ private:
     const Csm::CubismId* _idParamEyeBallX;          ///< パラメータID: ParamEyeBallX
     const Csm::CubismId* _idParamEyeBallY;          ///< パラメータID: ParamEyeBallXY
 
-    Csm::Rendering::CubismOffscreenFrame_Cocos2dx*  _renderBuffer;  ///< モードによってはCubismOffscreenFrameのテクスチャを描画
+    Csm::Rendering::CubismOffscreenSurface_Cocos2dx*  _renderBuffer;  ///< モードによってはCubismOffscreenSurfaceのテクスチャを描画
     cocos2d::RenderTexture* _renderSprite;          ///< _renderBufferを描画するスプライト
     float _clearColor[4];                           ///< _renderBufferをクリアする際の色
     Csm::csmVector<cocos2d::Texture2D*> _loadedTextures;
     cocos2d::GroupCommand _groupCommand;
 };
-
-
-

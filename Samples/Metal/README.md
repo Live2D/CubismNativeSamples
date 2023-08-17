@@ -12,7 +12,7 @@ There are restrictions. Please check [NOTICE.md](/NOTICE.md) in the top director
 
 | Third Party | Version |
 | --- | --- |
-| [ios-cmake]    | 4.3.0      |
+| [ios-cmake]    | 4.4.0      |
 | [stb_image.h]  | 2.28      |
 
 For other development environments and operation environments, see [README.md](/README.md) in the top directory.
@@ -52,7 +52,7 @@ You can choose between iOS and Mac Catalyst when running the script.
 
 Follow the steps below when building for Mac Catalyst.
 
-1. Check the box for `macOS` in XCode's `Project Settings - TARGETS - Demo - General - Deployment Info`.
+1. In XCode, under `Project Settings - TARGETS - Demo - General - Supported Destinations`, press `+`, select `Mac > Mac Catalyst` and press `Enable` in the modal view.
 2. Change the description of XCode's `Project Settings - TARGETS - Demo` and `Framework`'s `Build Settings - Architectures - Architectures` according to the execution environment.
 3. Change XCode's `Project Settings - TARGETS - Demo` and `Framework`'s `Build Settings - Architectures - Base SDK` to `iOS`, or refer to the Apple official tutorials.
 [turning-on-mac-catalyst]: https://developer.apple.com/tutorials/mac-catalyst/turning-on-mac-catalyst

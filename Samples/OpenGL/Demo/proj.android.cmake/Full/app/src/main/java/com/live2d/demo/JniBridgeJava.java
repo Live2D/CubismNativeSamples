@@ -55,6 +55,15 @@ public class JniBridgeJava {
         _activityInstance = activity;
     }
 
+    public static String[] GetAssetList(String dirPath) {
+        try {
+            return _context.getAssets().list(dirPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new String[0];
+        }
+    }
+
     public static byte[] LoadFile(String filePath) {
         InputStream fileData = null;
         try {

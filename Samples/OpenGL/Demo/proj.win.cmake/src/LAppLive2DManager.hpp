@@ -37,6 +37,24 @@ public:
     static void ReleaseInstance();
 
     /**
+    * @brief   Resources フォルダにあるモデルフォルダ名をセットする
+    *
+    */
+    void SetUpModel();
+
+    /**
+    * @brief   Resources フォルダにあるモデルフォルダ名を取得する
+    *
+    */
+    Csm::csmVector<Csm::csmString> GetModelDir() const;
+
+    /**
+    * @brief   Resources フォルダにあるモデルフォルダのサイズを取得する
+    *
+    */
+    Csm::csmInt32 GetModelDirSize() const;
+
+    /**
     * @brief   現在のシーンで保持しているモデルを返す
     *
     * @param[in]   no  モデルリストのインデックス値
@@ -106,7 +124,9 @@ private:
     */
     virtual ~LAppLive2DManager();
 
-    Csm::CubismMatrix44*        _viewMatrix; ///< モデル描画に用いるView行列
-    Csm::csmVector<LAppModel*>  _models; ///< モデルインスタンスのコンテナ
-    Csm::csmInt32               _sceneIndex; ///< 表示するシーンのインデックス値
+    Csm::CubismMatrix44* _viewMatrix; ///< モデル描画に用いるView行列
+    Csm::csmVector<LAppModel*> _models; ///< モデルインスタンスのコンテナ
+    Csm::csmInt32 _sceneIndex; ///< 表示するシーンのインデックス値
+
+    Csm::csmVector<Csm::csmString> _modelDir; ///< モデルディレクトリ名のコンテナ
 };

@@ -4,6 +4,12 @@
 
 # Notices
 
+## [Caution] Differences between Metal and OpenGL rendering on iOS (2023-08-17)
+
+The rendering differences between Metal and OpenGL that have been occurring for some time have been resolved in Cubism 5 SDK for Native R1 Beta1 (5-r.1-beta.1) for macOS.
+The rendering difference on iOS will be addressed in a future update.
+
+
 ## [Caution] About Cocos2d-x setup error (2022-03-15)
 
 An error occurs in the setup-cocos2d batch that is executed when setting up the Cocos2d-x sample project.

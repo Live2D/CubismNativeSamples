@@ -38,18 +38,6 @@ namespace LAppDefine {
     const csmChar* PowerImageName = "close.png";
 
     // モデル定義------------------------------------------
-    // モデルを配置したディレクトリ名の配列
-    // ディレクトリ名とmodel3.jsonの名前を一致させておくこと
-    const csmChar* ModelDir[] = {
-        "Haru",
-        "Hiyori",
-        "Mark",
-        "Natori",
-        "Rice",
-        "Mao"
-    };
-    const csmInt32 ModelDirSize = sizeof(ModelDir) / sizeof(const csmChar*);
-
     // 外部定義ファイル(json)と合わせる
     const csmChar* MotionGroupIdle = "Idle"; // アイドリング
     const csmChar* MotionGroupTapBody = "TapBody"; // 体をタップしたとき

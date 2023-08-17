@@ -84,7 +84,7 @@ LAppModel::LAppModel()
     _clearColor[2] = 1.0f;
     _clearColor[3] = 0.0f;
 
-    _renderBuffer = new Csm::Rendering::CubismOffscreenFrame_Cocos2dx;
+    _renderBuffer = new Csm::Rendering::CubismOffscreenSurface_Cocos2dx;
 
     _groupCommand.init(0.0);
 }
@@ -99,7 +99,7 @@ LAppModel::~LAppModel()
         _renderSprite->removeFromParentAndCleanup(true);
         _renderSprite = NULL;
     }
-    _renderBuffer->DestroyOffscreenFrame();
+    _renderBuffer->DestroyOffscreenSurface();
     delete _renderBuffer;
 
     ReleaseMotions();
@@ -815,7 +815,7 @@ void LAppModel::MakeRenderingTarget()
         );
 
         // レンダリングバッファの描画先をそのテクスチャにする
-        _renderBuffer->CreateOffscreenFrame(frameW, frameH, _renderSprite);
+        _renderBuffer->CreateOffscreenSurface(frameW, frameH, _renderSprite);
     }
 }
 

@@ -42,7 +42,7 @@ CubismDirectXView::CubismDirectXView()
 
 CubismDirectXView::~CubismDirectXView()
 {
-    _renderBuffer.DestroyOffscreenFrame();
+    _renderBuffer.DestroyOffscreenSurface();
 
     delete _renderSprite;
     delete _deviceToScreen;
@@ -143,7 +143,7 @@ float CubismDirectXView::TransformScreenY(float deviceY) const
 void CubismDirectXView::PreModelDraw(CubismUserModelExtend& refModel)
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-    Csm::Rendering::CubismOffscreenFrame_D3D11* useTarget = nullptr;
+    Csm::Rendering::CubismOffscreenSurface_D3D11* useTarget = nullptr;
 
     if (_renderTarget != SelectTarget_None)
     {
@@ -159,7 +159,7 @@ void CubismDirectXView::PreModelDraw(CubismUserModelExtend& refModel)
             if (_windowWidth != 0 && _windowHeight != 0)
             {
                 // モデル描画キャンバス
-                useTarget->CreateOffscreenFrame(CubismDirectXRenderer::GetInstance()->GetD3dDevice(),
+                useTarget->CreateOffscreenSurface(CubismDirectXRenderer::GetInstance()->GetD3dDevice(),
                     static_cast<csmUint32>(_windowWidth), static_cast<csmUint32>(_windowHeight));
             }
         }
@@ -173,7 +173,7 @@ void CubismDirectXView::PreModelDraw(CubismUserModelExtend& refModel)
 void CubismDirectXView::PostModelDraw(CubismUserModelExtend& refModel)
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-    Csm::Rendering::CubismOffscreenFrame_D3D11* useTarget = nullptr;
+    Csm::Rendering::CubismOffscreenSurface_D3D11* useTarget = nullptr;
 
     if (_renderTarget != SelectTarget_None)
     {
@@ -224,7 +224,7 @@ void CubismDirectXView::SetRenderTargetClearColor(float r, float g, float b)
     _clearColor[2] = b;
 }
 
-void CubismDirectXView::DestroyOffscreenFrame()
+void CubismDirectXView::DestroyOffscreenSurface()
 {
-    _renderBuffer.DestroyOffscreenFrame();
+    _renderBuffer.DestroyOffscreenSurface();
 }

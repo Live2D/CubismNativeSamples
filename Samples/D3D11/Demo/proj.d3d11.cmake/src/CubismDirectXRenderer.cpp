@@ -497,10 +497,10 @@ void CubismDirectXRenderer::ResizeDevice(CubismUserModel* userModel)
                         // パラメータ、スプライトサイズなど再設定
                         CubismDirectXView::GetInstance()->Initialize();
                         CubismDirectXView::GetInstance()->ResizeSprite();
-                        CubismDirectXView::GetInstance()->DestroyOffscreenFrame();
+                        CubismDirectXView::GetInstance()->DestroyOffscreenSurface();
                     }
 
-                    static_cast<CubismUserModelExtend*>(userModel)->GetRenderBuffer().DestroyOffscreenFrame();
+                    static_cast<CubismUserModelExtend*>(userModel)->GetRenderBuffer().DestroyOffscreenSurface();
 
                     // 通常に戻る
                     _deviceStep = DeviceStep_None;

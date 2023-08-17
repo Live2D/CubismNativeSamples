@@ -45,7 +45,7 @@ using namespace LAppDefine;
 
 - (void)releaseView
 {
-    _renderBuffer.DestroyOffscreenFrame();
+    _renderBuffer.DestroyOffscreenSurface();
 
     _renderSprite = nil;
     _gear = nil;
@@ -194,7 +194,7 @@ using namespace LAppDefine;
 
                 if (model)
                 {
-                    Csm::Rendering::CubismOffscreenFrame_OpenGLES2& useTarget = model->GetRenderBuffer();
+                    Csm::Rendering::CubismOffscreenSurface_OpenGLES2& useTarget = model->GetRenderBuffer();
                     GLuint id = useTarget.GetColorBuffer();
                     [_renderSprite renderImmidiate:_vertexBufferId fragmentBufferID:_fragmentBufferId TextureId:id uvArray:uvVertex];
                 }
@@ -340,7 +340,7 @@ using namespace LAppDefine;
 - (void)PreModelDraw:(LAppModel&)refModel
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-    Csm::Rendering::CubismOffscreenFrame_OpenGLES2* useTarget = NULL;
+    Csm::Rendering::CubismOffscreenSurface_OpenGLES2* useTarget = NULL;
 
     if (_renderTarget != SelectTarget_None)
     {// 別のレンダリングターゲットへ向けて描画する場合
@@ -358,11 +358,11 @@ using namespace LAppDefine;
             // PadとPhoneで縦横を変えている
             if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
             {
-                useTarget->CreateOffscreenFrame(height, width);
+                useTarget->CreateOffscreenSurface(height, width);
             }
             else
             {
-                useTarget->CreateOffscreenFrame(width, height);
+                useTarget->CreateOffscreenSurface(width, height);
             }
         }
 
@@ -375,7 +375,7 @@ using namespace LAppDefine;
 - (void)PostModelDraw:(LAppModel&)refModel
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-    Csm::Rendering::CubismOffscreenFrame_OpenGLES2* useTarget = NULL;
+    Csm::Rendering::CubismOffscreenSurface_OpenGLES2* useTarget = NULL;
 
     if (_renderTarget != SelectTarget_None)
     {// 別のレンダリングターゲットへ向けて描画する場合

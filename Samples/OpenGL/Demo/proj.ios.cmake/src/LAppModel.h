@@ -111,7 +111,7 @@ public:
     /**
      * @brief   別ターゲットに描画する際に使用するバッファの取得
      */
-    Csm::Rendering::CubismOffscreenFrame_OpenGLES2& GetRenderBuffer();
+    Csm::Rendering::CubismOffscreenSurface_OpenGLES2& GetRenderBuffer();
 
 protected:
     /**
@@ -182,7 +182,7 @@ private:
     const Csm::CubismId* _idParamEyeBallX; ///< パラメータID: ParamEyeBallX
     const Csm::CubismId* _idParamEyeBallY; ///< パラメータID: ParamEyeBallXY
 
-    Csm::Rendering::CubismOffscreenFrame_OpenGLES2 _renderBuffer;
+    Csm::Rendering::CubismOffscreenSurface_OpenGLES2 _renderBuffer;
 };
 
 #endif /* LAppModel_h */

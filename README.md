@@ -6,7 +6,7 @@
 
 # Cubism Native Samples
 
-This is a sample implementation of an application that displays models output by Live2D Cubism 4 Editor.
+This is a sample implementation of an application that displays models output by Live2D Cubism Editor.
 
 It is used in conjunction with Cubism Native Framework and Live2D Cubism Core.
 
@@ -21,6 +21,13 @@ Please check the [license](LICENSE.md) before using this SDK.
 Please check the [notices](NOTICE.md) before using this SDK.
 
 
+## Compatibility with Cubism 5 new features and previous Cubism SDK versions
+
+This SDK is compatible with Cubism 5.  
+For SDK compatibility with new features in Cubism 5 Editor, please refer to [here](https://docs.live2d.com/en/cubism-sdk-manual/cubism-5-new-functions/).  
+For compatibility with previous versions of Cubism SDK, please refer to [here](https://docs.live2d.com/en/cubism-sdk-manual/compatibility-with-cubism-5/).
+
+
 ## Directory structure
 
 ```
@@ -33,6 +40,7 @@ Please check the [notices](NOTICE.md) before using this SDK.
    ├─ D3D11         # Directory containing the DirectX 11 sample project
    ├─ Metal         # Directory containing the Metal sample project
    ├─ OpenGL        # Directory containing the OpenGL sample project
+   ├─ Vulkan        # Directory containing the Vulkan sample project
    └─ Resources     # Directory containing resources such as model files and images
 ```
 
@@ -98,21 +106,21 @@ Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repositor
 
 | Development Tool | Version |
 | --- | --- |
-| Android Studio | Flamingo 2022.2.1 Patch 1 |
-| CMake | 3.26.3 |
+| Android Studio | Giraffe 2022.3.1 |
+| CMake | 3.27.1 |
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.54 |
-| Visual Studio 2019 | 16.11.26 |
-| Visual Studio 2022 | 17.5.5 |
-| XCode | 14.3 |
+| Visual Studio 2017 | 15.9.56 |
+| Visual Studio 2019 | 16.11.29 |
+| Visual Studio 2022 | 17.7.0 |
+| XCode | 14.3.1 |
 
 ### Android
 
 | Android SDK tools | Version |
 | --- | --- |
 | Android NDK | 25.2.9519653 |
-| Android SDK | 33.0.2 |
+| Android SDK | 34.0.0 |
 | CMake | 3.22.1 |
 
 ### Linux
@@ -124,7 +132,7 @@ Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repositor
 | Red Hat | CentOS Stream 8 *1 | `centos:latest` | 8.5.0 |
 | Red Hat | CentOS Stream 9 | - | 11.3.1 |
 | Debian | Ubuntu 18.04 | `ubuntu:18.04` | 7.5.0 |
-| Debian | Ubuntu 22.04.1 | `ubuntu:22.04.1` | 11.3.0 |
+| Debian | Ubuntu 22.04.3 | `ubuntu:22.04.3` | 11.3.0 |
 
 *1 CentOS 8 is not supported
 
@@ -142,8 +150,8 @@ Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repositor
 
 | Platform | Version |
 | --- | --- |
-| iOS / iPadOS | 16.4.1 |
-| macOS | 13.3 |
+| iOS / iPadOS | 16.6 |
+| macOS | 13.5 |
 | Windows 10 | 22H2 |
 | Windows 11 | 22H2 |
 
@@ -161,7 +169,7 @@ Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repositor
 | Red Hat | Amazon Linux | 2 |
 | Red Hat | CentOS Stream | 8 |
 | Red Hat | CentOS Stream | 9 |
-| Debian | Ubuntu | 22.04.1 |
+| Debian | Ubuntu | 22.04.3 |
 
 ## Contributing
 

@@ -120,7 +120,7 @@ public:
     /**
      * @brief   別ターゲットに描画する際に使用するバッファの取得
      */
-    Csm::Rendering::CubismOffscreenFrame_D3D11& GetRenderBuffer();
+    Csm::Rendering::CubismOffscreenSurface_D3D11& GetRenderBuffer();
 
     /**
      * @brief   .moc3ファイルの整合性をチェックする
@@ -205,8 +205,5 @@ private:
 
     bool _deleteModel;  ///< 実体消滅予定フラグ Drawを呼ばない
 
-    Csm::Rendering::CubismOffscreenFrame_D3D11 _renderBuffer;   ///< フレームバッファ以外の描画先
+    Csm::Rendering::CubismOffscreenSurface_D3D11 _renderBuffer;   ///< フレームバッファ以外の描画先
 };
-
-
-

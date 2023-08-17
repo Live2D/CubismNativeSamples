@@ -131,7 +131,7 @@ public:
     /**
     * @brief   内部レンダリングバッファの破棄
     */
-    void DestroyOffscreenFrame();
+    void DestroyOffscreenSurface();
 
 private:
     MouseActionManager* _mouseActionManager;                 ///< マウスアクションマネージャー
@@ -141,8 +141,7 @@ private:
 
     // レンダリング先を別ターゲットにする方式の場合に使用
     CubismSprite* _renderSprite;                                  ///< モードによっては_renderBufferのテクスチャを描画
-    Csm::Rendering::CubismOffscreenFrame_D3D11 _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング
+    Csm::Rendering::CubismOffscreenSurface_D3D11 _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング
     SelectTarget _renderTarget;     ///< レンダリング先の選択肢
     float _clearColor[4];           ///< レンダリングターゲットのクリアカラー
 };
-

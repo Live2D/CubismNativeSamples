@@ -68,7 +68,7 @@ MinLAppModel::MinLAppModel(const std::string modelDirectryName,const std::string
 
 MinLAppModel::~MinLAppModel()
 {
-    _renderBuffer.DestroyOffscreenFrame();
+    _renderBuffer.DestroyOffscreenSurface();
 
     ReleaseMotions();
     ReleaseExpressions();
@@ -466,7 +466,7 @@ void MinLAppModel::MotionEventFired(const csmString& eventValue)
     CubismLogInfo("%s is fired on MinLAppModel!!", eventValue.GetRawString());
 }
 
-Csm::Rendering::CubismOffscreenFrame_OpenGLES2& MinLAppModel::GetRenderBuffer()
+Csm::Rendering::CubismOffscreenSurface_OpenGLES2& MinLAppModel::GetRenderBuffer()
 {
     return _renderBuffer;
 }

@@ -770,7 +770,7 @@ void LAppDelegate::ResizeDevice()
                         // パラメータ、スプライトサイズなど再設定
                         _view->Initialize();
                         _view->ResizeSprite();
-                        _view->DestroyOffscreenFrame();
+                        _view->DestroyOffscreenSurface();
                     }
 
                     // マネージャにサイズ変更通知

@@ -64,7 +64,7 @@ CubismUserModelExtend::CubismUserModelExtend(const std::string modelDirectoryNam
 
 CubismUserModelExtend::~CubismUserModelExtend()
 {
-    _renderBuffer.DestroyOffscreenFrame();
+    _renderBuffer.DestroyOffscreenSurface();
 
     // モデルの設定データの解放
     ReleaseModelSetting();
@@ -475,7 +475,7 @@ void CubismUserModelExtend::ReloadRenderer()
 void CubismUserModelExtend::OnDeviceLost()
 {
     // レンダリングバッファ破棄
-    _renderBuffer.DestroyOffscreenFrame();
+    _renderBuffer.DestroyOffscreenSurface();
 
     // レンダラー破棄
     DeleteRenderer();
@@ -519,7 +519,7 @@ void CubismUserModelExtend::ModelOnUpdate()
     Draw(projection); ///< 参照渡しなのでprojectionは変質する
 }
 
-Csm::Rendering::CubismOffscreenFrame_D3D9& CubismUserModelExtend::GetRenderBuffer()
+Csm::Rendering::CubismOffscreenSurface_D3D9& CubismUserModelExtend::GetRenderBuffer()
 {
     return _renderBuffer;
 }

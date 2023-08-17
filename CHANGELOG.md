@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
+## [5-r.1-beta.1] - 2023-08-17
+
+### Added
+
+* Add Wankoromochi as a model bundled with SDK.
+* Add the sample for Vulkan API in Windows.
+
+### Changed
+
+* Update third-party libraries.
+* Offscreen drawing-related terminology has been unified with "OffscreenSurface".
+* Adjusted to automatically search and use models in the Resource folder.
+
+### Fixed
+
+* Fix a bug that premultiplied alpha not works correctly when `PREMULTIPLIED_ALPHA_ENABLE` is not defined in Metal.
+
+
 ## [4-r.7] - 2023-05-25
 
 ### Added
@@ -305,6 +323,7 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[5-r.1-beta.1]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.7...5-r.1-beta.1
 [4-r.7]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.6.2...4-r.7
 [4-r.6.2]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.6.1...4-r.6.2
 [4-r.6.1]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.6...4-r.6.1

@@ -44,7 +44,7 @@ LAppView::LAppView():
 
 LAppView::~LAppView()
 {
-    _renderBuffer.DestroyOffscreenFrame();
+    _renderBuffer.DestroyOffscreenSurface();
     delete _renderSprite;
 
     delete _viewMatrix;
@@ -220,7 +220,7 @@ void LAppView::OnDeviceLost()
     ReleaseSprite();
 
     // レンダリングターゲット開放
-    _renderBuffer.DestroyOffscreenFrame();
+    _renderBuffer.DestroyOffscreenSurface();
 }
 
 void LAppView::OnTouchesBegan(float px, float py) const
@@ -299,7 +299,7 @@ void LAppView::PreModelDraw(LAppModel &refModel)
     {// 別のレンダリングターゲットへ向けて描画する場合
 
         // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-        Csm::Rendering::CubismOffscreenFrame_D3D9* useTarget = NULL;
+        Csm::Rendering::CubismOffscreenSurface_D3D9* useTarget = NULL;
 
         // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
@@ -312,7 +312,7 @@ void LAppView::PreModelDraw(LAppModel &refModel)
             if (width != 0 && height != 0)
             {
                 // モデル描画キャンバス
-                useTarget->CreateOffscreenFrame(LAppDelegate::GetInstance()->GetD3dDevice(),
+                useTarget->CreateOffscreenSurface(LAppDelegate::GetInstance()->GetD3dDevice(),
                     static_cast<csmUint32>(width), static_cast<csmUint32>(height));
             }
         }
@@ -329,7 +329,7 @@ void LAppView::PostModelDraw(LAppModel &refModel)
     {// 別のレンダリングターゲットへ向けて描画する場合
 
         // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-        Csm::Rendering::CubismOffscreenFrame_D3D9* useTarget = NULL;
+        Csm::Rendering::CubismOffscreenSurface_D3D9* useTarget = NULL;
 
         // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();

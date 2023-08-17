@@ -26,7 +26,7 @@ typedef NS_ENUM(NSUInteger, SelectTarget)
 @property (nonatomic) GLuint programId;
 
 @property (nonatomic) bool anotherTarget;
-@property (nonatomic) Csm::Rendering::CubismOffscreenFrame_OpenGLES2 renderBuffer;
+@property (nonatomic) Csm::Rendering::CubismOffscreenSurface_OpenGLES2 renderBuffer;
 
 @property (nonatomic) float spriteColorR;
 @property (nonatomic) float spriteColorG;

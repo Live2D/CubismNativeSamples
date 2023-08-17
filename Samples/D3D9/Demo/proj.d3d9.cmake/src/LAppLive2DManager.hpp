@@ -13,6 +13,7 @@
 #include <Math/CubismMatrix44.hpp>
 #include <Type/csmVector.hpp>
 #include <Type/csmMap.hpp>
+#include <Type/csmRectF.hpp>
 
 class LAppModel;
 
@@ -54,6 +55,24 @@ public:
     *
     */
     static void ReleaseInstance();
+
+    /**
+    * @brief   Resources フォルダにあるモデルフォルダ名をセットする
+    *
+    */
+    void SetUpModel();
+
+    /**
+    * @brief   Resources フォルダにあるモデルフォルダ名を取得する
+    *
+    */
+    Csm::csmVector<Csm::csmString> GetModelDir() const;
+
+    /**
+    * @brief   Resources フォルダにあるモデルフォルダのサイズを取得する
+    *
+    */
+    Csm::csmInt32 GetModelDirSize() const;
 
     /**
     * @brief   現在のシーンで保持しているモデルを返す
@@ -141,10 +160,13 @@ private:
     */
     virtual ~LAppLive2DManager();
 
-    Csm::CubismMatrix44*        _viewMatrix; ///< モデル描画に用いるView行列
-    Csm::csmVector<LAppModel*>  _models; ///< モデルインスタンスのコンテナ
-    Csm::csmInt32               _sceneIndex; ///< 表示するシーンのインデックス値
+    Csm::CubismMatrix44* _viewMatrix; ///< モデル描画に用いるView行列
+    Csm::csmVector<LAppModel*> _models; ///< モデルインスタンスのコンテナ
+    Csm::csmInt32 _sceneIndex; ///< 表示するシーンのインデックス値
 
-    Csm::csmVector<ReleaseModel>  _releaseModel; ///< 解放予定モデルインスタンスのコンテナ
-    Csm::csmMap<LAppModel*, int>  _releaseModels; ///< モデルインスタンスのコンテナ(解放予約、解放カウント)
+    Csm::csmVector<Csm::csmString> _modelDir; ///< モデルディレクトリ名のコンテナ
+
+    Csm::csmVector<ReleaseModel> _releaseModel; ///< 解放予定モデルインスタンスのコンテナ
+
+    Csm::csmMap<LAppModel*, int> _releaseModels; ///< モデルインスタンスのコンテナ(解放予約、解放カウント)
 };

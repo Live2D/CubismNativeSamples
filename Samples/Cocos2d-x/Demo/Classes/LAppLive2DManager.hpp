@@ -141,15 +141,31 @@ private:
      */
     void CreateShader();
 
-    Csm::CubismMatrix44*        _viewMatrix;    ///< モデル描画に用いるView行列
+    /**
+     * @brief Resources フォルダにあるモデルフォルダ名をセットする
+     */
+    void SetUpModel();
+
+    /**
+     * @brief Resources フォルダにあるモデルフォルダ名を取得する
+     */
+    Csm::csmVector<Csm::csmString> GetModelDir() const;
+
+    /**
+     * @brief Resources フォルダにあるモデルフォルダのサイズを取得する
+     */
+    Csm::csmInt32 GetModelDirSize() const;
+
+    Csm::CubismMatrix44* _viewMatrix;    ///< モデル描画に用いるView行列
     Csm::csmVector<LAppModel*>  _models;        ///< モデルインスタンスのコンテナ
     Csm::csmInt32               _sceneIndex;    ///< 表示するシーンのインデックス値
 
     // レンダリング先を別ターゲットにする方式の場合に使用
     SelectTarget _renderTarget;                 ///< レンダリング先の選択肢
     LAppSprite* _sprite;                        ///< テクスチャの単純描画クラス
-    Csm::Rendering::CubismOffscreenFrame_Cocos2dx* _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング
+    Csm::Rendering::CubismOffscreenSurface_Cocos2dx* _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング
     float _clearColor[4];                       ///< レンダリングターゲットのクリアカラー
     cocos2d::backend::Program* _program;
 
+    Csm::csmVector<Csm::csmString> _modelDir; ///< モデルディレクトリ名のコンテナ
 };

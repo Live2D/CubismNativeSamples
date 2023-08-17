@@ -14,7 +14,7 @@ DirectX 11 で実装したアプリケーションのサンプル実装です。
 | [DirectXTK] | 2013 | April 23, 2018 |
 | [DirectXTK] | 2015 | December 17, 2019 |
 | [DirectXTK] | 2017 | March 24, 2022 |
-| [DirectXTK] | 2019 / 2022 | April 28, 2023 |
+| [DirectXTK] | 2019 / 2022 | June 13, 2023 |
 
 その他の開発環境・動作確認環境はトップディレクトリにある [README.md](/README.ja.md) を参照してください。
 

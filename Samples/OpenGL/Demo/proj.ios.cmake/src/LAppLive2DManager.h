@@ -9,8 +9,10 @@
 #define LAppLive2DManager_h
 
 #import <CubismFramework.hpp>
+#import <Foundation/Foundation.h>
 #import <Math/CubismMatrix44.hpp>
 #import <Type/csmVector.hpp>
+#import <Type/csmString.hpp>
 #import "LAppModel.h"
 
 @interface LAppLive2DManager : NSObject
@@ -18,6 +20,8 @@
 @property (nonatomic) Csm::CubismMatrix44 *viewMatrix; //モデル描画に用いるView行列
 @property (nonatomic) Csm::csmVector<LAppModel*> models; //モデルインスタンスのコンテナ
 @property (nonatomic) Csm::csmInt32 sceneIndex; //表示するシーンのインデックス値
+
+@property (nonatomic) Csm::csmVector<Csm::csmString> modelDir; ///< モデルディレクトリ名のコンテナ
 
 /**
  * @brief クラスのインスタンスを返す。
@@ -42,6 +46,11 @@
  * @breif 現在のシーンで保持している全てのモデルを解放する
  */
 - (void)releaseAllModel;
+
+/**
+ * @brief Resources フォルダにあるモデルフォルダ名をセットする
+ */
+- (void)setUpModel;
 
 /**
  * @brief   画面をドラッグしたときの処理

@@ -7,7 +7,10 @@
 
 
 #include "LAppLive2DManager.hpp"
-#include <string>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <io.h>
 #include <Rendering/D3D9/CubismRenderer_D3D9.hpp>
 #include "LAppPal.hpp"
 #include "LAppDefine.hpp"
@@ -17,7 +20,6 @@
 
 using namespace Csm;
 using namespace LAppDefine;
-using namespace std;
 
 namespace {
     LAppLive2DManager* s_instance = NULL;
@@ -25,6 +27,12 @@ namespace {
     void FinishedMotion(ACubismMotion* self)
     {
         LAppPal::PrintLog("Motion Finished: %x", self);
+    }
+
+    int CompareCsmString(const void* a, const void* b)
+    {
+        return strcmp(reinterpret_cast<const Csm::csmString*>(a)->GetRawString(),
+            reinterpret_cast<const Csm::csmString*>(b)->GetRawString());
     }
 }
 
@@ -53,6 +61,7 @@ LAppLive2DManager::LAppLive2DManager()
     , _sceneIndex(0)
 {
     _viewMatrix = new CubismMatrix44();
+    SetUpModel();
 
     ChangeScene(_sceneIndex);
 }
@@ -90,6 +99,50 @@ void LAppLive2DManager::ReleaseAllModel()
     }
 
     _models.Clear();
+}
+
+void LAppLive2DManager::SetUpModel()
+{
+    // ResourcesPathの中にあるフォルダ名を全てクロールし、モデルが存在するフォルダを定義する。
+    // フォルダはあるが同名の.model3.jsonが見つからなかった場合はリストに含めない。
+    csmString crawlPath(ResourcesPath);
+    crawlPath += "*.*";
+
+    struct _finddata_t fdata;
+    intptr_t fh = _findfirst(crawlPath.GetRawString(), &fdata);
+    if (fh == -1) return;
+
+    _modelDir.Clear();
+
+    while (_findnext(fh, &fdata) == 0)
+    {
+        if ((fdata.attrib & _A_SUBDIR) && strcmp(fdata.name, "..") != 0)
+        {
+            // フォルダと同名の.model3.jsonがあるか探索する
+            csmString model3jsonPath(ResourcesPath);
+            model3jsonPath += fdata.name;
+            model3jsonPath.Append(1, '/');
+            model3jsonPath += fdata.name;
+            model3jsonPath += ".model3.json";
+
+            struct _finddata_t fdata2;
+            if (_findfirst(model3jsonPath.GetRawString(), &fdata2) != -1)
+            {
+                _modelDir.PushBack(csmString(fdata.name));
+            }
+        }
+    }
+    qsort(_modelDir.GetPtr(), _modelDir.GetSize(), sizeof(csmString), CompareCsmString);
+}
+
+csmVector<csmString> LAppLive2DManager::GetModelDir() const
+{
+    return _modelDir;
+}
+
+csmInt32 LAppLive2DManager::GetModelDirSize() const
+{
+    return _modelDir.GetSize();
 }
 
 LAppModel* LAppLive2DManager::GetModel(csmUint32 no) const
@@ -196,7 +249,7 @@ void LAppLive2DManager::OnUpdate() const
 
 void LAppLive2DManager::NextScene()
 {
-    csmInt32 no = (_sceneIndex + 1) % ModelDirSize;
+    csmInt32 no = (_sceneIndex + 1) % GetModelDirSize();
     ChangeScene(no);
 }
 
@@ -208,17 +261,20 @@ void LAppLive2DManager::ChangeScene(Csm::csmInt32 index)
         LAppPal::PrintLog("[APP]model index: %d", _sceneIndex);
     }
 
-    // ModelDir[]に保持したディレクトリ名から
     // model3.jsonのパスを決定する.
-    // ディレクトリ名とmodel3.jsonの名前を一致させておくこと.
-    std::string model = ModelDir[index];
-    std::string modelPath = ResourcesPath + model + "/";
-    std::string modelJsonName = ModelDir[index];
+    // ディレクトリ名とmodel3.jsonの名前を一致していることが条件
+    const csmString& model = _modelDir[index];
+
+    csmString modelPath(ResourcesPath);
+    modelPath += model;
+    modelPath.Append(1, '/');
+
+    csmString modelJsonName(model);
     modelJsonName += ".model3.json";
 
     ReleaseAllModel();
     _models.PushBack(new LAppModel());
-    _models[0]->LoadAssets(modelPath.c_str(), modelJsonName.c_str());
+    _models[0]->LoadAssets(modelPath.GetRawString(), modelJsonName.GetRawString());
 
     /*
      * モデル半透明表示を行うサンプルを提示する。
@@ -240,7 +296,7 @@ void LAppLive2DManager::ChangeScene(Csm::csmInt32 index)
 #if defined(USE_RENDER_TARGET) || defined(USE_MODEL_RENDER_TARGET)
         // モデル個別にαを付けるサンプルとして、もう1体モデルを作成し、少し位置をずらす
         _models.PushBack(new LAppModel());
-        _models[1]->LoadAssets(modelPath.c_str(), modelJsonName.c_str());
+        _models[1]->LoadAssets(modelPath.GetRawString(), modelJsonName.GetRawString());
         _models[1]->GetModelMatrix()->TranslateX(0.2f);
 #endif
 

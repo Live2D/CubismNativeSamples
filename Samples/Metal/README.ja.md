@@ -12,7 +12,7 @@ Metal で実装したアプリケーションのサンプル実装です。
 
 | サードパーティ | バージョン |
 | --- | --- |
-| [ios-cmake]    | 4.3.0      |
+| [ios-cmake]    | 4.4.0      |
 | [stb_image.h]  | 2.28      |
 
 その他の開発環境・動作確認環境はトップディレクトリにある [README.md](/README.ja.md) を参照してください。
@@ -52,7 +52,7 @@ iOS もしくは Mac Catalyst用の CMake プロジェクトです。
 
 Mac Catalyst用ビルド時は下記の手順を行なってください。
 
-1. XCode の `Project設定 - TARGETS - Demo - General - Deployment Info` の `macOS` のチェックボックスをオンにしてください。
+1. XCode の `Project設定 - TARGETS - Demo - General - Supported Destinations` の `+` を押下し、`Mac > Mac Catalyst` を選択し、モーダルビューの`Enable`を押下してください。
 2. XCode の `Project設定 - TARGETS - Demo` および `Framework` の `Build Settings - Architectures - Architectures` の記載を実行環境に合わせて変更してください。
 3. XCode の `Project設定 - TARGETS - Demo` および `Framework` の `Build Settings - Architectures - Base SDK` を `iOS` に変更してください。
 もしくはApple公式Tutorialsを参考ください。

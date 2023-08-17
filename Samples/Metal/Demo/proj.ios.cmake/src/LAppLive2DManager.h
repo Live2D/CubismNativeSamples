@@ -11,6 +11,7 @@
 #import <CubismFramework.hpp>
 #import <Math/CubismMatrix44.hpp>
 #import <Type/csmVector.hpp>
+#import <Type/csmString.hpp>
 #import "LAppModel.h"
 #import "LAppSprite.h"
 
@@ -27,12 +28,14 @@ typedef NS_ENUM(NSUInteger, SelectTarget)
 @property (nonatomic) Csm::csmVector<LAppModel*> models; //モデルインスタンスのコンテナ
 @property (nonatomic) Csm::csmInt32 sceneIndex; //表示するシーンのインデックス値
 @property (nonatomic) SelectTarget renderTarget;
-@property (nonatomic) Csm::Rendering::CubismOffscreenFrame_Metal* renderBuffer;
+@property (nonatomic) Csm::Rendering::CubismOffscreenSurface_Metal* renderBuffer;
 @property (nonatomic) LAppSprite* sprite;
 @property (nonatomic) MTLRenderPassDescriptor* renderPassDescriptor;
 @property (nonatomic) float clearColorR;
 @property (nonatomic) float clearColorG;
 @property (nonatomic) float clearColorB;
+
+@property (nonatomic) Csm::csmVector<Csm::csmString> modelDir; ///< モデルディレクトリ名のコンテナ
 
 /**
  * @brief クラスのインスタンスを返す。
@@ -57,6 +60,11 @@ typedef NS_ENUM(NSUInteger, SelectTarget)
  * @brief 現在のシーンで保持している全てのモデルを解放する
  */
 - (void)releaseAllModel;
+
+/**
+ * @brief Resources フォルダにあるモデルフォルダ名をセットする
+ */
+- (void)setUpModel;
 
 /**
  * @brief   画面をドラッグしたときの処理

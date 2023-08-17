@@ -5,21 +5,31 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-//Cubism
 #include "SampleScene.h"
+#include <Rendering/CubismRenderer.hpp>
+
+//cocos2d-x
+#include "base/CCDirector.h"
+#include "renderer/backend/Device.h"
+
+//Cubism
 #include "LAppLive2DManager.hpp"
 #include "LAppPal.hpp"
 #include "LAppDefine.hpp"
 #include "LAppView.hpp"
 #include "LAppSprite.hpp"
-#include <Rendering/CubismRenderer.hpp>
+
+#if defined(_WIN32)
+#include <io.h>
+#elif defined(CSM_TARGET_IOS) || defined(CSM_TARGET_MACOSX) || defined(__ANDROID__)
+#include "LAppLive2DManagerInternal.h"
+#else
+#include <dirent.h>
+#endif
+
 #ifdef CSM_TARGET_ANDROID_ES2
 #include <Rendering/Cocos2d/CubismRenderer_Cocos2dx.hpp>
 #endif
-
-//cocos2d
-#include "base/CCDirector.h"
-#include "renderer/backend/Device.h"
 
 using namespace Csm;
 using namespace LAppDefine;
@@ -32,6 +42,12 @@ namespace {
     void FinishedMotion(ACubismMotion* self)
     {
         LAppPal::PrintLog("Motion Finished: %x", self);
+    }
+
+    int CompareCsmString(const void* a, const void* b)
+    {
+        return strcmp(reinterpret_cast<const Csm::csmString*>(a)->GetRawString(),
+            reinterpret_cast<const Csm::csmString*>(b)->GetRawString());
     }
 }
 
@@ -68,6 +84,7 @@ LAppLive2DManager::LAppLive2DManager()
     CubismFramework::Initialize();
 
     CreateShader();
+    SetUpModel();
 
     int width = static_cast<int>(cocos2d::Director::getInstance()->getOpenGLView()->getFrameSize().width);
     int height = static_cast<int>(cocos2d::Director::getInstance()->getOpenGLView()->getFrameSize().height);
@@ -78,7 +95,7 @@ LAppLive2DManager::LAppLive2DManager()
     _viewMatrix = new CubismMatrix44();
 
     // 使用するターゲット
-    _renderBuffer = new Csm::Rendering::CubismOffscreenFrame_Cocos2dx;
+    _renderBuffer = new Csm::Rendering::CubismOffscreenSurface_Cocos2dx;
     if (_renderBuffer)
     {// 描画ターゲット作成
 
@@ -89,7 +106,7 @@ LAppLive2DManager::LAppLive2DManager()
 #endif
 
         // モデル描画キャンバス
-        _renderBuffer->CreateOffscreenFrame(static_cast<csmUint32>(width), static_cast<csmUint32>(height));
+        _renderBuffer->CreateOffscreenSurface(static_cast<csmUint32>(width), static_cast<csmUint32>(height));
     }
 
 #ifdef CSM_TARGET_ANDROID_ES2
@@ -106,7 +123,7 @@ LAppLive2DManager::~LAppLive2DManager()
 {
     if (_renderBuffer)
     {
-        _renderBuffer->DestroyOffscreenFrame();
+        _renderBuffer->DestroyOffscreenSurface();
         delete _renderBuffer;
         _renderBuffer = NULL;
     }
@@ -157,7 +174,6 @@ void LAppLive2DManager::SetViewMatrix(Csm::CubismMatrix44* matrix)
 {
     _viewMatrix = matrix;
 }
-
 
 void LAppLive2DManager::OnDrag(csmFloat32 x, csmFloat32 y) const
 {
@@ -270,7 +286,7 @@ void LAppLive2DManager::OnUpdate(Csm::Rendering::CubismCommandBuffer_Cocos2dx* c
 
 void LAppLive2DManager::NextScene()
 {
-    csmInt32 no = (_sceneIndex + 1) % ModelDirSize;
+    csmInt32 no = (_sceneIndex + 1) % GetModelDirSize();
     ChangeScene(no);
 }
 
@@ -282,14 +298,17 @@ void LAppLive2DManager::ChangeScene(Csm::csmInt32 index)
     // ModelDir[]に保持したディレクトリ名から
     // model3.jsonのパスを決定する.
     // ディレクトリ名とmodel3.jsonの名前を一致させておくこと.
-    std::string dir = ModelDir[index];
-    dir += "/";
-    std::string modelJsonName = ModelDir[index];
+    const csmString& model = _modelDir[index];
+
+    csmString dir(model);;
+    dir.Append(1, '/');
+
+    csmString modelJsonName(model);
     modelJsonName += ".model3.json";
 
     ReleaseAllModel();
     _models.PushBack(new LAppModel());
-    _models[0]->LoadAssets(dir.c_str(), modelJsonName.c_str());
+    _models[0]->LoadAssets(dir.GetRawString(), modelJsonName.GetRawString());
 
     /*
      * モデル半透明表示を行うサンプルを提示する。
@@ -311,7 +330,7 @@ void LAppLive2DManager::ChangeScene(Csm::csmInt32 index)
 #if defined(USE_RENDER_TARGET) || defined(USE_MODEL_RENDER_TARGET)
         // モデル個別にαを付けるサンプルとして、もう1体モデルを作成し、少し位置をずらす
         _models.PushBack(new LAppModel());
-        _models[1]->LoadAssets(dir.c_str(), modelJsonName.c_str());
+        _models[1]->LoadAssets(dir.GetRawString(), modelJsonName.GetRawString());
         _models[1]->GetModelMatrix()->TranslateX(0.2f);
 #endif
 
@@ -360,6 +379,90 @@ void LAppLive2DManager::CreateShader()
     auto program = cocos2d::backend::Device::getInstance()->newProgram(vertexShader, fragmentShader);
     _program = program;
 
+}
+
+void LAppLive2DManager::SetUpModel()
+{
+    _modelDir.Clear();
+
+    // ResourcesPathの中にあるフォルダ名を全てクロールし、モデルが存在するフォルダを定義する。
+    // フォルダはあるが同名の.model3.jsonが見つからなかった場合はリストに含めない。
+#if defined(CSM_TARGET_IOS) || defined(CSM_TARGET_MACOSX) || defined(__ANDROID__)
+    LAppLive2DManagerInternal::SetUpModel(_modelDir);
+#else
+    const csmString resourcePath(FileUtils::getInstance()->getDefaultResourceRootPath().c_str());
+#if  defined(_WIN32)
+    struct _finddata_t fdata;
+    csmString crawlPath(resourcePath);
+    crawlPath += "*.*";
+
+    intptr_t fh = _findfirst(crawlPath.GetRawString(), &fdata);
+    if (fh == -1) return;
+
+    while (_findnext(fh, &fdata) == 0)
+    {
+        if ((fdata.attrib & _A_SUBDIR) && strcmp(fdata.name, "..") != 0)
+        {
+            // フォルダと同名の.model3.jsonがあるか探索する
+            csmString modelName(fdata.name);
+            csmString model3jsonPath(resourcePath);
+            model3jsonPath += modelName;
+            model3jsonPath.Append(1, '/');
+            model3jsonPath += modelName;
+            model3jsonPath += ".model3.json";
+
+            struct _finddata_t fdata2;
+            if (_findfirst(model3jsonPath.GetRawString(), &fdata2) != -1)
+            {
+                _modelDir.PushBack(csmString(fdata.name));
+            }
+        }
+    }
+#else
+    DIR* pDir = opendir(resourcePath.GetRawString());
+    if (pDir == NULL) return;
+
+    struct dirent* dirent;
+    while ((dirent = readdir(pDir)) != NULL)
+    {
+        if ((dirent->d_type & DT_DIR) && strcmp(dirent->d_name, "..") != 0)
+        {
+            // フォルダと同名の.model3.jsonがあるか探索する
+            csmString modelName(dirent->d_name);
+            csmString modelPath(resourcePath);
+            modelPath += modelName;
+            modelPath.Append(1, '/');
+
+            csmString model3jsonName(modelName);
+            model3jsonName += ".model3.json";
+
+            DIR* pDir2 = opendir(modelPath.GetRawString());
+
+            struct dirent* dirent2;
+            while ((dirent2 = readdir(pDir2)) != NULL)
+            {
+                if (strcmp(dirent2->d_name, model3jsonName.GetRawString()) == 0)
+                {
+                    _modelDir.PushBack(csmString(dirent->d_name));
+                }
+            }
+            closedir(pDir2);
+        }
+    }
+    closedir(pDir);
+#endif
+#endif
+    qsort(_modelDir.GetPtr(), _modelDir.GetSize(), sizeof(csmString), CompareCsmString);
+}
+
+Csm::csmVector<Csm::csmString> LAppLive2DManager::GetModelDir() const
+{
+    return _modelDir;
+}
+
+Csm::csmInt32 LAppLive2DManager::GetModelDirSize() const
+{
+    return _modelDir.GetSize();
 }
 
 void LAppLive2DManager::SetRenderTargetClearColor(float r, float g, float b)

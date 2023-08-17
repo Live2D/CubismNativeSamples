@@ -71,7 +71,7 @@ LAppModel::LAppModel()
 
 LAppModel::~LAppModel()
 {
-    _renderBuffer.DestroyOffscreenFrame();
+    _renderBuffer.DestroyOffscreenSurface();
 
     ReleaseMotions();
     ReleaseExpressions();
@@ -623,24 +623,30 @@ void LAppModel::ReloadRenderer()
 void LAppModel::SetupTextures()
 {
     for (csmInt32 modelTextureNumber = 0; modelTextureNumber < _modelSetting->GetTextureCount(); modelTextureNumber++)
+    {
+        // テクスチャ名が空文字だった場合はロード・バインド処理をスキップ
+        if (!strcmp(_modelSetting->GetTextureFileName(modelTextureNumber), ""))
         {
-            // テクスチャ名が空文字だった場合はロード・バインド処理をスキップ
-            if (!strcmp(_modelSetting->GetTextureFileName(modelTextureNumber), ""))
-            {
-                continue;
-            }
-
-            //Metalテクスチャにテクスチャをロードする
-            csmString texturePath = _modelSetting->GetTextureFileName(modelTextureNumber);
-            texturePath = _modelHomeDir + texturePath;
-
-            AppDelegate *delegate = (AppDelegate *) [[UIApplication sharedApplication] delegate];
-            TextureInfo* texture = [[delegate getTextureManager] createTextureFromPngFile:texturePath.GetRawString()];
-            id <MTLTexture> mtlTextueNumber = texture->id;
-
-            //Metal
-            GetRenderer<Rendering::CubismRenderer_Metal>()->BindTexture(modelTextureNumber, mtlTextueNumber);
+            continue;
         }
+
+        //Metalテクスチャにテクスチャをロードする
+        csmString texturePath = _modelSetting->GetTextureFileName(modelTextureNumber);
+        texturePath = _modelHomeDir + texturePath;
+
+        AppDelegate *delegate = (AppDelegate *) [[UIApplication sharedApplication] delegate];
+        TextureInfo* texture = [[delegate getTextureManager] createTextureFromPngFile:texturePath.GetRawString()];
+        id <MTLTexture> mtlTextueNumber = texture->id;
+
+        //Metal
+        GetRenderer<Rendering::CubismRenderer_Metal>()->BindTexture(modelTextureNumber, mtlTextueNumber);
+    }
+
+#ifdef PREMULTIPLIED_ALPHA_ENABLE
+    GetRenderer<Rendering::CubismRenderer_Metal>()->IsPremultipliedAlpha(true);
+#else
+    GetRenderer<Rendering::CubismRenderer_Metal>()->IsPremultipliedAlpha(false);
+#endif
 }
 
 void LAppModel::MotionEventFired(const csmString& eventValue)
@@ -648,7 +654,7 @@ void LAppModel::MotionEventFired(const csmString& eventValue)
     CubismLogInfo("%s is fired on LAppModel!!", eventValue.GetRawString());
 }
 
-Csm::Rendering::CubismOffscreenFrame_Metal& LAppModel::GetRenderBuffer()
+Csm::Rendering::CubismOffscreenSurface_Metal& LAppModel::GetRenderBuffer()
 {
     return _renderBuffer;
 }

@@ -5,9 +5,10 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-#import <Foundation/Foundation.h>
-#import <GLKit/GLKit.h>
 #import "LAppLive2DManager.h"
+#import <string.h>
+#import <stdlib.h>
+#import <GLKit/GLKit.h>
 #import "AppDelegate.h"
 #import "ViewController.h"
 #import "LAppModel.h"
@@ -24,10 +25,26 @@
 
 static LAppLive2DManager* s_instance = nil;
 
-
 void FinishedMotion(Csm::ACubismMotion* self)
 {
     LAppPal::PrintLog("Motion Finished: %x", self);
+}
+
+int CompareCsmString(const void* a, const void* b)
+{
+    return strcmp(reinterpret_cast<const Csm::csmString*>(a)->GetRawString(),
+        reinterpret_cast<const Csm::csmString*>(b)->GetRawString());
+}
+
+Csm::csmString GetPath(CFURLRef url)
+{
+  CFStringRef cfstr = CFURLCopyFileSystemPath(url, CFURLPathStyle::kCFURLPOSIXPathStyle);
+  CFIndex size = CFStringGetLength(cfstr) * 4 + 1; // Length * UTF-16 Max Character size + null-terminated-byte
+  char* buf = new char[size];
+  CFStringGetCString(cfstr, buf, size, CFStringBuiltInEncodings::kCFStringEncodingUTF8);
+  Csm::csmString result(buf);
+  delete[] buf;
+  return result;
 }
 
 + (LAppLive2DManager*)getInstance
@@ -59,6 +76,8 @@ void FinishedMotion(Csm::ACubismMotion* self)
 
         _viewMatrix = new Csm::CubismMatrix44();
 
+        [self setUpModel];
+
         [self changeScene:_sceneIndex];
     }
     return self;
@@ -77,6 +96,30 @@ void FinishedMotion(Csm::ACubismMotion* self)
     }
 
     _models.Clear();
+}
+
+- (void)setUpModel
+{
+    _modelDir.Clear();
+
+    NSBundle* bundle = [NSBundle mainBundle];
+    NSString* resPath = [NSString stringWithUTF8String:LAppDefine::ResourcesPath];
+    NSArray* resArr = [bundle pathsForResourcesOfType:NULL inDirectory:resPath];
+    NSUInteger cnt = [resArr count];
+
+    for (NSUInteger i = 0; i < cnt; i++)
+    {
+        NSString* modelName = [[resArr objectAtIndex:i] lastPathComponent];
+        NSMutableString* modelDirPath = [NSMutableString stringWithString:resPath];
+        [modelDirPath appendString:@"/"];
+        [modelDirPath appendString:modelName];
+        NSArray* model3json = [bundle pathsForResourcesOfType:@".model3.json" inDirectory:modelDirPath];
+        if ([model3json count] == 1)
+        {
+            _modelDir.PushBack(Csm::csmString([modelName UTF8String]));
+        }
+    }
+    qsort(_modelDir.GetPtr(), _modelDir.GetSize(), sizeof(Csm::csmString), CompareCsmString);
 }
 
 - (LAppModel*)getModel:(Csm::csmUint32)no
@@ -174,7 +217,7 @@ void FinishedMotion(Csm::ACubismMotion* self)
 
 - (void)nextScene;
 {
-    Csm::csmInt32 no = (_sceneIndex + 1) % LAppDefine::ModelDirSize;
+    Csm::csmInt32 no = (_sceneIndex + 1) % _modelDir.GetSize();
     [self changeScene:no];
 }
 
@@ -186,17 +229,20 @@ void FinishedMotion(Csm::ACubismMotion* self)
         LAppPal::PrintLog("[APP]model index: %d", _sceneIndex);
     }
 
-    // ModelDir[]に保持したディレクトリ名から
     // model3.jsonのパスを決定する.
     // ディレクトリ名とmodel3.jsonの名前を一致させておくこと.
-    std::string model = LAppDefine::ModelDir[index];
-    std::string modelPath = LAppDefine::ResourcesPath + model + "/";
-    std::string modelJsonName = LAppDefine::ModelDir[index];
+    const Csm::csmString& model = _modelDir[index];
+
+    Csm::csmString modelPath(LAppDefine::ResourcesPath);
+    modelPath += model;
+    modelPath.Append(1, '/');
+
+    Csm::csmString modelJsonName(model);
     modelJsonName += ".model3.json";
 
     [self releaseAllModel];
     _models.PushBack(new LAppModel());
-    _models[0]->LoadAssets(modelPath.c_str(), modelJsonName.c_str());
+    _models[0]->LoadAssets(modelPath.GetRawString(), modelJsonName.GetRawString());
 
     /*
      * モデル半透明表示を行うサンプルを提示する。
@@ -218,7 +264,7 @@ void FinishedMotion(Csm::ACubismMotion* self)
 #if defined(USE_RENDER_TARGET) || defined(USE_MODEL_RENDER_TARGET)
         // モデル個別にαを付けるサンプルとして、もう1体モデルを作成し、少し位置をずらす
         _models.PushBack(new LAppModel());
-        _models[1]->LoadAssets(modelPath.c_str(), modelJsonName.c_str());
+        _models[1]->LoadAssets(modelPath.GetRawString(), modelJsonName.GetRawString());
         _models[1]->GetModelMatrix()->TranslateX(0.2f);
 #endif
 

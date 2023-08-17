@@ -10,6 +10,7 @@
 #include <CubismFramework.hpp>
 #include <Math/CubismMatrix44.hpp>
 #include <Type/csmVector.hpp>
+#include <Type/csmString.hpp>
 
 class LAppModel;
 
@@ -35,6 +36,12 @@ public:
     *
     */
     static void ReleaseInstance();
+
+    /**
+    * @brief   Resources フォルダにあるモデルフォルダ名をセットする
+    *
+    */
+    void SetUpModel();
 
     /**
     * @brief   現在のシーンで保持しているモデルを返す
@@ -115,4 +122,6 @@ private:
     Csm::CubismMatrix44*        _viewMatrix; ///< モデル描画に用いるView行列
     Csm::csmVector<LAppModel*>  _models; ///< モデルインスタンスのコンテナ
     Csm::csmInt32               _sceneIndex; ///< 表示するシーンのインデックス値
+
+    Csm::csmVector<Csm::csmString> _modelDir; ///< モデルディレクトリ名のコンテナ
 };

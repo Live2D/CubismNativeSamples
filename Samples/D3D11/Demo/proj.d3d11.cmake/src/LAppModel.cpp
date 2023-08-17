@@ -71,7 +71,7 @@ LAppModel::LAppModel()
 
 LAppModel::~LAppModel()
 {
-    _renderBuffer.DestroyOffscreenFrame();
+    _renderBuffer.DestroyOffscreenSurface();
 
     ReleaseMotions();
     ReleaseExpressions();
@@ -665,7 +665,7 @@ void LAppModel::MotionEventFired(const csmString& eventValue)
 }
 
 
-Csm::Rendering::CubismOffscreenFrame_D3D11& LAppModel::GetRenderBuffer()
+Csm::Rendering::CubismOffscreenSurface_D3D11& LAppModel::GetRenderBuffer()
 {
     return _renderBuffer;
 }

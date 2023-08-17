@@ -22,3 +22,6 @@ end_of_line = crlf
 
 [*.bat]
 charset = unset
+
+[*.md]
+trim_trailing_whitespace = false

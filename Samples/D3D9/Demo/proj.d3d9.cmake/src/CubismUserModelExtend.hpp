@@ -63,7 +63,7 @@ public:
     /**
     * @brief   別ターゲットに描画する際に使用するバッファの取得
     */
-    Csm::Rendering::CubismOffscreenFrame_D3D9& GetRenderBuffer();
+    Csm::Rendering::CubismOffscreenSurface_D3D9& GetRenderBuffer();
 
 private:
     /**
@@ -154,5 +154,5 @@ private:
 
     Csm::csmVector<Csm::csmUint64> _bindTextureId; ///< テクスチャID
 
-    Csm::Rendering::CubismOffscreenFrame_D3D9   _renderBuffer;  ///< フレームバッファ以外の描画先
+    Csm::Rendering::CubismOffscreenSurface_D3D9   _renderBuffer;  ///< フレームバッファ以外の描画先
 };

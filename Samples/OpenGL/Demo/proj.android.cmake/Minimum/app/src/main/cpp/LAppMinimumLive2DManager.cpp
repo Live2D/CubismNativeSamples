@@ -52,6 +52,7 @@ LAppMinimumLive2DManager::LAppMinimumLive2DManager()
 LAppMinimumLive2DManager::~LAppMinimumLive2DManager()
 {
     ReleaseModel();
+    delete _viewMatrix;
 }
 
 void LAppMinimumLive2DManager::ReleaseModel()

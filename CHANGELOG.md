@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
+## [Unreleased]
+
+### Fixed
+
+* Fix a memory leak caused by a ViewMatrix variable. by [@COx2](https://github.com/Live2D/CubismNativeSamples/pull/40)
+
+
 ## [5-r.1-beta.1] - 2023-08-17
 
 ### Added

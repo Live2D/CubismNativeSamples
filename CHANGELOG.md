@@ -5,10 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
-## [Unreleased]
+## [5-r.1-beta.2] - 2023-09-28
+
+### Added
+
+* Add English version of README.md for Vulkan.
+
+### Changed
+
+* Replace the sample model `Mao` with the updated version that is compatible with Cubism 5.0.
+* The minimum operating system version of Android for OpenGL has been chang to 5.0 (API 21).
+  * Cocos2d-x is not supported.
+* Change to disable bitcode generation for building with Xcode.
 
 ### Fixed
 
+* Fix Metal rendering results on macOS to be similar to OpenGL.
 * Fix a memory leak caused by a ViewMatrix variable. by [@COx2](https://github.com/Live2D/CubismNativeSamples/pull/40)
 
 
@@ -330,6 +342,7 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[5-r.1-beta.2]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1-beta.1...5-r.1-beta.2
 [5-r.1-beta.1]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.7...5-r.1-beta.1
 [4-r.7]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.6.2...4-r.7
 [4-r.6.2]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.6.1...4-r.6.2

@@ -44,11 +44,16 @@ CMake project for iOS or Mac Catalyst.
 
 Running the script in the `script` directory will generate a CMake deliverable in the `build` directory.
 
-You can choose between iOS and Mac Catalyst when running the script.
+You can choose between iOS, iOS Simulator, or Mac Catalyst when running the script.
 
 | Script name | Product |
 | --- | --- |
 | `proj_xcode` | Xcode project |
+
+Follow the steps below when building for iOS Simulator on a Mac with Apple silicon.
+
+1. Change the description of XCode's `Project Settings - TARGETS - Demo` and `Framework`'s `Build Settings - Architectures - Architectures` according to the execution environment.
+
 
 Follow the steps below when building for Mac Catalyst.
 

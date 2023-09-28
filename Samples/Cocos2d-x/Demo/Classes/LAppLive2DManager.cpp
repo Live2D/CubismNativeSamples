@@ -131,7 +131,6 @@ LAppLive2DManager::~LAppLive2DManager()
     _sprite = NULL;
 
     ReleaseAllModel();
-    delete _viewMatrix;
 
     CubismFramework::Dispose();
 }

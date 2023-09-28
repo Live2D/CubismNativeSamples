@@ -44,11 +44,16 @@ iOS もしくは Mac Catalyst用の CMake プロジェクトです。
 
 `script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます。
 
-スクリプト実行時にiOS用かMac Catalyst用か選択できます。
+スクリプト実行時にiOS用かiOS Simulator用か、またはMac Catalyst用か選択できます。
 
 | スクリプト名 | 生成物 |
 | --- | --- |
 | `proj_xcode` | Xcode プロジェクト |
+
+Appleシリコン搭載のMacでのiOS Simulator用ビルド時は下記の手順を行ってください。
+
+1. XCode の `Project設定 - TARGETS - Demo` および `Framework` の `Build Settings - Architectures - Architectures` の記載を実行環境に合わせて変更してください。
+
 
 Mac Catalyst用ビルド時は下記の手順を行なってください。
 

@@ -160,3 +160,5 @@ CMake 用の設定ファイルです。
 ダウンロード後は `thirdParty/cocos2d` というディレクトリ名で展開されます。
 
 [Cocos2d-x]: https://cocos2d-x.org/
+
+NOTICE: MacOSにて thirdParty/cocos2d 内のスクリプト download-deps.py で一部URLの解決が出来ずエラーとなる問題を確認しております。

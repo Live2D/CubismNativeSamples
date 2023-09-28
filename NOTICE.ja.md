@@ -4,12 +4,6 @@
 
 # お知らせ
 
-## [注意事項] iOSにおけるMetalとOpenGLの描画差異について (2023-08-17)
-
-以前から発生していたMetalとOpenGLの描画差異について、macOSでの描画差異はCubism 5 SDK for Native R1 Beta1 (5-r.1-beta.1)にて解消いたしました。
-iOSでの描画差異は今後のアップデートにて対応する予定です。
-
-
 ## [注意事項] Cocos2d-xセットアップのエラーについて (2022-03-15)
 
 Cocos2d-xサンプルプロジェクトのセットアップ時に実行するsetup-cocos2dバッチにおいてエラーが発生いたします。
@@ -36,13 +30,6 @@ Metal及びCocos2d-x v4.0 の macOSサンプルビルドにおいてメモリリ
 詳細については Apple Developer Forums をご確認ください。
 
 * [Apple Developer Forums - Memory leak in MTLCommandBuffer?](https://developer.apple.com/forums/thread/120931)
-
-
-## [制限事項] Apple製品の対応状況について (2021-12-09 更新)
-
-macOS Monterey v12.0につきまして、Cubism 4 SDK for Native R4 (4-r.4) にて対応いたしました。
-また、Cubism 4 SDK for Native R4 Beta1 (4-r.4-beta.1) 以降のバージョンでApple Silicon版のmacに対応しております。
-※Cubism Editorは現在Apple Silicon製のMacに対応しておりません、ご了承ください。
 
 
 ## [制限事項] Cocos2d-x v4.0 の Linux(Ubuntu)サンプルビルドについて (2021-04-15)

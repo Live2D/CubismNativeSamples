@@ -1,73 +1,72 @@
 # Cubism Native Samples for Vulkan
 
-Vulkan で実装したアプリケーションのサンプル実装です。
+This is a sample implementation of an application implemented with Vulkan.
 
 
-## 開発環境
+## Development environment
 
-| サードパーティ | バージョン |
+| Third Party | Version |
 | --- | --- |
 | [GLFW] | 3.3.2 |
 | [stb_image.h] | 2.23 |
 | [Vulkan SDK] |1.3|
 
-その他の開発環境・動作確認環境はトップディレクトリにある [README.md](/README.md) を参照してください。
+For other development environment and operation environment, refer to [README.md](/README.md) in the top directory.
 
 
-## ディレクトリ構造
+## Directory structure
 
 ```
 .
 ├─ Demo
-│  └─ proj.win.cmake        # CMake project for Windows
-└─ thirdParty               # Third party libraries and scripts
+│  └─ proj.win.cmake        # CMake project for Windows
+└─ thirdParty               # Third party libraries and scripts
 ```
 
 
 ## Demo
 
-[Cubism Native Framework] の各機能を一通り使用したサンプルです。
-モーションの再生、表情の設定、ポーズの切り替え、物理演算の設定などを行います。
-メニューボタンからモデルを切り替えることができます。
+This is a sample that uses each function of [Cubism Native Framework].
+You can play motion, set facial expressions, switch poses, set physics, etc.
+You can switch models from the menu button.
 
 [Cubism Native Framework]: https://github.com/Live2D/CubismNativeFramework
 
-このディレクトリ内に含まれるものは以下の通りです。
+The items contained in this directory are as follows.
 
 ### proj.win.cmake
 
-Windows 用の CMake プロジェクトです。
+CMake project for Windows.
 
-`script` ディレクトリのスクリプトを実行すると `build` ディレクトリに CMake 成果物が生成されます
+Running the script in the `script` directory will generate a CMake deliverable in the `build` directory.
 
-| スクリプト名 | 生成物 |
+| Script name | Product |
 | --- | --- |
-| `nmake_msvcXXXX.bat` | 実行可能なアプリケーション |
-| `proj_msvcXXXX.bat` | Visual Studio プロジェクト |
+| `nmake_msvcXXXX.bat` | Executable application |
+| `proj_msvcXXXX.bat` | Visual Studio project |
 
-追加ライブラリとして [GLFW] を使用しています。
-[thirdParty](README.md#thirdParty) の項目を参照して事前にダウンロードを行なってください。
+[GLFW] is used as an additional library.
+Please refer to the [thirdParty](README.md#thirdParty) section and download in advance.
 
 ## thirdParty
 
-サンプルプロジェクトで使用するサードパーティライブラリと自動展開スクリプトが含まれます。
+Contains third-party libraries and auto-deployment scripts used in the sample project.
 
-### GLFW のセットアップ
+### GLFW Setup
 
-`script` ディレクトリ内のスクリプトを実行することで GLFW のダウンロードを行います。
+Download GLFW by running the script in the 'script' directory.
 
-| プラットフォーム | スクリプト名 |
+| Platform | Script name |
 | --- | --- |
 | Windows | `setup_glew_glfw.bat` |
 
-スクリプト内の `GLFW_VERSION` を変更することで、ダウンロードするバージョンを変更できます。
+You can change the version to download by changing `GLFW_VERSION` in the script.
 
 [GLFW]: https://github.com/glfw/glfw
 [stb_image.h]: https://github.com/nothings/stb/blob/master/stb_image.h
 
-### Vulkan SDK のインストール
+### Installing the Vulkan SDK
 
-あらかじめVulkan SDKインストールしておき、環境変数VULKAN_SDKを設定しておく必要があります。
+You need to install the Vulkan SDK in advance and set the environment variable VULKAN_SDK.
 
 [Vulkan SDK]: https://www.lunarg.com/vulkan-sdk/
-

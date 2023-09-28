@@ -78,6 +78,7 @@ LAppLive2DManager::~LAppLive2DManager()
         }
     }
     _releaseModel.Clear();
+    delete _viewMatrix;
 
     CubismFramework::Dispose();
 }

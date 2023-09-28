@@ -156,3 +156,5 @@ You can specify the version of Cocos2d-x on the SCM to be used with a commit has
 After downloading, it will be expanded with the directory name `thirdParty/cocos2d`.
 
 [Cocos2d-x]: https://cocos2d-x.org/
+
+NOTICE: Setting up a Cocos-2dx environment on macOS using `download-deps.py` in `thirdParty/cocos2d` fails to resolve certain URLs and causes an error.

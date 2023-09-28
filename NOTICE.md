@@ -4,12 +4,6 @@
 
 # Notices
 
-## [Caution] Differences between Metal and OpenGL rendering on iOS (2023-08-17)
-
-The rendering differences between Metal and OpenGL that have been occurring for some time have been resolved in Cubism 5 SDK for Native R1 Beta1 (5-r.1-beta.1) for macOS.
-The rendering difference on iOS will be addressed in a future update.
-
-
 ## [Caution] About Cocos2d-x setup error (2022-03-15)
 
 An error occurs in the setup-cocos2d batch that is executed when setting up the Cocos2d-x sample project.
@@ -36,13 +30,6 @@ Note that we cannot answer inquiries regarding this matter.
 Please check the Apple Developer Forums for more information.
 
 * [Apple Developer Forums - Memory leak in MTLCommandBuffer?](https://developer.apple.com/forums/thread/120931)
-
-
-## [Limitation] Support for Apple products (updated 2021-12-09)
-
-macOS Monterey v12.0 is now supported by the Cubism 4 SDK for Native R4 (4-r.4).
-In addition, Cubism 4 SDK for Native R4 Beta1 (4-r.4-beta.1) or later versions are compatible with the Apple Silicon version of Mac.
-† Please note that Cubism Editor is not currently compatible with Apple Silicon Macs.
 
 
 ## [Limitation] About the Linux (Ubuntu) sample builds of Cocos2d-x v4.0 (2021-04-15)

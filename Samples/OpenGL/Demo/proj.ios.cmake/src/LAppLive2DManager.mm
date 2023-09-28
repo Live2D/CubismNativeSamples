@@ -85,6 +85,9 @@ Csm::csmString GetPath(CFURLRef url)
 
 - (void)dealloc
 {
+    delete _viewMatrix;
+    _viewMatrix = nil;
+
     [self releaseAllModel];
 }
 

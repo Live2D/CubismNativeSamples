@@ -116,6 +116,9 @@ Csm::csmString GetPath(CFURLRef url)
         _sprite = nil;
     }
 
+    delete _viewMatrix;
+    _viewMatrix = nil;
+
     [self releaseAllModel];
     [super dealloc];
 }

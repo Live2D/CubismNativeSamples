@@ -18,6 +18,9 @@
 #import "stb_image.h"
 #pragma clang diagnostic pop
 #import "LAppPal.h"
+#import "AppDelegate.h"
+#import "ViewController.h"
+#import "MetalUIView.h"
 #import "Rendering/Metal/CubismRenderingInstanceSingleton_Metal.h"
 
 @interface LAppTextureManager()
@@ -90,6 +93,12 @@
     textureDescriptor.width = width;
     textureDescriptor.height = height;
 
+    int widthLevels = ceil(log2(width));
+    int heightLevels = ceil(log2(height));
+    int mipCount = (heightLevels > widthLevels) ? heightLevels : widthLevels;
+
+    textureDescriptor.mipmapLevelCount = mipCount;
+
     CubismRenderingInstanceSingleton_Metal *single = [CubismRenderingInstanceSingleton_Metal sharedManager];
     id <MTLDevice> device = [single getMTLDevice];
 
@@ -109,6 +118,16 @@
                 mipmapLevel:0
                   withBytes:png
                 bytesPerRow:bytesPerRow];
+
+    AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
+    ViewController* viewController = delegate.viewController;
+    id<CAMetalDrawable> drawable = [((MetalUIView*)viewController.view).metalLayer nextDrawable];
+    id<MTLCommandBuffer> commandBuffer = [viewController.commandQueue commandBuffer];
+    id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
+    [blitCommandEncoder generateMipmapsForTexture:texture];
+    [blitCommandEncoder endEncoding];
+    [commandBuffer presentDrawable:drawable];
+    [commandBuffer commit];
 
     // 解放処理
     stbi_image_free(png);

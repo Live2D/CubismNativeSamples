@@ -111,8 +111,8 @@ Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repositor
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
 | Visual Studio 2017 | 15.9.56 |
-| Visual Studio 2019 | 16.11.29 |
-| Visual Studio 2022 | 17.7.0 |
+| Visual Studio 2019 | 16.11.30 |
+| Visual Studio 2022 | 17.7.4 |
 | XCode | 14.3.1 |
 
 ### Android
@@ -150,8 +150,8 @@ Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repositor
 
 | Platform | Version |
 | --- | --- |
-| iOS / iPadOS | 16.6 |
-| macOS | 13.5 |
+| iOS / iPadOS | 16.6.1 |
+| macOS | 13.6 |
 | Windows 10 | 22H2 |
 | Windows 11 | 22H2 |
 
@@ -159,7 +159,7 @@ Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repositor
 
 | Version | Device | Tegra |
 | --- | --- | --- |
-| 13 | Pixel 6a | |
+| 13 | Pixel 7a | |
 | 7.1.1 | Nexus 9 | ✔︎ |
 
 ### Linux
@@ -187,12 +187,12 @@ We are regularly checking issue-reports and feature requests at Live2D Community
 
 We're also interested in your feedback for the future of the SDK. You can submit a suggestion or feature request at Live2D Community. To make this process more effective, we're asking that you include more information to help define them more clearly.
 
-## Community
+## Forum
 
-If you want to suggest or ask questions about how to use the Cubism SDK between users, please use the community.
+If you want to suggest or ask questions about how to use the Cubism SDK between users, please use the forum.
 
-- [Live2D community](https://community.live2d.com/)
-- [Live2D 公式コミュニティ (Japanese)](https://creatorsforum.live2d.com/)
+- [Live2D Creator's Forum](https://community.live2d.com/)
+- [Live2D 公式クリエイターズフォーラム (Japanese)](https://creatorsforum.live2d.com/)
 
 
 ![image](logos.png)

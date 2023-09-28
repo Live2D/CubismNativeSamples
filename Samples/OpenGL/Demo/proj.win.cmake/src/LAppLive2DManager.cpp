@@ -70,6 +70,7 @@ LAppLive2DManager::LAppLive2DManager()
 LAppLive2DManager::~LAppLive2DManager()
 {
     ReleaseAllModel();
+    delete _viewMatrix;
 }
 
 void LAppLive2DManager::ReleaseAllModel()

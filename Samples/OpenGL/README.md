@@ -78,7 +78,7 @@ When you run these scripts, you can choose to generate the full version or the m
 
 Follow the steps below when building for iOS Simulator on a Mac with Apple silicon.
 
-1. Change the description of XCode's `Project Settings - TARGETS - Demo` and `Framework`'s `Build Settings - Architectures - Architectures` according to the execution environment.
+1. Change the description of Xcode's `Project Settings - TARGETS - Demo` and `Framework`'s `Build Settings - Architectures - Architectures` according to the execution environment.
 
 
 [ios-cmake] is used as a toolchain for CMake.

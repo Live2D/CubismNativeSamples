@@ -8,7 +8,7 @@
 #pragma once
 
 #include <CubismFramework.hpp>
-#include <Utils/CubismString.hpp>
+#include <Type/csmVector.hpp>
 
  /**
   * @brief wavファイルハンドラ
@@ -17,6 +17,28 @@
 class LAppWavFileHandler
 {
 public:
+    /**
+     * @brief 読み込んだwavfileの情報
+     */
+    struct WavFileInfo
+    {
+        /**
+         * @brief コンストラクタ
+         */
+        WavFileInfo() : _fileName(""), _numberOfChannels(0),
+            _bitsPerSample(0), _samplingRate(0), _samplesPerChannel(0),
+            _avgBytesPerSec(0), _blockAlign(0)
+        { }
+
+        Csm::csmString _fileName; ///< ファイル名
+        Csm::csmUint32 _numberOfChannels; ///< チャンネル数
+        Csm::csmUint32 _bitsPerSample; ///< サンプルあたりビット数
+        Csm::csmUint32 _samplingRate; ///< サンプリングレート
+        Csm::csmUint32 _samplesPerChannel; ///< 1チャンネルあたり総サンプル数
+        Csm::csmUint32 _avgBytesPerSec; ///< 平均データ速度
+        Csm::csmUint32 _blockAlign; ///< ブロックサイズ
+    } _wavFileInfo;
+
     /**
      * @brief コンストラクタ
      */
@@ -50,6 +72,42 @@ public:
      */
     Csm::csmFloat32 GetRms() const;
 
+    /**
+     * @brief ファイル情報を取得
+     *
+     * @retval  ファイル情報
+     */
+    const WavFileInfo& GetWavFileInfo() const;
+
+    /**
+     * @brief 正規化前のデータを取得
+     *
+     * @retval  正規化前のデータ
+     */
+    Csm::csmByte* GetRawData() const;
+
+    /**
+     * @brief 正規化前のデータの大きさを取得
+     *
+     * @retval  正規化前のデータの大きさ
+     */
+    Csm::csmUint64 GetRawDataSize() const;
+
+    /**
+     * @brief 正規化データを取得する
+     *
+     * @retval 正規化データ
+     */
+    Csm::csmVector<Csm::csmFloat32> GetPcmData() const;
+
+    /**
+     * @brief 引数で指定したチャンネルの正規化データを取得する
+     *
+     * @param[in] dst 格納先
+     * @param[in] useChannel 使用するチャンネル
+     */
+    void GetPcmDataChannel(Csm::csmFloat32* dst, Csm::csmUint32 useChannel) const;
+
 private:
     /**
      * @brief wavファイルのロード
@@ -70,25 +128,6 @@ private:
      * @retval    csmFloat32    正規化されたサンプル
      */
     Csm::csmFloat32 GetPcmSample();
-
-    /**
-     * @brief 読み込んだwavfileの情報
-     */
-    struct WavFileInfo
-    {
-        /**
-         * @brief コンストラクタ
-         */
-        WavFileInfo() : _fileName(""), _numberOfChannels(0),
-            _bitsPerSample(0), _samplingRate(0), _samplesPerChannel(0)
-        { }
-
-        Csm::csmString _fileName; ///< ファイル名
-        Csm::csmUint32 _numberOfChannels; ///< チャンネル数
-        Csm::csmUint32 _bitsPerSample; ///< サンプルあたりビット数
-        Csm::csmUint32 _samplingRate; ///< サンプリングレート
-        Csm::csmUint32 _samplesPerChannel; ///< 1チャンネルあたり総サンプル数
-    } _wavFileInfo;
 
     /**
      * @brief バイトリーダ
@@ -175,6 +214,8 @@ private:
         Csm::csmUint32 _readOffset; ///< ファイル参照位置
     } _byteReader;
 
+    Csm::csmByte* _rawData; ///< 正規化される前のバイト列
+    Csm::csmUint64 _rawDataSize; ///< 正規化される前のバイト列の大きさ
     Csm::csmFloat32** _pcmData; ///< -1から1の範囲で表現された音声データ配列
     Csm::csmUint32 _sampleOffset; ///< サンプル参照位置
     Csm::csmFloat32 _lastRms; ///< 最後に計測したRMS値

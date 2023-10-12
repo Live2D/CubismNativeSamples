@@ -52,14 +52,14 @@ iOS もしくは Mac Catalyst用の CMake プロジェクトです。
 
 Appleシリコン搭載のMacでのiOS Simulator用ビルド時は下記の手順を行ってください。
 
-1. XCode の `Project設定 - TARGETS - Demo` および `Framework` の `Build Settings - Architectures - Architectures` の記載を実行環境に合わせて変更してください。
+1. Xcode の `Project設定 - TARGETS - Demo` および `Framework` の `Build Settings - Architectures - Architectures` の記載を実行環境に合わせて変更してください。
 
 
 Mac Catalyst用ビルド時は下記の手順を行なってください。
 
-1. XCode の `Project設定 - TARGETS - Demo - General - Supported Destinations` の `+` を押下し、`Mac > Mac Catalyst` を選択し、モーダルビューの`Enable`を押下してください。
-2. XCode の `Project設定 - TARGETS - Demo` および `Framework` の `Build Settings - Architectures - Architectures` の記載を実行環境に合わせて変更してください。
-3. XCode の `Project設定 - TARGETS - Demo` および `Framework` の `Build Settings - Architectures - Base SDK` を `iOS` に変更してください。
+1. Xcode の `Project設定 - TARGETS - Demo - General - Supported Destinations` の `+` を押下し、`Mac > Mac Catalyst` を選択し、モーダルビューの`Enable`を押下してください。
+2. Xcode の `Project設定 - TARGETS - Demo` および `Framework` の `Build Settings - Architectures - Architectures` の記載を実行環境に合わせて変更してください。
+3. Xcode の `Project設定 - TARGETS - Demo` および `Framework` の `Build Settings - Architectures - Base SDK` を `iOS` に変更してください。
 もしくはApple公式Tutorialsを参考ください。
 [turning-on-mac-catalyst]:https://developer.apple.com/tutorials/mac-catalyst/turning-on-mac-catalyst
 

@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
+## [5-r.1-beta.3] - 2023-10-12
+
+
+### Added
+
+* Add functions for MotionSyncPlugin to `LAppWavFileHandler`.
+
+### Changed
+
+* Change so that `LAppSprite` is not depend on `LAppDelegate`.
+
+
 ## [5-r.1-beta.2] - 2023-09-28
 
 ### Added
@@ -342,6 +354,7 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[5-r.1-beta.3]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1-beta.2...5-r.1-beta.3
 [5-r.1-beta.2]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1-beta.1...5-r.1-beta.2
 [5-r.1-beta.1]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.7...5-r.1-beta.1
 [4-r.7]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.6.2...4-r.7

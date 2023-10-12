@@ -11,7 +11,7 @@ This is a sample implementation of an application implemented with Cocos2d-x.
 
 | Framework | Version |
 | --- | --- |
-| [XCode] | 12.4 |
+| [Xcode] | 12.4 |
 | [Cocos2d-x] | 4.0 (`95e5d868ce5958c0dadfc485bdda52f1bc404fe0`) |
 
 For other development environments and operation environments, see [README.md](../../README.md) in the top directory.
@@ -78,7 +78,7 @@ Running the script in the `script` directory will generate a CMake deliverable i
 
 Follow the steps below when building.
 
-1. Rewrite the `Executable file` in `Info.plist` stated in XCode's `Project Settings - TARGETS - Demo - Packaging - Info.plist File` to `$(EXECUTABLE_NAME)` or `Demo` (app name).
+1. Rewrite the `Executable file` in `Info.plist` stated in Xcode's `Project Settings - TARGETS - Demo - Packaging - Info.plist File` to `$(EXECUTABLE_NAME)` or `Demo` (app name).
 
 NOTICE: Cubism Core does not support the i386 architecture, so **it is not possible to build for iPhone Simulator.**
 

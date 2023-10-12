@@ -110,10 +110,10 @@ Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repositor
 | CMake | 3.27.1 |
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.56 |
+| Visual Studio 2017 | 15.9.57 |
 | Visual Studio 2019 | 16.11.30 |
 | Visual Studio 2022 | 17.7.4 |
-| XCode | 14.3.1 |
+| Xcode | 14.3.1 |
 
 ### Android
 

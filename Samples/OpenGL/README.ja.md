@@ -78,7 +78,7 @@ iOS 用の CMake プロジェクトです。
 
 Appleシリコン搭載のMacでのiOS Simulator用ビルド時は下記の手順を行ってください。
 
-1. XCode の `Project設定 - TARGETS - Demo` および `Framework` の `Build Settings - Architectures - Architectures` の記載を実行環境に合わせて変更してください。
+1. Xcode の `Project設定 - TARGETS - Demo` および `Framework` の `Build Settings - Architectures - Architectures` の記載を実行環境に合わせて変更してください。
 
 
 CMake のツールチェーンとして [ios-cmake] を使用しています。

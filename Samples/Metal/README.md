@@ -52,14 +52,14 @@ You can choose between iOS, iOS Simulator, or Mac Catalyst when running the scri
 
 Follow the steps below when building for iOS Simulator on a Mac with Apple silicon.
 
-1. Change the description of XCode's `Project Settings - TARGETS - Demo` and `Framework`'s `Build Settings - Architectures - Architectures` according to the execution environment.
+1. Change the description of Xcode's `Project Settings - TARGETS - Demo` and `Framework`'s `Build Settings - Architectures - Architectures` according to the execution environment.
 
 
 Follow the steps below when building for Mac Catalyst.
 
-1. In XCode, under `Project Settings - TARGETS - Demo - General - Supported Destinations`, press `+`, select `Mac > Mac Catalyst` and press `Enable` in the modal view.
-2. Change the description of XCode's `Project Settings - TARGETS - Demo` and `Framework`'s `Build Settings - Architectures - Architectures` according to the execution environment.
-3. Change XCode's `Project Settings - TARGETS - Demo` and `Framework`'s `Build Settings - Architectures - Base SDK` to `iOS`, or refer to the Apple official tutorials.
+1. In Xcode, under `Project Settings - TARGETS - Demo - General - Supported Destinations`, press `+`, select `Mac > Mac Catalyst` and press `Enable` in the modal view.
+2. Change the description of Xcode's `Project Settings - TARGETS - Demo` and `Framework`'s `Build Settings - Architectures - Architectures` according to the execution environment.
+3. Change Xcode's `Project Settings - TARGETS - Demo` and `Framework`'s `Build Settings - Architectures - Base SDK` to `iOS`, or refer to the Apple official tutorials.
 [turning-on-mac-catalyst]: https://developer.apple.com/tutorials/mac-catalyst/turning-on-mac-catalyst
 
 

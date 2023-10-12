@@ -106,6 +106,13 @@ void LAppView::Initialize()
 
 void LAppView::Render()
 {
+    // 画面サイズを取得する
+    int maxWidth, maxHeight;
+    glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &maxWidth, &maxHeight);
+    _back->SetWindowSize(maxWidth, maxHeight);
+    _gear->SetWindowSize(maxWidth, maxHeight);
+    _power->SetWindowSize(maxWidth, maxHeight);
+
     _back->Render();
     _gear->Render();
     _power->Render();

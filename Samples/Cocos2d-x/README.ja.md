@@ -11,7 +11,7 @@ Cocos2d-xで実装したアプリケーションのサンプル実装です。
 
 | フレームワーク | バージョン |
 | --- | --- |
-| [XCode] | 12.4 |
+| [Xcode] | 12.4 |
 | [Cocos2d-x] | 4.0 (`95e5d868ce5958c0dadfc485bdda52f1bc404fe0`) |
 
 その他の開発環境・動作確認環境はトップディレクトリにある [README.md](../../README.ja.md) を参照してください。
@@ -80,7 +80,7 @@ iOS 用の CMake プロジェクトです。
 
 ビルド時に下記の手順を行なってください。
 
-1. XCode の `Project設定 - TARGETS - Demo - Packaging - Info.plist File`　に記載されている `Info.plist` 内の `Executable file` を `$(EXECUTABLE_NAME)` または`Demo`（アプリ名）に書き換えてください
+1. Xcode の `Project設定 - TARGETS - Demo - Packaging - Info.plist File`　に記載されている `Info.plist` 内の `Executable file` を `$(EXECUTABLE_NAME)` または`Demo`（アプリ名）に書き換えてください
 
 NOTICE: Cubism Core は i386 アーキテクチャをサポートしていないため、**iPhone Simulator 向けのビルドは行えません。**
 

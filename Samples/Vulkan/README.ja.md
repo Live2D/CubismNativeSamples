@@ -7,8 +7,8 @@ Vulkan で実装したアプリケーションのサンプル実装です。
 
 | サードパーティ | バージョン |
 | --- | --- |
-| [GLFW] | 3.3.2 |
-| [stb_image.h] | 2.23 |
+| [GLFW] | 3.3.9 |
+| [stb_image.h] | 2.29 |
 | [Vulkan SDK] |1.3|
 
 その他の開発環境・動作確認環境はトップディレクトリにある [README.ja.md](/README.ja.md) を参照してください。
@@ -68,6 +68,7 @@ Windows 用の CMake プロジェクトです。
 ### Vulkan SDK のインストール
 
 あらかじめVulkan SDKインストールしておき、環境変数VULKAN_SDKを設定しておく必要があります。
+x86プラットフォームでビルドする場合、Vulkan SDKインストールの際に `SDK 32-bit Core Components` をインストールする必要があります。
 
 [Vulkan SDK]: https://www.lunarg.com/vulkan-sdk/
 

@@ -391,6 +391,7 @@ void VulkanManager::ChooseSupportedDepthFormat()
         if (formatProps.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)
         {
             _depthFormat = depthFormats[i];
+            return;
         }
     }
     CubismLogError("can't find depth format!");
@@ -467,7 +468,7 @@ void VulkanManager::SubmitCommand(VkCommandBuffer commandBuffer, bool isFirstDra
         VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
         submitInfo.pWaitDstStageMask = waitStages;
     }
-    vkQueueSubmit(_graphicQueue, 1, &submitInfo, nullptr);
+    vkQueueSubmit(_graphicQueue, 1, &submitInfo, VK_NULL_HANDLE);
     // コマンドの実行終了まで待機
     vkQueueWaitIdle(_graphicQueue);
     vkFreeCommandBuffers(_device, _commandPool, 1, &commandBuffer);

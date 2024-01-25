@@ -7,8 +7,8 @@ This is a sample implementation of an application implemented with Vulkan.
 
 | Third Party | Version |
 | --- | --- |
-| [GLFW] | 3.3.2 |
-| [stb_image.h] | 2.23 |
+| [GLFW] | 3.3.9 |
+| [stb_image.h] | 2.29 |
 | [Vulkan SDK] |1.3|
 
 For other development environment and operation environment, refer to [README.md](/README.md) in the top directory.
@@ -68,5 +68,6 @@ You can change the version to download by changing `GLFW_VERSION` in the script.
 ### Installing the Vulkan SDK
 
 You need to install the Vulkan SDK in advance and set the environment variable VULKAN_SDK.
+When building on an x86 platform, you must install the `SDK 32-bit Core Components` when installing the Vulkan SDK.
 
 [Vulkan SDK]: https://www.lunarg.com/vulkan-sdk/

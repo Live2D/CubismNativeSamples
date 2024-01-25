@@ -12,8 +12,8 @@ There are restrictions. Please check [NOTICE.md](/NOTICE.md) in the top director
 
 | Third Party | Version |
 | --- | --- |
-| [ios-cmake]    | 4.4.0      |
-| [stb_image.h]  | 2.28      |
+| [ios-cmake]    | 4.4.1      |
+| [stb_image.h]  | 2.29      |
 
 For other development environments and operation environments, see [README.md](/README.md) in the top directory.
 

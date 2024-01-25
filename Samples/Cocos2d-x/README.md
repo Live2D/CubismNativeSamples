@@ -11,7 +11,7 @@ This is a sample implementation of an application implemented with Cocos2d-x.
 
 | Framework | Version |
 | --- | --- |
-| [Xcode] | 12.4 |
+| [Xcode] | 15.1 |
 | [Cocos2d-x] | 4.0 (`95e5d868ce5958c0dadfc485bdda52f1bc404fe0`) |
 
 For other development environments and operation environments, see [README.md](../../README.md) in the top directory.
@@ -66,6 +66,10 @@ NOTE: You need to download the following SDKs in advance.
 * NDK
 * CMake
 
+Follow the steps below before building.
+
+1. set `File - Build, Execution, Deployment - Build Tools - Gradle - Gradle JDK` to `1.8` in Android Studio
+
 ### proj.ios
 
 CMake project for iOS.
@@ -79,6 +83,24 @@ Running the script in the `script` directory will generate a CMake deliverable i
 Follow the steps below when building.
 
 1. Rewrite the `Executable file` in `Info.plist` stated in Xcode's `Project Settings - TARGETS - Demo - Packaging - Info.plist File` to `$(EXECUTABLE_NAME)` or `Demo` (app name).
+
+1. make the following modifications to `cocos2d/cocos/2d/CCFontAtlas.h`.
+```CCFontAtlas.h
+@@ -30,6 +30,7 @@
+ 
+ #include <string>
+ #include <unordered_map>
++#include <iconv.h>
+ 
+ #include "platform/CCPlatformMacros.h"
+ #include "base/CCRef.h"
+@@ -129,7 +130,7 @@ protected:
+     float _lineHeight;
+     Font* _font;
+     FontFreeType* _fontFreeType;
+-    void* _iconv;
++    iconv_t _iconv;
+```
 
 NOTICE: Cubism Core does not support the i386 architecture, so **it is not possible to build for iPhone Simulator.**
 
@@ -114,6 +136,26 @@ Running the script in the `script` directory will generate a CMake deliverable i
 WARNING: Regarding macOS build, it is not possible to build normally due to a problem caused by `Cocos2d-x V4.0`. Please check the following Issue for the workaround.
 
 * [cocos2d/cocos2d-x error: Objective-C was disabled in PCH file but is currently enabled#20607](https://github.com/cocos2d/cocos2d-x/issues/20607#issuecomment-780266298)
+
+Follow the steps below when building.
+
+1. make the following modifications to `cocos2d/cocos/2d/CCFontAtlas.h`
+```CCFontAtlas.h
+@@ -30,6 +30,7 @@
+ 
+ #include <string>
+ #include <unordered_map>
++#include <iconv.h>
+ 
+ #include "platform/CCPlatformMacros.h"
+ #include "base/CCRef.h"
+@@ -129,7 +130,7 @@ protected:
+     float _lineHeight;
+     Font* _font;
+     FontFreeType* _fontFreeType;
+-    void* _iconv;
++    iconv_t _iconv;
+```
 
 ### proj.win
 

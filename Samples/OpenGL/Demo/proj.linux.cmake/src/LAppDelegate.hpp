@@ -127,11 +127,6 @@ private:
     */
     void InitializeCubism();
 
-    /**
-     * @brief   文字列を指定の文字で切り分ける
-     */
-    Csm::csmVector<std::string> Split(const std::string& baseString, char delim);
-
     LAppAllocator _cubismAllocator;              ///< Cubism3 Allocator
     Csm::CubismFramework::Option _cubismOption;  ///< Cubism3 Option
     GLFWwindow* _window;                         ///< OpenGL ウィンドウ

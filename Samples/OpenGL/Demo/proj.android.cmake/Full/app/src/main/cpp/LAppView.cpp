@@ -184,6 +184,13 @@ void LAppView::InitializeSprite()
 
 void LAppView::Render()
 {
+    // 画面サイズを取得する
+    int maxWidth = LAppDelegate::GetInstance()->GetWindowWidth();
+    int maxHeight = LAppDelegate::GetInstance()->GetWindowHeight();
+    _back->SetWindowSize(maxWidth, maxHeight);
+    _gear->SetWindowSize(maxWidth, maxHeight);
+    _power->SetWindowSize(maxWidth, maxHeight);
+
     _back->Render();
     _gear->Render();
     _power->Render();
@@ -204,6 +211,8 @@ void LAppView::Render()
     // 各モデルが持つ描画ターゲットをテクスチャとする場合
     if (_renderTarget == SelectTarget_ModelFrameBuffer && _renderSprite)
     {
+        _renderSprite->SetWindowSize(maxWidth, maxHeight);
+
         const GLfloat uvVertex[] =
         {
             1.0f, 1.0f,

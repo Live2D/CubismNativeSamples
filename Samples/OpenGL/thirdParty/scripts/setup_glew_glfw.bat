@@ -1,7 +1,7 @@
 @echo off
 
 set GLEW_VERSION=2.2.0
-set GLFW_VERSION=3.3.8
+set GLFW_VERSION=3.3.9
 
 set SCRIPT_PATH=%~dp0
 

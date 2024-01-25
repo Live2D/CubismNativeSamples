@@ -94,6 +94,14 @@ public:
      */
     void SetColor(float r, float g, float b, float a);
 
+    /**
+     * @brief ウインドウサイズ設定
+     *
+     * @param[in]       width        横幅
+     * @param[in]       height       高さ
+     */
+    void SetWindowSize(int width, int height);
+
 private:
     GLuint _textureId;   ///< テクスチャID
     Rect _rect;          ///< 矩形
@@ -103,5 +111,7 @@ private:
     int _colorLocation;     ///< カラーアトリビュート
 
     float _spriteColor[4];  ///< 表示カラー
+    int _maxWidth;  ///< ウインドウ幅
+    int _maxHeight;  ///< ウインドウ高さ
 };
 

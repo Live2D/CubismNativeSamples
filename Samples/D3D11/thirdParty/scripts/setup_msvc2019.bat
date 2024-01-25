@@ -2,7 +2,7 @@
 
 setlocal
 
-set XTK_VERSION=jun2023
+set XTK_VERSION=dec2023
 
 set SCRIPT_PATH=%~dp0
 

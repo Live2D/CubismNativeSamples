@@ -133,6 +133,10 @@ void LAppMinimumView::Render()
     // 各モデルが持つ描画ターゲットをテクスチャとする場合
     if (_renderTarget == SelectTarget_ModelFrameBuffer && _renderSprite)
     {
+        // 画面サイズを取得する
+        int maxWidth = LAppMinimumDelegate::GetInstance()->GetWindowWidth();
+        int maxHeight = LAppMinimumDelegate::GetInstance()->GetWindowHeight();
+        _renderSprite->SetWindowSize(maxWidth, maxHeight);
         const GLfloat uvVertex[] =
                 {
                         1.0f, 1.0f,

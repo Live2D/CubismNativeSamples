@@ -11,7 +11,7 @@ Cocos2d-xで実装したアプリケーションのサンプル実装です。
 
 | フレームワーク | バージョン |
 | --- | --- |
-| [Xcode] | 12.4 |
+| [Xcode] | 15.1 |
 | [Cocos2d-x] | 4.0 (`95e5d868ce5958c0dadfc485bdda52f1bc404fe0`) |
 
 その他の開発環境・動作確認環境はトップディレクトリにある [README.md](../../README.ja.md) を参照してください。
@@ -68,6 +68,10 @@ NOTE: 事前に下記の SDK のダウンロードが必要です
 * NDK
 * CMake
 
+ビルド時に下記の手順を行なってください。
+
+1. Android Studio の `File - Build, Execution, Deployment - Build Tools - Gradle - Gradle JDK` を `1.8` に設定してください
+
 ### proj.ios
 
 iOS 用の CMake プロジェクトです。
@@ -81,6 +85,24 @@ iOS 用の CMake プロジェクトです。
 ビルド時に下記の手順を行なってください。
 
 1. Xcode の `Project設定 - TARGETS - Demo - Packaging - Info.plist File`　に記載されている `Info.plist` 内の `Executable file` を `$(EXECUTABLE_NAME)` または`Demo`（アプリ名）に書き換えてください
+
+1. `cocos2d/cocos/2d/CCFontAtlas.h` に以下の修正を加えてください
+```CCFontAtlas.h
+@@ -30,6 +30,7 @@
+ 
+ #include <string>
+ #include <unordered_map>
++#include <iconv.h>
+ 
+ #include "platform/CCPlatformMacros.h"
+ #include "base/CCRef.h"
+@@ -129,7 +130,7 @@ protected:
+     float _lineHeight;
+     Font* _font;
+     FontFreeType* _fontFreeType;
+-    void* _iconv;
++    iconv_t _iconv;
+```
 
 NOTICE: Cubism Core は i386 アーキテクチャをサポートしていないため、**iPhone Simulator 向けのビルドは行えません。**
 
@@ -118,6 +140,26 @@ WARNING: macOSビルドにつきまして、`Cocos2d-x V4.0` に起因する不�
 * [cocos2d/cocos2d-x error: Objective-C was disabled in PCH file but is currently enabled
 #20607
 ](https://github.com/cocos2d/cocos2d-x/issues/20607#issuecomment-780266298)
+
+ビルド時に下記の手順を行なってください。
+
+1. `cocos2d/cocos/2d/CCFontAtlas.h` に以下の修正を加えてください
+```CCFontAtlas.h
+@@ -30,6 +30,7 @@
+ 
+ #include <string>
+ #include <unordered_map>
++#include <iconv.h>
+ 
+ #include "platform/CCPlatformMacros.h"
+ #include "base/CCRef.h"
+@@ -129,7 +130,7 @@ protected:
+     float _lineHeight;
+     Font* _font;
+     FontFreeType* _fontFreeType;
+-    void* _iconv;
++    iconv_t _iconv;
+```
 
 ### proj.win
 

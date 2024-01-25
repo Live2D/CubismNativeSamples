@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <CubismFramework.hpp>
-#include <Type/csmVector.hpp>
+#import <CubismFramework.hpp>
+#import <Type/csmVector.hpp>
 
  /**
   * @brief wavファイルハンドラ

@@ -4,6 +4,17 @@
 
 # Notices
 
+## [Caution] Mac Catalyst build error for Metal (2024-01-25)
+
+There is an error when building Mac Catalyst for Metal.
+Specifically, when generating a project using `cmake3.27.0` or higher, errors such as `'Foundation/NSURLHandle.h' file not found` will occur.
+We will continue to investigate the details.
+
+### Workaround
+
+* Use cmake with versions less than 3.27
+
+
 ## [Caution] About Cocos2d-x setup error (2022-03-15)
 
 An error occurs in the setup-cocos2d batch that is executed when setting up the Cocos2d-x sample project.

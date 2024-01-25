@@ -6,7 +6,6 @@
  */
 
 #include "LAppSprite.hpp"
-#include "LAppMinimumDelegate.hpp"
 
 LAppSprite::LAppSprite(float x, float y, float width, float height, GLuint textureId, GLuint programId)
     : _rect()
@@ -59,17 +58,13 @@ void LAppSprite::Render() const
     // uniform属性の登録
     glUniform1i(_textureLocation, 0);
 
-    // 画面サイズを取得する
-    int maxWidth = LAppMinimumDelegate::GetInstance()->GetWindowWidth();
-    int maxHeight = LAppMinimumDelegate::GetInstance()->GetWindowHeight();
-
     // 頂点データ
     float positionVertex[] =
     {
-        (_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.up   - maxHeight * 0.5f) / (maxHeight * 0.5f),
-        (_rect.left  - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.up   - maxHeight * 0.5f) / (maxHeight * 0.5f),
-        (_rect.left  - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f),
-        (_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f)
+        (_rect.right - _maxWidth * 0.5f) / (_maxWidth * 0.5f), (_rect.up  - _maxHeight * 0.5f) / (_maxHeight * 0.5f),
+        (_rect.left  - _maxWidth * 0.5f) / (_maxWidth * 0.5f), (_rect.up  - _maxHeight * 0.5f) / (_maxHeight * 0.5f),
+        (_rect.left  - _maxWidth * 0.5f) / (_maxWidth * 0.5f), (_rect.down - _maxHeight * 0.5f) / (_maxHeight * 0.5f),
+        (_rect.right - _maxWidth * 0.5f) / (_maxWidth * 0.5f), (_rect.down - _maxHeight * 0.5f) / (_maxHeight * 0.5f)
     };
 
     // attribute属性を登録
@@ -92,17 +87,13 @@ void LAppSprite::RenderImmidiate(GLuint textureId, const GLfloat uvVertex[8]) co
     // uniform属性の登録
     glUniform1i(_textureLocation, 0);
 
-    // 画面サイズを取得する
-    int maxWidth = LAppMinimumDelegate::GetInstance()->GetWindowWidth();
-    int maxHeight = LAppMinimumDelegate::GetInstance()->GetWindowHeight();
-
     // 頂点データ
     float positionVertex[] =
     {
-        (_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.up - maxHeight * 0.5f) / (maxHeight * 0.5f),
-        (_rect.left - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.up - maxHeight * 0.5f) / (maxHeight * 0.5f),
-        (_rect.left - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f),
-        (_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f)
+        (_rect.right - _maxWidth * 0.5f) / (_maxWidth * 0.5f), (_rect.up - _maxHeight * 0.5f) / (_maxHeight * 0.5f),
+        (_rect.left - _maxWidth * 0.5f) / (_maxWidth * 0.5f), (_rect.up - _maxHeight * 0.5f) / (_maxHeight * 0.5f),
+        (_rect.left - _maxWidth * 0.5f) / (_maxWidth * 0.5f), (_rect.down - _maxHeight * 0.5f) / (_maxHeight * 0.5f),
+        (_rect.right - _maxWidth * 0.5f) / (_maxWidth * 0.5f), (_rect.down - _maxHeight * 0.5f) / (_maxHeight * 0.5f)
     };
 
     // attribute属性を登録
@@ -118,11 +109,8 @@ void LAppSprite::RenderImmidiate(GLuint textureId, const GLfloat uvVertex[8]) co
 
 bool LAppSprite::IsHit(float pointX, float pointY) const
 {
-    // 画面高さを取得する
-    int maxHeight = LAppMinimumDelegate::GetInstance()->GetWindowHeight();
-
     //Y座標は変換する必要あり
-    float y = maxHeight - pointY;
+    float y = _maxHeight - pointY;
 
     return (pointX >= _rect.left && pointX <= _rect.right && y <= _rect.up && y >= _rect.down);
 }
@@ -133,4 +121,10 @@ void LAppSprite::SetColor(float r, float g, float b, float a)
     _spriteColor[1] = g;
     _spriteColor[2] = b;
     _spriteColor[3] = a;
+}
+
+void LAppSprite::SetWindowSize(int width, int height)
+{
+    _maxWidth = width;
+    _maxHeight = height;
 }

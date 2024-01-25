@@ -120,12 +120,16 @@ void CubismUserModelExtend::SetupModel()
         LoadAsset(_modelJson->GetExpressionFileName(expressionIndex), [=](Csm::csmByte* buffer, Csm::csmSizeInt bufferSize) {
             auto expressionName = _modelJson->GetExpressionName(expressionIndex);
             ACubismMotion* motion = LoadExpression(buffer, bufferSize, expressionName);
-            if (_expressions[expressionName])
+
+            if (motion)
             {
-                ACubismMotion::Delete(_expressions[expressionName]);
-                _expressions[expressionName] = nullptr;
+                if (_expressions[expressionName])
+                {
+                    ACubismMotion::Delete(_expressions[expressionName]);
+                    _expressions[expressionName] = nullptr;
+                }
+                _expressions[expressionName] = motion;
             }
-            _expressions[expressionName] = motion;
         });
     }
 
@@ -192,26 +196,29 @@ void CubismUserModelExtend::PreloadMotionGroup(const csmChar* group)
         // モーションデータの読み込み
         CubismMotion* tmpMotion = static_cast<CubismMotion*>(LoadMotion(buffer, size, name.GetRawString()));
 
-        // フェードインの時間を取得
-        csmFloat32 fadeTime = _modelJson->GetMotionFadeInTimeValue(group, i);
-        if (fadeTime >= 0.0f)
+        if (tmpMotion)
         {
-            tmpMotion->SetFadeInTime(fadeTime);
-        }
+            // フェードインの時間を取得
+            csmFloat32 fadeTime = _modelJson->GetMotionFadeInTimeValue(group, i);
+            if (fadeTime >= 0.0f)
+            {
+                tmpMotion->SetFadeInTime(fadeTime);
+            }
 
-        // フェードアウトの時間を取得
-        fadeTime = _modelJson->GetMotionFadeOutTimeValue(group, i);
-        if (fadeTime >= 0.0f)
-        {
-            tmpMotion->SetFadeOutTime(fadeTime);
-        }
+            // フェードアウトの時間を取得
+            fadeTime = _modelJson->GetMotionFadeOutTimeValue(group, i);
+            if (fadeTime >= 0.0f)
+            {
+                tmpMotion->SetFadeOutTime(fadeTime);
+            }
 
-        if (_motions[name])
-        {
-            // インスタンスを破棄
-            ACubismMotion::Delete(_motions[name]);
+            if (_motions[name])
+            {
+                // インスタンスを破棄
+                ACubismMotion::Delete(_motions[name]);
+            }
+            _motions[name] = tmpMotion;
         }
-        _motions[name] = tmpMotion;
 
         DeleteBuffer(buffer, path.GetRawString());
     }
@@ -285,20 +292,23 @@ Csm::CubismMotionQueueEntryHandle CubismUserModelExtend::StartMotion(const Csm::
         // 一番先頭のモーションを読み込む
         motion = static_cast<CubismMotion*>(LoadMotion(buffer, size, NULL, onFinishedMotionHandler));
 
-        csmFloat32 fadeTime = _modelJson->GetMotionFadeInTimeValue(group, no);
-        if (fadeTime >= 0.0f)
+        if (motion)
         {
-            motion->SetFadeInTime(fadeTime);
-        }
+            csmFloat32 fadeTime = _modelJson->GetMotionFadeInTimeValue(group, no);
+            if (fadeTime >= 0.0f)
+            {
+                motion->SetFadeInTime(fadeTime);
+            }
 
-        fadeTime = _modelJson->GetMotionFadeOutTimeValue(group, no);
-        if (fadeTime >= 0.0f)
-        {
-            motion->SetFadeOutTime(fadeTime);
-        }
+            fadeTime = _modelJson->GetMotionFadeOutTimeValue(group, no);
+            if (fadeTime >= 0.0f)
+            {
+                motion->SetFadeOutTime(fadeTime);
+            }
 
-        // 終了時にメモリから削除
-        autoDelete = true;
+            // 終了時にメモリから削除
+            autoDelete = true;
+        }
 
         DeleteBuffer(buffer, path.GetRawString());
     }

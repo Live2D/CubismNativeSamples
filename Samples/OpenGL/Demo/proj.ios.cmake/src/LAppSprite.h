@@ -10,7 +10,7 @@
 
 #import <OpenGLES/ES2/gl.h>
 #import <OpenGLES/ES2/glext.h>
-#import "ViewController.h"
+#import <GLKit/GLKit.h>
 
 @interface LAppSprite : NSObject
 @property (strong, nonatomic) GLKBaseEffect *baseEffect;

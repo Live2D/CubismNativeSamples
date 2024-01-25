@@ -194,7 +194,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(
 
     textureImage.CreateImage(device, physicalDevice, width, height, _mipLevels, format, tiling, usage);
     VkCommandBuffer commandBuffer = LAppDelegate::GetInstance()->GetVulkanManager()->BeginSingleTimeCommands();
-    textureImage.SetImageLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, _mipLevels);
+    textureImage.SetImageLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, _mipLevels, VK_IMAGE_ASPECT_COLOR_BIT);
     CopyBufferToImage(commandBuffer, stagingBuffer.GetBuffer(), textureImage.GetImage(), width, height);
     LAppDelegate::GetInstance()->GetVulkanManager()->SubmitCommand(commandBuffer);
     GenerateMipmaps(textureImage, width, height, _mipLevels);

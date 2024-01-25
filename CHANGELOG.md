@@ -5,8 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
-## [5-r.1-beta.3] - 2023-10-12
+## [5-r.1-beta.4] - 2024-01-25
 
+### Added
+
+* Add `LAppWavFileHandler` class for Android and iOS.
+* Add functions for MotionSyncPlugin to `LAppWavFileHandler` in Windows and macOS.
+
+### Changed
+
+* Change so that `LAppSprite` is not depend on `LAppDelegate` in Android.
+* Change so that `ViewController` is not include on `LAppSprite` in iOS.
+* Change the path acquisition process to a library function on OpenGL Mac and Linux.
+* Change the compile and target SDK version of Android OS to 14.0 (API 34). 
+  * Upgrade the version of Android Gradle Plugin from 8.0.2 to 8.1.1.
+  * Upgrade the version of Gradle from 8.1.1 to 8.2.
+  * Change the minimum version of Android Studio to Hedgehog(2023.1.1).
+
+### Fixed
+
+* The version set in `sourceCompatibility` and `targetCompatibility` in `build.gradle`'s `compileOptions` has been lowered to `JavaVersion.VERSION_1_7`.
+* The version of CMake set in `externalNativeBuild` was raised to `3.22.1`.
+* Fix to check for null when reading json.
+* Replace deprecated features in Android.
+* Fix an issue that caused some graphics drivers to not render correctly in Vulkan.
+* Fix an issue that caused incorrect selection of depth format in Vulkan.
+* Fix errors that occurs when building with x86 in vulkan.
+
+## [5-r.1-beta.3] - 2023-10-12
 
 ### Added
 
@@ -354,6 +380,7 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[5-r.1-beta.4]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1-beta.3...5-r.1-beta.4
 [5-r.1-beta.3]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1-beta.2...5-r.1-beta.3
 [5-r.1-beta.2]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1-beta.1...5-r.1-beta.2
 [5-r.1-beta.1]: https://github.com/Live2D/CubismNativeSamples/compare/4-r.7...5-r.1-beta.1

@@ -96,7 +96,7 @@ const LAppWavFileHandler::WavFileInfo& LAppWavFileHandler::GetWavFileInfo() cons
     return _wavFileInfo;
 }
 
-Csm::csmByte* LAppWavFileHandler::GetRawData() const
+const Csm::csmByte* LAppWavFileHandler::GetRawData() const
 {
     return _rawData;
 }
@@ -127,6 +127,67 @@ void LAppWavFileHandler::GetPcmDataChannel(Csm::csmFloat32* dst, Csm::csmUint32 
     {
         dst[sampleCount] = _pcmData[useChannel][sampleCount];
     }
+}
+
+Csm::csmFloat32 LAppWavFileHandler::NormalizePcmSample(Csm::csmUint32 bitsPerSample, Csm::csmByte* data, Csm::csmUint32 dataSize)
+{
+    Csm::csmInt32 pcm32;
+
+    // 32ビット幅に拡張してから-1～1の範囲に丸める
+    switch (bitsPerSample)
+    {
+    case 8:
+        if (1 <= dataSize)
+        {
+            const Csm::csmUint8 ret = data[0];
+            pcm32 = static_cast<Csm::csmInt32>(ret) - 128;
+            pcm32 <<= 24;
+        }
+        else
+        {
+            pcm32 = 0;
+        }
+        break;
+    case 16:
+        if (2 <= dataSize)
+        {
+            const Csm::csmUint16 ret = (data[1] << 8) | data[0];
+            pcm32 = ret << 16;
+        }
+        else
+        {
+            pcm32 = 0;
+        }
+        break;
+    case 24:
+        if (3 <= dataSize)
+        {
+            const Csm::csmUint32 ret = (data[2] << 16) | (data[1] << 8) | data[0];
+            pcm32 = ret << 8;
+        }
+        else
+        {
+            pcm32 = 0;
+        }
+        break;
+    case 32:
+        if (4 <= dataSize)
+        {
+            const Csm::csmUint32 ret = (data[3] << 24) | (data[2] << 16) | (data[1] << 8) | data[0];
+            pcm32 = ret << 0;
+        }
+        else
+        {
+            pcm32 = 0;
+        }
+        break;
+    default:
+        // 対応していないビット幅
+        pcm32 = 0;
+        break;
+    }
+
+    return static_cast<Csm::csmFloat32>(pcm32) / INT32_MAX;
 }
 
 Csm::csmBool LAppWavFileHandler::LoadWavFile(const Csm::csmString& filePath)

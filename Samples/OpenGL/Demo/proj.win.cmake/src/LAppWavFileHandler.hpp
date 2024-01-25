@@ -84,7 +84,7 @@ public:
      *
      * @retval  正規化前のデータ
      */
-    Csm::csmByte* GetRawData() const;
+    const Csm::csmByte* GetRawData() const;
 
     /**
      * @brief 正規化前のデータの大きさを取得
@@ -107,6 +107,17 @@ public:
      * @param[in] useChannel 使用するチャンネル
      */
     void GetPcmDataChannel(Csm::csmFloat32* dst, Csm::csmUint32 useChannel) const;
+
+    /**
+     * @brief -1～1の範囲の1サンプル取得
+     *
+     * @param[in] bitsPerSample ビット深度
+     * @param[in] data 正規化したいデータ
+     * @param[in] dataSize 正規化したいデータの大きさ
+     *
+     * @retval    csmFloat32    正規化されたサンプル
+     */
+    static Csm::csmFloat32 NormalizePcmSample(Csm::csmUint32 bitsPerSample, Csm::csmByte* data, Csm::csmUint32 dataSize);
 
 private:
     /**

@@ -12,9 +12,9 @@ This is a sample implementation of an application implemented with OpenGL.
 | Third Party | Version |
 | --- | --- |
 | [GLEW] | 2.2.0 |
-| [GLFW] | 3.3.8 |
-| [ios-cmake] | 4.4.0 |
-| [stb_image.h] | 2.28 |
+| [GLFW] | 3.3.9 |
+| [ios-cmake] | 4.4.1 |
+| [stb_image.h] | 2.29 |
 
 For other development environments and operation environments, see [README.md](/README.md) in the top directory.
 

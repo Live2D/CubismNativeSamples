@@ -107,14 +107,14 @@ Demo
 
 | 開発ツール | バージョン |
 | --- | --- |
-| Android Studio | Giraffe 2022.3.1 |
-| CMake | 3.27.1 |
+| Android Studio | Hedgehog 2023.1.1 |
+| CMake | 3.28.1 |
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.57 |
-| Visual Studio 2019 | 16.11.30 |
-| Visual Studio 2022 | 17.7.4 |
-| Xcode | 14.3.1 |
+| Visual Studio 2017 | 15.9.59 |
+| Visual Studio 2019 | 16.11.33 |
+| Visual Studio 2022 | 17.8.4 |
+| Xcode | 15.1 |
 
 ### Android
 
@@ -152,7 +152,7 @@ Demo
 | プラットフォーム | バージョン |
 | --- | --- |
 | iOS / iPadOS | 16.6.1 |
-| macOS | 13.6 |
+| macOS | 14.1.1 |
 | Windows 10 | 22H2 |
 | Windows 11 | 22H2 |
 

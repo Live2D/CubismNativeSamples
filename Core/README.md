@@ -31,7 +31,7 @@ Core
 | Platform | Architecture | dll | lib | Path | Note |
 | --- | --- | --- | --- | --- | --- |
 | Android | ARM64 | ✓ | ✓ | android/arm64-v8a |   |
-| Android | ARMv7 | ✓ | ✓ | android/armeabi-v7a |   |
+| Android | ARMv7 | ✓ | ✓ | android/armeabi-v7a | This library is currently deprecated and will be removed in the near future. |
 | Android | x86 | ✓ | ✓ | android/x86 |   |
 | Android | x86_64 | ✓ | ✓ | android/x86_64 |   |
 | iOS | ARM64 |   | ✓ | ios/xxx-iphoneos | iOS Devices |

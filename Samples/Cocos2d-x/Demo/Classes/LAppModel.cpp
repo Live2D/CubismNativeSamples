@@ -184,12 +184,15 @@ void LAppModel::SetupModel(ICubismModelSetting* setting)
             buffer = CreateBuffer(path.GetRawString(), &size);
             ACubismMotion* motion = LoadExpression(buffer, size, name.GetRawString());
 
-            if (_expressions[name] != NULL)
+            if (motion)
             {
-                ACubismMotion::Delete(_expressions[name]);
-                _expressions[name] = NULL;
+                if (_expressions[name] != NULL)
+                {
+                    ACubismMotion::Delete(_expressions[name]);
+                    _expressions[name] = NULL;
+                }
+                _expressions[name] = motion;
             }
-            _expressions[name] = motion;
 
             DeleteBuffer(buffer, path.GetRawString());
         }
@@ -309,24 +312,27 @@ void LAppModel::PreloadMotionGroup(const csmChar* group)
         buffer = CreateBuffer(path.GetRawString(), &size);
         CubismMotion* tmpMotion = static_cast<CubismMotion*>(LoadMotion(buffer, size, name.GetRawString()));
 
-        csmFloat32 fadeTime = _modelSetting->GetMotionFadeInTimeValue(group, i);
-        if (fadeTime >= 0.0f)
+        if (tmpMotion)
         {
-            tmpMotion->SetFadeInTime(fadeTime);
-        }
+            csmFloat32 fadeTime = _modelSetting->GetMotionFadeInTimeValue(group, i);
+            if (fadeTime >= 0.0f)
+            {
+                tmpMotion->SetFadeInTime(fadeTime);
+            }
 
-        fadeTime = _modelSetting->GetMotionFadeOutTimeValue(group, i);
-        if (fadeTime >= 0.0f)
-        {
-            tmpMotion->SetFadeOutTime(fadeTime);
-        }
-        tmpMotion->SetEffectIds(_eyeBlinkIds, _lipSyncIds);
+            fadeTime = _modelSetting->GetMotionFadeOutTimeValue(group, i);
+            if (fadeTime >= 0.0f)
+            {
+                tmpMotion->SetFadeOutTime(fadeTime);
+            }
+            tmpMotion->SetEffectIds(_eyeBlinkIds, _lipSyncIds);
 
-        if (_motions[name] != NULL)
-        {
-            ACubismMotion::Delete(_motions[name]);
+            if (_motions[name] != NULL)
+            {
+                ACubismMotion::Delete(_motions[name]);
+            }
+            _motions[name] = tmpMotion;
         }
-        _motions[name] = tmpMotion;
 
         DeleteBuffer(buffer, path.GetRawString());
 
@@ -513,19 +519,23 @@ CubismMotionQueueEntryHandle LAppModel::StartMotion(const csmChar* group, csmInt
         csmSizeInt size;
         buffer = CreateBuffer(path.GetRawString(), &size);
         motion = static_cast<CubismMotion*>(LoadMotion(buffer, size, NULL, onFinishedMotionHandler));
-        csmFloat32 fadeTime = _modelSetting->GetMotionFadeInTimeValue(group, no);
-        if (fadeTime >= 0.0f)
-        {
-            motion->SetFadeInTime(fadeTime);
-        }
 
-        fadeTime = _modelSetting->GetMotionFadeOutTimeValue(group, no);
-        if (fadeTime >= 0.0f)
+        if (motion)
         {
-            motion->SetFadeOutTime(fadeTime);
+            csmFloat32 fadeTime = _modelSetting->GetMotionFadeInTimeValue(group, no);
+            if (fadeTime >= 0.0f)
+            {
+                motion->SetFadeInTime(fadeTime);
+            }
+
+            fadeTime = _modelSetting->GetMotionFadeOutTimeValue(group, no);
+            if (fadeTime >= 0.0f)
+            {
+                motion->SetFadeOutTime(fadeTime);
+            }
+            motion->SetEffectIds(_eyeBlinkIds, _lipSyncIds);
+            autoDelete = true; // 終了時にメモリから削除
         }
-        motion->SetEffectIds(_eyeBlinkIds, _lipSyncIds);
-        autoDelete = true; // 終了時にメモリから削除
 
         DeleteBuffer(buffer, path.GetRawString());
     }

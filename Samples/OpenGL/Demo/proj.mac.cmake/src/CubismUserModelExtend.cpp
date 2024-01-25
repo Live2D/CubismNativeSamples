@@ -119,12 +119,15 @@ void CubismUserModelExtend::SetupModel()
             buffer = CreateBuffer(path.GetRawString(), &size);
             ACubismMotion* motion = LoadExpression(buffer, size, name.GetRawString());
 
-            if (_expressions[name])
+            if (motion)
             {
-                ACubismMotion::Delete(_expressions[name]);
-                _expressions[name] = nullptr;
+                if (_expressions[name])
+                {
+                    ACubismMotion::Delete(_expressions[name]);
+                    _expressions[name] = nullptr;
+                }
+                _expressions[name] = motion;
             }
-            _expressions[name] = motion;
 
             DeleteBuffer(buffer, path.GetRawString());
         }

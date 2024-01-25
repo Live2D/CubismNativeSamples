@@ -134,12 +134,16 @@ void LAppMinimumModel::SetupModel()
         LoadAssets(_modelJson->GetExpressionFileName(expressionIndex), [=](Csm::csmByte* buffer, Csm::csmSizeInt bufferSize) {
             auto expressionName = _modelJson->GetExpressionName(expressionIndex);
             ACubismMotion* motion = LoadExpression(buffer, bufferSize, expressionName);
-            if (_expressions[expressionName])
+
+            if (motion)
             {
-                ACubismMotion::Delete(_expressions[expressionName]);
-                _expressions[expressionName] = nullptr;
+                if (_expressions[expressionName])
+                {
+                    ACubismMotion::Delete(_expressions[expressionName]);
+                    _expressions[expressionName] = nullptr;
+                }
+                _expressions[expressionName] = motion;
             }
-            _expressions[expressionName] = motion;
         });
     }
 
@@ -208,23 +212,26 @@ void LAppMinimumModel::PreloadMotionGroup(const csmChar* group)
         buffer = CreateBuffer(path.GetRawString(), &size);
         CubismMotion* tmpMotion = static_cast<CubismMotion*>(LoadMotion(buffer, size, name.GetRawString()));
 
-        csmFloat32 fadeTime = _modelJson->GetMotionFadeInTimeValue(group, i);
-        if (fadeTime >= 0.0f)
+        if (tmpMotion)
         {
-            tmpMotion->SetFadeInTime(fadeTime);
-        }
+            csmFloat32 fadeTime = _modelJson->GetMotionFadeInTimeValue(group, i);
+            if (fadeTime >= 0.0f)
+            {
+                tmpMotion->SetFadeInTime(fadeTime);
+            }
 
-        fadeTime = _modelJson->GetMotionFadeOutTimeValue(group, i);
-        if (fadeTime >= 0.0f)
-        {
-            tmpMotion->SetFadeOutTime(fadeTime);
-        }
+            fadeTime = _modelJson->GetMotionFadeOutTimeValue(group, i);
+            if (fadeTime >= 0.0f)
+            {
+                tmpMotion->SetFadeOutTime(fadeTime);
+            }
 
-        if (_motions[name] != NULL)
-        {
-            ACubismMotion::Delete(_motions[name]);
+            if (_motions[name] != NULL)
+            {
+                ACubismMotion::Delete(_motions[name]);
+            }
+            _motions[name] = tmpMotion;
         }
-        _motions[name] = tmpMotion;
 
         DeleteBuffer(buffer, path.GetRawString());
     }
@@ -385,18 +392,22 @@ CubismMotionQueueEntryHandle LAppMinimumModel::StartMotion(const csmChar* group,
         csmSizeInt size;
         buffer = CreateBuffer(path.GetRawString(), &size);
         motion = static_cast<CubismMotion*>(LoadMotion(buffer, size, nullptr, onFinishedMotionHandler));
-        csmFloat32 fadeTime = _modelJson->GetMotionFadeInTimeValue(group, no);
-        if (fadeTime >= 0.0f)
-        {
-            motion->SetFadeInTime(fadeTime);
-        }
 
-        fadeTime = _modelJson->GetMotionFadeOutTimeValue(group, no);
-        if (fadeTime >= 0.0f)
+        if (motion)
         {
-            motion->SetFadeOutTime(fadeTime);
+            csmFloat32 fadeTime = _modelJson->GetMotionFadeInTimeValue(group, no);
+            if (fadeTime >= 0.0f)
+            {
+                motion->SetFadeInTime(fadeTime);
+            }
+
+            fadeTime = _modelJson->GetMotionFadeOutTimeValue(group, no);
+            if (fadeTime >= 0.0f)
+            {
+                motion->SetFadeOutTime(fadeTime);
+            }
+            autoDelete = true; // 終了時にメモリから削除
         }
-        autoDelete = true; // 終了時にメモリから削除
 
         DeleteBuffer(buffer, path.GetRawString());
     }

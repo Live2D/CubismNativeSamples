@@ -9,6 +9,7 @@
 #include <iostream>
 #include <sstream>
 #include <unistd.h>
+#include <libgen.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "LAppView.hpp"
@@ -311,34 +312,6 @@ void LAppDelegate::SetRootDirectory()
         path[len] = '\0';
     }
 
-    std::string pathString(path);
-
-    pathString = pathString.substr(0, pathString.rfind("Demo"));
-    Csm::csmVector<string> splitStrings = this->Split(pathString, '/');
-
-    this->_rootDirectory = "";
-
-    for(int i = 0; i < splitStrings.GetSize(); i++)
-    {
-        this->_rootDirectory = this->_rootDirectory + "/" +splitStrings[i];
-    }
-
+    this->_rootDirectory = dirname(path);
     this->_rootDirectory += "/";
-}
-
-Csm::csmVector<string> LAppDelegate::Split(const std::string& baseString, char delimiter)
-{
-    Csm::csmVector<string> elems;
-    stringstream ss(baseString);
-    string item;
-
-    while(getline(ss, item, delimiter))
-    {
-        if(!item.empty())
-        {
-            elems.PushBack(item);
-        }
-    }
-
-    return elems;
 }

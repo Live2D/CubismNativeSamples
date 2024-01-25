@@ -9,6 +9,7 @@
 
 #include <sstream>
 #include <unistd.h>
+#include <libgen.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -85,28 +86,6 @@ static void InitializeCubism()
 }
 
 /**
-* @brief 文字列の分割
-*
-* 指定された区切り文字で文字列を分割する
-*/
-Csm::csmVector<std::string> Split(const std::string& baseString, char delimiter)
-{
-    Csm::csmVector < std::string > elems;
-    std::stringstream ss(baseString);
-    std::string item;
-
-    while (getline(ss, item, delimiter))
-    {
-        if (!item.empty())
-        {
-            elems.PushBack(item);
-        }
-    }
-
-    return elems;
-}
-
-/**
 * @brief ルートディレクトリの設定
 *
 * Linuxのルートディレクトリを確認し、パスを取得する
@@ -122,18 +101,7 @@ void SetRootDirectory()
         path[len] = '\0';
     }
 
-    std::string pathString(path);
-
-    pathString = pathString.substr(0, pathString.rfind("Demo"));
-    Csm::csmVector<std::string> splitStrings = Split(pathString, '/');
-
-    _rootDirectory = "";
-
-    for (int i = 0; i < splitStrings.GetSize(); i++)
-    {
-        _rootDirectory += "/" + splitStrings[i];
-    }
-
+    _rootDirectory = dirname(path);
     _rootDirectory += "/";
 }
 

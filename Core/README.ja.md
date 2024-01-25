@@ -29,7 +29,7 @@ Core
 | プラットフォーム | アーキテクチャ | dll | lib | パス | 注記 |
 | --- | --- | --- | --- | --- | --- |
 | Android | ARM64 | ✓ | ✓ | android/arm64-v8a |   |
-| Android | ARMv7 | ✓ | ✓ | android/armeabi-v7a |   |
+| Android | ARMv7 | ✓ | ✓ | android/armeabi-v7a | このライブラリは現在非推奨で、近日中に削除される予定です。 |
 | Android | x86 | ✓ | ✓ | android/x86 |   |
 | Android | x86_64 | ✓ | ✓ | android/x86_64 |   |
 | iOS | ARM64 |   | ✓ | ios/xxx-iphoneos | iOSデバイス |

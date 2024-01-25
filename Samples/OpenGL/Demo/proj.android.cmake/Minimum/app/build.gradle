@@ -1,8 +1,10 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
 
 android {
     namespace = "com.live2d.demo"
-    compileSdkVersion PROP_COMPILE_SDK_VERSION.toInteger()
+    compileSdk PROP_COMPILE_SDK_VERSION.toInteger()
 
     defaultConfig {
         applicationId "com.live2d.demo"
@@ -26,8 +28,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
     buildTypes {
         release {
@@ -38,7 +40,7 @@ android {
     externalNativeBuild {
         cmake {
             path "CMakeLists.txt"
-            version "3.10.2"
+            version "3.22.1"
         }
     }
     sourceSets.main {

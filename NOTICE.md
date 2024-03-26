@@ -4,6 +4,27 @@
 
 # Notices
 
+## [Caution] Support for Apple's Privacy Manifest Policy
+
+This product does not use the APIs or third-party products specified in Apple's privacy manifest policy.
+This will be addressed in future updates if this product requires such support.
+Please check the documentation published by Apple for details.
+
+* [Privacy updates for App Store submissions](https://developer.apple.com/news/?id=3d8a9yyh)
+
+
+## [Caution] Support for Wayland in Linux OpenGL Environment (2024-03-26)
+
+`GLFW 3.4`, which this product uses in the Linux OpenGL environment, can now be compiled for Wayland.
+However, this sample is not compatible with Wayland because `glewInit` is currently not working properly when compiling for Wayland (EGL) in `GLEW 2.2.0`.
+
+If you are using the Linux OpenGL environment, please continue to use the X11 build as usual.
+
+Please refer to the issue below for details.
+
+* [GLEW issue](https://github.com/nigels-com/glew/issues/172)
+
+
 ## [Caution] Mac Catalyst build error for Metal (2024-01-25)
 
 There is an error when building Mac Catalyst for Metal.

@@ -37,20 +37,37 @@ csmByte* LAppPal::LoadFileAsBytes(const string filePath, csmSizeInt* outSize)
     if (stat(path, &statBuf) == 0)
     {
         size = statBuf.st_size;
+
+        if (size == 0)
+        {
+            if (DebugLogEnable)
+            {
+                PrintLogLn("Stat succeeded but file size is zero. path:%s", path);
+            }
+            return NULL;
+        }
+    }
+    else
+    {
+        if (DebugLogEnable)
+        {
+            PrintLogLn("Stat failed. errno:%d path:%s", errno, path);
+        }
+        return NULL;
     }
 
     std::fstream file;
-    char* buf = new char[size];
-
     file.open(path, std::ios::in | std::ios::binary);
     if (!file.is_open())
     {
         if (DebugLogEnable)
         {
-            PrintLog("file open error");
+            PrintLogLn("File open failed. path:%s", path);
         }
         return NULL;
     }
+
+    char* buf = new char[size];
     file.read(buf, size);
     file.close();
 
@@ -94,11 +111,31 @@ void LAppPal::PrintLog(const char* format, ...)
     va_start(args, format);
     _vsnprintf_s(buf, sizeof(buf), format, args);
     OutputDebugStringA((LPCSTR)buf);
+    va_end(args);
+}
+
+void LAppPal::PrintLogLn(const char* format, ...)
+{
+    va_list args;
+    char buf[256];
+    va_start(args, format);
+    _vsnprintf_s(buf, sizeof(buf), format, args);
+    OutputDebugStringA((LPCSTR)buf);
     OutputDebugStringA("\n");   // 改行を別途付与します
     va_end(args);
 }
 
 void LAppPal::PrintLogW(const wchar_t* format, ...)
+{
+    va_list args;
+    wchar_t buf[256];
+    va_start(args, format);
+    _vsnwprintf_s(buf, sizeof(buf), format, args);
+    OutputDebugString((LPCSTR)buf);
+    va_end(args);
+}
+
+void LAppPal::PrintLogLnW(const wchar_t* format, ...)
 {
     va_list args;
     wchar_t buf[256];
@@ -112,6 +149,11 @@ void LAppPal::PrintLogW(const wchar_t* format, ...)
 void LAppPal::PrintMessage(const csmChar* message)
 {
     PrintLog("%s", message);
+}
+
+void LAppPal::PrintMessageLn(const csmChar* message)
+{
+    PrintLogLn("%s", message);
 }
 
 void LAppPal::CoordinateFullScreenToWindow(float clientWidth, float clientHeight, float fullScreenX, float fullScreenY, float& retWindowX, float& retWindowY)

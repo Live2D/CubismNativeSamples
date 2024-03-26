@@ -133,10 +133,6 @@ void LAppMinimumView::Render()
     // 各モデルが持つ描画ターゲットをテクスチャとする場合
     if (_renderTarget == SelectTarget_ModelFrameBuffer && _renderSprite)
     {
-        // 画面サイズを取得する
-        int maxWidth = LAppMinimumDelegate::GetInstance()->GetWindowWidth();
-        int maxHeight = LAppMinimumDelegate::GetInstance()->GetWindowHeight();
-        _renderSprite->SetWindowSize(maxWidth, maxHeight);
         const GLfloat uvVertex[] =
                 {
                         1.0f, 1.0f,
@@ -151,6 +147,11 @@ void LAppMinimumView::Render()
         LAppMinimumModel *model = Live2DManager->GetModel();
         if (model)
         {
+            // 画面サイズを取得する
+            int maxWidth = LAppMinimumDelegate::GetInstance()->GetWindowWidth();
+            int maxHeight = LAppMinimumDelegate::GetInstance()->GetWindowHeight();
+            _renderSprite->SetWindowSize(maxWidth, maxHeight);
+
             _renderSprite->RenderImmidiate(model->GetRenderBuffer().GetColorBuffer(), uvVertex);
         }
     }
@@ -183,7 +184,7 @@ void LAppMinimumView::OnTouchesEnded(float pointX, float pointY)
         float y = _deviceToScreen->TransformY(_touchManager->GetY()); // 論理座標変換した座標を取得。
         if (DebugTouchLogEnable)
         {
-            LAppPal::PrintLog("[APP]touchesEnded x:%.2f y:%.2f", x, y);
+            LAppPal::PrintLogLn("[APP]touchesEnded x:%.2f y:%.2f", x, y);
         }
     }
 }
@@ -262,6 +263,12 @@ void LAppMinimumView::PostModelDraw(LAppMinimumModel &refModel)
                     };
 
             _renderSprite->SetColor(1.0f, 1.0f, 1.0f, GetSpriteAlpha(0));
+
+            // 画面サイズを取得する
+            int maxWidth = LAppMinimumDelegate::GetInstance()->GetWindowWidth();
+            int maxHeight = LAppMinimumDelegate::GetInstance()->GetWindowHeight();
+            _renderSprite->SetWindowSize(maxWidth, maxHeight);
+
             _renderSprite->RenderImmidiate(useTarget->GetColorBuffer(), uvVertex);
         }
     }

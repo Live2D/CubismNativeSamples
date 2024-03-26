@@ -38,7 +38,15 @@ csmByte* LAppPal::LoadFileAsBytes(const string filePath, csmSizeInt* outSize)
                               ofType:[NSString stringWithUTF8String:extname.c_str()]
                               inDirectory:[NSString stringWithUTF8String:pathname.c_str()]];
 
-    NSData *data = [NSData dataWithContentsOfFile:castFilePath];
+    NSError *errorMsg = nil;
+    NSData *data = [NSData dataWithContentsOfFile:castFilePath options:NULL error: &errorMsg];
+
+    if (data == nil)
+    {
+        PrintLogLn("Failed to read file");
+        return NULL;
+    }
+
     NSUInteger len = [data length];
     Byte *byteData = (Byte*)malloc(len);
     memcpy(byteData, [data bytes], len);
@@ -61,7 +69,7 @@ void LAppPal::UpdateTime()
     s_lastFrame = s_currentFrame;
 }
 
-void LAppPal::PrintLog(const csmChar* format, ...)
+void LAppPal::PrintLogLn(const csmChar* format, ...)
 {
     va_list args;
     Csm::csmChar buf[256];
@@ -71,7 +79,7 @@ void LAppPal::PrintLog(const csmChar* format, ...)
     va_end(args);
 }
 
-void LAppPal::PrintMessage(const csmChar* message)
+void LAppPal::PrintMessageLn(const csmChar* message)
 {
-    PrintLog("%s", message);
+    PrintLogLn("%s", message);
 }

@@ -17,21 +17,35 @@ import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 
 public class MainActivity extends Activity {
-
-    private GLSurfaceView _glSurfaceView;
-    private GLRenderer _glRenderer;
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        float pointX = event.getX();
+        float pointY = event.getY();
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                JniBridgeJava.nativeOnTouchesBegan(pointX, pointY);
+                break;
+            case MotionEvent.ACTION_UP:
+                JniBridgeJava.nativeOnTouchesEnded(pointX, pointY);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                JniBridgeJava.nativeOnTouchesMoved(pointX, pointY);
+                break;
+        }
+        return super.onTouchEvent(event);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         JniBridgeJava.SetActivityInstance(this);
         JniBridgeJava.SetContext(this);
-        _glSurfaceView = new GLSurfaceView(this);
-        _glSurfaceView.setEGLContextClientVersion(2);
-        _glRenderer = new GLRenderer();
-        _glSurfaceView.setRenderer(_glRenderer);
-        _glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-        setContentView(_glSurfaceView);
+        glSurfaceView = new GLSurfaceView(this);
+        glSurfaceView.setEGLContextClientVersion(2);
+        glRenderer = new GLRenderer();
+        glSurfaceView.setRenderer(glRenderer);
+        glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+        setContentView(glSurfaceView);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             getWindow().getDecorView().setSystemUiVisibility(
@@ -40,9 +54,7 @@ public class MainActivity extends Activity {
                     | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
-                    | (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT
-                    ? View.SYSTEM_UI_FLAG_LOW_PROFILE
-                    : View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
         }
         else {
@@ -62,13 +74,13 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        _glSurfaceView.onResume();
+        glSurfaceView.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        _glSurfaceView.onPause();
+        glSurfaceView.onPause();
         JniBridgeJava.nativeOnPause();
     }
 
@@ -84,22 +96,6 @@ public class MainActivity extends Activity {
         JniBridgeJava.nativeOnDestroy();
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        float pointX = event.getX();
-        float pointY = event.getY();
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                JniBridgeJava.nativeOnTouchesBegan(pointX, pointY);
-                break;
-            case MotionEvent.ACTION_UP:
-                JniBridgeJava.nativeOnTouchesEnded(pointX, pointY);
-                break;
-            case MotionEvent.ACTION_MOVE:
-                JniBridgeJava.nativeOnTouchesMoved(pointX, pointY);
-                break;
-        }
-        return super.onTouchEvent(event);
-    }
-
+    private GLSurfaceView glSurfaceView;
+    private GLRenderer glRenderer;
 }

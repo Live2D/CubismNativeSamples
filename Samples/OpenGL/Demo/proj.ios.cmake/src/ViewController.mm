@@ -288,7 +288,7 @@ using namespace LAppDefine;
 
         if (DebugTouchLogEnable)
         {
-            LAppPal::PrintLog("[APP]touchesEnded x:%.2f y:%.2f", x, y);
+            LAppPal::PrintLogLn("[APP]touchesEnded x:%.2f y:%.2f", x, y);
         }
         [live2DManager onTap:x floatY:y];
 

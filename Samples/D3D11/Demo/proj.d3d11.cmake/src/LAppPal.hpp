@@ -75,6 +75,17 @@ public:
     static void PrintLog(const char*, ...);
 
     /**
+    * @brief ログを出力し最後に改行する
+    *
+    * ログを出力し最後に改行する
+    *
+    * @param[in]   format  書式付文字列
+    * @param[in]   ...     (可変長引数)文字列
+    *
+    */
+    static void PrintLogLn(const char*, ...);
+
+    /**
     * @brief ログを出力する wchar版
     *
     * ログを出力する
@@ -86,6 +97,17 @@ public:
     static void PrintLogW(const wchar_t*, ...);
 
     /**
+    * @brief ログを出力し最後に改行する wchar版
+    *
+    * ログを出力し最後に改行する
+    *
+    * @param[in]   format  書式付文字列
+    * @param[in]   ...     (可変長引数)文字列
+    *
+    */
+    static void PrintLogLnW(const wchar_t*, ...);
+
+    /**
     * @brief メッセージを出力する
     *
     * メッセージを出力する
@@ -94,6 +116,16 @@ public:
     *
     */
     static void PrintMessage(const Csm::csmChar* message);
+
+    /**
+    * @brief メッセージを出力し最後に改行する
+    *
+    * メッセージを出力し最後に改行する
+    *
+    * @param[in]   message  文字列
+    *
+    */
+    static void PrintMessageLn(const Csm::csmChar* message);
 
     /**
      * @brief   座標変換

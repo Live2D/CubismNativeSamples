@@ -50,7 +50,7 @@ bool LAppDelegate::Initialize()
 {
     if (DebugLogEnable)
     {
-        LAppPal::PrintLog("START");
+        LAppPal::PrintLogLn("START");
     }
 
     // GLFWの初期化
@@ -58,7 +58,7 @@ bool LAppDelegate::Initialize()
     {
         if (DebugLogEnable)
         {
-            LAppPal::PrintLog("Can't initilize GLFW");
+            LAppPal::PrintLogLn("Can't initilize GLFW");
         }
         return GL_FALSE;
     }
@@ -69,7 +69,7 @@ bool LAppDelegate::Initialize()
     {
         if (DebugLogEnable)
         {
-            LAppPal::PrintLog("Can't create GLFW window.");
+            LAppPal::PrintLogLn("Can't create GLFW window.");
         }
         glfwTerminate();
         return GL_FALSE;
@@ -82,7 +82,7 @@ bool LAppDelegate::Initialize()
     if (glewInit() != GLEW_OK) {
         if (DebugLogEnable)
         {
-            LAppPal::PrintLog("Can't initilize glew.");
+            LAppPal::PrintLogLn("Can't initilize glew.");
         }
         glfwTerminate();
         return GL_FALSE;
@@ -112,7 +112,7 @@ bool LAppDelegate::Initialize()
     // Cubism SDK の初期化
     InitializeCubism();
 
-    SetRootDirectory();
+    SetExecuteAbsolutePath();
 
     //load model
     LAppLive2DManager::GetInstance();
@@ -189,7 +189,7 @@ LAppDelegate::LAppDelegate():
     _windowWidth(0),
     _windowHeight(0)
 {
-    _rootDirectory = "";
+    _executeAbsolutePath = "";
     _view = new LAppView();
     _textureManager = new LAppTextureManager();
 }
@@ -202,7 +202,7 @@ LAppDelegate::~LAppDelegate()
 void LAppDelegate::InitializeCubism()
 {
     //setup cubism
-    _cubismOption.LogFunction = LAppPal::PrintMessage;
+    _cubismOption.LogFunction = LAppPal::PrintMessageLn;
     _cubismOption.LoggingLevel = LAppDefine::CubismLoggingLevel;
     Csm::CubismFramework::StartUp(&_cubismAllocator, &_cubismOption);
 
@@ -300,11 +300,11 @@ GLuint LAppDelegate::CreateShader()
     return programId;
 }
 
-void LAppDelegate::SetRootDirectory()
+void LAppDelegate::SetExecuteAbsolutePath()
 {
     char path[1024];
     uint32_t size = sizeof(path);
     _NSGetExecutablePath(path, &size);
-    this->_rootDirectory = dirname(path);
-    this->_rootDirectory += "/";
+    this->_executeAbsolutePath = dirname(path);
+    this->_executeAbsolutePath += "/";
 }

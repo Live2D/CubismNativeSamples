@@ -14,15 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class JniBridgeJava {
-
-    private static final String LIBRARY_NAME = "Demo";
-    private static Activity _activityInstance;
-    private static Context _context;
-
-    static {
-        System.loadLibrary(LIBRARY_NAME);
-    }
-
     // Native -----------------------------------------------------------------
 
     public static native void nativeOnStart();
@@ -48,17 +39,17 @@ public class JniBridgeJava {
     // Java -----------------------------------------------------------------
 
     public static void SetContext(Context context) {
-        _context = context;
+        JniBridgeJava.context = context;
     }
 
     public static void SetActivityInstance(Activity activity) {
-        _activityInstance = activity;
+        activityInstance = activity;
     }
 
     public static byte[] LoadFile(String filePath) {
         InputStream fileData = null;
         try {
-            fileData = _context.getAssets().open(filePath);
+            fileData = context.getAssets().open(filePath);
             int fileSize = fileData.available();
             byte[] fileBuffer = new byte[fileSize];
             fileData.read(fileBuffer, 0, fileSize);
@@ -78,7 +69,15 @@ public class JniBridgeJava {
     }
 
     public static void MoveTaskToBack() {
-        _activityInstance.moveTaskToBack(true);
+        activityInstance.moveTaskToBack(true);
     }
 
+    private static Activity activityInstance;
+    private static Context context;
+    private static final String LIBRARY_NAME = "Demo";
+
+
+    static {
+        System.loadLibrary(LIBRARY_NAME);
+    }
 }

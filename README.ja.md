@@ -100,27 +100,31 @@ Demo
 
 ## 変更履歴
 
-当リポジトリの変更履歴については [CHANGELOG.md](CHANGELOG.md) を参照ください。
+Samples : [CHANGELOG.md](CHANGELOG.md)
+
+Framework : [CHANGELOG.md](Framework/CHANGELOG.md)
+
+Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 
 ## 開発環境
 
 | 開発ツール | バージョン |
 | --- | --- |
-| Android Studio | Hedgehog 2023.1.1 |
-| CMake | 3.28.1 |
+| Android Studio | Iguana 2023.2.1 |
+| CMake | 3.28.3 |
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.59 |
-| Visual Studio 2019 | 16.11.33 |
-| Visual Studio 2022 | 17.8.4 |
-| Xcode | 15.1 |
+| Visual Studio 2017 | 15.9.60 |
+| Visual Studio 2019 | 16.11.34 |
+| Visual Studio 2022 | 17.9.4 |
+| Xcode | 15.3 |
 
 ### Android
 
 | Android SDK tools | バージョン |
 | --- | --- |
-| Android NDK | 25.2.9519653 |
+| Android NDK | 26.2.11394342 |
 | Android SDK | 34.0.0 |
 | CMake | 3.22.1 |
 
@@ -131,9 +135,10 @@ Demo
 | Red Hat | Amazon Linux 2 |  `amazonlinux:2` | 7.3.1 |
 | Red Hat | CentOS 7 | `centos:7` | 4.8.5 |
 | Red Hat | CentOS Stream 8 *1 | `centos:latest` | 8.5.0 |
-| Red Hat | CentOS Stream 9 | - | 11.3.1 |
+| Red Hat | CentOS Stream 9 | - | 12.2.1 |
+| Red Hat | AlmaLinux | `almalinux:latest` | 11.4.1 |
 | Debian | Ubuntu 18.04 | `ubuntu:18.04` | 7.5.0 |
-| Debian | Ubuntu 22.04.3 | `ubuntu:22.04.3` | 11.3.0 |
+| Debian | Ubuntu 22.04.4 | `ubuntu:22.04` | 11.4.0 |
 
 *1 CentOS 8はサポートしておりません
 
@@ -151,8 +156,8 @@ Demo
 
 | プラットフォーム | バージョン |
 | --- | --- |
-| iOS / iPadOS | 16.6.1 |
-| macOS | 14.1.1 |
+| iOS / iPadOS | 17.4 |
+| macOS | 14.4 |
 | Windows 10 | 22H2 |
 | Windows 11 | 22H2 |
 
@@ -168,9 +173,8 @@ Demo
 | 系統 | ディストリビューション | バージョン |
 | --- | --- | --- |
 | Red Hat | Amazon Linux | 2 |
-| Red Hat | CentOS Stream | 8 |
-| Red Hat | CentOS Stream | 9 |
-| Debian | Ubuntu | 22.04.3 |
+| Red Hat | AlmaLinux | 9 |
+| Debian | Ubuntu | 22.04.4 |
 
 ## プロジェクトへの貢献
 
@@ -178,7 +182,7 @@ Demo
 
 ### フォークとプルリクエスト
 
-修正、改善、さらには新機能をもたらすかどうかにかかわらず、プルリクエストに感謝します。ただし、ラッパーは可能な限り軽量で浅くなるように設計されているため、バグ修正とメモリ/パフォーマンスの改善のみを行う必要があることに注意してください。メインリポジトリを可能な限りクリーンに保つために、必要に応じて個人用フォークと機能ブランチを作成してください。
+修正、改善、さらには新機能をもたらすかどうかにかかわらず、プルリクエストに感謝します。メインリポジトリを可能な限りクリーンに保つために、必要に応じて個人用フォークと機能ブランチを作成してください。
 
 ### バグ
 

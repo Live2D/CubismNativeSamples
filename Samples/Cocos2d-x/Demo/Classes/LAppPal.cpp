@@ -8,6 +8,7 @@
 #include "LAppPal.hpp"
 #include <Model/CubismMoc.hpp>
 #include "cocos2d.h"
+#include "LAppDefine.hpp"
 
 using namespace Csm;
 USING_NS_CC;
@@ -16,6 +17,16 @@ csmByte* LAppPal::LoadFileAsBytes(const csmChar* filePath, csmSizeInt* outSize)
 {
     ssize_t size = 0;
     csmByte* buf = FileUtils::getInstance()->getDataFromFile(filePath).takeBuffer(&size);
+
+    if (buf == NULL)
+    {
+        if (LAppDefine::DebugLogEnable)
+        {
+            PrintLogLn("File load failed : %s", filePath);
+        }
+        return NULL;
+    }
+
     *outSize = static_cast<csmSizeInt>(size);
     return buf;
 }
@@ -34,17 +45,17 @@ csmFloat32  LAppPal::GetDeltaTime()
     return 0.0f;
 }
 
-void LAppPal::PrintLog(const csmChar* format, ...)
+void LAppPal::PrintLogLn(const csmChar* format, ...)
 {
     va_list args;
     csmChar buf[256];
     va_start(args, format);
     vsnprintf(buf, sizeof(buf), format, args); // 標準出力でレンダリング
-    cocos2d::log("%s", buf); // cocos2dのログ関数で出力
+    cocos2d::log("%s", buf); // cocos2dのログ関数で出力(関数で改行される)
     va_end(args);
 }
 
-void LAppPal::PrintMessage(const csmChar* message)
+void LAppPal::PrintMessageLn(const csmChar* message)
 {
-    PrintLog("%s", message);
+    PrintLogLn("%s", message);
 }

@@ -51,25 +51,25 @@ public:
     static void UpdateTime();
 
     /**
-    * @brief ログを出力する
+    * @brief ログを出力し最後に改行する
     *
-    * ログを出力する
+    * ログを出力し最後に改行する
     *
     * @param[in]   format  書式付文字列
     * @param[in]   ...     (可変長引数)文字列
     *
     */
-    static void PrintLog(const Csm::csmChar* format, ...);
+    static void PrintLogLn(const Csm::csmChar* format, ...);
 
     /**
-    * @brief メッセージを出力する
+    * @brief メッセージを出力し最後に改行する
     *
-    * メッセージを出力する
+    * メッセージを出力し最後に改行する
     *
     * @param[in]   message  文字列
     *
     */
-    static void PrintMessage(const Csm::csmChar* message);
+    static void PrintMessageLn(const Csm::csmChar* message);
 
 private:
     static double s_currentFrame;

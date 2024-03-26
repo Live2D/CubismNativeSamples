@@ -147,7 +147,7 @@ LAppMinimumDelegate::LAppMinimumDelegate():
     _height = height;
 
     // Setup Cubism
-    _cubismOption.LogFunction = LAppPal::PrintMessage;
+    _cubismOption.LogFunction = LAppPal::PrintMessageLn;
     _cubismOption.LoggingLevel = LAppDefine::CubismLoggingLevel;
     CubismFramework::CleanUp();
     CubismFramework::StartUp(&_cubismAllocator, &_cubismOption);

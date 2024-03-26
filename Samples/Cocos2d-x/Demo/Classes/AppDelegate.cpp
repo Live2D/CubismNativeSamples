@@ -107,7 +107,7 @@ bool AppDelegate::applicationDidFinishLaunching()
     register_all_packages();
 
     // prepare for Cubism Framework API.
-    _cubismOption.LogFunction = LAppPal::PrintMessage;
+    _cubismOption.LogFunction = LAppPal::PrintMessageLn;
     _cubismOption.LoggingLevel = LAppDefine::CubismLoggingLevel;
     Csm::CubismFramework::StartUp(&_cubismAllocator, &_cubismOption);
 

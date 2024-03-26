@@ -60,7 +60,7 @@ CubismSprite::CubismSprite(float x, float y, float width, float height, Csm::csm
         {
             if (LAppDefine::DebugLogEnable)
             {
-                LAppPal::PrintLog("Cannot allocate vertex data in LAppSprite");
+                LAppPal::PrintLogLn("Cannot allocate vertex data in LAppSprite");
             }
             return;
         }
@@ -104,7 +104,7 @@ CubismSprite::CubismSprite(float x, float y, float width, float height, Csm::csm
         {
             if (LAppDefine::DebugLogEnable)
             {
-                LAppPal::PrintLog("Cannot allocate index data in LAppSprite");
+                LAppPal::PrintLogLn("Cannot allocate index data in LAppSprite");
             }
             return;
         }

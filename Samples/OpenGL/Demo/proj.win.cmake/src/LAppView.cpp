@@ -140,6 +140,7 @@ void LAppView::Render()
 
             if (model)
             {
+                _renderSprite->SetWindowSize(maxWidth, maxHeight);
                 _renderSprite->RenderImmidiate( model->GetRenderBuffer().GetColorBuffer(), uvVertex);
             }
         }
@@ -217,7 +218,7 @@ void LAppView::OnTouchesEnded(float px, float py) const
         float y = _deviceToScreen->TransformY(_touchManager->GetY()); // 論理座標変換した座標を取得。
         if (DebugTouchLogEnable)
         {
-            LAppPal::PrintLog("[APP]touchesEnded x:%.2f y:%.2f", x, y);
+            LAppPal::PrintLogLn("[APP]touchesEnded x:%.2f y:%.2f", x, y);
         }
         live2DManager->OnTap(x, y);
 
@@ -311,6 +312,12 @@ void LAppView::PostModelDraw(LAppModel& refModel)
             };
 
             _renderSprite->SetColor(1.0f, 1.0f, 1.0f, GetSpriteAlpha(0));
+
+            // 画面サイズを取得する
+            int maxWidth, maxHeight;
+            glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &maxWidth, &maxHeight);
+            _renderSprite->SetWindowSize(maxWidth, maxHeight);
+
             _renderSprite->RenderImmidiate(useTarget->GetColorBuffer(), uvVertex);
         }
     }

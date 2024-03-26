@@ -8,6 +8,9 @@
 #pragma once
 #include <Rendering/Vulkan/CubismClass_Vulkan.hpp>
 
+// 前方宣言
+class VulkanManager;
+
 /**
 * @brief スプライトを実装するクラス。
 *
@@ -78,17 +81,21 @@ public:
     /**
     * @brief コンストラクタ
     *
+    * @param[in]       device                  デバイス
+    * @param[in]       physicalDevice          物理デバイス
+    * @param[in]       vkManager               Vulkanリソースマネージャ
     * @param[in]       x                       x座標
     * @param[in]       y                       y座標
     * @param[in]       width                   横幅
     * @param[in]       height                  高さ
     * @param[in]       textureId               テクスチャID
+    * @param[in]       view                    テクスチャビュー
+    * @param[in]       sampler                 テクスチャサンプラー
     * @param[in]       descriptorSetLayout     ディスクリプタセット
     */
     LAppSprite(
-        VkDevice device, VkPhysicalDevice physicalDevice,
-        float x, float y, float width, float height,
-        uint32_t textureId, VkDescriptorSetLayout descriptorSetLayout
+        VkDevice device, VkPhysicalDevice physicalDevice, VulkanManager* vkManager, float x, float y, float width, float height,
+        uint32_t textureId, VkImageView view, VkSampler sampler, VkDescriptorSetLayout descriptorSetLayout
     );
 
     /**
@@ -97,7 +104,15 @@ public:
     ~LAppSprite();
 
     /**
+    * @brief リソースを開放する
+    *
+    * @param[in]       device                  デバイス
+    */
+   void Release(VkDevice device);
+
+    /**
     * @brief ディスクリプタセットを作成する
+    *
     * @param[in]       device                  デバイス
     * @param[in]       descriptorSetLayout     ディスクリプタセットレイアウト
     */
@@ -105,8 +120,12 @@ public:
 
     /**
     * @brief ユニフォームバッファを更新する
+    *
+    * @param[in]       vkManager           Vulkanリソースマネージャ
+    * @param[in]       maxWidth            最大幅
+    * @param[in]       maxHeight           最大高さ
     */
-    void UpdateData() const;
+    void UpdateData(VulkanManager* vkManager, int maxWidth, int maxHeight) const;
 
     /**
      * @brief ディスクリプタセットを更新する
@@ -129,16 +148,21 @@ public:
     *
      * @param[in]       commandBuffer          コマンドバッファ
      * @param[in]       pipelineLayout         パイプラインレイアウト
+     * @param[in]       vkManager              Vulkanリソースマネージャ
+     * @param[in]       windowWidth            ウィンドウ幅
+     * @param[in]       windowHeight           ウィンドウ高さ
     */
-    void Render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout);
+    void Render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VulkanManager* vkManager, int windowWidth, int windowHeight);
 
     /**
     * @brief コンストラクタ
     *
-    * @param[in]       pointX    x座標
-    * @param[in]       pointY    y座標
+    * @param[in]       windowWidth        ウィンドウ幅
+    * @param[in]       windowHeight       ウィンドウ高さ
+    * @param[in]       pointX             x座標
+    * @param[in]       pointY             y座標
     */
-    bool IsHit(float pointX, float pointY) const;
+    bool IsHit(int windowWidth, int windowHeight, float pointX, float pointY) const;
 
     /**
      * @brief 色設定

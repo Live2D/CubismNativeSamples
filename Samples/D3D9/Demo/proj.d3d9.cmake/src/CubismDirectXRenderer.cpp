@@ -154,7 +154,7 @@ bool CubismDirectXRenderer::CreateShader()
     ID3DXBuffer* error = 0;
     if (FAILED(D3DXCreateEffect(_device, SpriteShaderEffectSrc, static_cast<UINT>(strlen(SpriteShaderEffectSrc)), 0, 0, 0, 0, &_shaderEffect, &error)))
     {
-        LAppPal::PrintLog("Cannot load the shaders");
+        LAppPal::PrintLogLn("Cannot load the shaders");
         return false;
     }
 
@@ -166,7 +166,7 @@ bool CubismDirectXRenderer::CreateShader()
     };
     if (_device->CreateVertexDeclaration(elems, &_vertexFormat))
     {
-        LAppPal::PrintLog("CreateVertexDeclaration failed");
+        LAppPal::PrintLogLn("CreateVertexDeclaration failed");
         CSM_ASSERT(0);
     }
 
@@ -358,7 +358,7 @@ void CubismDirectXRenderer::EndFrame(CubismUserModel* userModel)
                 D3DCREATE_HARDWARE_VERTEXPROCESSING, presentParam,
                 &_device)))
             {
-                LAppPal::PrintLog("Fail Direct3D Create Device");
+                LAppPal::PrintLogLn("Fail Direct3D Create Device");
                 _device = NULL;
             }
             else

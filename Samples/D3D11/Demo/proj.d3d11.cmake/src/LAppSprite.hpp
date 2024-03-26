@@ -51,8 +51,9 @@ public:
      * @param[in]       width        横幅
      * @param[in]       height       高さ
      * @param[in]       textureId    テクスチャID
+     * @param[in]       device       D3Dデバイス
      */
-    LAppSprite(float x, float y, float width, float height, Csm::csmUint64 textureId);
+    LAppSprite(float x, float y, float width, float height, Csm::csmUint64 textureId, ID3D11Device* device);
 
     /**
      * @brief デストラクタ
@@ -66,27 +67,23 @@ public:
     Csm::csmUint64 GetTextureId() { return _textureId; }
 
     /**
-     * @brief 描画する
-     * @param[in]        width   幅
-     * @param[in]        height  高さ
-     */
-    void Render(int width, int height) const;
-
-    /**
      * @brief テクスチャを指定しての描画
      * @param[in]        width   幅
      * @param[in]        height  高さ
      * @param[in]        resourceView   使用テクスチャ
+     * @param[in]        renderContext  デバイスコンテキスト
      */
-    void RenderImmidiate(int width, int height, ID3D11ShaderResourceView* resourceView) const;
+    void RenderImmidiate(int width, int height, ID3D11ShaderResourceView* resourceView, ID3D11DeviceContext* renderContext) const;
 
     /**
      * @brief ヒットチェック
      *
      * @param[in]       pointX    x座標
      * @param[in]       pointY    y座標
+     * @param[in]       clientWidth  クライアントウィンドウ幅
+     * @param[in]       clientHeight クライアントウィンドウ高さ
      */
-    bool IsHit(float pointX, float pointY) const;
+    bool IsHit(float pointX, float pointY, int clientWidth, int clientHeight) const;
 
     /**
      * @brief サイズ再設定
@@ -123,4 +120,3 @@ private:
 
     DirectX::XMFLOAT4   _color;     ///< スプライトカラー
 };
-

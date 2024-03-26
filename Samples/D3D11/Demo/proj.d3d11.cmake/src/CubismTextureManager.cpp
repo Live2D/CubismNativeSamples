@@ -172,7 +172,7 @@ CubismTextureManager::TextureInfo* CubismTextureManager::CreateTextureFromPngFil
     // 失敗
     if (LAppDefine::DebugLogEnable)
     {
-        LAppPal::PrintLog("Texture Load Error : %s", fileName.c_str());
+        LAppPal::PrintLogLn("Texture Load Error : %s", fileName.c_str());
     }
 
     return nullptr;

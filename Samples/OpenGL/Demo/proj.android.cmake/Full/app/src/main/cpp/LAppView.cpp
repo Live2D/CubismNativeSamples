@@ -211,8 +211,6 @@ void LAppView::Render()
     // 各モデルが持つ描画ターゲットをテクスチャとする場合
     if (_renderTarget == SelectTarget_ModelFrameBuffer && _renderSprite)
     {
-        _renderSprite->SetWindowSize(maxWidth, maxHeight);
-
         const GLfloat uvVertex[] =
         {
             1.0f, 1.0f,
@@ -229,6 +227,7 @@ void LAppView::Render()
 
             if (model)
             {
+                _renderSprite->SetWindowSize(maxWidth, maxHeight);
                 _renderSprite->RenderImmidiate(model->GetRenderBuffer().GetColorBuffer(), uvVertex);
             }
         }
@@ -262,7 +261,7 @@ void LAppView::OnTouchesEnded(float pointX, float pointY)
         float y = _deviceToScreen->TransformY(_touchManager->GetY()); // 論理座標変換した座標を取得。
         if (DebugTouchLogEnable)
         {
-            LAppPal::PrintLog("[APP]touchesEnded x:%.2f y:%.2f", x, y);
+            LAppPal::PrintLogLn("[APP]touchesEnded x:%.2f y:%.2f", x, y);
         }
         live2DManager->OnTap(x, y);
 
@@ -354,6 +353,12 @@ void LAppView::PostModelDraw(LAppModel &refModel)
             };
 
             _renderSprite->SetColor(1.0f, 1.0f, 1.0f, GetSpriteAlpha(0));
+
+            // 画面サイズを取得する
+            int maxWidth = LAppDelegate::GetInstance()->GetWindowWidth();
+            int maxHeight = LAppDelegate::GetInstance()->GetWindowHeight();
+            _renderSprite->SetWindowSize(maxWidth, maxHeight);
+
             _renderSprite->RenderImmidiate(useTarget->GetColorBuffer(), uvVertex);
         }
     }

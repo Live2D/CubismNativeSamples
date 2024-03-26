@@ -172,7 +172,7 @@ LRESULT WINAPI MsgProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam)
 */
 static bool InitializeSystem()
 {
-    LAppPal::PrintLog("START");
+    LAppPal::PrintLogLn("START");
 
     CubismDirectXRenderer* directXRenderer = CubismDirectXRenderer::GetInstance();
 
@@ -197,7 +197,7 @@ static bool InitializeSystem()
         CW_USEDEFAULT, CW_USEDEFAULT, rect.right, rect.bottom, NULL, NULL, directXRenderer->_windowClass.hInstance, NULL);
     if (directXRenderer->_windowHandle == NULL)
     {
-        LAppPal::PrintLog("Fail Create Window");
+        LAppPal::PrintLogLn("Fail Create Window");
         return false;
     }
 
@@ -208,7 +208,7 @@ static bool InitializeSystem()
     // Direct3D9 init
     if (!(directXRenderer->_direct3D = Direct3DCreate9(D3D_SDK_VERSION)))
     {
-        LAppPal::PrintLog("Fail Direct3D Initialize");
+        LAppPal::PrintLogLn("Fail Direct3D Initialize");
         return false;
     }
 
@@ -236,7 +236,7 @@ static bool InitializeSystem()
 
     if (FAILED(createResult))
     {
-        LAppPal::PrintLog("Fail Direct3D Create Device %x", createResult);
+        LAppPal::PrintLogLn("Fail Direct3D Create Device %x", createResult);
         return false;
 }
 

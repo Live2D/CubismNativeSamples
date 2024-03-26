@@ -132,7 +132,7 @@ void LAppView::onTouchesBegan(const std::vector<Touch*>& touches, Event* event)
     if (touchNum == 1)
     {
         Point pt = touches[0]->getLocationInView();
-        if (DebugTouchLogEnable)LAppPal::PrintLog("[APP]touchesBegan x:%.0f y:%.0f", pt.x, pt.y);
+        if (DebugTouchLogEnable)LAppPal::PrintLogLn("[APP]touchesBegan x:%.0f y:%.0f", pt.x, pt.y);
         touchMgr->touchesBegan(pt.x, pt.y);
     }
 }
@@ -152,7 +152,7 @@ void LAppView::onTouchesMoved(const std::vector<Touch*>& touches, Event* event)
         Point pt = touches[0]->getLocationInView();
 
         if (DebugTouchLogEnable)
-            LAppPal::PrintLog("[APP]touchesMoved device{x:%.0f y:%.0f} screen{x:%.2f y:%.2f} view{x:%.2f y:%.2f}", pt.x, pt.y, screenX, screenY, viewX, viewY);
+            LAppPal::PrintLogLn("[APP]touchesMoved device{x:%.0f y:%.0f} screen{x:%.2f y:%.2f} view{x:%.2f y:%.2f}", pt.x, pt.y, screenX, screenY, viewX, viewY);
 
         touchMgr->touchesMoved(pt.x, pt.y);
     }
@@ -171,7 +171,7 @@ void LAppView::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos
         // シングルタップ
         float x = deviceToScreen->TransformX(touchMgr->getX()); // 論理座標変換した座標を取得。
         float y = deviceToScreen->TransformY(touchMgr->getY()); // 論理座標変換した座標を取得。
-        if (DebugTouchLogEnable) LAppPal::PrintLog("[APP]touchesEnded x:%.2f y:%.2f", x, y);
+        if (DebugTouchLogEnable) LAppPal::PrintLogLn("[APP]touchesEnded x:%.2f y:%.2f", x, y);
         live2DMgr->OnTap(x, y);
     }
 }

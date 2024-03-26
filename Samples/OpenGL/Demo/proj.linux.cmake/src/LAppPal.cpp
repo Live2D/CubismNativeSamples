@@ -36,21 +36,37 @@ csmByte* LAppPal::LoadFileAsBytes(const string filePath, csmSizeInt* outSize)
     if (stat(path, &statBuf) == 0)
     {
         size = statBuf.st_size;
-        PrintLog(path);
+
+        if (size == 0)
+        {
+            if (DebugLogEnable)
+            {
+                PrintLogLn("Stat succeeded but file size is zero. path:%s", path);
+            }
+            return NULL;
+        }
+    }
+    else
+    {
+        if (DebugLogEnable)
+        {
+            PrintLogLn("Stat failed. errno:%d path:%s", errno, path);
+        }
+        return NULL;
     }
 
     std::fstream file;
-    char* buf = new char[size];
-
     file.open(path, std::ios::in | std::ios::binary);
     if (!file.is_open())
     {
         if (DebugLogEnable)
         {
-            PrintLog("file open error");
+            PrintLogLn("File open failed. path:%s", path);
         }
         return NULL;
     }
+
+    char* buf = new char[size];
     file.read(buf, size);
     file.close();
 
@@ -81,11 +97,26 @@ void LAppPal::PrintLog(const csmChar* format, ...)
     csmChar buf[256];
     va_start(args, format);
     vsnprintf(buf, sizeof(buf), format, args); // 標準出力でレンダリング
-    std::cerr << buf << std::endl;
+    std::cout << buf;
+    va_end(args);
+}
+
+void LAppPal::PrintLogLn(const csmChar* format, ...)
+{
+    va_list args;
+    csmChar buf[256];
+    va_start(args, format);
+    vsnprintf(buf, sizeof(buf), format, args); // 標準出力でレンダリング
+    std::cout << buf << std::endl;
     va_end(args);
 }
 
 void LAppPal::PrintMessage(const csmChar* message)
 {
     PrintLog("%s", message);
+}
+
+void LAppPal::PrintMessageLn(const csmChar* message)
+{
+    PrintLogLn("%s", message);
 }

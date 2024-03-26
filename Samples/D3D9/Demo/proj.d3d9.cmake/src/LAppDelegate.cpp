@@ -51,7 +51,7 @@ bool LAppDelegate::Initialize()
 {
     if (DebugLogEnable)
     {
-        LAppPal::PrintLog("START");
+        LAppPal::PrintLogLn("START");
     }
 
     // ウィンドウクラス
@@ -75,7 +75,7 @@ bool LAppDelegate::Initialize()
         CW_USEDEFAULT, CW_USEDEFAULT, rect.right, rect.bottom, NULL, NULL, _windowClass.hInstance, NULL);
     if(_windowHandle==NULL)
     {
-        LAppPal::PrintLog("Fail Create Window");
+        LAppPal::PrintLogLn("Fail Create Window");
         return false;
     }
 
@@ -86,7 +86,7 @@ bool LAppDelegate::Initialize()
     // Direct3D9 init
     if ((_direct3D = Direct3DCreate9(D3D_SDK_VERSION)) == NULL)
     {
-        LAppPal::PrintLog("Fail Direct3D Initialize");
+        LAppPal::PrintLogLn("Fail Direct3D Initialize");
         return false;
     }
 
@@ -111,7 +111,7 @@ bool LAppDelegate::Initialize()
 
     if(FAILED(createResult))
     {
-        LAppPal::PrintLog("Fail Direct3D Create Device %x", createResult);
+        LAppPal::PrintLogLn("Fail Direct3D Create Device %x", createResult);
         return false;
     }
 
@@ -291,7 +291,7 @@ bool LAppDelegate::CreateShader()
     ID3DXBuffer* error = 0;
     if (FAILED(D3DXCreateEffect(_device, SpriteShaderEffectSrc, static_cast<UINT>(strlen(SpriteShaderEffectSrc)), 0, 0, 0, 0, &_shaderEffect, &error)))
     {
-        LAppPal::PrintLog("Cannot load the shaders");
+        LAppPal::PrintLogLn("Cannot load the shaders");
         return false;
     }
 
@@ -303,7 +303,7 @@ bool LAppDelegate::CreateShader()
     };
     if (_device->CreateVertexDeclaration(elems, &_vertexFormat))
     {
-        LAppPal::PrintLog("CreateVertexDeclaration failed");
+        LAppPal::PrintLogLn("CreateVertexDeclaration failed");
         CSM_ASSERT(0);
     }
 
@@ -475,7 +475,7 @@ void LAppDelegate::EndFrame()
                 D3DCREATE_HARDWARE_VERTEXPROCESSING, presentParam,
                 &_device)))
             {
-                LAppPal::PrintLog("Fail Direct3D Create Device");
+                LAppPal::PrintLogLn("Fail Direct3D Create Device");
                 _device = NULL;
             }
             else

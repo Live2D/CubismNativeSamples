@@ -29,7 +29,7 @@ static LAppLive2DManager* s_instance = nil;
 
 void FinishedMotion(Csm::ACubismMotion* self)
 {
-    LAppPal::PrintLog("Motion Finished: %x", self);
+    LAppPal::PrintLogLn("Motion Finished: %x", self);
 }
 
 int CompareCsmString(const void* a, const void* b)
@@ -179,7 +179,7 @@ Csm::csmString GetPath(CFURLRef url)
 {
     if (LAppDefine::DebugLogEnable)
     {
-        LAppPal::PrintLog("[APP]tap point: {x:%.2f y:%.2f}", x, y);
+        LAppPal::PrintLogLn("[APP]tap point: {x:%.2f y:%.2f}", x, y);
     }
 
     for (Csm::csmUint32 i = 0; i < _models.GetSize(); i++)
@@ -188,7 +188,7 @@ Csm::csmString GetPath(CFURLRef url)
         {
             if (LAppDefine::DebugLogEnable)
             {
-                LAppPal::PrintLog("[APP]hit area: [%s]", LAppDefine::HitAreaNameHead);
+                LAppPal::PrintLogLn("[APP]hit area: [%s]", LAppDefine::HitAreaNameHead);
             }
             _models[i]->SetRandomExpression();
         }
@@ -196,7 +196,7 @@ Csm::csmString GetPath(CFURLRef url)
         {
             if (LAppDefine::DebugLogEnable)
             {
-                LAppPal::PrintLog("[APP]hit area: [%s]", LAppDefine::HitAreaNameBody);
+                LAppPal::PrintLogLn("[APP]hit area: [%s]", LAppDefine::HitAreaNameBody);
             }
             _models[i]->StartRandomMotion(LAppDefine::MotionGroupTapBody, LAppDefine::PriorityNormal, FinishedMotion);
         }
@@ -231,7 +231,8 @@ Csm::csmString GetPath(CFURLRef url)
 
             if (_renderTarget == SelectTarget_ViewFrameBuffer)
             {
-                _sprite = [[LAppSprite alloc] initWithMyVar:width * 0.5f Y:height * 0.5f Width:width Height:height Texture:_renderBuffer->GetColorBuffer()];
+                _sprite = [[LAppSprite alloc] initWithMyVar:width * 0.5f Y:height * 0.5f Width:width Height:height
+                                                   MaxWidth:width MaxHeight:height Texture:_renderBuffer->GetColorBuffer()];
             }
         }
 
@@ -254,7 +255,7 @@ Csm::csmString GetPath(CFURLRef url)
 
         if (model->GetModel() == NULL)
         {
-            LAppPal::PrintLog("Failed to model->GetModel().");
+            LAppPal::PrintLogLn("Failed to model->GetModel().");
             continue;
         }
 
@@ -323,7 +324,8 @@ Csm::csmString GetPath(CFURLRef url)
             id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
 
             Csm::Rendering::CubismOffscreenSurface_Metal& useTarget = model->GetRenderBuffer();
-            LAppSprite* depthSprite = [[LAppSprite alloc] initWithMyVar:width * 0.5f Y:height * 0.5f Width:width Height:height Texture:useTarget.GetColorBuffer()];
+            LAppSprite* depthSprite = [[LAppSprite alloc] initWithMyVar:width * 0.5f Y:height * 0.5f Width:width Height:height
+                                                               MaxWidth:width MaxHeight:height Texture:useTarget.GetColorBuffer()];
             float a = i < 1 ? 1.0f : model->GetOpacity(); // 片方のみ不透明度を取得できるようにする
             [depthSprite SetColor:1.0f g:1.0f b:1.0f a:a];
             [depthSprite renderImmidiate:renderEncoder];
@@ -344,7 +346,7 @@ Csm::csmString GetPath(CFURLRef url)
     _sceneIndex = index;
     if (LAppDefine::DebugLogEnable)
     {
-        LAppPal::PrintLog("[APP]model index: %d", _sceneIndex);
+        LAppPal::PrintLogLn("[APP]model index: %d", _sceneIndex);
     }
 
     // model3.jsonのパスを決定する.

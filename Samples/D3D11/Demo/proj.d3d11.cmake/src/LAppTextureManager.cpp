@@ -168,7 +168,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
     // 失敗
     if (DebugLogEnable)
     {
-        LAppPal::PrintLog("Texture Load Error : %s", fileName.c_str());
+        LAppPal::PrintLogLn("Texture Load Error : %s", fileName.c_str());
     }
 
     return NULL;

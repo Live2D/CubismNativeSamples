@@ -59,6 +59,13 @@ LAppView::~LAppView()
     delete _viewMatrix;
     delete _deviceToScreen;
     delete _touchManager;
+
+    LAppDelegate::GetInstance()->GetTextureManager()->ReleaseTexture(_back->GetTextureId());
+    LAppDelegate::GetInstance()->GetTextureManager()->ReleaseTexture(_gear->GetTextureId());
+    LAppDelegate::GetInstance()->GetTextureManager()->ReleaseTexture(_power->GetTextureId());
+    _back->Release(device);
+    _gear->Release(device);
+    _power->Release(device);
     delete _back;
     delete _gear;
     delete _power;
@@ -152,15 +159,17 @@ void LAppView::Render()
     }
 
     //スプライト描画
+    int width, height;
+    glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
     VulkanManager* vkManager = LAppDelegate::GetInstance()->GetVulkanManager();
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     VkCommandBuffer commandBuffer = vkManager->BeginSingleTimeCommands();
     BeginRendering(commandBuffer, 0.0, 0.0, 0.0, 1.0, true);
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
-    _back->Render(commandBuffer, _pipelineLayout);
-    _gear->Render(commandBuffer, _pipelineLayout);
-    _power->Render(commandBuffer, _pipelineLayout);
+    _back->Render(commandBuffer, _pipelineLayout, vkManager, width, height);
+    _gear->Render(commandBuffer, _pipelineLayout, vkManager, width, height);
+    _power->Render(commandBuffer, _pipelineLayout, vkManager, width, height);
     EndRendering(commandBuffer);
     vkManager->SubmitCommand(commandBuffer, true);
 
@@ -187,7 +196,7 @@ void LAppView::Render()
             _renderSprite->SetColor(1.0f, 1.0f, 1.0f, alpha);
             if (model)
             {
-                _renderSprite->Render(commandBuffer, _pipelineLayout);
+                _renderSprite->Render(commandBuffer, _pipelineLayout, vkManager, width, height);
             }
             EndRendering(commandBuffer);
             vkManager->SubmitCommand(commandBuffer);
@@ -248,7 +257,7 @@ void LAppView::CreateDescriptorSetLayout(VkDevice device)
 
     if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
     {
-        LAppPal::PrintLog("failed to create descriptor set layout!");
+        LAppPal::PrintLogLn("failed to create descriptor set layout!");
     }
 }
 
@@ -344,7 +353,7 @@ void LAppView::CreateSpriteGraphicsPipeline(VkDevice device, VkExtent2D extent, 
 
     if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS)
     {
-        LAppPal::PrintLog("failed to create pipeline layout!");
+        LAppPal::PrintLogLn("failed to create pipeline layout!");
     }
 
     VkPipelineRenderingCreateInfo renderingInfo{};
@@ -369,7 +378,7 @@ void LAppView::CreateSpriteGraphicsPipeline(VkDevice device, VkExtent2D extent, 
 
     if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS)
     {
-        LAppPal::PrintLog("failed to create graphics pipeline!");
+        LAppPal::PrintLogLn("failed to create graphics pipeline!");
     }
 }
 
@@ -392,6 +401,7 @@ void LAppView::InitializeSprite()
     const string resourcesPath = ResourcesPath;
 
     string imageName;
+    CubismImageVulkan textureImage;
     float x;
     float y;
     float fWidth;
@@ -402,45 +412,50 @@ void LAppView::InitializeSprite()
         resourcesPath + imageName, vkManager->GetImageFormat(), VK_IMAGE_TILING_OPTIMAL,
         VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(backgroundTexture->id, textureImage);
 
     x = width * 0.5f;
     y = height * 0.5f;
     fWidth = static_cast<float>(backgroundTexture->width * 2.0f);
     fHeight = static_cast<float>(height * 0.95f);
-    _back = new LAppSprite(device, physicalDevice, x, y, fWidth, fHeight, backgroundTexture->id, _descriptorSetLayout);
+    _back = new LAppSprite(device, physicalDevice, vkManager, x, y, fWidth, fHeight, backgroundTexture->id,
+                           textureImage.GetView(), textureImage.GetSampler(), _descriptorSetLayout);
 
     imageName = GearImageName;
     LAppTextureManager::TextureInfo* gearTexture = textureManager->CreateTextureFromPngFile(
         resourcesPath + imageName, vkManager->GetImageFormat(), VK_IMAGE_TILING_OPTIMAL,
         VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(gearTexture->id, textureImage);
 
     //X：右向き正、Y：下向き正
     x = static_cast<float>(width - gearTexture->width * 0.5f);
     y = static_cast<float>(gearTexture->height * 0.5f);
     fWidth = static_cast<float>(gearTexture->width);
     fHeight = static_cast<float>(gearTexture->height);
-    _gear = new LAppSprite(device, physicalDevice, x, y, fWidth, fHeight, gearTexture->id, _descriptorSetLayout);
+    _gear = new LAppSprite(device, physicalDevice, vkManager, x, y, fWidth, fHeight, gearTexture->id,
+                           textureImage.GetView(), textureImage.GetSampler(), _descriptorSetLayout);
 
     imageName = PowerImageName;
     LAppTextureManager::TextureInfo* powerTexture = textureManager->CreateTextureFromPngFile(
         resourcesPath + imageName, vkManager->GetImageFormat(), VK_IMAGE_TILING_OPTIMAL,
         VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-    );
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(powerTexture->id, textureImage);
 
     //X：右向き正、Y：下向き正
     x = static_cast<float>(width - powerTexture->width * 0.5f);
     y = static_cast<float>(height - powerTexture->height * 0.5f);
     fWidth = static_cast<float>(powerTexture->width);
     fHeight = static_cast<float>(powerTexture->height);
-    _power = new LAppSprite(device, physicalDevice, x, y, fWidth, fHeight, powerTexture->id, _descriptorSetLayout);
+    _power = new LAppSprite(device, physicalDevice, vkManager, x, y, fWidth, fHeight, powerTexture->id,
+                            textureImage.GetView(), textureImage.GetSampler(), _descriptorSetLayout);
 
     // 画面全体を覆うサイズ
     x = width * 0.5f;
     y = height * 0.5f;
     LAppLive2DManager* live2DManager = LAppLive2DManager::GetInstance();
-    _renderSprite = new LAppSprite(device, physicalDevice, x, y, static_cast<float>(width), static_cast<float>(height),0, _descriptorSetLayout);
+    _renderSprite = new LAppSprite(device, physicalDevice, vkManager, x, y, static_cast<float>(width), static_cast<float>(height),0, NULL, NULL, _descriptorSetLayout);
 }
 
 void LAppView::OnTouchesBegan(float px, float py) const
@@ -470,18 +485,22 @@ void LAppView::OnTouchesEnded(float px, float py) const
         float y = _deviceToScreen->TransformY(_touchManager->GetY()); // 論理座標変換した座標を取得。
         if (DebugTouchLogEnable)
         {
-            LAppPal::PrintLog("[APP]touchesEnded x:%.2f y:%.2f", x, y);
+            LAppPal::PrintLogLn("[APP]touchesEnded x:%.2f y:%.2f", x, y);
         }
         live2DManager->OnTap(x, y);
 
+        // 画面サイズの取得
+        int windowWidth, windowHeight;
+        glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &windowWidth, &windowHeight);
+
         // 歯車にタップしたか
-        if (_gear->IsHit(px, py))
+        if (_gear->IsHit(windowWidth, windowHeight, px, py))
         {
             live2DManager->NextScene();
         }
 
         // 電源ボタンにタップしたか
-        if (_power->IsHit(px, py))
+        if (_power->IsHit(windowWidth, windowHeight, px, py))
         {
             LAppDelegate::GetInstance()->AppEnd();
         }
@@ -555,6 +574,8 @@ void LAppView::PostModelDraw(LAppModel& refModel, csmInt32 modelIndex)
         // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はここ
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderSprite)
         {
+            int width, height;
+            glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
             VulkanManager* vkManager = LAppDelegate::GetInstance()->GetVulkanManager();
             VkCommandBuffer commandBuffer = vkManager->BeginSingleTimeCommands();
             _renderSprite->UpdateDescriptorSet(vkManager->GetDevice(), useTarget->GetTextureView(),
@@ -562,7 +583,7 @@ void LAppView::PostModelDraw(LAppModel& refModel, csmInt32 modelIndex)
             BeginRendering(commandBuffer, 0.f, 0.f, 0.3, 1.f, false);
             vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
             _renderSprite->SetColor(1.0f, 1.0f, 1.0f, GetSpriteAlpha(0));
-            _renderSprite->Render(commandBuffer, _pipelineLayout);
+            _renderSprite->Render(commandBuffer, _pipelineLayout, vkManager, width, height);
             EndRendering(commandBuffer);
             vkManager->SubmitCommand(commandBuffer);
         }

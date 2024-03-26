@@ -118,8 +118,8 @@ add_subdirectory(src)
 # Add shader files.
 add_subdirectory(${SAMPLE_SHADER_PATH} ${CMAKE_CURRENT_BINARY_DIR}/SampleShaders)
 add_subdirectory(${FRAMEWORK_SHADER_PATH} ${CMAKE_CURRENT_BINARY_DIR}/FrameworkShaders)
-add_dependencies(${APP_NAME} SampleShaders)
-add_dependencies(${APP_NAME} FrameworkShaders)
+add_dependencies(Framework SampleShaders)
+add_dependencies(Framework FrameworkShaders)
 
 # Link libraries to app.
 target_link_libraries(${APP_NAME}

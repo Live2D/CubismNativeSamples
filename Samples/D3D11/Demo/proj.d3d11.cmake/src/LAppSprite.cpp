@@ -9,7 +9,6 @@
 
 #include "LAppPal.hpp"
 #include "LAppDefine.hpp"
-#include "LAppDelegate.hpp"
 #include "LAppTextureManager.hpp"
 #include "Rendering/D3D11/CubismType_D3D11.hpp"
 
@@ -25,7 +24,7 @@ LAppSprite::LAppSprite()
     _color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint64 textureId)
+LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint64 textureId, ID3D11Device* device)
     : _rect(),
     _vertexBuffer(NULL),
     _indexBuffer(NULL),
@@ -38,8 +37,6 @@ LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint
     _rect.up = (y + height * 0.5f);
     _rect.down = (y - height * 0.5f);
     _textureId = textureId;
-
-    ID3D11Device* device = LAppDelegate::GetInstance()->GetD3dDevice();
 
     if (!device)
     {
@@ -65,7 +62,7 @@ LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint
         {
             if (DebugLogEnable)
             {
-                LAppPal::PrintLog("Cannot allocate vertex data in LAppSprite");
+                LAppPal::PrintLogLn("Cannot allocate vertex data in LAppSprite");
             }
             return;
         }
@@ -109,7 +106,7 @@ LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint
         {
             if (DebugLogEnable)
             {
-                LAppPal::PrintLog("Cannot allocate index data in LAppSprite");
+                LAppPal::PrintLogLn("Cannot allocate index data in LAppSprite");
             }
             return;
         }
@@ -133,8 +130,6 @@ LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint
 
 LAppSprite::~LAppSprite()
 {
-    LAppDelegate::GetInstance()->GetTextureManager()->ReleaseTexture(_textureId);
-
     if(_constantBuffer)
     {
         _constantBuffer->Release();
@@ -152,77 +147,7 @@ LAppSprite::~LAppSprite()
     }
 }
 
-void LAppSprite::Render(int width, int height) const
-{
-    if (width == 0 || height == 0)
-    {
-        return; // この際は描画できず
-    }
-
-    LAppDelegate* appDelegate = LAppDelegate::GetInstance();
-    ID3D11DeviceContext* renderContext = LAppDelegate::GetD3dContext();
-
-    SpriteVertex vtx[VERTEX_NUM] = {
-        { 0.0f, 0.0f, 0.0f, 0.0f },
-        { 0.5f, 0.0f, 1.0f, 0.0f },
-        { 0.0f, 0.5f, 0.0f, 1.0f },
-        { 0.5f, 0.5f, 1.0f, 1.0f },
-    };
-
-    vtx[0].x = (_rect.left  - width * 0.5f) / (width * 0.5f); vtx[0].y = (_rect.down - height * 0.5f) / (height * 0.5f);
-    vtx[1].x = (_rect.right - width * 0.5f) / (width * 0.5f); vtx[1].y = (_rect.down - height * 0.5f) / (height * 0.5f);
-    vtx[2].x = (_rect.left  - width * 0.5f) / (width * 0.5f); vtx[2].y = (_rect.up   - height * 0.5f) / (height * 0.5f);
-    vtx[3].x = (_rect.right - width * 0.5f) / (width * 0.5f); vtx[3].y = (_rect.up   - height * 0.5f) / (height * 0.5f);
-
-    // 頂点書き込み
-    if (_vertexBuffer)
-    {
-        D3D11_MAPPED_SUBRESOURCE subRes;
-        if (SUCCEEDED(renderContext->Map(_vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subRes)))
-        {
-            memcpy(subRes.pData, vtx, sizeof(SpriteVertex) * VERTEX_NUM);
-            renderContext->Unmap(_vertexBuffer, 0);
-        }
-    }
-
-    // 定数バッファ設定
-    if(_constantBuffer)
-    {
-        CubismConstantBufferD3D11 cb;
-        memset(&cb, 0, sizeof(cb));
-        cb.baseColor = _color;
-        DirectX::XMMATRIX proj = XMMatrixIdentity();
-        XMStoreFloat4x4(&cb.projectMatrix, XMMatrixTranspose(proj));
-        renderContext->UpdateSubresource(_constantBuffer, 0, NULL, &cb, 0, 0);
-
-        renderContext->VSSetConstantBuffers(0, 1, &_constantBuffer);
-        renderContext->PSSetConstantBuffers(0, 1, &_constantBuffer);
-    }
-
-    {
-        UINT strides = sizeof(LAppSprite::SpriteVertex);
-        UINT offsets = 0;
-
-        renderContext->IASetVertexBuffers(0, 1, &_vertexBuffer, &strides, &offsets);
-        renderContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
-        renderContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-        // 描画用設定
-        appDelegate->SetupShader();
-
-        // テクスチャセット
-        ID3D11ShaderResourceView* textureView = NULL;
-        if (LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(_textureId, textureView))
-        {
-            renderContext->PSSetShaderResources(0, 1, &textureView);
-        }
-
-        // 描画実行
-        renderContext->DrawIndexed(INDEX_NUM, 0, 0);
-    }
-}
-
-void LAppSprite::RenderImmidiate(int width, int height, ID3D11ShaderResourceView* resourceView) const
+void LAppSprite::RenderImmidiate(int width, int height, ID3D11ShaderResourceView* resourceView, ID3D11DeviceContext* renderContext) const
 {
     if (!resourceView) return;
 
@@ -230,9 +155,6 @@ void LAppSprite::RenderImmidiate(int width, int height, ID3D11ShaderResourceView
     {
         return; // この際は描画できず
     }
-
-    LAppDelegate* appDelegate = LAppDelegate::GetInstance();
-    ID3D11DeviceContext* renderContext = LAppDelegate::GetD3dContext();
 
     SpriteVertex vtx[VERTEX_NUM] = {
         { 0.0f, 0.0f, 0.0f, 0.0f },
@@ -279,9 +201,6 @@ void LAppSprite::RenderImmidiate(int width, int height, ID3D11ShaderResourceView
         renderContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
         renderContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-        // 描画用設定
-        appDelegate->SetupShader();
-
         // テクスチャセット
         {
             renderContext->PSSetShaderResources(0, 1, &resourceView);
@@ -292,18 +211,16 @@ void LAppSprite::RenderImmidiate(int width, int height, ID3D11ShaderResourceView
     }
 }
 
-bool LAppSprite::IsHit(float pointX, float pointY) const
+bool LAppSprite::IsHit(float pointX, float pointY, int clientWidth, int clientHeight) const
 {
-    // フルスクリーン座標に変換
-    float coordX = 0.0f, coordY = 0.0f;
-    int clientWidth = 0, clientHeight = 0;
-    LAppDelegate::GetClientSize(clientWidth, clientHeight);
-    LAppPal::CoordinateWindowToFullScreen(static_cast<float>(clientWidth), static_cast<float>(clientHeight), pointX, pointY, coordX, coordY);
-
     if(clientWidth==0 || clientHeight==0)
     {// この際はヒットしない
         return false;
     }
+
+    // フルスクリーン座標に変換
+    float coordX = 0.0f, coordY = 0.0f;
+    LAppPal::CoordinateWindowToFullScreen(static_cast<float>(clientWidth), static_cast<float>(clientHeight), pointX, pointY, coordX, coordY);
 
     coordX = (clientWidth+coordX)/(2.0f*clientWidth) * clientWidth;
     coordY = (clientHeight+coordY)/(2.0f*clientHeight) * clientHeight;

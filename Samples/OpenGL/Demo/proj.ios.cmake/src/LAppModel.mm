@@ -31,7 +31,7 @@ namespace {
     {
         if (DebugLogEnable)
         {
-            LAppPal::PrintLog("[APP]create buffer: %s ", path);
+            LAppPal::PrintLogLn("[APP]create buffer: %s ", path);
         }
         return LAppPal::LoadFileAsBytes(path,size);
     }
@@ -40,7 +40,7 @@ namespace {
     {
         if (DebugLogEnable)
         {
-            LAppPal::PrintLog("[APP]delete buffer: %s", path);
+            LAppPal::PrintLogLn("[APP]delete buffer: %s", path);
         }
         LAppPal::ReleaseBytes(buffer);
     }
@@ -85,7 +85,7 @@ void LAppModel::LoadAssets(const csmChar* dir, const csmChar* fileName)
 
     if (_debugMode)
     {
-        LAppPal::PrintLog("[APP]load model setting: %s", fileName);
+        LAppPal::PrintLogLn("[APP]load model setting: %s", fileName);
     }
 
     csmSizeInt size;
@@ -99,7 +99,7 @@ void LAppModel::LoadAssets(const csmChar* dir, const csmChar* fileName)
 
     if (_model == NULL)
     {
-        LAppPal::PrintLog("Failed to LoadAssets().");
+        LAppPal::PrintLogLn("Failed to LoadAssets().");
         return;
     }
 
@@ -126,7 +126,7 @@ void LAppModel::SetupModel(ICubismModelSetting* setting)
 
         if (_debugMode)
         {
-            LAppPal::PrintLog("[APP]create model: %s", setting->GetModelFileName());
+            LAppPal::PrintLogLn("[APP]create model: %s", setting->GetModelFileName());
         }
 
         buffer = CreateBuffer(path.GetRawString(), &size);
@@ -234,7 +234,7 @@ void LAppModel::SetupModel(ICubismModelSetting* setting)
 
     if (_modelSetting == NULL || _modelMatrix == NULL)
     {
-        LAppPal::PrintLog("Failed to SetupModel().");
+        LAppPal::PrintLogLn("Failed to SetupModel().");
         return;
     }
 
@@ -270,7 +270,7 @@ void LAppModel::PreloadMotionGroup(const csmChar* group)
 
         if (_debugMode)
         {
-            LAppPal::PrintLog("[APP]load motion: %s => [%s_%d] ", path.GetRawString(), group, i);
+            LAppPal::PrintLogLn("[APP]load motion: %s => [%s_%d] ", path.GetRawString(), group, i);
         }
 
         csmByte* buffer;
@@ -438,7 +438,7 @@ CubismMotionQueueEntryHandle LAppModel::StartMotion(const csmChar* group, csmInt
     {
         if (_debugMode)
         {
-            LAppPal::PrintLog("[APP]can't start motion.");
+            LAppPal::PrintLogLn("[APP]can't start motion.");
         }
         return InvalidMotionQueueEntryHandleValue;
     }
@@ -494,7 +494,7 @@ CubismMotionQueueEntryHandle LAppModel::StartMotion(const csmChar* group, csmInt
 
     if (_debugMode)
     {
-        LAppPal::PrintLog("[APP]start motion: [%s_%d]", group, no);
+        LAppPal::PrintLogLn("[APP]start motion: [%s_%d]", group, no);
     }
     return  _motionManager->StartMotionPriority(motion, autoDelete, priority);
 }
@@ -559,7 +559,7 @@ void LAppModel::SetExpression(const csmChar* expressionID)
     ACubismMotion* motion = _expressions[expressionID];
     if (_debugMode)
     {
-        LAppPal::PrintLog("[APP]expression: [%s]", expressionID);
+        LAppPal::PrintLogLn("[APP]expression: [%s]", expressionID);
     }
 
     if (motion != NULL)
@@ -570,7 +570,7 @@ void LAppModel::SetExpression(const csmChar* expressionID)
     {
         if (_debugMode)
         {
-            LAppPal::PrintLog("[APP]expression[%s] is null ", expressionID);
+            LAppPal::PrintLogLn("[APP]expression[%s] is null ", expressionID);
         }
     }
 }

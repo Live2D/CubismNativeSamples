@@ -62,7 +62,7 @@ static LAppAllocator _cubismAllocator; ///< メモリのアロケーター
 
 static LAppTextureManager* _textureManager; ///< テクスチャの管理
 
-static std::string _rootDirectory; ///< ルートディレクトリ
+static std::string _executeAbsolutePath; ///< アプリケーションの実行パス
 static std::string _currentModelDirectory; ///< 現在のモデルのディレクトリ名
 
 static GLFWwindow* _window; ///< ウィンドウオブジェクト
@@ -86,11 +86,11 @@ static void InitializeCubism()
 }
 
 /**
-* @brief ルートディレクトリの設定
+* @brief アプリケーションの実行パスの設定
 *
-* Linuxのルートディレクトリを確認し、パスを取得する
+* Linuxのアプリケーションの実行パスを確認し、パスを取得する
 */
-void SetRootDirectory()
+void SetExecuteAbsolutePath()
 {
     const int maximumPathBufferSize = 1024;
     char path[maximumPathBufferSize];
@@ -101,8 +101,8 @@ void SetRootDirectory()
         path[len] = '\0';
     }
 
-    _rootDirectory = dirname(path);
-    _rootDirectory += "/";
+    _executeAbsolutePath = dirname(path);
+    _executeAbsolutePath += "/";
 }
 
 /**
@@ -112,12 +112,12 @@ void SetRootDirectory()
 */
 static bool InitializeSystem()
 {
-    LAppPal::PrintLog("START");
+    LAppPal::PrintLogLn("START");
 
     // GLFWの初期化
     if (glfwInit() == GL_FALSE)
     {
-        LAppPal::PrintLog("Can't initilize GLFW");
+        LAppPal::PrintLogLn("Can't initilize GLFW");
 
         return GL_FALSE;
     }
@@ -126,7 +126,7 @@ static bool InitializeSystem()
     _window = glfwCreateWindow(LAppDefine::RenderTargetWidth, LAppDefine::RenderTargetHeight, "SIMPLE_SAMPLE", NULL, NULL);
     if (_window == NULL)
     {
-        LAppPal::PrintLog("Can't create GLFW window.");
+        LAppPal::PrintLogLn("Can't create GLFW window.");
 
         glfwTerminate();
         return GL_FALSE;
@@ -137,7 +137,7 @@ static bool InitializeSystem()
     glfwSwapInterval(1);
 
     if (glewInit() != GLEW_OK) {
-        LAppPal::PrintLog("Can't initilize glew.");
+        LAppPal::PrintLogLn("Can't initilize glew.");
 
         glfwTerminate();
         return GL_FALSE;
@@ -165,7 +165,7 @@ static bool InitializeSystem()
     // ドラッグ入力管理クラスの初期化
     MouseActionManager::GetInstance()->Initialize(windowWidth, windowHeight);
 
-    SetRootDirectory();
+    SetExecuteAbsolutePath();
 
     return GL_TRUE;
 }
@@ -209,7 +209,7 @@ void Release()
 void LoadModel(const std::string modelDirectoryName)
 {
     // モデルのディレクトリを指定
-    _currentModelDirectory = _rootDirectory + LAppDefine::ResourcesPath + modelDirectoryName + "/";
+    _currentModelDirectory = _executeAbsolutePath + LAppDefine::ResourcesPath + modelDirectoryName + "/";
 
     // モデルデータの新規生成
     _userModel = new CubismUserModelExtend(modelDirectoryName, _currentModelDirectory);

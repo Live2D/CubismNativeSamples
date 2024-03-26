@@ -30,7 +30,7 @@ namespace {
     {
         if (DebugLogEnable)
         {
-            LAppPal::PrintLog("[APP]create buffer: %s ", path);
+            LAppPal::PrintLogLn("[APP]create buffer: %s ", path);
         }
         return LAppPal::LoadFileAsBytes(path, size);
     }
@@ -39,7 +39,7 @@ namespace {
     {
         if (DebugLogEnable)
         {
-            LAppPal::PrintLog("[APP]delete buffer: %s", path);
+            LAppPal::PrintLogLn("[APP]delete buffer: %s", path);
         }
         LAppPal::ReleaseBytes(buffer);
     }
@@ -204,7 +204,7 @@ void LAppMinimumModel::PreloadMotionGroup(const csmChar* group)
 
         if (_debugMode)
         {
-            LAppPal::PrintLog("[APP]load motion: %s => [%s_%d] ", path.GetRawString(), group, i);
+            LAppPal::PrintLogLn("[APP]load motion: %s => [%s_%d] ", path.GetRawString(), group, i);
         }
 
         csmByte* buffer;
@@ -371,7 +371,7 @@ CubismMotionQueueEntryHandle LAppMinimumModel::StartMotion(const csmChar* group,
     {
         if (_debugMode)
         {
-            LAppPal::PrintLog("[APP]can't start motion.");
+            LAppPal::PrintLogLn("[APP]can't start motion.");
         }
         return InvalidMotionQueueEntryHandleValue;
     }
@@ -426,7 +426,7 @@ CubismMotionQueueEntryHandle LAppMinimumModel::StartMotion(const csmChar* group,
 
     if (_debugMode)
     {
-        LAppPal::PrintLog("[APP]start motion: [%s_%d]", group, no);
+        LAppPal::PrintLogLn("[APP]start motion: [%s_%d]", group, no);
     }
     return  _motionManager->StartMotionPriority(motion, autoDelete, priority);
 }
@@ -449,7 +449,7 @@ void LAppMinimumModel::SetExpression(const csmChar* expressionID)
     ACubismMotion* motion = _expressions[expressionID];
     if (_debugMode)
     {
-        LAppPal::PrintLog("[APP]expression: [%s]", expressionID);
+        LAppPal::PrintLogLn("[APP]expression: [%s]", expressionID);
     }
 
     if (motion)
@@ -458,7 +458,7 @@ void LAppMinimumModel::SetExpression(const csmChar* expressionID)
     }
     else
     {
-        if (_debugMode) LAppPal::PrintLog("[APP]expression[%s] is null ", expressionID);
+        if (_debugMode) LAppPal::PrintLogLn("[APP]expression[%s] is null ", expressionID);
     }
 }
 

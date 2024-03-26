@@ -56,19 +56,17 @@ void LAppPal::UpdateTime()
     s_lastFrame = s_currentFrame;
 }
 
-void LAppPal::PrintLog(const csmChar* format, ...)
+void LAppPal::PrintLogLn(const csmChar* format, ...)
 {
     va_list args;
-    csmChar buf[256];
     va_start(args, format);
     __android_log_vprint(ANDROID_LOG_DEBUG, "NativePrint", format, args);    // 標準出力でレンダリング
-    std::cerr << buf << std::endl;
     va_end(args);
 }
 
-void LAppPal::PrintMessage(const csmChar* message)
+void LAppPal::PrintMessageLn(const csmChar* message)
 {
-    PrintLog("%s", message);
+    PrintLogLn("%s", message);
 }
 
 double LAppPal::GetSystemTime()

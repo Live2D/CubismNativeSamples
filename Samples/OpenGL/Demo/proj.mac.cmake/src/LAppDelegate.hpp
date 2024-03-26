@@ -97,14 +97,14 @@ public:
     void AppEnd() { _isEnd = true; }
 
     /**
-     * @brief   ルートディレクトリを設定する。
+     * @brief   アプリケーションの実行パスを設定する。
      */
-    void SetRootDirectory();
+    void SetExecuteAbsolutePath();
 
     /**
-     * @brief   ルートディレクトリを取得する。
+     * @brief   アプリケーションの実行パスを取得する。
      */
-    std::string GetRootDirectory(){ return _rootDirectory;}
+    std::string GetExecuteAbsolutePath(){ return _executeAbsolutePath;}
 
     /**
      * @brief   テクスチャマネージャーを取得する。
@@ -136,7 +136,7 @@ private:
     float _mouseY;                               ///< マウスY座標
     bool _isEnd;                                 ///< APP終了しているか
     LAppTextureManager* _textureManager;         ///< テクスチャマネージャー
-    std::string _rootDirectory; ///< ルートディレクトリ
+    std::string _executeAbsolutePath; ///< アプリケーションの実行パス
 
     int _windowWidth;                            ///< Initialize関数で設定したウィンドウ幅
     int _windowHeight;                           ///< Initialize関数で設定したウィンドウ高さ

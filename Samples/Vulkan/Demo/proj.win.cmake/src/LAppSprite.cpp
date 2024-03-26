@@ -7,14 +7,13 @@
 
 #include "LAppSprite.hpp"
 #include "LAppTextureManager.hpp"
-#include "LAppDelegate.hpp"
+#include "VulkanManager.hpp"
 
 using namespace Csm;
 
 LAppSprite::LAppSprite(
-    VkDevice device, VkPhysicalDevice physicalDevice,
-    float x, float y, float width, float height,
-    Csm::csmUint32 textureId, VkDescriptorSetLayout descriptorSetLayout)
+    VkDevice device, VkPhysicalDevice physicalDevice, VulkanManager* vkManager, float x, float y, float width, float height,
+    Csm::csmUint32 textureId, VkImageView view, VkSampler sampler, VkDescriptorSetLayout descriptorSetLayout)
     : _rect()
 {
     _rect.left = (x - width * 0.5f);
@@ -59,11 +58,11 @@ LAppSprite::LAppSprite(
                                   VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                                   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-        VkCommandBuffer commandBuffer = LAppDelegate::GetInstance()->GetVulkanManager()->BeginSingleTimeCommands();
+        VkCommandBuffer commandBuffer = vkManager->BeginSingleTimeCommands();
         VkBufferCopy copyRegion{};
         copyRegion.size = bufferSize;
         vkCmdCopyBuffer(commandBuffer, stagingBuffer.GetBuffer(), _indexBuffer.GetBuffer(), 1, &copyRegion);
-        LAppDelegate::GetInstance()->GetVulkanManager()->SubmitCommand(commandBuffer);
+        vkManager->SubmitCommand(commandBuffer);
 
         stagingBuffer.Destroy(device);
     }
@@ -89,23 +88,22 @@ LAppSprite::LAppSprite(
 
     if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &_descriptorPool) != VK_SUCCESS)
     {
-        LAppPal::PrintLog("failed to create descriptor pool!");
+        LAppPal::PrintLogLn("failed to create descriptor pool!");
     }
 
     CreateDescriptorSet(device, descriptorSetLayout);
-    if (textureId != 0)
+    if (view != NULL && sampler != NULL)
     {
-        CubismImageVulkan image;
-        LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(_textureId, image);
         SetDescriptorUpdated(false);
-        UpdateDescriptorSet(device, image.GetView(), image.GetSampler());
+        UpdateDescriptorSet(device, view, sampler);
     }
 }
 
 LAppSprite::~LAppSprite()
+{}
+
+void LAppSprite::Release(VkDevice device)
 {
-    LAppDelegate::GetInstance()->GetTextureManager()->ReleaseTexture(_textureId);
-    VkDevice device = LAppDelegate::GetInstance()->GetVulkanManager()->GetDevice();
     _vertexBuffer.Destroy(device);
     _stagingBuffer.Destroy(device);
     _indexBuffer.Destroy(device);
@@ -122,16 +120,12 @@ void LAppSprite::CreateDescriptorSet(VkDevice device, VkDescriptorSetLayout desc
     allocInfo.pSetLayouts = &descriptorSetLayout;
     if (vkAllocateDescriptorSets(device, &allocInfo, &_descriptorSet) != VK_SUCCESS)
     {
-        LAppPal::PrintLog("failed to allocate descriptor sets!");
+        LAppPal::PrintLogLn("failed to allocate descriptor sets!");
     }
 }
 
-void LAppSprite::UpdateData() const
+void LAppSprite::UpdateData(VulkanManager* vkManager, int maxWidth, int maxHeight) const
 {
-    // 画面サイズを取得する
-    int maxWidth, maxHeight;
-    glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &maxWidth, &maxHeight);
-
     if (maxWidth == 0 || maxHeight == 0)
     {
         return; // この際は描画できず
@@ -164,7 +158,7 @@ void LAppSprite::UpdateData() const
         vertices.PushBack(vertex);
     }
 
-    VkCommandBuffer commandBuffer = LAppDelegate::GetInstance()->GetVulkanManager()->BeginSingleTimeCommands();
+    VkCommandBuffer commandBuffer = vkManager->BeginSingleTimeCommands();
     csmUint32 bufferSize = sizeof(SpriteVertex) * vertices.GetSize();
 
     _stagingBuffer.MemCpy(vertices.GetPtr(), bufferSize);
@@ -173,7 +167,7 @@ void LAppSprite::UpdateData() const
     copyRegion.size = bufferSize;
     vkCmdCopyBuffer(commandBuffer, _stagingBuffer.GetBuffer(), _vertexBuffer.GetBuffer(), 1, &copyRegion);
 
-    LAppDelegate::GetInstance()->GetVulkanManager()->SubmitCommand(commandBuffer);
+    vkManager->SubmitCommand(commandBuffer);
 
     //ユニフォームバッファ設定
     SpriteUBO _ubo;
@@ -225,9 +219,9 @@ void LAppSprite::SetDescriptorUpdated(bool frag)
     isDescriptorUpdated = frag;
 }
 
-void LAppSprite::Render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout)
+void LAppSprite::Render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VulkanManager* vkManager, int windowWidth, int windowHeight)
 {
-    UpdateData();
+    UpdateData(vkManager, windowWidth, windowHeight);
     VkBuffer vertexBuffers[] = {_vertexBuffer.GetBuffer()};
     VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
@@ -236,13 +230,9 @@ void LAppSprite::Render(VkCommandBuffer commandBuffer, VkPipelineLayout pipeline
     vkCmdDrawIndexed(commandBuffer, IndexNum, 1, 0, 0, 0);
 }
 
-bool LAppSprite::IsHit(float pointX, float pointY) const
+bool LAppSprite::IsHit(int windowWidth, int windowHeight, float pointX, float pointY) const
 {
-    // 画面サイズを取得する
-    int maxWidth, maxHeight;
-    glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &maxWidth, &maxHeight);
-
-    if (maxWidth == 0 || maxHeight == 0)
+    if (windowWidth == 0 || windowHeight == 0)
     {
         return false; // この際は描画できず
     }

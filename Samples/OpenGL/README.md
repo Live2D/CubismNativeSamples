@@ -12,7 +12,7 @@ This is a sample implementation of an application implemented with OpenGL.
 | Third Party | Version |
 | --- | --- |
 | [GLEW] | 2.2.0 |
-| [GLFW] | 3.3.9 |
+| [GLFW] | 3.4 |
 | [ios-cmake] | 4.4.1 |
 | [stb_image.h] | 2.29 |
 
@@ -100,6 +100,8 @@ When you run these scripts, you can choose to generate the full version or the m
 
 [GLEW] and [GLFW] are used as additional libraries.
 Please refer to the [thirdParty](#thirdParty) section and download in advance.
+During the build process, you may be prompted to install additional packages such as `libpng` or X Windows System dependent libraries. If prompted, please install the required packages.
+
 
 ### proj.mac.cmake
 

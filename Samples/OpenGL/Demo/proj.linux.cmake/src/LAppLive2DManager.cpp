@@ -31,7 +31,7 @@ namespace {
 
     void FinishedMotion(ACubismMotion* self)
     {
-        LAppPal::PrintLog("Motion Finished: %x", self);
+        LAppPal::PrintLogLn("Motion Finished: %x", self);
     }
 
     int CompareCsmString(const void* a, const void* b)
@@ -92,7 +92,7 @@ void LAppLive2DManager::SetUpModel()
     // ResourcesPathの中にあるフォルダ名を全てクロールし、モデルが存在するフォルダを定義する。
     // フォルダはあるが同名の.model3.jsonが見つからなかった場合はリストに含めない。
     struct dirent *dirent;
-    csmString crawlPath(LAppDelegate::GetInstance()->GetRootDirectory().c_str());
+    csmString crawlPath(LAppDelegate::GetInstance()->GetExecuteAbsolutePath().c_str());
     crawlPath += ResourcesPath;
 
     DIR *pDir = opendir(crawlPath.GetRawString());
@@ -165,7 +165,7 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
 {
     if (DebugLogEnable)
     {
-        LAppPal::PrintLog("[APP]tap point: {x:%.2f y:%.2f}", x, y);
+        LAppPal::PrintLogLn("[APP]tap point: {x:%.2f y:%.2f}", x, y);
     }
 
     for (csmUint32 i = 0; i < _models.GetSize(); i++)
@@ -174,7 +174,7 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
         {
             if (DebugLogEnable)
             {
-                LAppPal::PrintLog("[APP]hit area: [%s]", HitAreaNameHead);
+                LAppPal::PrintLogLn("[APP]hit area: [%s]", HitAreaNameHead);
             }
             _models[i]->SetRandomExpression();
         }
@@ -182,7 +182,7 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
         {
             if (DebugLogEnable)
             {
-                LAppPal::PrintLog("[APP]hit area: [%s]", HitAreaNameBody);
+                LAppPal::PrintLogLn("[APP]hit area: [%s]", HitAreaNameBody);
             }
             _models[i]->StartRandomMotion(MotionGroupTapBody, PriorityNormal, FinishedMotion);
         }
@@ -202,7 +202,7 @@ void LAppLive2DManager::OnUpdate() const
 
         if (model->GetModel() == NULL)
         {
-            LAppPal::PrintLog("Failed to model->GetModel().");
+            LAppPal::PrintLogLn("Failed to model->GetModel().");
             continue;
         }
 
@@ -243,16 +243,16 @@ void LAppLive2DManager::ChangeScene(Csm::csmInt32 index)
     _sceneIndex = index;
     if (DebugLogEnable)
     {
-        LAppPal::PrintLog("[APP]model index: %d", _sceneIndex);
+        LAppPal::PrintLogLn("[APP]model index: %d", _sceneIndex);
     }
 
     // ModelDir[]に保持したディレクトリ名から
     // model3.jsonのパスを決定する.
     // ディレクトリ名とmodel3.jsonの名前を一致させておくこと.
     const csmString& model = _modelDir[index];
-    LAppPal::PrintLog("[APP]_modelDir: %s", model.GetRawString());
+    LAppPal::PrintLogLn("[APP]_modelDir: %s", model.GetRawString());
 
-    csmString modelPath(LAppDelegate::GetInstance()->GetRootDirectory().c_str());
+    csmString modelPath(LAppDelegate::GetInstance()->GetExecuteAbsolutePath().c_str());
     modelPath += ResourcesPath;
     modelPath += model;
     modelPath.Append(1, '/');

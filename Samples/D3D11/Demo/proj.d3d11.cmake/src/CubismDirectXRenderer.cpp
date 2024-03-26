@@ -165,7 +165,7 @@ bool CubismDirectXRenderer::CreateRenderTarget(UINT width, UINT height)
     hr = _instance->_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
     if (FAILED(hr))
     {
-        LAppPal::PrintLog("Fail SwapChain GetBuffer 0x%x", hr);
+        LAppPal::PrintLogLn("Fail SwapChain GetBuffer 0x%x", hr);
         return false;
     }
     hr = _instance->_device->CreateRenderTargetView(backBuffer, NULL, &_instance->_renderTargetView);
@@ -173,7 +173,7 @@ bool CubismDirectXRenderer::CreateRenderTarget(UINT width, UINT height)
     backBuffer->Release();
     if (FAILED(hr))
     {
-        LAppPal::PrintLog("Fail CreateRenderTargetView 0x%x", hr);
+        LAppPal::PrintLogLn("Fail CreateRenderTargetView 0x%x", hr);
         return false;
     }
 
@@ -194,7 +194,7 @@ bool CubismDirectXRenderer::CreateRenderTarget(UINT width, UINT height)
     hr = _instance->_device->CreateTexture2D(&depthDesc, NULL, &_instance->_depthTexture);
     if (FAILED(hr))
     {
-        LAppPal::PrintLog("Fail Create DepthTarget 0x%x", hr);
+        LAppPal::PrintLogLn("Fail Create DepthTarget 0x%x", hr);
         return false;
     }
     // DepthView
@@ -206,7 +206,7 @@ bool CubismDirectXRenderer::CreateRenderTarget(UINT width, UINT height)
     hr = _instance->_device->CreateDepthStencilView(_instance->_depthTexture, &depthViewDesc, &_instance->_depthStencilView);
     if (FAILED(hr))
     {
-        LAppPal::PrintLog("Fail Create DepthTargetView 0x%x", hr);
+        LAppPal::PrintLogLn("Fail Create DepthTargetView 0x%x", hr);
         return false;
     }
 
@@ -281,13 +281,13 @@ bool CubismDirectXRenderer::CreateShader()
             &vertexError);                              // エラーが出る場合はここで
         if (FAILED(hr))
         {
-            LAppPal::PrintLog("Fail Compile Vertex Shader");
+            LAppPal::PrintLogLn("Fail Compile Vertex Shader");
             break;
         }
         hr = _device->CreateVertexShader(vertexBlob->GetBufferPointer(), vertexBlob->GetBufferSize(), nullptr, &_vertexShader);
         if (FAILED(hr))
         {
-            LAppPal::PrintLog("Fail Create Vertex Shader");
+            LAppPal::PrintLogLn("Fail Create Vertex Shader");
             break;
         }
 
@@ -305,14 +305,14 @@ bool CubismDirectXRenderer::CreateShader()
             &pixelError);                       // エラーが出る場合はここで
         if (FAILED(hr))
         {
-            LAppPal::PrintLog("Fail Compile Pixel Shader");
+            LAppPal::PrintLogLn("Fail Compile Pixel Shader");
             break;
         }
 
         hr = _device->CreatePixelShader(pixelBlob->GetBufferPointer(), pixelBlob->GetBufferSize(), NULL, &_pixelShader);
         if (FAILED(hr))
         {
-            LAppPal::PrintLog("Fail Create Pixel Shader");
+            LAppPal::PrintLogLn("Fail Create Pixel Shader");
             break;
         }
 
@@ -325,7 +325,7 @@ bool CubismDirectXRenderer::CreateShader()
 
         if (FAILED(hr))
         {
-            LAppPal::PrintLog("CreateVertexDeclaration failed");
+            LAppPal::PrintLogLn("CreateVertexDeclaration failed");
             break;
         }
 
@@ -550,7 +550,7 @@ void CubismDirectXRenderer::EndFrame(CubismUserModel* userModel)
 
     if (_deviceStep == DeviceStep_Lost)
     {// ロストした
-        LAppPal::PrintLog("Device Lost Abort");
+        LAppPal::PrintLogLn("Device Lost Abort");
         // アプリケーション終了フラグを立てる
         _isEnd = true;
     }

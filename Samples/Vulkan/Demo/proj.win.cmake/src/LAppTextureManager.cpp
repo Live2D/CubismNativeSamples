@@ -174,7 +174,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(
     VkDeviceSize imageSize = static_cast<VkDeviceSize>(width * height * 4);
     if (!png)
     {
-        LAppPal::PrintLog("could'nt load texture image.");
+        LAppPal::PrintLogLn("could'nt load texture image.");
     }
 
     CubismBufferVulkan stagingBuffer;

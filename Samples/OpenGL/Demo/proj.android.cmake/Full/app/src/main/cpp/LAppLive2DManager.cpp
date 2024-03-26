@@ -25,7 +25,7 @@ namespace {
 
     void FinishedMotion(ACubismMotion* self)
     {
-        LAppPal::PrintLog("Motion Finished: %x", self);
+        LAppPal::PrintLogLn("Motion Finished: %x", self);
     }
 
     int CompareCsmString(const void* a, const void* b)
@@ -127,7 +127,7 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
 {
     if (DebugLogEnable)
     {
-        LAppPal::PrintLog("[APP]tap point: {x:%.2f y:%.2f}", x, y);
+        LAppPal::PrintLogLn("[APP]tap point: {x:%.2f y:%.2f}", x, y);
     }
 
     for (csmUint32 i = 0; i < _models.GetSize(); i++)
@@ -136,7 +136,7 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
         {
             if (DebugLogEnable)
             {
-                LAppPal::PrintLog("[APP]hit area: [%s]", HitAreaNameHead);
+                LAppPal::PrintLogLn("[APP]hit area: [%s]", HitAreaNameHead);
             }
             _models[i]->SetRandomExpression();
         }
@@ -144,7 +144,7 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
         {
             if (DebugLogEnable)
             {
-                LAppPal::PrintLog("[APP]hit area: [%s]", HitAreaNameBody);
+                LAppPal::PrintLogLn("[APP]hit area: [%s]", HitAreaNameBody);
             }
             _models[i]->StartRandomMotion(MotionGroupTapBody, PriorityNormal, FinishedMotion);
         }
@@ -164,7 +164,7 @@ void LAppLive2DManager::OnUpdate() const
 
         if (model->GetModel() == NULL)
         {
-            LAppPal::PrintLog("Failed to model->GetModel().");
+            LAppPal::PrintLogLn("Failed to model->GetModel().");
             continue;
         }
 
@@ -207,7 +207,7 @@ void LAppLive2DManager::ChangeScene(Csm::csmInt32 index)
     _sceneIndex = index;
     if (DebugLogEnable)
     {
-        LAppPal::PrintLog("[APP]model index: %d", _sceneIndex);
+        LAppPal::PrintLogLn("[APP]model index: %d", _sceneIndex);
     }
 
     // model3.jsonのパスを決定する.

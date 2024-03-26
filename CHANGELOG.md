@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
+## [5-r.1] - 2024-03-26
+
+### Added
+
+* Add x86_64 architecture to target platforms in Android.
+
+### Changed
+
+* Rename "rootDirectory" to "executeAbsolutePath".
+* The log function was changed because it was ambiguous whether or not a newline was inserted.
+* Change so that `LAppSprite` is not depend on `LAppDelegate` in D3D11 and D3D9, Metal, Vulkan.
+* Some function arguments in `LAppSprite` are changed in D3D11 and D3D9, Metal, Vulkan.
+
+### Fixed
+
+* Fixed undefined behavior and memory leak in `LAppPal`.
+* Modify code to more closely resemble Java coding style.
+* Fix model drawing disappearing when defining `USE_RENDER_TARGET` and `USE_MODEL_RENDER_TARGET`.
+* Fix an issue where the OpenGL sample for Visual Studio 2013 was not functioning correctly.
+* Fix shader build error when running nmake in Vulkan.
+
+### Removed
+
+* Remove unnecessary pre-API 21 processing.
+
+
 ## [5-r.1-beta.4] - 2024-01-25
 
 ### Added
@@ -31,6 +57,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 * Fix an issue that caused some graphics drivers to not render correctly in Vulkan.
 * Fix an issue that caused incorrect selection of depth format in Vulkan.
 * Fix errors that occurs when building with x86 in vulkan.
+
 
 ## [5-r.1-beta.3] - 2023-10-12
 
@@ -380,6 +407,7 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[5-r.1]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1-beta.4...5-r.1
 [5-r.1-beta.4]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1-beta.3...5-r.1-beta.4
 [5-r.1-beta.3]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1-beta.2...5-r.1-beta.3
 [5-r.1-beta.2]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1-beta.1...5-r.1-beta.2

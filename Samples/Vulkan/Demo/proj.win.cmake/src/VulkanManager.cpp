@@ -141,7 +141,7 @@ void VulkanManager::CreateInstance()
     //検証レイヤーが有効のときに使えるか確認
     if (_enableValidationLayers && !CheckValidationLayerSupport())
     {
-        LAppPal::PrintLog("validation layers requested, but not available!");
+        LAppPal::PrintLogLn("validation layers requested, but not available!");
     }
 
     VkApplicationInfo appInfo{};
@@ -174,7 +174,7 @@ void VulkanManager::CreateInstance()
     }
     if (vkCreateInstance(&createInfo, nullptr, &_instance) != VK_SUCCESS)
     {
-        LAppPal::PrintLog("failed to create _instance!");
+        LAppPal::PrintLogLn("failed to create _instance!");
     }
 }
 
@@ -187,7 +187,7 @@ void VulkanManager::SetupDebugMessenger()
 
     if (CreateDebugUtilsMessengerEXT(_instance, &createInfo, nullptr, &_debugMessenger) != VK_SUCCESS)
     {
-        LAppPal::PrintLog("failed to set up debug messenger!");
+        LAppPal::PrintLogLn("failed to set up debug messenger!");
     }
 }
 
@@ -222,7 +222,7 @@ void VulkanManager::CreateSurface()
 {
     if (glfwCreateWindowSurface(_instance, _window, nullptr, &_surface) != VK_SUCCESS)
     {
-        LAppPal::PrintLog("failed to create _window _surface!");
+        LAppPal::PrintLogLn("failed to create _window _surface!");
     }
 }
 
@@ -281,7 +281,7 @@ void VulkanManager::PickPhysicalDevice()
 
     if (deviceCount == 0)
     {
-        LAppPal::PrintLog("failed to find GPUs with Vulkan support!");
+        LAppPal::PrintLogLn("failed to find GPUs with Vulkan support!");
     }
 
     csmVector<VkPhysicalDevice> devices;
@@ -300,7 +300,7 @@ void VulkanManager::PickPhysicalDevice()
 
     if (_physicalDevice == VK_NULL_HANDLE)
     {
-        LAppPal::PrintLog("failed to find a suitable GPU!");
+        LAppPal::PrintLogLn("failed to find a suitable GPU!");
     }
 }
 
@@ -365,7 +365,7 @@ void VulkanManager::CreateLogicalDevice()
 
     if (vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device) != VK_SUCCESS)
     {
-        LAppPal::PrintLog("failed to create logical _device!");
+        LAppPal::PrintLogLn("failed to create logical _device!");
     }
 
     // キューハンドルを取得
@@ -407,7 +407,7 @@ void VulkanManager::CreateCommandPool()
 
     if (vkCreateCommandPool(_device, &poolInfo, nullptr, &_commandPool) != VK_SUCCESS)
     {
-        LAppPal::PrintLog("failed to create graphics command pool!");
+        LAppPal::PrintLogLn("failed to create graphics command pool!");
     }
 }
 
@@ -485,7 +485,7 @@ void VulkanManager::UpdateDrawFrame()
     }
     else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
     {
-        LAppPal::PrintLog("failed to acquire swap chain image!");
+        LAppPal::PrintLogLn("failed to acquire swap chain image!");
     }
 }
 
@@ -497,7 +497,7 @@ void VulkanManager::PostDraw()
         _isSwapchainInvalid = true;
     }
     else if (result != VK_SUCCESS) {
-        LAppPal::PrintLog("failed to present swap chain image!");
+        LAppPal::PrintLogLn("failed to present swap chain image!");
     }
 }
 

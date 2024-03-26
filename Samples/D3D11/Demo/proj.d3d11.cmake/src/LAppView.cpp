@@ -46,13 +46,11 @@ LAppView::~LAppView()
 {
     _renderBuffer.DestroyOffscreenSurface();
 
-    delete _renderSprite;
+    ReleaseSprite();
+
     delete _viewMatrix;
     delete _deviceToScreen;
     delete _touchManager;
-    delete _back;
-    delete _gear;
-    delete _power;
 }
 
 void LAppView::Initialize()
@@ -109,21 +107,33 @@ void LAppView::Render()
         return;
     }
 
+    // シェーダー設定
+    LAppDelegate::GetInstance()->SetupShader();
+
     // スプライト描画
     int width, height;
     LAppDelegate::GetInstance()->GetClientSize(width, height);
 
+    // デバイスコンテキスト取得
+    ID3D11DeviceContext* renderContext = LAppDelegate::GetD3dContext();
+
     if (_back)
     {
-        _back->Render(width, height);
+        ID3D11ShaderResourceView* textureView = NULL;
+        LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(_back->GetTextureId(), textureView);
+        _back->RenderImmidiate(width, height, textureView, renderContext);
     }
     if (_gear)
     {
-        _gear->Render(width, height);
+        ID3D11ShaderResourceView* textureView = NULL;
+        LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(_gear->GetTextureId(), textureView);
+        _gear->RenderImmidiate(width, height, textureView, renderContext);
     }
     if (_power)
     {
-        _power->Render(width, height);
+        ID3D11ShaderResourceView* textureView = NULL;
+        LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(_power->GetTextureId(), textureView);
+        _power->RenderImmidiate(width, height, textureView, renderContext);
     }
 
     live2DManager->SetViewMatrix(_viewMatrix);
@@ -142,7 +152,7 @@ void LAppView::Render()
 
             if (model)
             {
-                _renderSprite->RenderImmidiate(width, height, model->GetRenderBuffer().GetTextureView());
+                _renderSprite->RenderImmidiate(width, height, model->GetRenderBuffer().GetTextureView(), renderContext);
             }
         }
     }
@@ -157,6 +167,8 @@ void LAppView::InitializeSprite()
     LAppTextureManager* textureManager = LAppDelegate::GetInstance()->GetTextureManager();
     const string resourcesPath = ResourcesPath;
 
+    ID3D11Device* device = LAppDelegate::GetInstance()->GetD3dDevice();
+
     float x = 0.0f;
     float y = 0.0f;
     float fWidth = 0.0f;
@@ -168,7 +180,7 @@ void LAppView::InitializeSprite()
     y = height * 0.5f;
     fWidth = static_cast<float>(backgroundTexture->width * 2);
     fHeight = static_cast<float>(height) * 0.95f;
-    _back = new LAppSprite(x, y, fWidth, fHeight, backgroundTexture->id);
+    _back = new LAppSprite(x, y, fWidth, fHeight, backgroundTexture->id, device);
 
     imageName = resourcesPath + GearImageName;
     LAppTextureManager::TextureInfo* gearTexture = textureManager->CreateTextureFromPngFile(imageName, false);
@@ -176,7 +188,7 @@ void LAppView::InitializeSprite()
     y = static_cast<float>(height - gearTexture->height * 0.5f);
     fWidth = static_cast<float>(gearTexture->width);
     fHeight = static_cast<float>(gearTexture->height);
-    _gear = new LAppSprite(x, y, fWidth, fHeight, gearTexture->id);
+    _gear = new LAppSprite(x, y, fWidth, fHeight, gearTexture->id, device);
 
     imageName = resourcesPath + PowerImageName;
     LAppTextureManager::TextureInfo* powerTexture = textureManager->CreateTextureFromPngFile(imageName, false);
@@ -184,24 +196,42 @@ void LAppView::InitializeSprite()
     y = static_cast<float>(powerTexture->height * 0.5f);
     fWidth = static_cast<float>(powerTexture->width);
     fHeight = static_cast<float>(powerTexture->height);
-    _power = new LAppSprite(x, y, fWidth, fHeight, powerTexture->id);
+    _power = new LAppSprite(x, y, fWidth, fHeight, powerTexture->id, device);
 
     x = width * 0.5f;
     y = height * 0.5f;
-    _renderSprite = new LAppSprite(x, y, static_cast<float>(width), static_cast<float>(height), 0);
+    _renderSprite = new LAppSprite(x, y, static_cast<float>(width), static_cast<float>(height), 0, device);
 }
 
 void LAppView::ReleaseSprite()
 {
+    LAppTextureManager* textureManager = LAppDelegate::GetInstance()->GetTextureManager();
+
+    if (_renderSprite)
+    {
+        textureManager->ReleaseTexture(_renderSprite->GetTextureId());
+    }
     delete _renderSprite;
     _renderSprite = NULL;
 
+    if (_gear)
+    {
+        textureManager->ReleaseTexture(_gear->GetTextureId());
+    }
     delete _gear;
     _gear = NULL;
 
+    if (_power)
+    {
+        textureManager->ReleaseTexture(_power->GetTextureId());
+    }
     delete _power;
     _power = NULL;
 
+    if (_back)
+    {
+        textureManager->ReleaseTexture(_back->GetTextureId());
+    }
     delete _back;
     _back = NULL;
 }
@@ -303,18 +333,18 @@ void LAppView::OnTouchesEnded(float px, float py) const
         float y = _deviceToScreen->TransformY(py); // 論理座標変換した座標を取得。
         if (DebugTouchLogEnable)
         {
-            LAppPal::PrintLog("[APP]touchesEnded x:%.2f y:%.2f", x, y);
+            LAppPal::PrintLogLn("[APP]touchesEnded x:%.2f y:%.2f", x, y);
         }
         live2DManager->OnTap(x, y);
 
         // 歯車にタップしたか
-        if (_gear->IsHit(px, py))
+        if (_gear->IsHit(px, py, width, height))
         {
             live2DManager->NextScene();
         }
 
         // 電源ボタンにタップしたか
-        if (_power->IsHit(px, py))
+        if (_power->IsHit(px, py, width, height))
         {
             LAppDelegate::GetInstance()->AppEnd();
         }
@@ -390,12 +420,15 @@ void LAppView::PostModelDraw(LAppModel& refModel)
         // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はここ
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderSprite)
         {
+            // シェーダー設定
+            LAppDelegate::GetInstance()->SetupShader();
+
             // スプライト描画
             int width, height;
             LAppDelegate::GetInstance()->GetClientSize(width, height);
 
             _renderSprite->SetColor(1.0f, 1.0f, 1.0f, GetSpriteAlpha(0));
-            _renderSprite->RenderImmidiate(width, height, useTarget->GetTextureView());
+            _renderSprite->RenderImmidiate(width, height, useTarget->GetTextureView(), LAppDelegate::GetInstance()->GetD3dContext());
         }
     }
 }

@@ -99,27 +99,31 @@ Please refer to 'LAppLive2DManager.cpp' in the sample directory for details.
 
 ## Changelog
 
-Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repository.
+Samples : [CHANGELOG.md](CHANGELOG.md)
+
+Framework : [CHANGELOG.md](Framework/CHANGELOG.md)
+
+Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 
 ## Development environment
 
 | Development Tool | Version |
 | --- | --- |
-| Android Studio | Hedgehog 2023.1.1 |
-| CMake | 3.28.1 |
+| Android Studio | Iguana 2023.2.1 |
+| CMake | 3.28.3 |
 | Visual Studio 2013 | Update 5 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.59 |
-| Visual Studio 2019 | 16.11.33 |
-| Visual Studio 2022 | 17.8.4 |
-| Xcode | 15.1 |
+| Visual Studio 2017 | 15.9.60 |
+| Visual Studio 2019 | 16.11.34 |
+| Visual Studio 2022 | 17.9.4 |
+| Xcode | 15.3 |
 
 ### Android
 
 | Android SDK tools | Version |
 | --- | --- |
-| Android NDK | 25.2.9519653 |
+| Android NDK | 26.2.11394342 |
 | Android SDK | 34.0.0 |
 | CMake | 3.22.1 |
 
@@ -130,9 +134,10 @@ Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repositor
 | Red Hat | Amazon Linux 2 |  `amazonlinux:2` | 7.3.1 |
 | Red Hat | CentOS 7 | `centos:7` | 4.8.5 |
 | Red Hat | CentOS Stream 8 *1 | `centos:latest` | 8.5.0 |
-| Red Hat | CentOS Stream 9 | - | 11.3.1 |
+| Red Hat | CentOS Stream 9 | - | 12.2.1 |
+| Red Hat | AlmaLinux | `almalinux:latest` | 11.4.1 |
 | Debian | Ubuntu 18.04 | `ubuntu:18.04` | 7.5.0 |
-| Debian | Ubuntu 22.04.3 | `ubuntu:22.04.3` | 11.3.0 |
+| Debian | Ubuntu 22.04.4 | `ubuntu:22.04` | 11.4.0 |
 
 *1 CentOS 8 is not supported
 
@@ -150,8 +155,8 @@ Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repositor
 
 | Platform | Version |
 | --- | --- |
-| iOS / iPadOS | 16.6.1 |
-| macOS | 14.1.1 |
+| iOS / iPadOS | 17.4 |
+| macOS | 14.4 |
 | Windows 10 | 22H2 |
 | Windows 11 | 22H2 |
 
@@ -167,9 +172,8 @@ Please refer to [CHANGELOG.md](CHANGELOG.md) for the changelog of this repositor
 | System | Distribution | Version |
 | --- | --- | --- |
 | Red Hat | Amazon Linux | 2 |
-| Red Hat | CentOS Stream | 8 |
-| Red Hat | CentOS Stream | 9 |
-| Debian | Ubuntu | 22.04.3 |
+| Red Hat | AlmaLinux | 9 |
+| Debian | Ubuntu | 22.04.4 |
 
 ## Contributing
 
@@ -177,7 +181,7 @@ There are many ways to contribute to the project: logging bugs, submitting pull 
 
 ### Forking And Pull Requests
 
-We very much appreciate your pull requests, whether they bring fixes, improvements, or even new features. Note, however, that the wrapper is designed to be as lightweight and shallow as possible and should therefore only be subject to bug fixes and memory/performance improvements. To keep the main repository as clean as possible, create a personal fork and feature branches there as needed.
+We very much appreciate your pull requests, whether they bring fixes, improvements, or even new features. To keep the main repository as clean as possible, create a personal fork and feature branches there as needed.
 
 ### Bugs
 

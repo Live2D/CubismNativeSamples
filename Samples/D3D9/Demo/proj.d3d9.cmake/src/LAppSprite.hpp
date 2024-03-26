@@ -68,28 +68,24 @@ public:
     Csm::csmUint64 GetTextureId() { return _textureId; }
 
     /**
-    * @brief 描画する
-    * @param[in]        device 描画デバイス
-    * @param[in]        width   幅
-    * @param[in]        height  高さ
-    */
-    void Render(LPDIRECT3DDEVICE9 device, int width, int height) const;
-
-    /**
      * @brief テクスチャを指定しての描画
-     * @param[in]        width   幅
-     * @param[in]        height  高さ
-     * @param[in]        resourceView   使用テクスチャ
+     * @param[in]        device        D3D9デバイス
+     * @param[in]        shaderEffect  シェーダーエフェクト
+     * @param[in]        width         幅
+     * @param[in]        height        高さ
+     * @param[in]        texture       使用テクスチャ
      */
-    void RenderImmidiate(LPDIRECT3DDEVICE9 device, int maxWidth, int maxHeight, LPDIRECT3DTEXTURE9 texture) const;
+    void RenderImmidiate(LPDIRECT3DDEVICE9 device, ID3DXEffect* shaderEffect, int maxWidth, int maxHeight, LPDIRECT3DTEXTURE9 texture) const;
 
     /**
     * @brief ヒットチェック
     *
     * @param[in]       pointX    x座標
     * @param[in]       pointY    y座標
+    * @param[in]       clientWidth  クライアントウィンドウ幅
+    * @param[in]       clientHeight クライアントウィンドウ高さ
     */
-    bool IsHit(float pointX, float pointY) const;
+    bool IsHit(float pointX, float pointY, int clientWidth, int clientHeight) const;
 
     /**
      * @brief 色設定
@@ -114,4 +110,3 @@ private:
     Live2D::Cubism::Framework::csmUint16*   _indexStore;    ///< インデックスをストアしておく領域
     D3DXVECTOR4                             _color;         ///< 描画色
 };
-

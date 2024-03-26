@@ -96,12 +96,12 @@ static void InitializeCubism()
 */
 static bool InitializeSystem()
 {
-    LAppPal::PrintLog("START");
+    LAppPal::PrintLogLn("START");
 
     // GLFWの初期化
     if (glfwInit() == GL_FALSE)
     {
-        LAppPal::PrintLog("Can't initilize GLFW");
+        LAppPal::PrintLogLn("Can't initilize GLFW");
 
         return GL_FALSE;
     }
@@ -110,7 +110,7 @@ static bool InitializeSystem()
     _window = glfwCreateWindow(LAppDefine::RenderTargetWidth, LAppDefine::RenderTargetHeight, "SIMPLE_SAMPLE", NULL, NULL);
     if (_window == NULL)
     {
-        LAppPal::PrintLog("Can't create GLFW window.");
+        LAppPal::PrintLogLn("Can't create GLFW window.");
 
         glfwTerminate();
         return GL_FALSE;
@@ -121,7 +121,7 @@ static bool InitializeSystem()
     glfwSwapInterval(1);
 
     if (glewInit() != GLEW_OK) {
-        LAppPal::PrintLog("Can't initilize glew.");
+        LAppPal::PrintLogLn("Can't initilize glew.");
 
         glfwTerminate();
         return GL_FALSE;

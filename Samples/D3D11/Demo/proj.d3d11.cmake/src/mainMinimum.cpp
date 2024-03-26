@@ -172,7 +172,7 @@ LRESULT WINAPI MsgProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam)
 */
 static bool InitializeSystem()
 {
-    LAppPal::PrintLog("START");
+    LAppPal::PrintLogLn("START");
 
     CubismDirectXRenderer* directXRenderer = CubismDirectXRenderer::GetInstance();
 
@@ -197,7 +197,7 @@ static bool InitializeSystem()
         CW_USEDEFAULT, CW_USEDEFAULT, rect.right, rect.bottom, NULL, NULL, directXRenderer->_windowClass.hInstance, NULL);
     if (directXRenderer->_windowHandle == nullptr)
     {
-        LAppPal::PrintLog("Fail Create Window");
+        LAppPal::PrintLogLn("Fail Create Window");
         return false;
     }
 
@@ -247,7 +247,7 @@ static bool InitializeSystem()
         &directXRenderer->_deviceContext);
     if (FAILED(result))
     {
-        LAppPal::PrintLog("Fail Direct3D Create Device 0x%x", result);
+        LAppPal::PrintLogLn("Fail Direct3D Create Device 0x%x", result);
         return false;
     }
 
@@ -264,7 +264,7 @@ static bool InitializeSystem()
     result = directXRenderer->_device->CreateDepthStencilState(&depthDesc, &directXRenderer->_depthState);
     if (FAILED(result))
     {
-        LAppPal::PrintLog("Fail Create Depth 0x%x", result);
+        LAppPal::PrintLogLn("Fail Create Depth 0x%x", result);
         return false;
     }
 
@@ -281,7 +281,7 @@ static bool InitializeSystem()
     result = directXRenderer->_device->CreateRasterizerState(&rasterDesc, &directXRenderer->_rasterizer);
     if (FAILED(result))
     {
-        LAppPal::PrintLog("Fail Create Rasterizer 0x%x", result);
+        LAppPal::PrintLogLn("Fail Create Rasterizer 0x%x", result);
         return false;
     }
 
@@ -299,7 +299,7 @@ static bool InitializeSystem()
     directXRenderer->_device->CreateSamplerState(&samplerDesc, &directXRenderer->_samplerState);
     if (FAILED(result))
     {
-        LAppPal::PrintLog("Fail Create Sampler 0x%x", result);
+        LAppPal::PrintLogLn("Fail Create Sampler 0x%x", result);
         return false;
     }
 

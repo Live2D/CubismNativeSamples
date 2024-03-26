@@ -4,6 +4,27 @@
 
 # お知らせ
 
+## [注意事項] Apple社のPrivacy Manifest Policy対応について
+
+Apple社が対応を必要としているPrivacy Manifest Policyについて、本製品では指定されているAPI及びサードパーティ製品を使用しておりません。
+もし本製品で対応が必要と判断した場合、今後のアップデートにて順次対応する予定です。
+詳しくはApple社が公開しているドキュメントをご確認ください。
+
+* [Privacy updates for App Store submissions](https://developer.apple.com/news/?id=3d8a9yyh)
+
+
+## [注意事項] Linux OpenGL環境でのWaylandのサポートについて (2024-03-26)
+
+本製品がLinux OpenGL環境で利用している `GLFW 3.4` が、Wayland向けにコンパイルできるようになりました。
+しかし、 `GLEW 2.2.0` では現在Wayland(EGL)向けのコンパイルを行うと `glewInit` が正常に動作しない状態であるため、本サンプルはWaylandに対応しておりません。
+
+Linux OpenGL環境をご利用の方は、引き続き通常通りX11向けビルドをご利用ください。
+
+詳しくは以下のissueを参照ください。
+
+* [GLEW issue](https://github.com/nigels-com/glew/issues/172)
+
+
 ## [注意事項] Metal の Mac Catalyst のビルドエラーについて (2024-01-25)
 
 MetalのMac Catalystのビルド時にエラーが発生する場合がございます。

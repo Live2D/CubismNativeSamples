@@ -7,7 +7,6 @@
 
 #import "LAppSprite.h"
 #import <Foundation/Foundation.h>
-#import "AppDelegate.h"
 #import <CubismFramework.hpp>
 #import <Rendering/Metal/CubismRenderer_Metal.hpp>
 #import "Rendering/Metal/CubismRenderingInstanceSingleton_Metal.h"
@@ -32,7 +31,8 @@ typedef struct
 
 } BaseColor;
 
-- (id)initWithMyVar:(float)x Y:(float)y Width:(float)width Height:(float)height Texture:(id <MTLTexture>) texture
+- (id)initWithMyVar:(float)x Y:(float)y Width:(float)width Height:(float)height
+                    MaxWidth:(float)maxWidth MaxHeight:(float)maxHeight Texture:(id <MTLTexture>) texture
 {
     self = [super self];
 
@@ -53,7 +53,7 @@ typedef struct
         CubismRenderingInstanceSingleton_Metal *single = [CubismRenderingInstanceSingleton_Metal sharedManager];
         id <MTLDevice> device = [single getMTLDevice];
 
-        [self SetMTLBffer:device];
+        [self SetMTLBuffer:device MaxWidth:maxWidth MaxHeight:maxHeight];
 
         [self SetMTLFunction:device];
     }
@@ -110,7 +110,7 @@ typedef struct
     [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
 }
 
-- (void)resizeImmidiate:(float)x Y:(float)y Width:(float)width Height:(float)height
+- (void)resizeImmidiate:(float)x Y:(float)y Width:(float)width Height:(float)height MaxWidth:(float)maxWidth MaxHeight:(float)maxHeight
 {
     _rect.left = (x - width * 0.5f);
     _rect.right = (x + width * 0.5f);
@@ -119,7 +119,7 @@ typedef struct
 
     CubismRenderingInstanceSingleton_Metal *single = [CubismRenderingInstanceSingleton_Metal sharedManager];
     id <MTLDevice> device = [single getMTLDevice];
-    [self SetMTLBffer:device];
+    [self SetMTLBuffer:device MaxWidth:maxWidth MaxHeight:maxHeight];
 
     return self;
 }
@@ -175,13 +175,8 @@ typedef struct
     return string;
 }
 
-- (void)SetMTLBffer:(id <MTLDevice>)device
+- (void)SetMTLBuffer:(id <MTLDevice>)device MaxWidth:(float)maxWidth MaxHeight:(float)maxHeight
 {
-    AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
-    ViewController* view = [delegate viewController];
-    float maxWidth = view.view.frame.size.width;
-    float maxHeight = view.view.frame.size.height;
-
     vector_float4 positionVertex[] =
     {
         {(_rect.left  - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f), 0, 1},
@@ -282,4 +277,3 @@ typedef struct
     }
 }
 @end
-

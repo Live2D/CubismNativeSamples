@@ -145,7 +145,7 @@ void SwapchainManager::CreateSwapchain(GLFWwindow* window, VkPhysicalDevice phys
     createInfo.oldSwapchain = VK_NULL_HANDLE;
     if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapchain) != VK_SUCCESS)
     {
-        LAppPal::PrintLog("failed to create swap chain");
+        LAppPal::PrintLogLn("failed to create swap chain");
     }
 
     // swapchain imageを取得する
@@ -173,7 +173,7 @@ void SwapchainManager::CreateSwapchain(GLFWwindow* window, VkPhysicalDevice phys
 
         if (vkCreateImageView(device, &viewInfo, nullptr, &imageViews[i]) != VK_SUCCESS)
         {
-            LAppPal::PrintLog("failed to create texture image view");
+            LAppPal::PrintLogLn("failed to create texture image view");
         }
     }
 }

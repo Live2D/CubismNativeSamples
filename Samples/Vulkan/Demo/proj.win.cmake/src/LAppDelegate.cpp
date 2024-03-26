@@ -49,7 +49,7 @@ bool LAppDelegate::Initialize()
 {
     if (DebugLogEnable)
     {
-        LAppPal::PrintLog("START");
+        LAppPal::PrintLogLn("START");
     }
 
     // GLFWの初期化
@@ -57,7 +57,7 @@ bool LAppDelegate::Initialize()
     {
         if (DebugLogEnable)
         {
-            LAppPal::PrintLog("Can't initilize GLFW");
+            LAppPal::PrintLogLn("Can't initilize GLFW");
         }
         return GL_FALSE;
     }
@@ -71,7 +71,7 @@ bool LAppDelegate::Initialize()
     {
         if (DebugLogEnable)
         {
-            LAppPal::PrintLog("Can't create GLFW window.");
+            LAppPal::PrintLogLn("Can't create GLFW window.");
         }
         glfwTerminate();
         return GL_FALSE;

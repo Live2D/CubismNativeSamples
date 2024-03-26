@@ -131,9 +131,9 @@ bool SampleScene::init()
 
     if (LAppDefine::DebugLogEnable)
     {
-        LAppPal::PrintLog("==============================================");
-        LAppPal::PrintLog("            Live2D SDK Sample App             ");
-        LAppPal::PrintLog("==============================================");
+        LAppPal::PrintLogLn("==============================================");
+        LAppPal::PrintLogLn("            Live2D SDK Sample App             ");
+        LAppPal::PrintLogLn("==============================================");
     }
 
     if (LAppDefine::DebugDrawRectEnable)

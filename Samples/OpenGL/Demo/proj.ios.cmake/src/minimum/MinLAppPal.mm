@@ -38,7 +38,15 @@ csmByte* MinLAppPal::LoadFileAsBytes(const string filePath, csmSizeInt* outSize)
                               ofType:[NSString stringWithUTF8String:extname.c_str()]
                               inDirectory:[NSString stringWithUTF8String:pathname.c_str()]];
 
+    NSError *errorMsg = nil;
     NSData *data = [NSData dataWithContentsOfFile:castFilePath];
+
+    if (data == nil)
+    {
+        NSLog(@"Failed to read file, error %@", errorMsg);
+        return NULL;
+    }
+
     NSUInteger len = [data length];
     Byte *byteData = (Byte*)malloc(len);
     memcpy(byteData, [data bytes], len);

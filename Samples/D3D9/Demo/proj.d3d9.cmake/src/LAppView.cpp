@@ -45,14 +45,12 @@ LAppView::LAppView():
 LAppView::~LAppView()
 {
     _renderBuffer.DestroyOffscreenSurface();
-    delete _renderSprite;
+
+    ReleaseSprite();
 
     delete _viewMatrix;
     delete _deviceToScreen;
     delete _touchManager;
-    delete _back;
-    delete _gear;
-    delete _power;
 }
 
 void LAppView::Initialize()
@@ -115,22 +113,38 @@ void LAppView::Render()
         return;
     }
 
+    LAppTextureManager* textureManager = LAppDelegate::GetInstance()->GetTextureManager();
+    if (!textureManager)
+    {
+        return;
+    }
+
+    ID3DXEffect* shaderEffect = LAppDelegate::GetInstance()->SetupShader();
+    if (!shaderEffect)
+    {
+        return;
+    }
+
     // スプライト描画
     int width, height;
     LAppDelegate::GetInstance()->GetClientSize(width, height);
 
     {
+        IDirect3DTexture9* texture = NULL;
         if (_back)
         {
-            _back->Render(device, width, height);
+            textureManager->GetTexture(_back->GetTextureId(), texture);
+            _back->RenderImmidiate(device, shaderEffect, width, height, texture);
         }
         if (_gear)
         {
-            _gear->Render(device, width, height);
+            textureManager->GetTexture(_gear->GetTextureId(), texture);
+            _gear->RenderImmidiate(device, shaderEffect, width, height, texture);
         }
         if (_power)
         {
-            _power->Render(device, width, height);
+            textureManager->GetTexture(_power->GetTextureId(), texture);
+            _power->RenderImmidiate(device, shaderEffect, width, height, texture);
         }
     }
 
@@ -150,7 +164,7 @@ void LAppView::Render()
 
             if (model)
             {
-                _renderSprite->RenderImmidiate(LAppDelegate::GetInstance()->GetD3dDevice(), width, height, model->GetRenderBuffer().GetTexture());
+                _renderSprite->RenderImmidiate(device, shaderEffect, width, height, model->GetRenderBuffer().GetTexture());
             }
         }
     }
@@ -205,10 +219,35 @@ void LAppView::InitializeSprite()
 
 void LAppView::ReleaseSprite()
 {
-    delete _renderSprite; _renderSprite = NULL;
-    delete _power; _power = NULL;
-    delete _gear; _gear = NULL;
-    delete _back; _back = NULL;
+    LAppTextureManager* textureManager = LAppDelegate::GetInstance()->GetTextureManager();
+
+    if (_renderSprite)
+    {
+        textureManager->ReleaseTexture(_renderSprite->GetTextureId());
+    }
+    delete _renderSprite;
+    _renderSprite = NULL;
+
+    if (_power)
+    {
+        textureManager->ReleaseTexture(_power->GetTextureId());
+    }
+    delete _power;
+    _power = NULL;
+
+    if (_gear)
+    {
+        textureManager->ReleaseTexture(_gear->GetTextureId());
+    }
+    delete _gear;
+    _gear = NULL;
+
+    if (_back)
+    {
+        textureManager->ReleaseTexture(_back->GetTextureId());
+    }
+    delete _back;
+    _back = NULL;
 
     // スプライト用のシェーダ・頂点宣言も開放
     LAppDelegate::GetInstance()->ReleaseShader();
@@ -253,18 +292,18 @@ void LAppView::OnTouchesEnded(float px, float py) const
         float y = _deviceToScreen->TransformY(py); // 論理座標変換した座標を取得。
         if (DebugTouchLogEnable)
         {
-            LAppPal::PrintLog("[APP]touchesEnded x:%.2f y:%.2f", x, y);
+            LAppPal::PrintLogLn("[APP]touchesEnded x:%.2f y:%.2f", x, y);
         }
         live2DManager->OnTap(x, y);
 
         // 歯車にタップしたか
-        if (_gear && _gear->IsHit(px, py))
+        if (_gear && _gear->IsHit(px, py, width, height))
         {
             live2DManager->NextScene();
         }
 
         // 電源ボタンにタップしたか
-        if (_power && _power->IsHit(px, py))
+        if (_power && _power->IsHit(px, py, width, height))
         {
             LAppDelegate::GetInstance()->AppEnd();
         }
@@ -340,12 +379,15 @@ void LAppView::PostModelDraw(LAppModel &refModel)
         // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はここ
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderSprite)
         {
+            ID3DXEffect* shaderEffect = LAppDelegate::GetInstance()->SetupShader();
+
             // スプライト描画
             int width, height;
             LAppDelegate::GetInstance()->GetClientSize(width, height);
 
             _renderSprite->SetColor(1.0f, 1.0f, 1.0f, GetSpriteAlpha(0));
-            _renderSprite->RenderImmidiate(LAppDelegate::GetInstance()->GetD3dDevice(), width, height, useTarget->GetTexture());
+            _renderSprite->RenderImmidiate(LAppDelegate::GetInstance()->GetD3dDevice(),
+                                           shaderEffect, width, height, useTarget->GetTexture());
         }
     }
 }

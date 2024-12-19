@@ -1,0 +1,46 @@
+#!/usr/bin/env sh
+
+set -ue
+
+SCRIPT_PATH=$(cd $(dirname $0) && pwd)
+CMAKE_PATH=$SCRIPT_PATH/..
+BUILD_PATH=$SCRIPT_PATH/../build/make_gcc
+MINIMUM_DEMO="OFF"
+DATA=""
+
+if [ "$#" -ne 0 ]; then
+ DATA="$1"
+fi
+
+while :
+do
+
+ if [ -z "$DATA" ]; then
+   echo "Choose which format you would like to create the demo."
+   echo "Full version : 1"
+   echo "Minimum version : 2"
+   read -p "Your Choice : " DATA
+ fi
+
+ case "$DATA" in
+   "1" )
+     echo "Making Full Demo"
+     MINIMUM_DEMO="OFF"
+     break ;;
+   "2" )
+     echo "Making Minimum Demo"
+     MINIMUM_DEMO="ON"
+     break ;;
+   * )
+     echo "You need to enter a valid number."
+     DATA="" ;;
+ esac
+done
+
+# Run CMake.
+cmake -S "$CMAKE_PATH" \
+  -B "$BUILD_PATH" \
+  -D CMAKE_BUILD_TYPE=Release \
+  -D CSM_MINIMUM_DEMO=$MINIMUM_DEMO \
+  -D GLFW_BUILD_WAYLAND=OFF
+cd "$BUILD_PATH" && make

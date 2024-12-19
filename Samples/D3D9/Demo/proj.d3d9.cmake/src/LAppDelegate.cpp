@@ -207,8 +207,6 @@ LAppDelegate::LAppDelegate()
     , _deviceLostStep(LostStep::LostStep_None)
     , _lostCounter(0)
     , _isFullScreen(false)
-    , _shaderEffect(NULL)
-    , _vertexFormat(NULL)
 {
     _textureManager = new LAppTextureManager();
     _view = new LAppView();
@@ -239,102 +237,6 @@ void LAppDelegate::InitializeCubism()
 
     _view->InitializeSprite();
 }
-
-bool LAppDelegate::CreateShader()
-{
-    ReleaseShader();
-
-    static const csmChar* SpriteShaderEffectSrc =
-        "float4x4 projectMatrix;"\
-        "float4 baseColor;"\
-        "texture mainTexture;"\
-        \
-        "sampler mainSampler = sampler_state{"\
-            "texture = <mainTexture>;"\
-        "};"\
-        \
-        "struct VS_IN {"\
-            "float2 pos : POSITION;"\
-            "float2 uv : TEXCOORD0;"\
-        "};"\
-        "struct VS_OUT {"\
-            "float4 Position : POSITION0;"\
-            "float2 uv : TEXCOORD0;"\
-            "float4 clipPosition : TEXCOORD1;"\
-        "};"\
-        \
-    "/* Vertex Shader */"\
-        "/* normal */"\
-        "VS_OUT VertNormal(VS_IN In) {"\
-            "VS_OUT Out = (VS_OUT)0;"\
-            "Out.Position = mul(float4(In.pos, 0.0f, 1.0f), projectMatrix);"\
-            "Out.uv.x = In.uv.x;"\
-            "Out.uv.y = 1.0 - +In.uv.y;"\
-            "return Out;"\
-        "}"\
-        \
-    "/* Pixel Shader */"\
-        "/* normal */"\
-        "float4 PixelNormal(VS_OUT In) : COLOR0{"\
-            "float4 color = tex2D(mainSampler, In.uv) * baseColor;"\
-            "return color;"\
-        "}"\
-        \
-    "/* Technique */"\
-        "technique ShaderNames_Normal {"\
-            "pass p0{"\
-                "VertexShader = compile vs_2_0 VertNormal();"\
-                "PixelShader = compile ps_2_0 PixelNormal();"\
-            "}"\
-        "}";
-
-    ID3DXBuffer* error = 0;
-    if (FAILED(D3DXCreateEffect(_device, SpriteShaderEffectSrc, static_cast<UINT>(strlen(SpriteShaderEffectSrc)), 0, 0, 0, 0, &_shaderEffect, &error)))
-    {
-        LAppPal::PrintLogLn("Cannot load the shaders");
-        return false;
-    }
-
-    // この描画で使用する頂点フォーマット
-    D3DVERTEXELEMENT9 elems[] = {
-        { 0, 0, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
-        { 0, sizeof(float) * 2, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
-        D3DDECL_END()
-    };
-    if (_device->CreateVertexDeclaration(elems, &_vertexFormat))
-    {
-        LAppPal::PrintLogLn("CreateVertexDeclaration failed");
-        CSM_ASSERT(0);
-    }
-
-    return true;
-}
-
-ID3DXEffect* LAppDelegate::SetupShader()
-{
-    if(_device==NULL || _vertexFormat==NULL || _shaderEffect==NULL)
-    {
-        return NULL;
-    }
-
-    _device->SetVertexDeclaration(_vertexFormat);
-    return _shaderEffect;
-}
-
-void LAppDelegate::ReleaseShader()
-{
-    if(_vertexFormat)
-    {
-        _vertexFormat->Release();
-        _vertexFormat = NULL;
-    }
-    if(_shaderEffect)
-    {
-        _shaderEffect->Release();
-        _shaderEffect = NULL;
-    }
-}
-
 
 void LAppDelegate::StartFrame()
 {
@@ -368,13 +270,6 @@ void LAppDelegate::StartFrame()
 
 void LAppDelegate::EndFrame()
 {
-    // テクスチャの参照を外しておく
-    if (_shaderEffect)
-    {
-        _shaderEffect->SetTexture("mainTexture", NULL);
-        _shaderEffect->CommitChanges();
-    }
-
     if (_device)
     {
         //シーンの終了

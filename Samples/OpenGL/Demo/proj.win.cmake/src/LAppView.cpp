@@ -15,13 +15,13 @@
 #include "LAppDefine.hpp"
 #include "TouchManager.hpp"
 #include "LAppSprite.hpp"
+#include "LAppSpriteShader.hpp"
 #include "LAppModel.hpp"
 
 using namespace std;
 using namespace LAppDefine;
 
 LAppView::LAppView():
-    _programId(0),
     _back(NULL),
     _gear(NULL),
     _power(NULL),
@@ -46,6 +46,7 @@ LAppView::LAppView():
 LAppView::~LAppView()
 {
     _renderBuffer.DestroyOffscreenSurface();
+    delete _spriteShader;
     delete _renderSprite;
     delete _viewMatrix;
     delete _deviceToScreen;
@@ -99,6 +100,11 @@ void LAppView::Initialize()
         ViewLogicalMaxBottom,
         ViewLogicalMaxTop
     );
+
+    // シェーダー作成
+    _spriteShader = new LAppSpriteShader();
+
+    InitializeSprite();
 }
 
 void LAppView::Render()
@@ -149,7 +155,7 @@ void LAppView::Render()
 
 void LAppView::InitializeSprite()
 {
-    _programId = LAppDelegate::GetInstance()->CreateShader();
+    GLuint programId = _spriteShader->GetShaderId();
 
     int width, height;
     glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
@@ -164,7 +170,7 @@ void LAppView::InitializeSprite()
     float y = height * 0.5f;
     float fWidth = static_cast<float>(backgroundTexture->width * 2.0f);
     float fHeight = static_cast<float>(height * 0.95f);
-    _back = new LAppSprite(x, y, fWidth, fHeight, backgroundTexture->id, _programId);
+    _back = new LAppSprite(x, y, fWidth, fHeight, backgroundTexture->id, programId);
 
     imageName = GearImageName;
     LAppTextureManager::TextureInfo* gearTexture = textureManager->CreateTextureFromPngFile(resourcesPath + imageName);
@@ -173,7 +179,7 @@ void LAppView::InitializeSprite()
     y = static_cast<float>(height - gearTexture->height * 0.5f);
     fWidth = static_cast<float>(gearTexture->width);
     fHeight = static_cast<float>(gearTexture->height);
-    _gear = new LAppSprite(x, y, fWidth, fHeight, gearTexture->id, _programId);
+    _gear = new LAppSprite(x, y, fWidth, fHeight, gearTexture->id, programId);
 
     imageName = PowerImageName;
     LAppTextureManager::TextureInfo* powerTexture = textureManager->CreateTextureFromPngFile(resourcesPath + imageName);
@@ -182,12 +188,12 @@ void LAppView::InitializeSprite()
     y = static_cast<float>(powerTexture->height * 0.5f);
     fWidth = static_cast<float>(powerTexture->width);
     fHeight = static_cast<float>(powerTexture->height);
-    _power = new LAppSprite(x, y, fWidth, fHeight, powerTexture->id, _programId);
+    _power = new LAppSprite(x, y, fWidth, fHeight, powerTexture->id, programId);
 
     // 画面全体を覆うサイズ
     x = width * 0.5f;
     y = height * 0.5f;
-    _renderSprite = new LAppSprite(x, y, static_cast<float>(width), static_cast<float>(height), 0, _programId);
+    _renderSprite = new LAppSprite(x, y, static_cast<float>(width), static_cast<float>(height), 0, programId);
 }
 
 void LAppView::OnTouchesBegan(float px, float py) const

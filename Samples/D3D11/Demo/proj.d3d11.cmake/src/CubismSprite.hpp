@@ -12,6 +12,8 @@
 #include <CubismFramework.hpp>
 #include <Type/CubismBasicType.hpp>
 
+class CubismSpriteShader;
+
  /**
  * @brief スプライトを実装するクラス。
  *
@@ -52,8 +54,9 @@ public:
     * @param[in]       width        横幅
     * @param[in]       height       高さ
     * @param[in]       textureId    テクスチャID
+    * @param[in]       shader       シェーダー設定
     */
-    CubismSprite(float x, float y, float width, float height, Csm::csmUint64 textureId);
+    CubismSprite(float x, float y, float width, float height, Csm::csmUint64 textureId, CubismSpriteShader* shader);
 
     /**
     * @brief デストラクタ
@@ -106,7 +109,6 @@ public:
     static const int INDEX_NUM = 6;
 
 private:
-
     Csm::csmUint64 _textureId;  ///< テクスチャID
     Rect _rect;                 ///< 矩形
 
@@ -115,5 +117,6 @@ private:
     ID3D11Buffer* _constantBuffer;  ///< 定数バッファ
 
     DirectX::XMFLOAT4   _color;     ///< スプライトカラー
-};
 
+    CubismSpriteShader* _shader;    ///< スプライト用のシェーダー準備クラス
+};

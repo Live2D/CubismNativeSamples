@@ -7,14 +7,17 @@
 
 #include "LAppSprite.hpp"
 #include "LAppTextureManager.hpp"
+#include "LAppSpritePipeline.hpp"
 #include "VulkanManager.hpp"
 
 using namespace Csm;
 
 LAppSprite::LAppSprite(
-    VkDevice device, VkPhysicalDevice physicalDevice, VulkanManager* vkManager, float x, float y, float width, float height,
-    Csm::csmUint32 textureId, VkImageView view, VkSampler sampler, VkDescriptorSetLayout descriptorSetLayout)
-    : _rect()
+    VkDevice device, VkPhysicalDevice physicalDevice, VulkanManager* vkManager,
+    float x, float y, float width, float height,
+    Csm::csmUint32 textureId, LAppSpritePipeline* pipeline,
+    VkImageView view, VkSampler sampler)
+    : _rect(), _pipeline(pipeline)
 {
     _rect.left = (x - width * 0.5f);
     _rect.right = (x + width * 0.5f);
@@ -91,8 +94,8 @@ LAppSprite::LAppSprite(
         LAppPal::PrintLogLn("failed to create descriptor pool!");
     }
 
-    CreateDescriptorSet(device, descriptorSetLayout);
-    if (view != NULL && sampler != NULL)
+    CreateDescriptorSet(device, _pipeline->GetDescriptorSetLayout());
+    if (textureId != 0)
     {
         SetDescriptorUpdated(false);
         UpdateDescriptorSet(device, view, sampler);
@@ -219,14 +222,14 @@ void LAppSprite::SetDescriptorUpdated(bool frag)
     isDescriptorUpdated = frag;
 }
 
-void LAppSprite::Render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VulkanManager* vkManager, int windowWidth, int windowHeight)
+void LAppSprite::Render(VkCommandBuffer commandBuffer, VulkanManager* vkManager, int windowWidth, int windowHeight)
 {
     UpdateData(vkManager, windowWidth, windowHeight);
     VkBuffer vertexBuffers[] = {_vertexBuffer.GetBuffer()};
     VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
     vkCmdBindIndexBuffer(commandBuffer, _indexBuffer.GetBuffer(), 0, VK_INDEX_TYPE_UINT16);
-    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &_descriptorSet, 0,nullptr);
+    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &_descriptorSet, 0,nullptr);
     vkCmdDrawIndexed(commandBuffer, IndexNum, 1, 0, 0, 0);
 }
 
@@ -256,4 +259,9 @@ void LAppSprite::ResetRect(float x, float y, float width, float height)
     _rect.right = (x + width * 0.5f);
     _rect.up = (y - height * 0.5f);
     _rect.down = (y + height * 0.5f);
+}
+
+void LAppSprite::SetPipeline(LAppSpritePipeline* pipeline)
+{
+    _pipeline = pipeline;
 }

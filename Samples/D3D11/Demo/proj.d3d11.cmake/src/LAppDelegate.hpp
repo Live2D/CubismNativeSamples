@@ -60,7 +60,6 @@ public:
      */
     static void GetClientSize(int& rWidth, int& rHeight);
 
-
     /**
      * @brief   APPに必要なものを初期化する。
      */
@@ -102,21 +101,6 @@ public:
      * @brief   フレーム最後の行動
      */
     void EndFrame();
-
-    /**
-     * @brief   スプライト描画用シェーダの作成と頂点宣言の作成を行う
-     */
-    bool CreateShader();
-
-    /**
-     * @brief   シェーダをコンテキストにセット
-     */
-    void SetupShader();
-
-    /**
-     * @brief   CreateShaderで確保したオブジェクトの開放
-     */
-    void ReleaseShader();
 
 private:
 
@@ -179,12 +163,4 @@ private:
     ID3D11Texture2D*        _depthTexture;      ///< Zバッファ
     ID3D11DepthStencilView* _depthStencilView;  ///< Zバッファビュー
     ID3D11DepthStencilState* _depthState;       ///< スプライト描画用深度オブジェクト
-
-    ID3D11RasterizerState*  _rasterizer;    ///< スプライト描画用ラスタライザ
-    ID3D11SamplerState*     _samplerState;  ///< スプライト描画用サンプラーステート
-
-    ID3D11VertexShader*     _vertexShader;  ///< スプライト描画シェーダ
-    ID3D11PixelShader*      _pixelShader;   ///< スプライト描画シェーダ
-    ID3D11BlendState*       _blendState;    ///< スプライト描画用ブレンドステート
-    ID3D11InputLayout*      _vertexFormat;  ///< スプライト描画用型宣言
 };

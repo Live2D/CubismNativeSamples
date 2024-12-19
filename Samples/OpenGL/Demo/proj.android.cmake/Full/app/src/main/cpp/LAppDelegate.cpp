@@ -13,7 +13,10 @@
 #include "LAppDefine.hpp"
 #include "LAppLive2DManager.hpp"
 #include "LAppTextureManager.hpp"
+#include "LAppModel.hpp"
 #include "JniBridgeC.hpp"
+
+#include <Rendering/OpenGL/CubismShader_OpenGLES2.hpp>
 
 using namespace Csm;
 using namespace std;
@@ -46,14 +49,11 @@ void LAppDelegate::ReleaseInstance()
 
 void LAppDelegate::OnStart()
 {
-    _textureManager = new LAppTextureManager();
-    _view = new LAppView();
-    LAppPal::UpdateTime();
+    _isActive = true;
 }
 
 void LAppDelegate::OnPause()
 {
-    _SceneIndex = LAppLive2DManager::GetInstance()->GetSceneIndex();
 }
 
 void LAppDelegate::OnStop()
@@ -112,10 +112,36 @@ void LAppDelegate::OnSurfaceCreate()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    //Initialize cubism
-    CubismFramework::Initialize();
+    if (_textureManager == nullptr)
+    {
+        _textureManager = new LAppTextureManager();
+    }
+    else
+    {
+        // 無効になっているOpenGLリソースを破棄
+        _textureManager->ReleaseInvalidTextures();
+    }
+    if (_view != NULL)
+    {
+        delete _view;
+    }
+    _view = new LAppView();
+    LAppPal::UpdateTime();
 
-    _view->InitializeShader();
+    //Initialize cubism
+    if (!CubismFramework::IsInitialized())
+    {
+        CubismFramework::Initialize();
+    }
+
+    // 無効になっているOpenGLリソースを破棄
+    Live2D::Cubism::Framework::Rendering::CubismShader_OpenGLES2::GetInstance()->ReleaseInvalidShaderProgram();
+
+    LAppLive2DManager* live2DManager = LAppLive2DManager::GetInstance();
+    for (Csm::csmUint32 i = 0; i < live2DManager->GetModelNum(); i++)
+    {
+        live2DManager->GetModel(i)->ReloadRenderer();
+    }
 }
 
 void LAppDelegate::OnSurfaceChanged(float width, float height)
@@ -124,17 +150,15 @@ void LAppDelegate::OnSurfaceChanged(float width, float height)
     _width = width;
     _height = height;
 
-    //AppViewの初期化
+    // AppViewの初期化
     _view->Initialize();
+    // Spriteの初期化
     _view->InitializeSprite();
+}
 
-    //load model
-    if (LAppLive2DManager::GetInstance()->GetSceneIndex() != _SceneIndex)
-    {
-        LAppLive2DManager::GetInstance()->ChangeScene(_SceneIndex);
-    }
-
-    _isActive = true;
+void LAppDelegate::SetSceneIndex(int index)
+{
+    _SceneIndex = index;
 }
 
 LAppDelegate::LAppDelegate():
@@ -191,47 +215,4 @@ void LAppDelegate::OnTouchMoved(double x, double y)
     {
         _view->OnTouchesMoved(_mouseX, _mouseY);
     }
-}
-
-GLuint LAppDelegate::CreateShader()
-{
-    //バーテックスシェーダのコンパイル
-    GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-    const char* vertexShader =
-        "#version 100\n"
-        "attribute vec3 position;"
-        "attribute vec2 uv;"
-        "varying vec2 vuv;"
-        "void main(void){"
-        "    gl_Position = vec4(position, 1.0);"
-        "    vuv = uv;"
-        "}";
-    glShaderSource(vertexShaderId, 1, &vertexShader, NULL);
-    glCompileShader(vertexShaderId);
-
-    //フラグメントシェーダのコンパイル
-    GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-    const char* fragmentShader =
-        "#version 100\n"
-        "precision mediump float;"
-        "varying vec2 vuv;"
-        "uniform sampler2D texture;"
-        "uniform vec4 baseColor;"
-        "void main(void){"
-        "    gl_FragColor = texture2D(texture, vuv) * baseColor;"
-        "}";
-    glShaderSource(fragmentShaderId, 1, &fragmentShader, NULL);
-    glCompileShader(fragmentShaderId);
-
-    //プログラムオブジェクトの作成
-    GLuint programId = glCreateProgram();
-    glAttachShader(programId, vertexShaderId);
-    glAttachShader(programId, fragmentShaderId);
-
-    // リンク
-    glLinkProgram(programId);
-
-    glUseProgram(programId);
-
-    return programId;
 }

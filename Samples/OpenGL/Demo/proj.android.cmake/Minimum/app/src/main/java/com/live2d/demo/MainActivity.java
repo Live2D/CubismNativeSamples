@@ -18,20 +18,29 @@ import android.view.WindowInsetsController;
 
 public class MainActivity extends Activity {
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        float pointX = event.getX();
-        float pointY = event.getY();
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                JniBridgeJava.nativeOnTouchesBegan(pointX, pointY);
-                break;
-            case MotionEvent.ACTION_UP:
-                JniBridgeJava.nativeOnTouchesEnded(pointX, pointY);
-                break;
-            case MotionEvent.ACTION_MOVE:
-                JniBridgeJava.nativeOnTouchesMoved(pointX, pointY);
-                break;
-        }
+    public boolean onTouchEvent(final MotionEvent event) {
+        final float pointX = event.getX();
+        final float pointY = event.getY();
+
+        // GLSurfaceViewのイベント処理キューにタッチイベントを追加する。
+        glSurfaceView.queueEvent(
+            new Runnable() {
+                @Override
+                public void run() {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            JniBridgeJava.nativeOnTouchesBegan(pointX, pointY);
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            JniBridgeJava.nativeOnTouchesEnded(pointX, pointY);
+                            break;
+                        case MotionEvent.ACTION_MOVE:
+                            JniBridgeJava.nativeOnTouchesMoved(pointX, pointY);
+                            break;
+                    }
+                }
+            }
+        );
         return super.onTouchEvent(event);
     }
 

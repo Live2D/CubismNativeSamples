@@ -276,21 +276,10 @@ void LAppModel::PreloadMotionGroup(const csmChar* group)
         csmByte* buffer;
         csmSizeInt size;
         buffer = CreateBuffer(path.GetRawString(), &size);
-        CubismMotion* tmpMotion = static_cast<CubismMotion*>(LoadMotion(buffer, size, name.GetRawString()));
+        CubismMotion* tmpMotion = static_cast<CubismMotion*>(LoadMotion(buffer, size, name.GetRawString(), NULL, NULL, _modelSetting, group, i));
 
         if (tmpMotion)
         {
-            csmFloat32 fadeTime = _modelSetting->GetMotionFadeInTimeValue(group, i);
-            if (fadeTime >= 0.0f)
-            {
-                tmpMotion->SetFadeInTime(fadeTime);
-            }
-
-            fadeTime = _modelSetting->GetMotionFadeOutTimeValue(group, i);
-            if (fadeTime >= 0.0f)
-            {
-                tmpMotion->SetFadeOutTime(fadeTime);
-            }
             tmpMotion->SetEffectIds(_eyeBlinkIds, _lipSyncIds);
 
             if (_motions[name] != NULL)
@@ -428,7 +417,7 @@ void LAppModel::Update()
 
 }
 
-CubismMotionQueueEntryHandle LAppModel::StartMotion(const csmChar* group, csmInt32 no, csmInt32 priority, ACubismMotion::FinishedMotionCallback onFinishedMotionHandler)
+CubismMotionQueueEntryHandle LAppModel::StartMotion(const csmChar* group, csmInt32 no, csmInt32 priority, ACubismMotion::FinishedMotionCallback onFinishedMotionHandler, ACubismMotion::BeganMotionCallback onBeganMotionHandler)
 {
     if (priority == PriorityForce)
     {
@@ -458,21 +447,10 @@ CubismMotionQueueEntryHandle LAppModel::StartMotion(const csmChar* group, csmInt
         csmByte* buffer;
         csmSizeInt size;
         buffer = CreateBuffer(path.GetRawString(), &size);
-        motion = static_cast<CubismMotion*>(LoadMotion(buffer, size, NULL, onFinishedMotionHandler));
+        motion = static_cast<CubismMotion*>(LoadMotion(buffer, size, NULL, onFinishedMotionHandler, onBeganMotionHandler, _modelSetting, group, no));
 
         if (motion)
         {
-            csmFloat32 fadeTime = _modelSetting->GetMotionFadeInTimeValue(group, no);
-            if (fadeTime >= 0.0f)
-            {
-                motion->SetFadeInTime(fadeTime);
-            }
-
-            fadeTime = _modelSetting->GetMotionFadeOutTimeValue(group, no);
-            if (fadeTime >= 0.0f)
-            {
-                motion->SetFadeOutTime(fadeTime);
-            }
             motion->SetEffectIds(_eyeBlinkIds, _lipSyncIds);
             autoDelete = true; // 終了時にメモリから削除
         }
@@ -481,6 +459,7 @@ CubismMotionQueueEntryHandle LAppModel::StartMotion(const csmChar* group, csmInt
     }
     else
     {
+        motion->SetBeganMotionHandler(onBeganMotionHandler);
         motion->SetFinishedMotionHandler(onFinishedMotionHandler);
     }
 
@@ -499,7 +478,7 @@ CubismMotionQueueEntryHandle LAppModel::StartMotion(const csmChar* group, csmInt
     return  _motionManager->StartMotionPriority(motion, autoDelete, priority);
 }
 
-CubismMotionQueueEntryHandle LAppModel::StartRandomMotion(const csmChar* group, csmInt32 priority, ACubismMotion::FinishedMotionCallback onFinishedMotionHandler)
+CubismMotionQueueEntryHandle LAppModel::StartRandomMotion(const csmChar* group, csmInt32 priority, ACubismMotion::FinishedMotionCallback onFinishedMotionHandler, ACubismMotion::BeganMotionCallback onBeganMotionHandler)
 {
     if (_modelSetting->GetMotionCount(group) == 0)
     {
@@ -508,7 +487,7 @@ CubismMotionQueueEntryHandle LAppModel::StartRandomMotion(const csmChar* group, 
 
     csmInt32 no = rand() % _modelSetting->GetMotionCount(group);
 
-    return StartMotion(group, no, priority, onFinishedMotionHandler);
+    return StartMotion(group, no, priority, onFinishedMotionHandler, onBeganMotionHandler);
 }
 
 void LAppModel::DoDraw()
@@ -564,7 +543,7 @@ void LAppModel::SetExpression(const csmChar* expressionID)
 
     if (motion != NULL)
     {
-        _expressionManager->StartMotionPriority(motion, false, PriorityForce);
+        _expressionManager->StartMotion(motion, false);
     }
     else
     {

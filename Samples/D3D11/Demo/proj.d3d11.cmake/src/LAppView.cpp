@@ -15,6 +15,7 @@
 #include "LAppDefine.hpp"
 #include "TouchManager.hpp"
 #include "LAppSprite.hpp"
+#include "LAppSpriteShader.hpp"
 #include "LAppModel.hpp"
 
 using namespace std;
@@ -25,7 +26,8 @@ LAppView::LAppView():
     _gear(NULL),
     _power(NULL),
     _renderSprite(NULL),
-    _renderTarget(SelectTarget_None)
+    _renderTarget(SelectTarget_None),
+    _shader(NULL)
 {
     _clearColor[0] = 1.0f;
     _clearColor[1] = 1.0f;
@@ -40,6 +42,9 @@ LAppView::LAppView():
 
     // 画面の表示の拡大縮小や移動の変換を行う行列
     _viewMatrix = new CubismViewMatrix();
+
+    // スプライト用シェーダー
+    _shader = new LAppSpriteShader();
 }
 
 LAppView::~LAppView()
@@ -47,7 +52,9 @@ LAppView::~LAppView()
     _renderBuffer.DestroyOffscreenSurface();
 
     ReleaseSprite();
+    _shader->ReleaseShader();
 
+    delete _shader;
     delete _viewMatrix;
     delete _deviceToScreen;
     delete _touchManager;
@@ -97,6 +104,9 @@ void LAppView::Initialize()
         ViewLogicalMaxBottom,
         ViewLogicalMaxTop
     );
+
+    // シェーダー作成
+    _shader->CreateShader();
 }
 
 void LAppView::Render()
@@ -106,9 +116,6 @@ void LAppView::Render()
     {
         return;
     }
-
-    // シェーダー設定
-    LAppDelegate::GetInstance()->SetupShader();
 
     // スプライト描画
     int width, height;
@@ -180,7 +187,7 @@ void LAppView::InitializeSprite()
     y = height * 0.5f;
     fWidth = static_cast<float>(backgroundTexture->width * 2);
     fHeight = static_cast<float>(height) * 0.95f;
-    _back = new LAppSprite(x, y, fWidth, fHeight, backgroundTexture->id, device);
+    _back = new LAppSprite(x, y, fWidth, fHeight, backgroundTexture->id, _shader, device);
 
     imageName = resourcesPath + GearImageName;
     LAppTextureManager::TextureInfo* gearTexture = textureManager->CreateTextureFromPngFile(imageName, false);
@@ -188,7 +195,7 @@ void LAppView::InitializeSprite()
     y = static_cast<float>(height - gearTexture->height * 0.5f);
     fWidth = static_cast<float>(gearTexture->width);
     fHeight = static_cast<float>(gearTexture->height);
-    _gear = new LAppSprite(x, y, fWidth, fHeight, gearTexture->id, device);
+    _gear = new LAppSprite(x, y, fWidth, fHeight, gearTexture->id, _shader, device);
 
     imageName = resourcesPath + PowerImageName;
     LAppTextureManager::TextureInfo* powerTexture = textureManager->CreateTextureFromPngFile(imageName, false);
@@ -196,11 +203,11 @@ void LAppView::InitializeSprite()
     y = static_cast<float>(powerTexture->height * 0.5f);
     fWidth = static_cast<float>(powerTexture->width);
     fHeight = static_cast<float>(powerTexture->height);
-    _power = new LAppSprite(x, y, fWidth, fHeight, powerTexture->id, device);
+    _power = new LAppSprite(x, y, fWidth, fHeight, powerTexture->id, _shader, device);
 
     x = width * 0.5f;
     y = height * 0.5f;
-    _renderSprite = new LAppSprite(x, y, static_cast<float>(width), static_cast<float>(height), 0, device);
+    _renderSprite = new LAppSprite(x, y, static_cast<float>(width), static_cast<float>(height), 0, _shader, device);
 }
 
 void LAppView::ReleaseSprite()
@@ -420,9 +427,6 @@ void LAppView::PostModelDraw(LAppModel& refModel)
         // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はここ
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderSprite)
         {
-            // シェーダー設定
-            LAppDelegate::GetInstance()->SetupShader();
-
             // スプライト描画
             int width, height;
             LAppDelegate::GetInstance()->GetClientSize(width, height);

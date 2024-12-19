@@ -103,22 +103,6 @@ public:
      */
     void EndFrame();
 
-    /**
-     * @brief   スプライト描画用シェーダの作成と頂点宣言の作成を行う
-     */
-    bool CreateShader();
-
-    /**
-     * @brief   スプライト描画時、頂点宣言をセットするとともにシェーダエフェクトを返す
-     */
-    ID3DXEffect* SetupShader();
-
-    /**
-     * @brief   CreateShaderで確保したオブジェクトの開放
-     */
-    void ReleaseShader();
-
-
 private:
 
     enum LostStep
@@ -173,7 +157,4 @@ private:
     bool                    _isFullScreen;  ///< フルスクリーン中か
     D3DPRESENT_PARAMETERS   _presentParameters;     ///< プレゼントパラメータ
     D3DPRESENT_PARAMETERS   _presentParametersFull;     ///< プレゼントパラメータ フルスクリーン
-
-    ID3DXEffect*                    _shaderEffect;  ///< スプライト描画用シェーダ
-    IDirect3DVertexDeclaration9*    _vertexFormat;  ///< スプライト描画用型宣言
 };

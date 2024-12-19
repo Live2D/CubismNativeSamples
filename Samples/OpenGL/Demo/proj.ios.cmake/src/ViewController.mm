@@ -355,15 +355,7 @@ using namespace LAppDefine;
             int height = screenRect.size.height;
 
             // モデル描画キャンバス
-            // PadとPhoneで縦横を変えている
-            if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-            {
-                useTarget->CreateOffscreenSurface(height, width);
-            }
-            else
-            {
-                useTarget->CreateOffscreenSurface(width, height);
-            }
+            useTarget->CreateOffscreenSurface(height, width);
         }
 
         // レンダリング開始

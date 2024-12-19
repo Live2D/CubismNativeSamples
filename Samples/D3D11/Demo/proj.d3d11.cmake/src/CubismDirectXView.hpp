@@ -15,6 +15,8 @@
 #include "CubismUserModelExtend.hpp"
 #include "CubismSprite.hpp"
 
+class CubismSpriteShader;
+
 class CubismDirectXView
 {
 public:
@@ -144,4 +146,6 @@ private:
     Csm::Rendering::CubismOffscreenSurface_D3D11 _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング
     SelectTarget _renderTarget;     ///< レンダリング先の選択肢
     float _clearColor[4];           ///< レンダリングターゲットのクリアカラー
+
+    CubismSpriteShader* _shader;     ///< スプライト用のシェーダー準備クラス
 };

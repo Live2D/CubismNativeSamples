@@ -96,7 +96,6 @@
     int widthLevels = ceil(log2(width));
     int heightLevels = ceil(log2(height));
     int mipCount = (heightLevels > widthLevels) ? heightLevels : widthLevels;
-
     textureDescriptor.mipmapLevelCount = mipCount;
 
     CubismRenderingInstanceSingleton_Metal *single = [CubismRenderingInstanceSingleton_Metal sharedManager];

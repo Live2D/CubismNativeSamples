@@ -7,8 +7,6 @@
 
 #include "LAppDelegate.hpp"
 #include <iostream>
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
 #include <Rendering/Vulkan/CubismRenderer_Vulkan.hpp>
 #include "LAppLive2DManager.hpp"
 #include "LAppView.hpp"
@@ -86,7 +84,7 @@ bool LAppDelegate::Initialize()
     //コールバック関数の登録
     glfwSetMouseButtonCallback(window, EventHandler::OnMouseCallBack);
     glfwSetCursorPosCallback(window, EventHandler::OnMouseCallBack);
-    glfwSetFramebufferSizeCallback(window, s_vulkanManager->framebufferResizeCallback);
+    glfwSetFramebufferSizeCallback(window, EventHandler::OnFramebufferResizedCallback);
 
     // ウィンドウサイズ記憶
     int width, height;
@@ -106,9 +104,8 @@ bool LAppDelegate::Initialize()
     Live2D::Cubism::Framework::Rendering::CubismRenderer_Vulkan::InitializeConstantSettings(
         s_vulkanManager->GetDevice(), s_vulkanManager->GetPhysicalDevice(),
         s_vulkanManager->GetCommandPool(), s_vulkanManager->GetGraphicQueue(),
-        swapchainManager->GetExtent(), swapchainManager->GetSwapchainImageFormat(),
-        s_vulkanManager->GetImageFormat(),
-        s_vulkanManager->GetSwapchainImage(), s_vulkanManager->GetSwapchainImageView(),
+        swapchainManager->GetImageCount() , swapchainManager->GetExtent(),
+        s_vulkanManager->GetSwapchainImageView(), swapchainManager->GetSwapchainImageFormat(),
         s_vulkanManager->GetDepthFormat()
     );
 
@@ -140,7 +137,8 @@ void LAppDelegate::Release()
     //Cubism SDK の解放
     CubismFramework::Dispose();
 
-    s_vulkanManager->Destroy();
+    delete s_vulkanManager;
+    s_vulkanManager = NULL;
 }
 
 bool LAppDelegate::RecreateSwapchain()
@@ -156,10 +154,11 @@ bool LAppDelegate::RecreateSwapchain()
         }
 
         s_vulkanManager->RecreateSwapchain();
-        Live2D::Cubism::Framework::Rendering::CubismRenderer_Vulkan::UpdateSwapchainVariable(
-            s_vulkanManager->GetSwapchainManager()->GetExtent(),
+        Live2D::Cubism::Framework::Rendering::CubismRenderer_Vulkan::SetRenderTarget(
             s_vulkanManager->GetSwapchainImage(),
-            s_vulkanManager->GetSwapchainImageView()
+            s_vulkanManager->GetSwapchainImageView(),
+            s_vulkanManager->GetSwapchainManager()->GetSwapchainImageFormat(),
+            s_vulkanManager->GetSwapchainManager()->GetExtent()
         );
 
         // AppViewの初期化

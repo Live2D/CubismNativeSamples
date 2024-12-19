@@ -35,6 +35,9 @@ namespace LAppDefine {
     extern const csmChar* GearImageName;         ///< 歯車画像ファイル
     extern const csmChar* PowerImageName;        ///< 終了ボタン画像ファイル
 
+    extern const csmChar* ShaderPath;               ///< シェーダーパス
+    extern const csmChar* ShaderName;               ///< シェーダー本体
+
     // モデル定義--------------------------------------------
                                                     // 外部定義ファイル(json)と合わせる
     extern const csmChar* MotionGroupIdle;          ///< アイドリング時に再生するモーションのリスト

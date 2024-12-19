@@ -103,11 +103,11 @@ bool LAppDelegate::Initialize()
     _windowWidth = width;
     _windowHeight = height;
 
-    //AppViewの初期化
-    _view->Initialize();
-
     // Cubism SDK の初期化
     InitializeCubism();
+
+    //AppViewの初期化
+    _view->Initialize();
 
     return GL_TRUE;
 }
@@ -209,8 +209,6 @@ void LAppDelegate::InitializeCubism()
     CubismMatrix44 projection;
 
     LAppPal::UpdateTime();
-
-    _view->InitializeSprite();
 }
 
 void LAppDelegate::OnMouseCallBack(GLFWwindow* window, int button, int action, int modify)
@@ -254,77 +252,4 @@ void LAppDelegate::OnMouseCallBack(GLFWwindow* window, double x, double y)
     }
 
     _view->OnTouchesMoved(_mouseX, _mouseY);
-}
-
-GLuint LAppDelegate::CreateShader()
-{
-    //バーテックスシェーダのコンパイル
-    GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-    const char* vertexShader =
-        "#version 120\n"
-        "attribute vec3 position;"
-        "attribute vec2 uv;"
-        "varying vec2 vuv;"
-        "void main(void){"
-        "    gl_Position = vec4(position, 1.0);"
-        "    vuv = uv;"
-        "}";
-    glShaderSource(vertexShaderId, 1, &vertexShader, NULL);
-    glCompileShader(vertexShaderId);
-    if(!CheckShader(vertexShaderId))
-    {
-        return 0;
-    }
-
-    //フラグメントシェーダのコンパイル
-    GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-    const char* fragmentShader =
-        "#version 120\n"
-        "varying vec2 vuv;"
-        "uniform sampler2D texture;"
-        "uniform vec4 baseColor;"
-        "void main(void){"
-        "    gl_FragColor = texture2D(texture, vuv) * baseColor;"
-        "}";
-    glShaderSource(fragmentShaderId, 1, &fragmentShader, NULL);
-    glCompileShader(fragmentShaderId);
-    if (!CheckShader(fragmentShaderId))
-    {
-        return 0;
-    }
-
-    //プログラムオブジェクトの作成
-    GLuint programId = glCreateProgram();
-    glAttachShader(programId, vertexShaderId);
-    glAttachShader(programId, fragmentShaderId);
-
-    // リンク
-    glLinkProgram(programId);
-
-    glUseProgram(programId);
-
-    return programId;
-}
-
-bool LAppDelegate::CheckShader(GLuint shaderId)
-{
-    GLint status;
-    GLint logLength;
-    glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &logLength);
-    if (logLength > 0)
-    {
-        GLchar* log = reinterpret_cast<GLchar*>(CSM_MALLOC(logLength));
-        glGetShaderInfoLog(shaderId, logLength, &logLength, log);
-        CubismLogError("Shader compile log: %s", log);
-        CSM_FREE(log);
-    }
-
-    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &status);
-    if (status == GL_FALSE)
-    {
-        glDeleteShader(shaderId);
-        return false;
-    }
-
-    return true;
 }

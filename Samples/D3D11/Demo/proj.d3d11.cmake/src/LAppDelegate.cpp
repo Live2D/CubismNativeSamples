@@ -144,44 +144,6 @@ bool LAppDelegate::Initialize()
         return false;
     }
 
-    // ラスタライザ
-    D3D11_RASTERIZER_DESC rasterDesc;
-    memset(&rasterDesc, 0, sizeof(rasterDesc));
-    rasterDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
-    rasterDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK; // 裏面を切る
-    rasterDesc.FrontCounterClockwise = TRUE; // CCWを表面にする
-    rasterDesc.DepthClipEnable = FALSE;
-    rasterDesc.MultisampleEnable = FALSE;
-    rasterDesc.DepthBiasClamp = 0;
-    rasterDesc.SlopeScaledDepthBias = 0;
-    result = _device->CreateRasterizerState(&rasterDesc, &_rasterizer);
-    if (FAILED(result))
-    {
-        LAppPal::PrintLogLn("Fail Create Rasterizer 0x%x", result);
-        return false;
-    }
-
-    // テクスチャサンプラーステート
-    D3D11_SAMPLER_DESC samplerDesc;
-    memset(&samplerDesc, 0, sizeof(D3D11_SAMPLER_DESC));
-    samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-    samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-    samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-    samplerDesc.MaxAnisotropy = 1;
-    samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-    samplerDesc.MinLOD = -D3D11_FLOAT32_MAX;
-    samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    _device->CreateSamplerState(&samplerDesc, &_samplerState);
-    if (FAILED(result))
-    {
-        LAppPal::PrintLogLn("Fail Create Sampler 0x%x", result);
-        return false;
-    }
-
-    // スプライト用シェーダ作成
-    CreateShader();
-
     // デバイス作成の後
     _textureManager = new LAppTextureManager();
 
@@ -262,24 +224,10 @@ void LAppDelegate::Release()
     // リソースを解放
     LAppLive2DManager::ReleaseInstance();
 
-    // シェーダ類の開放
-    ReleaseShader();
-
     delete _view;
     delete _textureManager;
     _view = NULL;
     _textureManager = NULL;
-
-    if(_samplerState)
-    {
-        _samplerState->Release();
-        _samplerState = NULL;
-    }
-    if (_rasterizer)
-    {
-        _rasterizer->Release();
-        _rasterizer = NULL;
-    }
 
     if (_renderTargetView)
     {
@@ -378,12 +326,6 @@ LAppDelegate::LAppDelegate()
     , _depthTexture(NULL)
     , _depthStencilView(NULL)
     , _depthState(NULL)
-    , _rasterizer(NULL)
-    , _samplerState(NULL)
-    , _vertexShader(NULL)
-    , _pixelShader(NULL)
-    , _blendState(NULL)
-    , _vertexFormat(NULL)
 {
     _view = new LAppView();
 }
@@ -411,231 +353,6 @@ void LAppDelegate::InitializeCubism()
     LAppPal::UpdateTime();
 
     _view->InitializeSprite();
-}
-
-bool LAppDelegate::CreateShader()
-{
-    // 一旦削除する
-    ReleaseShader();
-
-// スプライト描画用シェーダ
-    static const csmChar* SpriteShaderEffectSrc =
-        "cbuffer ConstantBuffer {"\
-        "float4x4 projectMatrix;"\
-        "float4x4 clipMatrix;"\
-        "float4 baseColor;"\
-        "float4 channelFlag;"\
-        "}"\
-        \
-        "Texture2D mainTexture : register(t0);"\
-        "SamplerState mainSampler : register(s0);"\
-        "struct VS_IN {"\
-            "float2 pos : POSITION0;"\
-            "float2 uv : TEXCOORD0;"\
-        "};"\
-        "struct VS_OUT {"\
-            "float4 Position : SV_POSITION;"\
-            "float2 uv : TEXCOORD0;"\
-            "float4 clipPosition : TEXCOORD1;"\
-        "};"\
-        \
-    "/* Vertex Shader */"\
-        "/* normal */"\
-        "VS_OUT VertNormal(VS_IN In) {"\
-            "VS_OUT Out = (VS_OUT)0;"\
-            "Out.Position = mul(float4(In.pos, 0.0f, 1.0f), projectMatrix);"\
-            "Out.uv.x = In.uv.x;"\
-            "Out.uv.y = 1.0 - +In.uv.y;"\
-            "return Out;"\
-        "}"\
-        \
-    "/* Pixel Shader */"\
-        "/* normal */"\
-        "float4 PixelNormal(VS_OUT In) : SV_Target {"\
-            "float4 color = mainTexture.Sample(mainSampler, In.uv) * baseColor;"\
-            "return color;"\
-        "}";
-
-    ID3DBlob* vertexError = NULL;
-    ID3DBlob* pixelError = NULL;
-
-    ID3DBlob* vertexBlob = NULL;   ///< スプライト描画用シェーダ
-    ID3DBlob* pixelBlob = NULL;     ///< スプライト描画用シェーダ
-
-    HRESULT hr = S_OK;
-    do
-    {
-        UINT compileFlag = 0;
-
-        hr = D3DCompile(
-            SpriteShaderEffectSrc,              // メモリー内のシェーダーへのポインターです
-            strlen(SpriteShaderEffectSrc),      // メモリー内のシェーダーのサイズです
-            NULL,                               // シェーダー コードが格納されているファイルの名前
-            NULL,                               // マクロ定義の配列へのポインター
-            NULL,                               // インクルード ファイルを扱うインターフェイスへのポインター
-            "VertNormal",                       // シェーダーの実行が開始されるシェーダー エントリポイント関数の名前
-            "vs_4_0",                           // シェーダー モデルを指定する文字列。
-            compileFlag,                        // シェーダーコンパイルフラグ
-            0,                                  // シェーダーコンパイルフラグ
-            &vertexBlob,
-            &vertexError);                              // エラーが出る場合はここで
-        if (FAILED(hr))
-        {
-            LAppPal::PrintLogLn("Fail Compile Vertex Shader");
-            break;
-        }
-        hr = _device->CreateVertexShader(vertexBlob->GetBufferPointer(), vertexBlob->GetBufferSize(), NULL, &_vertexShader);
-        if (FAILED(hr))
-        {
-            LAppPal::PrintLogLn("Fail Create Vertex Shader");
-            break;
-        }
-
-        hr = D3DCompile(
-            SpriteShaderEffectSrc,              // メモリー内のシェーダーへのポインターです
-            strlen(SpriteShaderEffectSrc),      // メモリー内のシェーダーのサイズです
-            NULL,                               // シェーダー コードが格納されているファイルの名前
-            NULL,                               // マクロ定義の配列へのポインター
-            NULL,                               // インクルード ファイルを扱うインターフェイスへのポインター
-            "PixelNormal",                      // シェーダーの実行が開始されるシェーダー エントリポイント関数の名前
-            "ps_4_0",                           // シェーダー モデルを指定する文字列
-            compileFlag,                        // シェーダーコンパイルフラグ
-            0,                                  // シェーダーコンパイルフラグ
-            &pixelBlob,
-            &pixelError);                       // エラーが出る場合はここで
-        if (FAILED(hr))
-        {
-            LAppPal::PrintLogLn("Fail Compile Pixel Shader");
-            break;
-        }
-
-        hr = _device->CreatePixelShader(pixelBlob->GetBufferPointer(), pixelBlob->GetBufferSize(), NULL, &_pixelShader);
-        if (FAILED(hr))
-        {
-            LAppPal::PrintLogLn("Fail Create Pixel Shader");
-            break;
-        }
-
-        // この描画で使用する頂点フォーマット
-        D3D11_INPUT_ELEMENT_DESC elems[] = {
-            { "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        };
-        hr = _device->CreateInputLayout(elems, ARRAYSIZE(elems), vertexBlob->GetBufferPointer(), vertexBlob->GetBufferSize(), &_vertexFormat);
-
-        if (FAILED(hr))
-        {
-            LAppPal::PrintLogLn("CreateVertexDeclaration failed");
-            break;
-        }
-
-    } while (0);
-
-    if(pixelError)
-    {
-        pixelError->Release();
-        pixelError = NULL;
-    }
-    if (vertexError)
-    {
-        vertexError->Release();
-        vertexError = NULL;
-    }
-
-    // blobはもうここで不要
-    if (pixelBlob)
-    {
-        pixelBlob->Release();
-        pixelBlob = NULL;
-    }
-    if (vertexBlob)
-    {
-        vertexBlob->Release();
-        vertexBlob = NULL;
-    }
-
-    if (FAILED(hr))
-    {
-        return false;
-    }
-
-    // レンダリングステートオブジェクト
-    D3D11_BLEND_DESC blendDesc;
-    memset(&blendDesc, 0, sizeof(blendDesc));
-    blendDesc.AlphaToCoverageEnable = FALSE;
-    blendDesc.IndependentBlendEnable = FALSE;   // falseの場合はRenderTarget[0]しか使用しなくなる
-    blendDesc.RenderTarget[0].BlendEnable = TRUE;
-    blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-    blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-    blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-    blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-    blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-    blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-    blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-    _device->CreateBlendState(&blendDesc, &_blendState);
-
-    return true;
-}
-
-void LAppDelegate::SetupShader()
-{
-    if(_device==NULL || _vertexFormat==NULL || _vertexShader==NULL || _pixelShader==NULL)
-    {
-        return;
-    }
-
-    // 現在のウィンドウサイズ
-    int windowWidth, windowHeight;
-    GetClientSize(windowWidth, windowHeight);
-
-    // スプライト描画用の設定をし、シェーダセット
-    float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    _deviceContext->OMSetBlendState(_blendState, blendFactor, 0xffffffff);
-
-    _deviceContext->IASetInputLayout(_vertexFormat);
-    _deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    _deviceContext->IASetInputLayout(_vertexFormat);
-
-    D3D11_VIEWPORT viewport;
-    viewport.TopLeftX = 0;
-    viewport.TopLeftY = 0;
-    viewport.Width = static_cast<FLOAT>(windowWidth);
-    viewport.Height = static_cast<FLOAT>(windowHeight);
-    viewport.MinDepth = 0.0f;
-    viewport.MaxDepth = 1.0f;
-
-    _deviceContext->RSSetViewports(1, &viewport);
-    _deviceContext->RSSetState(_rasterizer);
-
-    _deviceContext->VSSetShader(_vertexShader, NULL, 0);
-
-    _deviceContext->PSSetShader(_pixelShader, NULL, 0);
-    _deviceContext->PSSetSamplers(0, 1, &_samplerState);
-}
-
-void LAppDelegate::ReleaseShader()
-{
-    if(_blendState)
-    {
-        _blendState->Release();
-        _blendState = NULL;
-    }
-    if(_vertexFormat)
-    {
-        _vertexFormat->Release();
-        _vertexFormat = NULL;
-    }
-    if (_pixelShader)
-    {
-        _pixelShader->Release();
-        _pixelShader = NULL;
-    }
-    if (_vertexShader)
-    {
-        _vertexShader->Release();
-        _vertexShader = NULL;
-    }
 }
 
 void LAppDelegate::StartFrame()

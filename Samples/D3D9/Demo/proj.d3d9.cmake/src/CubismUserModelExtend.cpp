@@ -200,24 +200,10 @@ void CubismUserModelExtend::PreloadMotionGroup(const csmChar* group)
         csmSizeInt size;
         buffer = CreateBuffer(path.GetRawString(), &size);
         // モーションデータの読み込み
-        CubismMotion* tmpMotion = static_cast<CubismMotion*>(LoadMotion(buffer, size, name.GetRawString()));
+        CubismMotion* tmpMotion = static_cast<CubismMotion*>(LoadMotion(buffer, size, name.GetRawString(), NULL, NULL, _modelJson, group, i));
 
         if (tmpMotion)
         {
-            // フェードインの時間を取得
-            csmFloat32 fadeTime = _modelJson->GetMotionFadeInTimeValue(group, i);
-            if (fadeTime >= 0.0f)
-            {
-                tmpMotion->SetFadeInTime(fadeTime);
-            }
-
-            // フェードアウトの時間を取得
-            fadeTime = _modelJson->GetMotionFadeOutTimeValue(group, i);
-            if (fadeTime >= 0.0f)
-            {
-                tmpMotion->SetFadeOutTime(fadeTime);
-            }
-
             if (_motions[name])
             {
                 // インスタンスを破棄
@@ -257,10 +243,9 @@ void CubismUserModelExtend::ReleaseModelSetting()
 * @param[in]   group                       モーショングループ名
 * @param[in]   no                          グループ内の番号
 * @param[in]   priority                    優先度
-* @param[in]   onFinishedMotionHandler     モーション再生終了時に呼び出されるコールバック関数。NULLの場合、呼び出されない。
 * @return                                  開始したモーションの識別番号を返す。個別のモーションが終了したか否かを判定するIsFinished()の引数で使用する。開始できない時は「-1」
 */
-Csm::CubismMotionQueueEntryHandle CubismUserModelExtend::StartMotion(const Csm::csmChar* group, Csm::csmInt32 no, Csm::csmInt32 priority, Csm::ACubismMotion::FinishedMotionCallback onFinishedMotionHandler)
+Csm::CubismMotionQueueEntryHandle CubismUserModelExtend::StartMotion(const Csm::csmChar* group, Csm::csmInt32 no, Csm::csmInt32 priority)
 {
     // モーション数が取得出来なかった、もしくは0の時
     if (!(_modelJson->GetMotionCount(group)))
@@ -296,32 +281,15 @@ Csm::CubismMotionQueueEntryHandle CubismUserModelExtend::StartMotion(const Csm::
         csmSizeInt size;
         buffer = CreateBuffer(path.GetRawString(), &size);
         // 一番先頭のモーションを読み込む
-        motion = static_cast<CubismMotion*>(LoadMotion(buffer, size, NULL, onFinishedMotionHandler));
+        motion = static_cast<CubismMotion*>(LoadMotion(buffer, size, NULL, NULL, NULL, _modelJson, group, no));
 
         if (motion)
         {
-            csmFloat32 fadeTime = _modelJson->GetMotionFadeInTimeValue(group, no);
-            if (fadeTime >= 0.0f)
-            {
-                motion->SetFadeInTime(fadeTime);
-            }
-
-            fadeTime = _modelJson->GetMotionFadeOutTimeValue(group, no);
-            if (fadeTime >= 0.0f)
-            {
-                motion->SetFadeOutTime(fadeTime);
-            }
-
             // 終了時にメモリから削除
             autoDelete = true;
         }
 
         DeleteBuffer(buffer, path.GetRawString());
-    }
-    else
-    {
-        // モーションの再生終了コールバックを登録
-        motion->SetFinishedMotionHandler(onFinishedMotionHandler);
     }
 
     // 優先度を設定してモーションを始める

@@ -6,6 +6,7 @@
  */
 
 #include "LAppPal.hpp"
+#include <windows.h>
 #include <cstdio>
 #include <stdarg.h>
 #include <sys/stat.h>
@@ -27,12 +28,12 @@ double LAppPal::s_deltaTime = 0.0;
 
 csmByte* LAppPal::LoadFileAsBytes(const string filePath, csmSizeInt* outSize)
 {
-    //filePath;//
-    const char* path = filePath.c_str();
+    wchar_t wideStr[MAX_PATH];
+    MultiByteToWideChar(CP_UTF8, 0U, filePath.c_str(), -1, wideStr, MAX_PATH);
 
     int size = 0;
-    struct stat statBuf;
-    if (stat(path, &statBuf) == 0)
+    struct _stat statBuf;
+    if (_wstat(wideStr, &statBuf) == 0)
     {
         size = statBuf.st_size;
 
@@ -40,7 +41,7 @@ csmByte* LAppPal::LoadFileAsBytes(const string filePath, csmSizeInt* outSize)
         {
             if (DebugLogEnable)
             {
-                PrintLogLn("Stat succeeded but file size is zero. path:%s", path);
+                PrintLogLn("Stat succeeded but file size is zero. path:%s", filePath.c_str());
             }
             return NULL;
         }
@@ -49,27 +50,33 @@ csmByte* LAppPal::LoadFileAsBytes(const string filePath, csmSizeInt* outSize)
     {
         if (DebugLogEnable)
         {
-            PrintLogLn("Stat failed. errno:%d path:%s", errno, path);
+            PrintLogLn("Stat failed. errno:%d path:%s", errno, filePath.c_str());
         }
         return NULL;
     }
 
-    std::fstream file;
-    file.open(path, std::ios::in | std::ios::binary);
+    std::wfstream file;
+    file.open(wideStr, std::ios::in | std::ios::binary);
     if (!file.is_open())
     {
         if (DebugLogEnable)
         {
-            PrintLogLn("File open failed. path:%s", path);
+            PrintLogLn("File open failed. path:%s", filePath.c_str());
         }
         return NULL;
     }
 
-    char* buf = new char[size];
-    file.read(buf, size);
-    file.close();
+    // ファイル名はワイド文字で探しているがファイルの中身はutf-8なので、1バイトずつ取得する。
 
     *outSize = size;
+    csmChar* buf = new char[*outSize];
+    std::wfilebuf* fileBuf = file.rdbuf();
+    for (csmUint32 i = 0; i < *outSize; i++)
+    {
+        buf[i] = fileBuf->sbumpc();
+    }
+    file.close();
+
     return reinterpret_cast<csmByte*>(buf);
 }
 
@@ -128,4 +135,14 @@ void LAppPal::PrintMessage(const csmChar* message)
 void LAppPal::PrintMessageLn(const csmChar* message)
 {
     PrintLogLn("%s", message);
+}
+
+bool LAppPal::ConvertMultiByteToWide(const csmChar* multiByte, wchar_t* wide, int wideSize)
+{
+    return MultiByteToWideChar(CP_UTF8, 0U, multiByte, -1, wide, wideSize) != 0;
+}
+
+bool LAppPal::ConvertWideToMultiByte(const wchar_t* wide, csmChar* multiByte, int multiByteSize)
+{
+    return WideCharToMultiByte(CP_UTF8, 0U, wide, -1, multiByte, multiByteSize, NULL, NULL) != 0;
 }

@@ -114,8 +114,6 @@ void LAppMinimumDelegate::OnSurfaceCreate()
 
     //Initialize cubism
     CubismFramework::Initialize();
-
-    _view->InitializeShader();
 }
 
 void LAppMinimumDelegate::OnSurfaceChanged(float width, float height)
@@ -190,47 +188,4 @@ void LAppMinimumDelegate::OnTouchMoved(double x, double y)
     {
         _view->OnTouchesMoved(_mouseX, _mouseY);
     }
-}
-
-GLuint LAppMinimumDelegate::CreateShader()
-{
-    //バーテックスシェーダのコンパイル
-    GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-    const char* vertexShader =
-        "#version 100\n"
-        "attribute vec3 position;"
-        "attribute vec2 uv;"
-        "varying vec2 vuv;"
-        "void main(void){"
-        "    gl_Position = vec4(position, 1.0);"
-        "    vuv = uv;"
-        "}";
-    glShaderSource(vertexShaderId, 1, &vertexShader, nullptr);
-    glCompileShader(vertexShaderId);
-
-    //フラグメントシェーダのコンパイル
-    GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-    const char* fragmentShader =
-        "#version 100\n"
-        "precision mediump float;"
-        "varying vec2 vuv;"
-        "uniform sampler2D texture;"
-        "uniform vec4 baseColor;"
-        "void main(void){"
-        "    gl_FragColor = texture2D(texture, vuv) * baseColor;"
-        "}";
-    glShaderSource(fragmentShaderId, 1, &fragmentShader, nullptr);
-    glCompileShader(fragmentShaderId);
-
-    //プログラムオブジェクトの作成
-    GLuint programId = glCreateProgram();
-    glAttachShader(programId, vertexShaderId);
-    glAttachShader(programId, fragmentShaderId);
-
-    // リンク
-    glLinkProgram(programId);
-
-    glUseProgram(programId);
-
-    return programId;
 }

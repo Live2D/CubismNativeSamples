@@ -27,6 +27,11 @@
 
 static LAppLive2DManager* s_instance = nil;
 
+void BeganMotion(Csm::ACubismMotion* self)
+{
+    LAppPal::PrintLogLn("Motion began: %x", self);
+}
+
 void FinishedMotion(Csm::ACubismMotion* self)
 {
     LAppPal::PrintLogLn("Motion Finished: %x", self);
@@ -198,7 +203,7 @@ Csm::csmString GetPath(CFURLRef url)
             {
                 LAppPal::PrintLogLn("[APP]hit area: [%s]", LAppDefine::HitAreaNameBody);
             }
-            _models[i]->StartRandomMotion(LAppDefine::MotionGroupTapBody, LAppDefine::PriorityNormal, FinishedMotion);
+            _models[i]->StartRandomMotion(LAppDefine::MotionGroupTapBody, LAppDefine::PriorityNormal, FinishedMotion, BeganMotion);
         }
     }
 }
@@ -207,8 +212,11 @@ Csm::csmString GetPath(CFURLRef url)
 {
     AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
     ViewController* view = [delegate viewController];
-    float width = view.view.frame.size.width;
-    float height = view.view.frame.size.height;
+
+    const CGFloat retinaScale = [[UIScreen mainScreen] scale];
+    // Retinaディスプレイサイズにするため倍率をかける
+    const float width = view.view.frame.size.width * retinaScale;
+    const float height = view.view.frame.size.height * retinaScale;
 
     Csm::CubismMatrix44 projection;
     Csm::csmUint32 modelCount = _models.GetSize();
@@ -227,7 +235,7 @@ Csm::csmString GetPath(CFURLRef url)
             _renderBuffer = new Csm::Rendering::CubismOffscreenSurface_Metal;
             _renderBuffer->SetMTLPixelFormat(MTLPixelFormatBGRA8Unorm);
             _renderBuffer->SetClearColor(0.0, 0.0, 0.0, 0.0);
-            _renderBuffer->CreateOffscreenSurface(width, height, nil);
+            _renderBuffer->CreateOffscreenSurface(static_cast<LAppDefine::csmUint32>(width), static_cast<LAppDefine::csmUint32>(height), nil);
 
             if (_renderTarget == SelectTarget_ViewFrameBuffer)
             {
@@ -388,9 +396,9 @@ Csm::csmString GetPath(CFURLRef url)
         _models[1]->GetModelMatrix()->TranslateX(0.2f);
 #endif
 
-        float clearColorR = 1.0f;
-        float clearColorG = 1.0f;
-        float clearColorB = 1.0f;
+        float clearColorR = 0.0f;
+        float clearColorG = 0.0f;
+        float clearColorB = 0.0f;
 
         AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
         ViewController* view = [delegate viewController];

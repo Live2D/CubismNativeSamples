@@ -106,9 +106,6 @@ bool LAppDelegate::Initialize()
     _windowWidth = width;
     _windowHeight = height;
 
-    //AppViewの初期化
-    _view->Initialize();
-
     // Cubism SDK の初期化
     InitializeCubism();
 
@@ -117,7 +114,8 @@ bool LAppDelegate::Initialize()
     //load model
     LAppLive2DManager::GetInstance();
 
-    //load sprite
+    //AppViewの初期化
+    _view->Initialize();
     _view->InitializeSprite();
 
     return GL_TRUE;
@@ -256,48 +254,6 @@ void LAppDelegate::OnMouseCallBack(GLFWwindow* window, double x, double y)
     }
 
     _view->OnTouchesMoved(_mouseX, _mouseY);
-}
-
-GLuint LAppDelegate::CreateShader()
-{
-    //バーテックスシェーダのコンパイル
-    GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-    const char* vertexShader =
-        "#version 120\n"
-        "attribute vec3 position;"
-        "attribute vec2 uv;"
-        "varying vec2 vuv;"
-        "void main(void){"
-        "    gl_Position = vec4(position, 1.0);"
-        "    vuv = uv;"
-        "}";
-    glShaderSource(vertexShaderId, 1, &vertexShader, NULL);
-    glCompileShader(vertexShaderId);
-
-    //フラグメントシェーダのコンパイル
-    GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-    const char* fragmentShader =
-        "#version 120\n"
-        "varying vec2 vuv;"
-        "uniform sampler2D texture;"
-        "uniform vec4 baseColor;"
-        "void main(void){"
-        "    gl_FragColor = texture2D(texture, vuv) * baseColor;"
-        "}";
-    glShaderSource(fragmentShaderId, 1, &fragmentShader, NULL);
-    glCompileShader(fragmentShaderId);
-
-    //プログラムオブジェクトの作成
-    GLuint programId = glCreateProgram();
-    glAttachShader(programId, vertexShaderId);
-    glAttachShader(programId, fragmentShaderId);
-
-    // リンク
-    glLinkProgram(programId);
-
-    glUseProgram(programId);
-
-    return programId;
 }
 
 void LAppDelegate::SetExecuteAbsolutePath()

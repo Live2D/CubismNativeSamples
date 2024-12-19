@@ -8,6 +8,8 @@
 
 # Sample build directories
 /Samples/**/build/
+# HarmonyOS files
+Samples/OpenGL/Demo/proj.harmonyos.cmake/Full/entry/src/main/resources/rawfile/
 # Sample third party files
 /Samples/**/thirdParty/*
 !/Samples/**/thirdParty/scripts/*

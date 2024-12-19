@@ -13,13 +13,23 @@ foreach(shader ${shader_files})
     set(compiled_shaders_app ${compiled_shaders_app} ${output_file})
     set(compiled_shaders_app ${compiled_shaders_app} PARENT_SCOPE)
     set_source_files_properties(${shader} PROPERTIES HEADER_FILE_ONLY TRUE)
+    if(WIN32)
+        add_custom_command(
+            OUTPUT ${output_file}
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${output_dir}
+            COMMAND $ENV{VK_SDK_PATH}/Bin/glslc.exe ${full_path} -o ${output_file}
+            DEPENDS ${full_path}
+        )
+    endif()
+    if(UNIX AND NOT APPLE)
+        add_custom_command(
+            OUTPUT ${output_file}
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${output_dir}
+            COMMAND glslc ${full_path} -o ${output_file}
+            DEPENDS ${full_path}
+        )
+    endif()
 
-    add_custom_command(
-        OUTPUT ${output_file}
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${output_dir}
-        COMMAND $ENV{VK_SDK_PATH}/Bin/glslc.exe ${full_path} -o ${output_file}
-        DEPENDS ${full_path}
-    )
 endforeach()
 
 source_group("shaders" FILES ${shader_files})

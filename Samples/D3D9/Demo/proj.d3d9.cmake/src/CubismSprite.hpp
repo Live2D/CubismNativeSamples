@@ -12,6 +12,8 @@
 #include <CubismFramework.hpp>
 #include <Type/CubismBasicType.hpp>
 
+#include "CubismSpriteShader.hpp"
+
  /**
  * @brief スプライトを実装するクラス。
  *
@@ -52,8 +54,9 @@ public:
     * @param[in]       width        横幅
     * @param[in]       height       高さ
     * @param[in]       textureId    テクスチャID
+    * @param[in]       shader       シェーダー操作クラス
     */
-    CubismSprite(float x, float y, float width, float height, Csm::csmUint64 textureId);
+    CubismSprite(float x, float y, float width, float height, Csm::csmUint64 textureId, CubismSpriteShader* shader);
 
     /**
     * @brief デストラクタ
@@ -114,5 +117,6 @@ private:
     SpriteVertex* _vertexStore;   ///< 頂点をストアしておく領域
     Live2D::Cubism::Framework::csmUint16* _indexStore;    ///< インデックスをストアしておく領域
     D3DXVECTOR4 _color;     ///< スプライトカラー
-};
 
+    CubismSpriteShader* _shader;  ///< シェーダー
+};

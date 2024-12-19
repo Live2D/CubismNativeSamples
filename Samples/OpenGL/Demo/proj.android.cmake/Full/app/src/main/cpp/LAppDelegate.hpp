@@ -97,11 +97,6 @@ public:
     void OnTouchMoved(double x, double y);
 
     /**
-    * @brief シェーダーを登録する。
-    */
-    GLuint CreateShader();
-
-    /**
     * @brief テクスチャマネージャーの取得
     */
     LAppTextureManager* GetTextureManager() { return _textureManager; }
@@ -126,6 +121,16 @@ public:
     */
     LAppView* GetView() { return _view; }
 
+    /**
+    * @brief   シーンインデックスを設定する
+    */
+    void SetSceneIndex(int index);
+
+    /**
+    * @brief   シーンインデックスを取得する
+    */
+    int GetSceneIndex() { return  _SceneIndex; };
+
 private:
     /**
     * @brief   コンストラクタ
@@ -136,11 +141,6 @@ private:
     * @brief   デストラクタ
     */
     ~LAppDelegate();
-
-    /**
-    * @brief   Cubism SDK の初期化
-    */
-    void InitializeCubism();
 
     LAppAllocator _cubismAllocator;              ///< Cubism SDK Allocator
     Csm::CubismFramework::Option _cubismOption;  ///< Cubism SDK Option

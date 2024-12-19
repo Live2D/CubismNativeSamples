@@ -13,8 +13,8 @@ This is a sample implementation of an application implemented with OpenGL.
 | --- | --- |
 | [GLEW] | 2.2.0 |
 | [GLFW] | 3.4 |
-| [ios-cmake] | 4.4.1 |
-| [stb_image.h] | 2.29 |
+| [ios-cmake] | 4.5.0 |
+| [stb_image.h] | 2.30 |
 
 For other development environments and operation environments, see [README.md](/README.md) in the top directory.
 
@@ -27,6 +27,8 @@ For other development environments and operation environments, see [README.md](/
 │  ├─ proj.android.cmake
 │  │  ├─Full                # Full Demo Android Studio project
 │  │  └─Minimum             # Minimum Demo Android Studio project
+│  ├─ proj.harmonyos.cmake
+│  │  └─Full                # Full Demo DevEco Studio project
 │  ├─ proj.ios.cmake        # CMake project for iOS
 │  ├─ proj.linux.cmake      # CMake project for Linux
 │  ├─ proj.mac.cmake        # CMake project for macOS
@@ -63,6 +65,10 @@ NOTE: You need to download the following SDKs in advance.
 * Android SDK Build-Tools
 * NDK
 * CMake
+
+### proj.harmonyos.cmake
+
+This directory contains one DevEco Studio projects: the full version.
 
 ### proj.ios.cmake
 
@@ -146,14 +152,12 @@ Download GLEW and GLFW by running the script in the `script` directory.
 | Platform | Script name |
 | --- | --- |
 | Linux *1 / macOS | `setup_glew_glfw` |
-| Windows *2 | `setup_glew_glfw.bat` |
+| Windows | `setup_glew_glfw.bat` |
 
 You can change the version to download by changing `GLEW_VERSION` and `GLFW_VERSION` in the script.
 
 *1 On Linux, it may be necessary to install libraries on which GLFW depends. Please refer to the official page to install all libraries on which GLFW depends.
 [GLFW.org Dependencies for X11 on Unix-like systems](https://www.glfw.org/docs/latest/compile_guide.html#compile_deps_x11)
-*2 Additional support may be required when using `Visual Studio 2013`.
-See [NOTICE.md](/NOTICE.md) for details.
 
 ## ios-cmake setup
 

@@ -16,6 +16,7 @@
 class TouchManager;
 class LAppSprite;
 class LAppModel;
+class LAppSpritePipeline;
 
 /**
 * @brief 描画クラス
@@ -62,6 +63,12 @@ public:
     */
     void BeginRendering(VkCommandBuffer commandBuffer, float r, float g, float b, float a, bool isClear);
 
+    /**
+    * @brief レンダリングを終了する際のレイアウトを変更する。
+    *
+    * @param[in]  commandBuffer    -> コマンドバッファ
+    */
+    void ChangeEndLayout(VkCommandBuffer commandBuffer);
 
     /**
     * @brief レンダリングを終了する。
@@ -74,32 +81,6 @@ public:
     * @brief 描画する。
     */
     void Render();
-
-    /**
-    * @brief   シェーダーモジュ―ルを作成する
-    *
-    * @param[in]  device    -> デバイス
-    * @param[in]  filename  -> シェーダーのファイル名
-    */
-    VkShaderModule CreateShaderModule(VkDevice device, std::string filename);
-
-    /**
-     * @brief   スプライト用のディスクリプタセットのレイアウトを作成する。
-     *
-     * @param[in]       device            論理デバイス
-     */
-    void CreateDescriptorSetLayout(VkDevice device);
-
-    /**
-     * @brief スプライト用のパイプラインを作成する。
-     *
-     * @param[in]       device                  デバイス
-     * @param[in]       extent                  フレームバッファのサイズ
-     * @param[in]       vertShaderModule        頂点シェーダのモジュール
-     * @param[in]       fragShaderModule        フラグメントシェーダのモジュール
-     */
-    void CreateSpriteGraphicsPipeline(VkDevice device, VkExtent2D extent, VkShaderModule vertShaderModule,
-        VkShaderModule fragShaderModule, VkFormat swapchainFormat);
 
     /**
     * @brief 画像の初期化を行う。
@@ -196,13 +177,6 @@ public:
     float GetSpriteAlpha(int assign) const;
 
     /**
-     * @brief ウィンドウサイズ変更の際にリソースを破棄する。
-     *
-     * @param[in]       device            デバイス
-     */
-    void Cleanup(VkDevice device);
-
-    /**
      * @brief ウィンドウサイズ変更の際にスプライトを再作成する
      *
      * @param[in]       width            横幅
@@ -216,19 +190,15 @@ public:
     void DestroyOffscreenSurface();
 
 private:
-    TouchManager* _touchManager;                               ///< タッチマネージャー
-    Csm::CubismMatrix44* _deviceToScreen;                      ///< デバイスからスクリーンへの行列
-    Csm::CubismViewMatrix* _viewMatrix;                        ///< viewMatrix
-    LAppSprite* _back;                                         ///< 背景画像
-    LAppSprite* _gear;                                         ///< ギア画像
-    LAppSprite* _power;                                        ///< 電源画像
-    LAppSprite* _renderSprite;                                 ///< レンダリング先を別ターゲットにする方式の場合に使用
+    TouchManager* _touchManager;                                 ///< タッチマネージャー
+    Csm::CubismMatrix44* _deviceToScreen;                        ///< デバイスからスクリーンへの行列
+    Csm::CubismViewMatrix* _viewMatrix;                          ///< viewMatrix
+    LAppSprite* _back;                                           ///< 背景画像
+    LAppSprite* _gear;                                           ///< ギア画像
+    LAppSprite* _power;                                          ///< 電源画像
+    LAppSprite* _renderSprite;                                   ///< レンダリング先を別ターゲットにする方式の場合に使用
     Csm::Rendering::CubismOffscreenSurface_Vulkan _renderBuffer; ///< モードによってはCubismモデル結果をこっちにレンダリング
-    SelectTarget _renderTarget;                                ///< レンダリング先の選択肢
-    float _clearColor[4];                                      ///< レンダリングターゲットのクリアカラー
-    VkShaderModule _vertShaderModule;                          ///< 頂点シェーダーモジュール
-    VkShaderModule _fragShaderModule;                          ///< フラグメントシェーダーモジュール
-    VkDescriptorSetLayout _descriptorSetLayout;                ///< ディスクリプタセットのレイアウト, UBOが1つとテクスチャが1つずつ
-    VkPipelineLayout _pipelineLayout;                          ///< スプライト描画に使うパイプラインのレイアウト
-    VkPipeline _pipeline;                                      ///< スプライト描画に使うパイプライン
+    SelectTarget _renderTarget;                                  ///< レンダリング先の選択肢
+    float _clearColor[4];                                        ///< レンダリングターゲットのクリアカラー
+    LAppSpritePipeline* _spritePipeline;                         ///< スプライト用パイプライン
 };

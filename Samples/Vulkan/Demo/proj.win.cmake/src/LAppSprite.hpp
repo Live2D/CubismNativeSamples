@@ -10,6 +10,7 @@
 
 // 前方宣言
 class VulkanManager;
+class LAppSpritePipeline;
 
 /**
 * @brief スプライトを実装するクラス。
@@ -89,13 +90,13 @@ public:
     * @param[in]       width                   横幅
     * @param[in]       height                  高さ
     * @param[in]       textureId               テクスチャID
+    * @param[in]       pipeline                パイプライン
     * @param[in]       view                    テクスチャビュー
     * @param[in]       sampler                 テクスチャサンプラー
-    * @param[in]       descriptorSetLayout     ディスクリプタセット
     */
     LAppSprite(
         VkDevice device, VkPhysicalDevice physicalDevice, VulkanManager* vkManager, float x, float y, float width, float height,
-        uint32_t textureId, VkImageView view, VkSampler sampler, VkDescriptorSetLayout descriptorSetLayout
+        uint32_t textureId, LAppSpritePipeline* pipeline, VkImageView view, VkSampler sampler
     );
 
     /**
@@ -152,7 +153,7 @@ public:
      * @param[in]       windowWidth            ウィンドウ幅
      * @param[in]       windowHeight           ウィンドウ高さ
     */
-    void Render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VulkanManager* vkManager, int windowWidth, int windowHeight);
+    void Render(VkCommandBuffer commandBuffer, VulkanManager* vkManager, int windowWidth, int windowHeight);
 
     /**
     * @brief コンストラクタ
@@ -185,6 +186,13 @@ public:
     void ResetRect(float x, float y, float width, float height);
 
     /**
+     * @brief パイプラインのセット
+     *
+     * @param[in]       pipeline      パイプラインクラスへのポインタ
+     */
+    void SetPipeline(LAppSpritePipeline* pipeline);
+
+    /**
     * @brief Getter テクスチャID
     * @return テクスチャIDを返す
     */
@@ -201,6 +209,7 @@ private:
     Live2D::Cubism::Framework::CubismBufferVulkan _stagingBuffer; ///< ステージングバッファ
     Live2D::Cubism::Framework::CubismBufferVulkan _indexBuffer; ///< インデックスバッファ
     Live2D::Cubism::Framework::CubismBufferVulkan _uniformBuffer; ///< ユニフォームバッファ
+    LAppSpritePipeline* _pipeline; ///< パイプライン
     VkDescriptorPool _descriptorPool; ///< ディスクリプタプール
     VkDescriptorSet _descriptorSet; ///< ディスクリプタセット モデルの数
     bool isDescriptorUpdated;

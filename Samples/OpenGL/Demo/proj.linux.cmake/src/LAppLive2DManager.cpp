@@ -29,6 +29,11 @@ using namespace LAppDefine;
 namespace {
     LAppLive2DManager* s_instance = NULL;
 
+    void BeganMotion(ACubismMotion* self)
+    {
+        LAppPal::PrintLogLn("Motion began: %x", self);
+    }
+
     void FinishedMotion(ACubismMotion* self)
     {
         LAppPal::PrintLogLn("Motion Finished: %x", self);
@@ -184,7 +189,7 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
             {
                 LAppPal::PrintLogLn("[APP]hit area: [%s]", HitAreaNameBody);
             }
-            _models[i]->StartRandomMotion(MotionGroupTapBody, PriorityNormal, FinishedMotion);
+            _models[i]->StartRandomMotion(MotionGroupTapBody, PriorityNormal, FinishedMotion, BeganMotion);
         }
     }
 }
@@ -288,7 +293,7 @@ void LAppLive2DManager::ChangeScene(Csm::csmInt32 index)
         _models[1]->GetModelMatrix()->TranslateX(0.2f);
 #endif
 
-        float clearColor[3] = { 1.0f, 1.0f, 1.0f };
+        float clearColor[3] = { 0.0f, 0.0f, 0.0f };
 
         LAppDelegate::GetInstance()->GetView()->SwitchRenderingTarget(useRenderTarget);
 

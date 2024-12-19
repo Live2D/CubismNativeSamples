@@ -50,11 +50,6 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
     }
 }
 
-void VulkanManager::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
-    auto app = reinterpret_cast<VulkanManager*>(glfwGetWindowUserPointer(window));
-    app->_framebufferResized = true;
-}
-
 VulkanManager::VulkanManager(GLFWwindow* wind):
                                               _instance(VK_NULL_HANDLE)
                                               , _physicalDevice(VK_NULL_HANDLE)
@@ -458,17 +453,30 @@ void VulkanManager::SubmitCommand(VkCommandBuffer commandBuffer, bool isFirstDra
     vkEndCommandBuffer(commandBuffer);
 
     VkSubmitInfo submitInfo{};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &commandBuffer;
+
     if(isFirstDraw)
     {
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &commandBuffer;
         submitInfo.waitSemaphoreCount = 1;
         submitInfo.pWaitSemaphores = &_imageAvailableSemaphore;
         VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
         submitInfo.pWaitDstStageMask = waitStages;
+        vkQueueSubmit(_graphicQueue, 1, &submitInfo, VK_NULL_HANDLE);
     }
-    vkQueueSubmit(_graphicQueue, 1, &submitInfo, VK_NULL_HANDLE);
+    else
+    {
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &commandBuffer;
+        VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_VERTEX_INPUT_BIT  };
+        submitInfo.pWaitDstStageMask = waitStages;
+        vkQueueSubmit(_graphicQueue, 1, &submitInfo, VK_NULL_HANDLE);
+    }
+
     // コマンドの実行終了まで待機
     vkQueueWaitIdle(_graphicQueue);
     vkFreeCommandBuffers(_device, _commandPool, 1, &commandBuffer);
@@ -513,6 +521,8 @@ void VulkanManager::RecreateSwapchain()
 void VulkanManager::Destroy()
 {
     _swapchainManager->Cleanup(_device);
+    delete _swapchainManager;
+    _swapchainManager = NULL;
 
     vkDestroySemaphore(_device, _imageAvailableSemaphore, nullptr);
 

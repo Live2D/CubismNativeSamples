@@ -19,6 +19,7 @@ android {
                 abiFilters.addAll(PROP_APP_ABI.split(':').collect{ it as String })
             }
         }
+        ndkVersion "26.3.11579264"
     }
     signingConfigs {
         debug {
@@ -29,8 +30,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     buildTypes {
         release {
@@ -46,6 +47,7 @@ android {
     }
     sourceSets.main {
         assets.srcDir "../../../../../Resources"
+        assets.srcDir "../../../../Shaders/StandardES"
     }
 }
 

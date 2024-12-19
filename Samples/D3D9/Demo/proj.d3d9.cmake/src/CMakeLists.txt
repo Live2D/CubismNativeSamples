@@ -12,6 +12,8 @@ if (CSM_MINIMUM_DEMO)
     ${CMAKE_CURRENT_SOURCE_DIR}/TouchManager.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CubismSprite.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CubismSprite.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/CubismSpriteShader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/CubismSpriteShader.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CubismTextureManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CubismTextureManager.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CubismUserModelExtend.cpp
@@ -44,6 +46,8 @@ else ()
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppPal.hpp
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppSprite.cpp
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppSprite.hpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/LAppSpriteShader.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/LAppSpriteShader.hpp
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppTextureManager.cpp
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppTextureManager.hpp
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppView.cpp

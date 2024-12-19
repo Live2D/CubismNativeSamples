@@ -15,6 +15,7 @@ set(FRAMEWORK_PATH ${SDK_ROOT_PATH}/Framework)
 set(THIRD_PARTY_PATH ${SDK_ROOT_PATH}/Samples/D3D11/thirdParty)
 set(DX_PATH ${THIRD_PARTY_PATH}/DirectXTK)
 set(RES_PATH ${SDK_ROOT_PATH}/Samples/Resources)
+set(SAMPLE_SHADER_PATH ${SDK_ROOT_PATH}/Samples/D3D11/Shaders)
 
 # Set project.
 project(${APP_NAME})
@@ -47,11 +48,7 @@ else()
   message(FATAL_ERROR "[${APP_NAME}] Invalid linker flag ${CMAKE_EXE_LINKER_FLAGS}.")
 endif()
 # Detect compiler.
-if(MSVC_VERSION MATCHES 1800)
-  # Visual Studio 2013
-  set(COMPILER 120)
-  set(MSVC_YEAR 2013)
-elseif(MSVC_VERSION MATCHES 1900)
+if(MSVC_VERSION MATCHES 1900)
   # Visual Studio 2015
   set(COMPILER 140)
   set(MSVC_YEAR 2015)
@@ -114,6 +111,7 @@ find_package(OpenGL REQUIRED)
 add_executable(${APP_NAME} WIN32)
 # Add source files.
 add_subdirectory(src)
+
 # Link libraries to app.
 target_link_libraries(${APP_NAME}
   Framework
@@ -131,6 +129,9 @@ add_custom_command(
   COMMAND
     ${CMAKE_COMMAND} -E
       copy_directory ${RES_PATH} $<TARGET_FILE_DIR:${APP_NAME}>/Resources
+  COMMAND
+    ${CMAKE_COMMAND} -E
+    copy_directory ${SAMPLE_SHADER_PATH} $<TARGET_FILE_DIR:${APP_NAME}>/SampleShaders
 )
 
 # Set project properties.

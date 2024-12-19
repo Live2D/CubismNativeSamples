@@ -91,6 +91,24 @@ public:
     */
     static void PrintMessageLn(const Csm::csmChar* message);
 
+    /**
+     * @brief マルチバイト文字からワイド文字に変換する
+     *
+     * @param[in]   multiByte 変換元
+     * @param[in]   wide      格納先
+     * @param[in]   wideSize  格納先の大きさ
+     */
+    static bool ConvertMultiByteToWide(const Csm::csmChar* multiByte, wchar_t* wide, int wideSize);
+
+    /**
+     * @brief ワイド文字からマルチバイト文字に変換する
+     *
+     * @param[in]   wide          変換元
+     * @param[in]   multiByte     格納先
+     * @param[in]   multiByteSize 格納先の大きさ
+     */
+    static bool ConvertWideToMultiByte(const wchar_t* wide, Csm::csmChar* multiByte, int multiByteSize);
+
 private:
     static double s_currentFrame;
     static double s_lastFrame;

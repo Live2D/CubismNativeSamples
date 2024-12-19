@@ -130,8 +130,8 @@ void LAppTextureManager::GenerateMipmaps(CubismImageVulkan image, uint32_t texWi
 }
 
 LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(
-    std::string fileName, VkFormat format,
-    VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags imageProperties)
+    std::string fileName, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage,
+    VkMemoryPropertyFlags imageProperties, Csm::csmFloat32 anisotropy)
 {
     VkDevice device = LAppDelegate::GetInstance()->GetVulkanManager()->GetDevice();
     VkPhysicalDevice physicalDevice = LAppDelegate::GetInstance()->GetVulkanManager()->GetPhysicalDevice();
@@ -199,9 +199,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(
     LAppDelegate::GetInstance()->GetVulkanManager()->SubmitCommand(commandBuffer);
     GenerateMipmaps(textureImage, width, height, _mipLevels);
     textureImage.CreateView(device, format, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels);
-    VkPhysicalDeviceProperties properties{};
-    vkGetPhysicalDeviceProperties(physicalDevice, &properties);
-    textureImage.CreateSampler(device, properties.limits.maxSamplerAnisotropy, _mipLevels);
+    textureImage.CreateSampler(device, anisotropy, _mipLevels);
     _textures.PushBack(textureImage);
 
     LAppTextureManager::TextureInfo* textureInfo = new LAppTextureManager::TextureInfo();

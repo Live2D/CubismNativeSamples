@@ -7,8 +7,6 @@
 
 #pragma once
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
 #include "LAppAllocator.hpp"
 #include "VulkanManager.hpp"
 
@@ -147,5 +145,14 @@ public:
     static void OnMouseCallBack(GLFWwindow* window, double x, double y)
     {
         LAppDelegate::GetInstance()->OnMouseCallBack(window, x, y);
+    }
+
+    /**
+    * @brief   glfwSetFramebufferSizeCallback用コールバック関数。
+    */
+    static void OnFramebufferResizedCallback(GLFWwindow* window, int width, int height)
+    {
+        auto app = reinterpret_cast<VulkanManager*>(glfwGetWindowUserPointer(window));
+        app->SetFrameBufferResized(true);
     }
 };

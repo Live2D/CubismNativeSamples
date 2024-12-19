@@ -7,6 +7,7 @@
 
 #pragma once
 #include <vulkan/vulkan.h>
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <Type/CubismBasicType.hpp>
 #include <Type/csmVector.hpp>
@@ -160,5 +161,5 @@ private:
     Csm::csmVector<VkImage> images;                            ///< スワップチェーンのイメージ
     Csm::csmVector<VkImageView> imageViews;                    ///< スワップチェーンのイメージビュー
     VkSwapchainKHR swapchain;                                  ///< スワップチェーン
-    const VkFormat swapchainFormat = VK_FORMAT_B8G8R8A8_UNORM; ///< スワップチェーンのフォーマット
+    const VkFormat swapchainFormat = VK_FORMAT_R8G8B8A8_UNORM; ///< スワップチェーンのフォーマット
 };

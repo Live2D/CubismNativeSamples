@@ -11,6 +11,7 @@
 #include <Math/CubismMatrix44.hpp>
 #include <Math/CubismViewMatrix.hpp>
 #include "CubismFramework.hpp"
+#include "LAppSpriteShader.hpp"
 
 class TouchManager;
 class LAppSprite;
@@ -186,4 +187,5 @@ private:
     SelectTarget _renderTarget;     ///< レンダリング先の選択肢
     float _clearColor[4];           ///< レンダリングターゲットのクリアカラー
 
+    LAppSpriteShader* _shader;    ///< スプライト用のシェーダー準備クラス
 };

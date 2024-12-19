@@ -10,6 +10,7 @@
 
 
 #include "CubismDirectXRenderer.hpp"
+#include "CubismDirectXView.hpp"
 #include "LAppDefine.hpp"
 #include "LAppPal.hpp"
 #include "Rendering/D3D9/CubismType_D3D9.hpp"
@@ -22,10 +23,11 @@ CubismSprite::CubismSprite()
     _color = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-CubismSprite::CubismSprite(float x, float y, float width, float height, Csm::csmUint64 textureId)
+CubismSprite::CubismSprite(float x, float y, float width, float height, Csm::csmUint64 textureId, CubismSpriteShader* shader)
     : _rect(),
     _vertexStore(nullptr),
-    _indexStore(nullptr)
+    _indexStore(nullptr),
+    _shader(shader)
 {
     _color = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -79,6 +81,7 @@ CubismSprite::~CubismSprite()
     }
     _indexStore = nullptr;
     _vertexStore = nullptr;
+    _shader = nullptr;
 }
 
 void CubismSprite::Render(LPDIRECT3DDEVICE9 device, int maxWidth, int maxHeight) const
@@ -93,6 +96,11 @@ void CubismSprite::Render(LPDIRECT3DDEVICE9 device, int maxWidth, int maxHeight)
         return; // この際は描画できず
     }
 
+    if (device == nullptr || _shader == nullptr)
+    {
+        return;
+    }
+
     // 頂点設定
     _vertexStore[0].x = (_rect.left - maxWidth * 0.5f) / (maxWidth * 0.5f); _vertexStore[0].y = (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f); _vertexStore[0].u = 0.0f; _vertexStore[0].v = 0.0f;
     _vertexStore[1].x = (_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f); _vertexStore[1].y = (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f); _vertexStore[1].u = 1.0f; _vertexStore[1].v = 0.0f;
@@ -100,53 +108,23 @@ void CubismSprite::Render(LPDIRECT3DDEVICE9 device, int maxWidth, int maxHeight)
     _vertexStore[3].x = (_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f); _vertexStore[3].y = (_rect.up - maxHeight * 0.5f) / (maxHeight * 0.5f); _vertexStore[3].u = 1.0f; _vertexStore[3].v = 1.0f;
 
     {
-        D3DXMATRIX proj(
-            1.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, 1.0f, 0.0f, 0.0f,
-            0.0f, 0.0f, 1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );
+        // レンダーステート
+        device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+        device->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+        device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+        device->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, false);
+        device->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
 
-        // このエフェクトで描画
-        ID3DXEffect* shaderEffect = CubismDirectXRenderer::GetInstance()->SetupShader();
-        if (shaderEffect)
-        {
-            // レンダーステート
-            device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-            device->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-            device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+        // シェーダー準備
+        IDirect3DTexture9* texture = NULL;
+        CubismDirectXRenderer::GetInstance()->_textureManager->GetTexture(_textureId, texture);
+        _shader->SetShader(device, texture, _color);
 
-            device->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, false);
-            device->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+        // 描画
+        device->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, VERTEX_NUM, 2, _indexStore, D3DFMT_INDEX16, _vertexStore, sizeof(SpriteVertex));
 
-
-            UINT numPass = 0;
-            shaderEffect->SetTechnique("ShaderNames_Normal");
-
-            // numPassには指定のtechnique内に含まれるpassの数が返る
-            shaderEffect->Begin(&numPass, 0);
-            shaderEffect->BeginPass(0);
-
-            shaderEffect->SetMatrix("projectMatrix", &proj);
-
-            shaderEffect->SetVector("baseColor", &_color);
-
-            IDirect3DTexture9* texture = NULL;
-            if (CubismDirectXRenderer::GetInstance()->_textureManager->GetTexture(_textureId, texture))
-            {
-                shaderEffect->SetTexture("mainTexture", texture);
-            }
-            shaderEffect->CommitChanges();
-
-
-            {
-                // 描画
-                device->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, VERTEX_NUM, 2, _indexStore, D3DFMT_INDEX16, _vertexStore, sizeof(SpriteVertex));
-            }
-
-            shaderEffect->EndPass();
-            shaderEffect->End();
-        }
+        // シェーダー後処理
+        _shader->UnsetShader();
     }
 }
 
@@ -162,6 +140,11 @@ void CubismSprite::RenderImmidiate(LPDIRECT3DDEVICE9 device, int maxWidth, int m
         return; // この際は描画できず
     }
 
+    if (device == nullptr || _shader == nullptr)
+    {
+        return;
+    }
+
     // 頂点設定
     _vertexStore[0].x = (_rect.left - maxWidth * 0.5f) / (maxWidth * 0.5f); _vertexStore[0].y = (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f); _vertexStore[0].u = 0.0f; _vertexStore[0].v = 0.0f;
     _vertexStore[1].x = (_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f); _vertexStore[1].y = (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f); _vertexStore[1].u = 1.0f; _vertexStore[1].v = 0.0f;
@@ -169,51 +152,21 @@ void CubismSprite::RenderImmidiate(LPDIRECT3DDEVICE9 device, int maxWidth, int m
     _vertexStore[3].x = (_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f); _vertexStore[3].y = (_rect.up - maxHeight * 0.5f) / (maxHeight * 0.5f); _vertexStore[3].u = 1.0f; _vertexStore[3].v = 1.0f;
 
     {
-        D3DXMATRIX proj(
-            1.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, 1.0f, 0.0f, 0.0f,
-            0.0f, 0.0f, 1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );
+        // レンダーステート
+        device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+        device->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+        device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+        device->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, false);
+        device->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
 
-        // このエフェクトで描画
-        ID3DXEffect* shaderEffect = CubismDirectXRenderer::GetInstance()->SetupShader();
-        if (shaderEffect)
-        {
-            // レンダーステート
-            device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-            device->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-            device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+        // シェーダー準備
+        _shader->SetShader(device, texture, _color);
 
-            device->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, false);
-            device->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+        // 描画
+        device->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, VERTEX_NUM, 2, _indexStore, D3DFMT_INDEX16, _vertexStore, sizeof(SpriteVertex));
 
-
-            UINT numPass = 0;
-            shaderEffect->SetTechnique("ShaderNames_Normal");
-
-            // numPassには指定のtechnique内に含まれるpassの数が返る
-            shaderEffect->Begin(&numPass, 0);
-            shaderEffect->BeginPass(0);
-
-            shaderEffect->SetMatrix("projectMatrix", &proj);
-
-            shaderEffect->SetVector("baseColor", &_color);
-
-            {
-                shaderEffect->SetTexture("mainTexture", texture);
-            }
-            shaderEffect->CommitChanges();
-
-
-            {
-                // 描画
-                device->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, VERTEX_NUM, 2, _indexStore, D3DFMT_INDEX16, _vertexStore, sizeof(SpriteVertex));
-            }
-
-            shaderEffect->EndPass();
-            shaderEffect->End();
-        }
+        // シェーダー後処理
+        _shader->UnsetShader();
     }
 }
 

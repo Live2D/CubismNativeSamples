@@ -268,44 +268,6 @@ static bool InitializeSystem()
         return false;
     }
 
-    // ラスタライザ
-    D3D11_RASTERIZER_DESC rasterDesc;
-    memset(&rasterDesc, 0, sizeof(rasterDesc));
-    rasterDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
-    rasterDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK; // 裏面を切る
-    rasterDesc.FrontCounterClockwise = TRUE; // CCWを表面にする
-    rasterDesc.DepthClipEnable = FALSE;
-    rasterDesc.MultisampleEnable = FALSE;
-    rasterDesc.DepthBiasClamp = 0;
-    rasterDesc.SlopeScaledDepthBias = 0;
-    result = directXRenderer->_device->CreateRasterizerState(&rasterDesc, &directXRenderer->_rasterizer);
-    if (FAILED(result))
-    {
-        LAppPal::PrintLogLn("Fail Create Rasterizer 0x%x", result);
-        return false;
-    }
-
-    // テクスチャサンプラーステート
-    D3D11_SAMPLER_DESC samplerDesc;
-    memset(&samplerDesc, 0, sizeof(D3D11_SAMPLER_DESC));
-    samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-    samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-    samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-    samplerDesc.MaxAnisotropy = 1;
-    samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-    samplerDesc.MinLOD = -D3D11_FLOAT32_MAX;
-    samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    directXRenderer->_device->CreateSamplerState(&samplerDesc, &directXRenderer->_samplerState);
-    if (FAILED(result))
-    {
-        LAppPal::PrintLogLn("Fail Create Sampler 0x%x", result);
-        return false;
-    }
-
-    // スプライト用シェーダ作成
-    directXRenderer->CreateShader();
-
     // デバイス作成の後
     _textureManager = new CubismTextureManager();
 

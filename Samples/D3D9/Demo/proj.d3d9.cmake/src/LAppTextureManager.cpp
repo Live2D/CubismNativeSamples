@@ -29,6 +29,11 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
 {
     LPDIRECT3DDEVICE9 device = LAppDelegate::GetD3dDevice();
 
+    // wcharに変換
+    const int WCHAR_LENGTH = 512;
+    wchar_t wchrStr[WCHAR_LENGTH] = L"";
+    LAppPal::ConvertMultiByteToWide(fileName.c_str(), wchrStr, sizeof(wchrStr));
+
     IDirect3DTexture9* texture = NULL;
     LAppTextureManager::TextureInfo* textureInfo = NULL;
 
@@ -43,7 +48,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
     // Lockする場合は立てる
     DWORD usage = isPreMult ? D3DUSAGE_DYNAMIC : 0;
 
-    if (SUCCEEDED(D3DXCreateTextureFromFileExA(device, fileName.c_str(), width, height,
+    if (SUCCEEDED(D3DXCreateTextureFromFileExW(device, wchrStr, width, height,
         mipLevel,   // 「この値が 0 または D3DX_DEFAULT の場合は、完全なミップマップ チェーンが作成される。」
         usage,
         D3DFMT_A8R8G8B8,

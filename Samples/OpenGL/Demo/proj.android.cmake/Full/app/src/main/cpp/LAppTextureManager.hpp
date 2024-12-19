@@ -80,6 +80,12 @@ public:
     void ReleaseTextures();
 
     /**
+     * @brief   一部の環境でこのインスタンスが管理するリソースが破棄される場合があります。
+     *          このような場合に二重解放を避け無効になったリソースを破棄します。
+     */
+    void ReleaseInvalidTextures();
+
+    /**
      * @brief 画像の解放
      *
      * 指定したテクスチャIDの画像を解放する

@@ -72,11 +72,6 @@ public:
     void OnMouseCallBack(GLFWwindow* window, double x, double y);
 
     /**
-    * @brief シェーダーを登録する。
-    */
-    GLuint CreateShader();
-
-    /**
     * @brief   Window情報を取得する。
     */
     GLFWwindow* GetWindow() { return _window; }

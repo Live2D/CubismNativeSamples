@@ -13,8 +13,8 @@ OpenGL で実装したアプリケーションのサンプル実装です。
 | --- | --- |
 | [GLEW] | 2.2.0 |
 | [GLFW] | 3.4 |
-| [ios-cmake] | 4.4.1 |
-| [stb_image.h] | 2.29 |
+| [ios-cmake] | 4.5.0 |
+| [stb_image.h] | 2.30 |
 
 その他の開発環境・動作確認環境はトップディレクトリにある [README.md](/README.ja.md) を参照してください。
 
@@ -27,6 +27,8 @@ OpenGL で実装したアプリケーションのサンプル実装です。
 │  ├─ proj.android.cmake
 │  │  ├─Full                # Full Demo Android Studio project
 │  │  └─Minimum             # Minimum Demo Android Studio project
+│  ├─ proj.harmonyos.cmake
+│  │  └─Full                # Full Demo DevEco Studio project
 │  ├─ proj.ios.cmake        # CMake project for iOS
 │  ├─ proj.linux.cmake      # CMake project for Linux
 │  ├─ proj.mac.cmake        # CMake project for macOS
@@ -63,6 +65,10 @@ NOTE: 事前に下記の SDK のダウンロードが必要です
 * Android SDK Build-Tools
 * NDK
 * CMake
+
+### proj.harmonyos.cmake
+
+このディレクトリにはフルバージョンの DevEco Studio プロジェクトが含まれます。
 
 ### proj.ios.cmake
 
@@ -146,14 +152,12 @@ Windows 用の CMake プロジェクトです。
 | プラットフォーム | スクリプト名 |
 | --- | --- |
 | Linux *1 / macOS | `setup_glew_glfw` |
-| Windows *2 | `setup_glew_glfw.bat` |
+| Windows | `setup_glew_glfw.bat` |
 
 スクリプト内の `GLEW_VERSION` 及び `GLFW_VERSION` を変更することで、ダウンロードするバージョンを変更できます。
 
 *1 Linuxでは GLFW が依存するライブラリのインストールが必要になる場合がございますので、公式ページを参考に依存関係にあるライブラリをすべてインストールしてください。
 [GLFW.org Dependencies for X11 on Unix-like systems](https://www.glfw.org/docs/latest/compile_guide.html#compile_deps_x11)
-*2 `Visual Studio 2013` をご利用の際、追加対応が必要となる場合がございます。
-詳しくは [NOTICE.md](/NOTICE.ja.md) をご確認ください。
 
 ## ios-cmake のセットアップ
 

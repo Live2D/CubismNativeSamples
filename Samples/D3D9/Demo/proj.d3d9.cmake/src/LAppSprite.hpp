@@ -12,6 +12,8 @@
 #include <CubismFramework.hpp>
 #include <Type/CubismBasicType.hpp>
 
+#include "LAppSpriteShader.hpp"
+
 /**
 * @brief スプライトを実装するクラス。
 *
@@ -53,8 +55,9 @@ public:
     * @param[in]       width        横幅
     * @param[in]       height       高さ
     * @param[in]       textureId    テクスチャID
+    * @param[in]       shader       シェーダー操作クラス
     */
-    LAppSprite(float x, float y, float width, float height, Csm::csmUint64 textureId);
+    LAppSprite(float x, float y, float width, float height, Csm::csmUint64 textureId, LAppSpriteShader* shader);
 
     /**
     * @brief デストラクタ
@@ -70,12 +73,11 @@ public:
     /**
      * @brief テクスチャを指定しての描画
      * @param[in]        device        D3D9デバイス
-     * @param[in]        shaderEffect  シェーダーエフェクト
      * @param[in]        width         幅
      * @param[in]        height        高さ
      * @param[in]        texture       使用テクスチャ
      */
-    void RenderImmidiate(LPDIRECT3DDEVICE9 device, ID3DXEffect* shaderEffect, int maxWidth, int maxHeight, LPDIRECT3DTEXTURE9 texture) const;
+    void RenderImmidiate(LPDIRECT3DDEVICE9 device, int maxWidth, int maxHeight, LPDIRECT3DTEXTURE9 texture) const;
 
     /**
     * @brief ヒットチェック
@@ -109,4 +111,6 @@ private:
     SpriteVertex*                           _vertexStore;   ///< 頂点をストアしておく領域
     Live2D::Cubism::Framework::csmUint16*   _indexStore;    ///< インデックスをストアしておく領域
     D3DXVECTOR4                             _color;         ///< 描画色
+
+    LAppSpriteShader* _shader;   ///< シェーダー
 };

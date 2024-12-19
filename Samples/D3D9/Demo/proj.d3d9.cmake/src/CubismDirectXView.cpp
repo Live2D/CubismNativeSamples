@@ -7,8 +7,11 @@
 
 #include "CubismDirectXView.hpp"
 
+#include <d3dcompiler.h>
+
 #include "CubismDirectXRenderer.hpp"
 #include "CubismSampleViewMatrix.hpp"
+#include "LAppPal.hpp"
 
 namespace {
     CubismDirectXView* _instance = nullptr;
@@ -25,7 +28,11 @@ CubismDirectXView* CubismDirectXView::GetInstance()
 }
 
 CubismDirectXView::CubismDirectXView()
-    :_windowWidth(0), _windowHeight(0), _renderSprite(nullptr), _renderTarget(SelectTarget_None)
+    :_windowWidth(0),
+    _windowHeight(0),
+    _renderSprite(nullptr),
+    _renderTarget(SelectTarget_None),
+    _shader(nullptr)
 {
     _clearColor[0] = 1.0f;
     _clearColor[1] = 1.0f;
@@ -91,13 +98,13 @@ void CubismDirectXView::Render(CubismUserModel* userModel)
 
 void CubismDirectXView::InitializeSprite()
 {
+    // シェーダ作成
+    _shader = new CubismSpriteShader();
+
     CubismDirectXRenderer::GetInstance()->GetClientSize(_windowWidth, _windowHeight);
     float x = _windowWidth * 0.5f;
     float y = _windowHeight * 0.5f;
-    _renderSprite = new CubismSprite(x, y, static_cast<float>(_windowWidth), static_cast<float>(_windowHeight), 0);
-
-    // シェーダ作成
-    CubismDirectXRenderer::GetInstance()->CreateShader();
+    _renderSprite = new CubismSprite(x, y, static_cast<float>(_windowWidth), static_cast<float>(_windowHeight), 0, _shader);
 }
 
 void CubismDirectXView::ReleaseSprite()
@@ -106,7 +113,8 @@ void CubismDirectXView::ReleaseSprite()
     _renderSprite = nullptr;
 
     // スプライト用のシェーダ・頂点宣言も開放
-    CubismDirectXRenderer::GetInstance()->ReleaseShader();
+    delete _shader;
+    _shader = nullptr;
 }
 
 void CubismDirectXView::ResizeSprite()

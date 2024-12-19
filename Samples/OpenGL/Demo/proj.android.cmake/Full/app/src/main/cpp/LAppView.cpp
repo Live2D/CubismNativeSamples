@@ -15,6 +15,7 @@
 #include "LAppDefine.hpp"
 #include "TouchManager.hpp"
 #include "LAppSprite.hpp"
+#include "LAppSpriteShader.hpp"
 #include "LAppModel.hpp"
 
 #include <Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp>
@@ -26,11 +27,11 @@ using namespace std;
 using namespace LAppDefine;
 
 LAppView::LAppView():
-    _programId(0),
     _back(NULL),
     _gear(NULL),
     _power(NULL),
     _changeModel(false),
+    _spriteShader(NULL),
     _renderSprite(NULL),
     _renderTarget(SelectTarget_None)
 {
@@ -52,14 +53,38 @@ LAppView::LAppView():
 LAppView::~LAppView()
 {
     _renderBuffer.DestroyOffscreenSurface();
-    delete _renderSprite;
-
-    delete _viewMatrix;
-    delete _deviceToScreen;
-    delete _touchManager;
-    delete _back;
-    delete _gear;
-    delete _power;
+    if (_renderSprite)
+    {
+        delete _renderSprite;
+    }
+    if (_spriteShader)
+    {
+        delete _spriteShader;
+    }
+    if (_viewMatrix)
+    {
+        delete _viewMatrix;
+    }
+    if (_deviceToScreen)
+    {
+        delete _deviceToScreen;
+    }
+    if (_touchManager)
+    {
+        delete _touchManager;
+    }
+    if (_back)
+    {
+        delete _back;
+    }
+    if (_gear)
+    {
+        delete _gear;
+    }
+    if (_power)
+    {
+        delete _power;
+    }
 }
 
 void LAppView::Initialize()
@@ -101,15 +126,14 @@ void LAppView::Initialize()
         ViewLogicalMaxBottom,
         ViewLogicalMaxTop
     );
-}
 
-void LAppView::InitializeShader()
-{
-    _programId = LAppDelegate::GetInstance()->CreateShader();
+    _spriteShader = new LAppSpriteShader();
 }
 
 void LAppView::InitializeSprite()
 {
+    GLuint programId = _spriteShader->GetShaderId();
+
     int width = LAppDelegate::GetInstance()->GetWindowWidth();
     int height = LAppDelegate::GetInstance()->GetWindowHeight();
 
@@ -126,7 +150,7 @@ void LAppView::InitializeSprite()
 
     if(_back == NULL)
     {
-        _back = new LAppSprite(x, y, fWidth, fHeight, backgroundTexture->id, _programId);
+        _back = new LAppSprite(x, y, fWidth, fHeight, backgroundTexture->id, programId);
     }
     else
     {
@@ -144,7 +168,7 @@ void LAppView::InitializeSprite()
 
     if(_gear == NULL)
     {
-        _gear = new LAppSprite(x, y, fWidth, fHeight, gearTexture->id, _programId);
+        _gear = new LAppSprite(x, y, fWidth, fHeight, gearTexture->id, programId);
     }
     else
     {
@@ -161,7 +185,7 @@ void LAppView::InitializeSprite()
 
     if(_power == NULL)
     {
-        _power = new LAppSprite(x, y, fWidth, fHeight, powerTexture->id, _programId);
+        _power = new LAppSprite(x, y, fWidth, fHeight, powerTexture->id, programId);
     }
     else
     {
@@ -174,7 +198,7 @@ void LAppView::InitializeSprite()
 
     if (_renderSprite == NULL)
     {
-        _renderSprite = new LAppSprite(x, y, width, height, 0, _programId);
+        _renderSprite = new LAppSprite(x, y, width, height, 0, programId);
     }
     else
     {

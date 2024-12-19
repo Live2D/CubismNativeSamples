@@ -13,18 +13,20 @@
 #include "LAppDefine.hpp"
 #include "LAppPal.hpp"
 #include "Rendering/D3D11/CubismType_D3D11.hpp"
+#include "CubismSpriteShader.hpp"
 
 CubismSprite::CubismSprite()
-    : _rect(),_vertexBuffer(nullptr),_indexBuffer(nullptr),_constantBuffer(nullptr)
+    : _rect(),_vertexBuffer(nullptr),_indexBuffer(nullptr),_constantBuffer(nullptr),_shader(NULL)
 {
     _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-CubismSprite::CubismSprite(float x, float y, float width, float height, Csm::csmUint64 textureId)
+CubismSprite::CubismSprite(float x, float y, float width, float height, Csm::csmUint64 textureId, CubismSpriteShader* shader)
     : _rect(),
     _vertexBuffer(NULL),
     _indexBuffer(NULL),
-    _constantBuffer(NULL)
+    _constantBuffer(NULL),
+    _shader(shader)
 {
     _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -130,6 +132,8 @@ CubismSprite::~CubismSprite()
 {
     CubismDirectXRenderer::GetInstance()->_textureManager->ReleaseTexture(_textureId);
 
+    _shader = NULL;
+
     if (_constantBuffer)
     {
         _constantBuffer->Release();
@@ -203,7 +207,7 @@ void CubismSprite::Render(int width, int height) const
         renderContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
         // 描画用設定
-        cubismDirectXRenderer->SetupShader();
+        _shader->SetupShader();
 
         // テクスチャセット
         ID3D11ShaderResourceView* textureView = nullptr;
@@ -275,7 +279,7 @@ void CubismSprite::RenderImmidiate(int width, int height, ID3D11ShaderResourceVi
         renderContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
         // 描画用設定
-        cubismDirectXRenderer->SetupShader();
+        _shader->SetupShader();
 
         // テクスチャセット
         {

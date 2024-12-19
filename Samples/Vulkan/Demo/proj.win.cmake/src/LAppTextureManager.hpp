@@ -96,8 +96,8 @@ public:
     * @return 作成したイメージのリソース。読み込み失敗時はNULLを返す。
     */
     TextureInfo* CreateTextureFromPngFile(
-        std::string fileName,
-        VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags imageProperties
+        std::string fileName,VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage,
+        VkMemoryPropertyFlags imageProperties, Csm::csmFloat32 anisotropy
     );
 
     /**

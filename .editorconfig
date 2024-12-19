@@ -25,3 +25,6 @@ charset = unset
 
 [*.md]
 trim_trailing_whitespace = false
+
+[*.{cpp,hpp,h}]
+charset = utf-8-bom

@@ -97,11 +97,6 @@ public:
     void OnTouchMoved(double x, double y);
 
     /**
-    * @brief シェーダーを登録する。
-    */
-    GLuint CreateShader();
-
-    /**
     * @brief テクスチャマネージャーの取得
     */
     LAppTextureManager* GetTextureManager() { return _textureManager; }

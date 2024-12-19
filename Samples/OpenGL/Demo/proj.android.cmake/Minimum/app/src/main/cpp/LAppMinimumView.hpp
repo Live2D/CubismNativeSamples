@@ -16,6 +16,7 @@
 
 class TouchManager;
 class LAppSprite;
+class LAppSpriteShader;
 class LAppMinimumModel;
 
 /**
@@ -54,11 +55,6 @@ public:
     * @brief 描画する。
     */
     void Render();
-
-    /**
-    * @brief シェーダーの初期化を行う。
-    */
-    void InitializeShader();
 
     /**
     * @brief 画像の初期化を行う。
@@ -150,11 +146,12 @@ private:
     TouchManager* _touchManager;                 ///< タッチマネージャー
     Csm::CubismMatrix44* _deviceToScreen;    ///< デバイスからスクリーンへの行列
     Csm::CubismViewMatrix* _viewMatrix;      ///< viewMatrix
-    GLuint _programId;                       ///< シェーダID
 
     // レンダリング先を別ターゲットにする方式の場合に使用
     LAppSprite* _renderSprite;                                      ///< モードによっては_renderBufferのテクスチャを描画
     Csm::Rendering::CubismOffscreenSurface_OpenGLES2 _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング
     SelectTarget _renderTarget;     ///< レンダリング先の選択肢
     float _clearColor[4];           ///< レンダリングターゲットのクリアカラー
+
+    LAppSpriteShader* _spriteShader;   ///< シェーダー作成委譲クラス
 };

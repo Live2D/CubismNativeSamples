@@ -7,7 +7,6 @@
 
 #pragma once
 #include <vulkan/vulkan.h>
-#include <GLFW/glfw3.h>
 #include "Type/csmMap.hpp"
 #include "SwapchainManager.hpp"
 
@@ -39,8 +38,6 @@ public:
     const char* validationLayers[1] = {
         "VK_LAYER_KHRONOS_validation"
     };
-
-    static void VulkanManager::framebufferResizeCallback(GLFWwindow* window, int width, int height);
 
     /**
      * @brief   コンストラクタ
@@ -158,7 +155,7 @@ public:
     void UpdateDrawFrame();
 
     /**
-     * @brief   描画する
+     * @brief   描画完了の追加処理
      */
     void PostDraw();
 
@@ -213,6 +210,12 @@ public:
      * @param[in]   flag     ->  セットするフラグ
      */
     void SetIsWindowSizeChanged(bool flag) { _isSwapchainInvalid = flag; }
+
+    /**
+     * @brief    フレームバッファのフラグを更新する
+     *
+     */
+    void SetFrameBufferResized(bool flag) { _framebufferResized = flag; }
 
     /**
      * @brief   深度フォーマットを取得する

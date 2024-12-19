@@ -9,6 +9,7 @@ set(FRAMEWORK_PATH ${SDK_ROOT_PATH}/Framework)
 set(THIRD_PARTY_PATH ${SDK_ROOT_PATH}/Samples/Metal/thirdParty)
 set(STB_PATH ${THIRD_PARTY_PATH}/stb)
 set(RES_PATH ${SDK_ROOT_PATH}/Samples/Resources)
+set(SHADER_PATH ${SDK_ROOT_PATH}/Samples/Metal/Shaders)
 
 # Set project.
 project(${APP_NAME})
@@ -135,7 +136,7 @@ if(CSM_MAC_CATALYST)
     )
 else()
     set_xcode_property(${APP_NAME}
-      PRODUCT_BUNDLE_IDENTIFIER "com.live2d.demo-4-r7" "All"
+      PRODUCT_BUNDLE_IDENTIFIER "com.live2d.demo-5-r.2" "All"
     )
 endif()
 set_xcode_property(${APP_NAME} TARGETED_DEVICE_FAMILY "1,2" "All")

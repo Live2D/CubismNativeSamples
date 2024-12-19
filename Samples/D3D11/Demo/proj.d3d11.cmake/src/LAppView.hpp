@@ -16,6 +16,7 @@
 
 class TouchManager;
 class LAppSprite;
+class LAppSpriteShader;
 class LAppModel;
 
 /**
@@ -170,4 +171,6 @@ private:
     Csm::Rendering::CubismOffscreenSurface_D3D11 _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング
     SelectTarget _renderTarget;     ///< レンダリング先の選択肢
     float _clearColor[4];           ///< レンダリングターゲットのクリアカラー
+
+    LAppSpriteShader* _shader;      ///< スプライト用のシェーダー準備クラス
 };

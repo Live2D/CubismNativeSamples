@@ -9,6 +9,7 @@
 
 #include "CubismDirectXRenderer.hpp"
 #include "CubismSampleViewMatrix.hpp"
+#include "CubismSpriteShader.hpp"
 
 namespace {
     CubismDirectXView* _instance = nullptr;
@@ -25,7 +26,7 @@ CubismDirectXView* CubismDirectXView::GetInstance()
 }
 
 CubismDirectXView::CubismDirectXView()
-    :_windowWidth(0), _windowHeight(0), _renderSprite(nullptr), _renderTarget(SelectTarget_None)
+    :_windowWidth(0), _windowHeight(0), _renderSprite(nullptr), _renderTarget(SelectTarget_None), _shader(NULL)
 {
     _clearColor[0] = 1.0f;
     _clearColor[1] = 1.0f;
@@ -37,6 +38,9 @@ CubismDirectXView::CubismDirectXView()
     // デバイス座標からスクリーン座標に変換するための行列
     _deviceToScreen = new CubismMatrix44();
 
+    // スプライト用シェーダー
+    _shader = new CubismSpriteShader();
+
     Initialize();
 }
 
@@ -44,6 +48,9 @@ CubismDirectXView::~CubismDirectXView()
 {
     _renderBuffer.DestroyOffscreenSurface();
 
+    _shader->ReleaseShader();
+
+    delete _shader;
     delete _renderSprite;
     delete _deviceToScreen;
 
@@ -53,6 +60,9 @@ CubismDirectXView::~CubismDirectXView()
 void CubismDirectXView::Initialize()
 {
     CubismDirectXRenderer::GetInstance()->GetClientSize(_windowWidth, _windowHeight);
+
+    // シェーダー作成
+    _shader->CreateShader();
 
     InitializeSprite();
 }
@@ -94,7 +104,7 @@ void CubismDirectXView::InitializeSprite()
     CubismDirectXRenderer::GetInstance()->GetClientSize(_windowWidth, _windowHeight);
     float x = _windowWidth * 0.5f;
     float y = _windowHeight * 0.5f;
-    _renderSprite = new CubismSprite(x, y, static_cast<float>(_windowWidth), static_cast<float>(_windowHeight), 0);
+    _renderSprite = new CubismSprite(x, y, static_cast<float>(_windowWidth), static_cast<float>(_windowHeight), 0, _shader);
 }
 
 void CubismDirectXView::ReleaseSprite()

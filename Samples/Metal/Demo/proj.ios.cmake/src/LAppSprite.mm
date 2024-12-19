@@ -7,6 +7,8 @@
 
 #import "LAppSprite.h"
 #import <Foundation/Foundation.h>
+#import "LAppDefine.h"
+#import "LAppPal.h"
 #import <CubismFramework.hpp>
 #import <Rendering/Metal/CubismRenderer_Metal.hpp>
 #import "Rendering/Metal/CubismRenderingInstanceSingleton_Metal.h"
@@ -138,43 +140,6 @@ typedef struct
     _spriteColorA = a;
 }
 
-- (NSString*)GetMetalShader {
-    NSString *string =
-    @"#include <metal_stdlib>\n"
-    "using namespace metal;\n"
-    "\n"
-    "struct ColorInOut\n"
-    "{\n"
-    "    float4 position [[ position ]];\n"
-    "    float2 texCoords;\n"
-    "};\n"
-    "\n"
-    "struct BaseColor\n"
-    "{\n"
-    "    float4 color;\n"
-    "};\n"
-    "\n"
-    "vertex ColorInOut vertexShader(constant float4 *positions [[ buffer(0) ]],\n"
-    "                               constant float2 *texCoords [[ buffer(1) ]],\n"
-    "                                        uint    vid       [[ vertex_id ]])\n"
-    "{\n"
-    "    ColorInOut out;\n"
-    "    out.position = positions[vid];\n"
-    "    out.texCoords = texCoords[vid];\n"
-    "    return out;\n"
-    "}\n"
-    "\n"
-    "fragment float4 fragmentShader(ColorInOut       in      [[ stage_in ]],\n"
-    "                               texture2d<float> texture [[ texture(0) ]],\n"
-    "                               constant BaseColor &uniform [[ buffer(2) ]])\n"
-    "{\n"
-    "    constexpr sampler colorSampler;\n"
-    "    float4 color = texture.sample(colorSampler, in.texCoords) * uniform.color;\n"
-    "    return color;\n"
-    "}\n";
-    return string;
-}
-
 - (void)SetMTLBuffer:(id <MTLDevice>)device MaxWidth:(float)maxWidth MaxHeight:(float)maxHeight
 {
     vector_float4 positionVertex[] =
@@ -205,7 +170,14 @@ typedef struct
 {
     MTLCompileOptions* compileOptions = [MTLCompileOptions new];
     compileOptions.languageVersion = MTLLanguageVersion2_1;
-    NSString* shader = [self GetMetalShader];
+
+    // シェーダをファイルから読みこみ
+    unsigned int size;
+    Csm::csmString shaderFilePath(LAppDefine::ShaderPath);
+    shaderFilePath += LAppDefine::ShaderName;
+    unsigned char* shaderRawString = LAppPal::LoadFileAsBytes(shaderFilePath.GetRawString(), &size);
+    NSString* shader = [NSString stringWithUTF8String:(char *)shaderRawString];
+
     NSError* compileError;
     id<MTLLibrary> shaderLib = [device newLibraryWithSource:shader options:compileOptions error:&compileError];
     if (!shaderLib)

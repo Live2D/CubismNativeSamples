@@ -37,6 +37,11 @@ namespace LAppDefine {
     // 終了ボタン
     const csmChar* PowerImageName = "close.png";
 
+    // シェーダー相対パス
+    const csmChar* ShaderPath = "SampleShaders/";
+    // シェーダー本体
+    const csmChar* ShaderName = "SpriteEffect.fx";
+
     // モデル定義------------------------------------------
     // 外部定義ファイル(json)と合わせる
     const csmChar* MotionGroupIdle = "Idle"; // アイドリング

@@ -5,6 +5,59 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
+## [5-r.2] - 2024-12-19
+
+### Added
+
+* Add Vulkan support in Ubuntu 22.04 and AlmaLinux 9.
+* Add a function to notify when motion playback starts.
+* Add shader setup classes for D3D9, D3D11, OpenGL, Vulkan.
+* Add the sample for OpenGL API in HarmonyOS.
+
+### Changed
+
+* Change to overwrite motion fade by the value specified in .model3.json on Framework.
+* Change to use multi-buffering in Vulkan.
+* Change the screen orientation and rotation direction to be unified across Android, iPhone, and iPad.
+* Change specify the NDK version of the Android sample.
+* Change to read shader source codes from files.
+* Change the compile and target SDK version of Android OS to 15.0 (API 35).
+  * Upgrade the version of Android Gradle Plugin from 8.1.1 to 8.6.1.
+  * Upgrade the version of Gradle from 8.2 to 8.7.
+  * Upgrade the version of NDK from 25.2.9519653 to 26.3.11579264.
+  * Change the minimum version of Android Studio to Ladybug(2024.2.1 Patch 2).
+* Change the minimum support version of Java to 8.
+* Change the function for playing back expression motions from CubismExpressionMotionManager::StartMotionPriority() to CubismExpressionMotionManager::StartMotion().
+* Change to use GLSurfaceView event queues to handle touch events.
+
+### Fixed
+
+* Fix memory leak in Vulkan.
+* Fixed drawing failure when enabling `USE_RENDER_TARGET` macros in Vulkan samples.
+* Fix memory leak when exit in D3D9 and D3D11.
+* Fix exit error in Vulkan.
+* Fix the processing of anisotropy filtering in Vulkan to match that of other renderers.
+* Fix an issue on Windows where an error would occur if the model name contained certain characters.
+* Implement support for `MSVC19.40` in the VS2022 build. by [@tatsuya-shiozawa](https://github.com/Live2D/CubismNativeSamples/pull/46)
+* Fix an issue where a compile error occurred due to missing includes in the OpenGL iOS minimum sample.
+* Fix an issue in the Android sample where the model display would reset after performing certain operations.
+* Fix a memory leak in the compilation process of shader strings in OpenGL.
+* Fix an issue that could cause drawing errors when the application is restored from the background.
+* Fix an issue in the OpenGL sample where the textures are not released.
+* Fix a warning due to the initial value of programId being NULL.
+* Fix an issue that caused white edge-like objects to be drawn when enabling the `USE_RENDER_TARGET` or `USE_MODEL_RENDER_TARGET` flag in `LAppLive2DManager`.
+* Fix an issue causing a decrease in rendering resolution when using render targets in the Metal sample project.
+* Fix an issue where rendering would break when using the iPad with `USE_RENDER_TARGET` or `USE_MODEL_RENDER_TARGET` defined in OpenGL samples.
+
+### Removed
+
+* Remove Visual Studio 2013 samples.
+* Remove armeabi-v7a from architecture support.
+* Remove the Cocos2d-x sample project.
+* Remove the callback what motion playback finishes on the minimum sample.
+* Remove unnecessary declarations in the OpenGL Android sample.
+
+
 ## [5-r.1] - 2024-03-26
 
 ### Added
@@ -17,6 +70,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 * The log function was changed because it was ambiguous whether or not a newline was inserted.
 * Change so that `LAppSprite` is not depend on `LAppDelegate` in D3D11 and D3D9, Metal, Vulkan.
 * Some function arguments in `LAppSprite` are changed in D3D11 and D3D9, Metal, Vulkan.
+* Change to read shader source codes from files.
 
 ### Fixed
 
@@ -43,7 +97,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 * Change so that `LAppSprite` is not depend on `LAppDelegate` in Android.
 * Change so that `ViewController` is not include on `LAppSprite` in iOS.
 * Change the path acquisition process to a library function on OpenGL Mac and Linux.
-* Change the compile and target SDK version of Android OS to 14.0 (API 34). 
+* Change the compile and target SDK version of Android OS to 14.0 (API 34).
   * Upgrade the version of Android Gradle Plugin from 8.0.2 to 8.1.1.
   * Upgrade the version of Gradle from 8.1.1 to 8.2.
   * Change the minimum version of Android Studio to Hedgehog(2023.1.1).
@@ -407,6 +461,7 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[5-r.2]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1...5-r.2
 [5-r.1]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1-beta.4...5-r.1
 [5-r.1-beta.4]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1-beta.3...5-r.1-beta.4
 [5-r.1-beta.3]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1-beta.2...5-r.1-beta.3

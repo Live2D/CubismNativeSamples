@@ -29,12 +29,12 @@ Core
 | プラットフォーム | アーキテクチャ | dll | lib | パス | 注記 |
 | --- | --- | --- | --- | --- | --- |
 | Android | ARM64 | ✓ | ✓ | android/arm64-v8a |   |
-| Android | ARMv7 | ✓ | ✓ | android/armeabi-v7a | このライブラリは現在非推奨で、近日中に削除される予定です。 |
 | Android | x86 | ✓ | ✓ | android/x86 |   |
 | Android | x86_64 | ✓ | ✓ | android/x86_64 |   |
 | iOS | ARM64 |   | ✓ | ios/xxx-iphoneos | iOSデバイス |
 | iOS | x86_64 |   | ✓ | ios/xxx-iphonesimulator | iOS Simulator |
 | Linux | x86_64 | ✓ | ✓ | linux/x86_64 |   |
+| Linux | ARM64 | ✓ | ✓ | experimental/linux/ARM64 |   |
 | macOS | ARM64 | ✓ | ✓ | macos/arm64 |   |
 | macOS | x86_64 | ✓ | ✓ | macos/x86_64 |   |
 | Mac Catalyst | ARM64 |   | ✓ | experimental/catalyst | Universal Binary |
@@ -59,7 +59,6 @@ Core
 
 | VC++バージョン | Visual Studioバージョン |
 | ---: | --- |
-| 120 | Visual Studio 2013 |
 | 140 | Visual Studio 2015 |
 | 141 | Visual Studio 2017 |
 | 142 | Visual Studio 2019 |

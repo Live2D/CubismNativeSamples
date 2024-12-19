@@ -13,6 +13,7 @@ set(SDK_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../../..)
 set(CORE_PATH ${SDK_ROOT_PATH}/Core)
 set(FRAMEWORK_PATH ${SDK_ROOT_PATH}/Framework)
 set(RES_PATH ${SDK_ROOT_PATH}/Samples/Resources)
+set(SAMPLE_SHADER_PATH ${SDK_ROOT_PATH}/Samples/D3D9/Shaders)
 
 # Set project.
 project(${APP_NAME})
@@ -45,10 +46,7 @@ else()
   message(FATAL_ERROR "[${APP_NAME}] Invalid linker flag ${CMAKE_EXE_LINKER_FLAGS}.")
 endif()
 # Detect compiler.
-if(MSVC_VERSION MATCHES 1800)
-  # Visual Studio 2013
-  set(COMPILER 120)
-elseif(MSVC_VERSION MATCHES 1900)
+if(MSVC_VERSION MATCHES 1900)
   # Visual Studio 2015
   set(COMPILER 140)
 elseif(MSVC_VERSION GREATER_EQUAL 1910 AND MSVC_VERSION LESS 1920)
@@ -57,7 +55,7 @@ elseif(MSVC_VERSION GREATER_EQUAL 1910 AND MSVC_VERSION LESS 1920)
 elseif(MSVC_VERSION GREATER_EQUAL 1920 AND MSVC_VERSION LESS 1930)
   # Visual Studio 2019
   set(COMPILER 142)
-elseif(MSVC_VERSION GREATER_EQUAL 1930 AND MSVC_VERSION LESS 1940)
+elseif(MSVC_VERSION GREATER_EQUAL 1930 AND MSVC_VERSION LESS 1950)
   # Visual Studio 2022
   set(COMPILER 143)
 elseif(MSVC)
@@ -103,6 +101,7 @@ target_link_libraries(Framework
 add_executable(${APP_NAME} WIN32)
 # Add source files.
 add_subdirectory(src)
+
 # Link libraries to app.
 target_link_libraries(${APP_NAME}
   Framework
@@ -120,6 +119,9 @@ add_custom_command(
   COMMAND
     ${CMAKE_COMMAND} -E
       copy_directory ${RES_PATH} $<TARGET_FILE_DIR:${APP_NAME}>/Resources
+  COMMAND
+    ${CMAKE_COMMAND} -E
+      copy_directory ${SAMPLE_SHADER_PATH} $<TARGET_FILE_DIR:${APP_NAME}>/SampleShaders
 )
 
 # Set project properties.

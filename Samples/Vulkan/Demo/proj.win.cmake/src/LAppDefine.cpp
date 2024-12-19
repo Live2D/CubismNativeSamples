@@ -37,6 +37,13 @@ const csmChar* GearImageName = "icon_gear.png";
 // 終了ボタン
 const csmChar* PowerImageName = "close.png";
 
+// シェーダー相対パス
+const csmChar* ShaderPath = "SampleShaders/";
+// 頂点シェーダー
+const csmChar* VertShaderName = "VertSprite.spv";
+// フラグメントシェーダー
+const csmChar* FragShaderName = "FragSprite.spv";
+
 // モデル定義------------------------------------------
 // 外部定義ファイル(json)と合わせる
 const csmChar* MotionGroupIdle = "Idle"; // アイドリング

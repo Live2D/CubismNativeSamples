@@ -16,15 +16,17 @@ using namespace LAppDefine;
 LAppSprite::LAppSprite()
     : _rect(),
     _vertexStore(NULL),
-    _indexStore(NULL)
+    _indexStore(NULL),
+    _shader(NULL)
 {
     _color = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint64 textureId)
+LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint64 textureId, LAppSpriteShader* shader)
     : _rect(),
     _vertexStore(NULL),
-    _indexStore(NULL)
+    _indexStore(NULL),
+    _shader(shader)
 {
     _rect.left = (x - width * 0.5f);
     _rect.right = (x + width * 0.5f);
@@ -71,9 +73,10 @@ LAppSprite::~LAppSprite()
     }
     _indexStore = NULL;
     _vertexStore = NULL;
+    _shader = NULL;
 }
 
-void LAppSprite::RenderImmidiate(LPDIRECT3DDEVICE9 device, ID3DXEffect* shaderEffect, int maxWidth, int maxHeight, LPDIRECT3DTEXTURE9 texture) const
+void LAppSprite::RenderImmidiate(LPDIRECT3DDEVICE9 device, int maxWidth, int maxHeight, LPDIRECT3DTEXTURE9 texture) const
 {
     if (!_vertexStore)
     {
@@ -85,7 +88,7 @@ void LAppSprite::RenderImmidiate(LPDIRECT3DDEVICE9 device, ID3DXEffect* shaderEf
         return; // この際は描画できず
     }
 
-    if (shaderEffect == NULL)
+    if (device == NULL || _shader == NULL)
     {
         return;
     }
@@ -97,13 +100,6 @@ void LAppSprite::RenderImmidiate(LPDIRECT3DDEVICE9 device, ID3DXEffect* shaderEf
     _vertexStore[3].x = (_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f); _vertexStore[3].y = (_rect.up - maxHeight * 0.5f) / (maxHeight * 0.5f); _vertexStore[3].u = 1.0f; _vertexStore[3].v = 1.0f;
 
     {
-        D3DXMATRIX proj(
-            1.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, 1.0f, 0.0f, 0.0f,
-            0.0f, 0.0f, 1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );
-
         // レンダーステート
         device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
         device->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
@@ -112,27 +108,14 @@ void LAppSprite::RenderImmidiate(LPDIRECT3DDEVICE9 device, ID3DXEffect* shaderEf
         device->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, false);
         device->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
 
-
-        UINT numPass = 0;
-        shaderEffect->SetTechnique("ShaderNames_Normal");
-
-        // numPassには指定のtechnique内に含まれるpassの数が返る
-        shaderEffect->Begin(&numPass, 0);
-        shaderEffect->BeginPass(0);
-
-        shaderEffect->SetMatrix("projectMatrix", &proj);
-
-        shaderEffect->SetVector("baseColor", &_color);
-
-        shaderEffect->SetTexture("mainTexture", texture);
-
-        shaderEffect->CommitChanges();
+        // シェーダー準備
+        _shader->SetShader(device, texture, _color);
 
         // 描画
         device->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, VERTEX_NUM, 2, _indexStore, D3DFMT_INDEX16, _vertexStore, sizeof(SpriteVertex));
 
-        shaderEffect->EndPass();
-        shaderEffect->End();
+        // シェーダー後処理
+        _shader->UnsetShader();
     }
 }
 

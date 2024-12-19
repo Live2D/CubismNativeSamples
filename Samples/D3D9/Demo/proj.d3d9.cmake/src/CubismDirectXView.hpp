@@ -14,6 +14,7 @@
 #include "MouseActionManager.hpp"
 #include "CubismUserModelExtend.hpp"
 #include "CubismSprite.hpp"
+#include "CubismSpriteShader.hpp"
 
 class CubismDirectXView
 {
@@ -149,4 +150,6 @@ private:
     Csm::Rendering::CubismOffscreenSurface_D3D9 _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング
     SelectTarget _renderTarget;     ///< レンダリング先の選択肢
     float _clearColor[4];           ///< レンダリングターゲットのクリアカラー
+
+    CubismSpriteShader* _shader;    ///< スプライト用のシェーダー準備クラス
 };

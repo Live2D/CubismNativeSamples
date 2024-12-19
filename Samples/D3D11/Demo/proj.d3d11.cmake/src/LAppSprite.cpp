@@ -10,6 +10,7 @@
 #include "LAppPal.hpp"
 #include "LAppDefine.hpp"
 #include "LAppTextureManager.hpp"
+#include "LAppSpriteShader.hpp"
 #include "Rendering/D3D11/CubismType_D3D11.hpp"
 
 using namespace LAppDefine;
@@ -19,16 +20,18 @@ LAppSprite::LAppSprite()
     : _rect(),
     _vertexBuffer(NULL),
     _indexBuffer(NULL),
-    _constantBuffer(NULL)
+    _constantBuffer(NULL),
+    _shader(NULL)
 {
     _color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint64 textureId, ID3D11Device* device)
+LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint64 textureId, LAppSpriteShader* shader, ID3D11Device* device)
     : _rect(),
     _vertexBuffer(NULL),
     _indexBuffer(NULL),
-    _constantBuffer(NULL)
+    _constantBuffer(NULL),
+    _shader(shader)
 {
     _color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -130,6 +133,8 @@ LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint
 
 LAppSprite::~LAppSprite()
 {
+    _shader = NULL;
+
     if(_constantBuffer)
     {
         _constantBuffer->Release();
@@ -200,6 +205,9 @@ void LAppSprite::RenderImmidiate(int width, int height, ID3D11ShaderResourceView
         renderContext->IASetVertexBuffers(0, 1, &_vertexBuffer, &strides, &offsets);
         renderContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
         renderContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+        // シェーダーセット
+        _shader->SetupShader();
 
         // テクスチャセット
         {

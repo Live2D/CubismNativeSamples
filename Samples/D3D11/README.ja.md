@@ -11,7 +11,6 @@ DirectX 11 で実装したアプリケーションのサンプル実装です。
 
 | 開発キット | Visual Studio | バージョン |
 | --- | --- | --- |
-| [DirectXTK] | 2013 | April 23, 2018 |
 | [DirectXTK] | 2015 | December 17, 2019 |
 | [DirectXTK] | 2017 | March 24, 2022 |
 | [DirectXTK] | 2019 / 2022 | December 31, 2023 |
@@ -72,7 +71,6 @@ CMake プロジェクトです。
 
 | Visual Studio | スクリプト名 |
 | --- | --- |
-| 2013 | `setup_msvc2013.bat` |
 | 2015 | `setup_msvc2015.bat` |
 | 2017 | `setup_msvc2017.bat` |
 | 2019 | `setup_msvc2019.bat` |

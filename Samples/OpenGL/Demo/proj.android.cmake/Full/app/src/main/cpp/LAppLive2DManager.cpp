@@ -23,6 +23,11 @@ using namespace LAppDefine;
 namespace {
     LAppLive2DManager* s_instance = NULL;
 
+    void BeganMotion(ACubismMotion* self)
+    {
+        LAppPal::PrintLogLn("Motion Began: %x", self);
+    }
+
     void FinishedMotion(ACubismMotion* self)
     {
         LAppPal::PrintLogLn("Motion Finished: %x", self);
@@ -57,12 +62,11 @@ void LAppLive2DManager::ReleaseInstance()
 
 LAppLive2DManager::LAppLive2DManager()
     : _viewMatrix(NULL)
-    , _sceneIndex(0)
 {
     _viewMatrix = new CubismMatrix44();
     SetUpModel();
 
-    ChangeScene(_sceneIndex);
+    ChangeScene(LAppDelegate::GetInstance()->GetSceneIndex());
 }
 
 LAppLive2DManager::~LAppLive2DManager()
@@ -146,7 +150,7 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
             {
                 LAppPal::PrintLogLn("[APP]hit area: [%s]", HitAreaNameBody);
             }
-            _models[i]->StartRandomMotion(MotionGroupTapBody, PriorityNormal, FinishedMotion);
+            _models[i]->StartRandomMotion(MotionGroupTapBody, PriorityNormal, FinishedMotion, BeganMotion);
         }
     }
 }
@@ -198,16 +202,16 @@ void LAppLive2DManager::OnUpdate() const
 
 void LAppLive2DManager::NextScene()
 {
-    csmInt32 no = (_sceneIndex + 1) % _modelDir.GetSize();
+    csmInt32 no = (LAppDelegate::GetInstance()->GetSceneIndex() + 1) % _modelDir.GetSize();
     ChangeScene(no);
 }
 
 void LAppLive2DManager::ChangeScene(Csm::csmInt32 index)
 {
-    _sceneIndex = index;
+    LAppDelegate::GetInstance()->SetSceneIndex(index);
     if (DebugLogEnable)
     {
-        LAppPal::PrintLogLn("[APP]model index: %d", _sceneIndex);
+        LAppPal::PrintLogLn("[APP]model index: %d", index);
     }
 
     // model3.jsonのパスを決定する.
@@ -248,7 +252,7 @@ void LAppLive2DManager::ChangeScene(Csm::csmInt32 index)
         LAppDelegate::GetInstance()->GetView()->SwitchRenderingTarget(useRenderTarget);
 
         // 別レンダリング先を選択した際の背景クリア色
-        float clearColor[3] = { 1.0f, 1.0f, 1.0f };
+        float clearColor[3] = { 0.0f, 0.0f, 0.0f };
         LAppDelegate::GetInstance()->GetView()->SetRenderTargetClearColor(clearColor[0], clearColor[1], clearColor[2]);
     }
 }

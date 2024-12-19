@@ -15,6 +15,7 @@
 #include "LAppMinimumLive2DManager.hpp"
 #include "TouchManager.hpp"
 #include "LAppSprite.hpp"
+#include "LAppSpriteShader.hpp"
 #include "LAppMinimumModel.hpp"
 
 #include <Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp>
@@ -27,7 +28,6 @@ using namespace LAppDefine;
 using namespace Csm;
 
 LAppMinimumView::LAppMinimumView():
-        _programId(0),
         _renderSprite(nullptr),
         _renderTarget(SelectTarget_None)
 {
@@ -49,6 +49,7 @@ LAppMinimumView::LAppMinimumView():
 LAppMinimumView::~LAppMinimumView()
 {
     _renderBuffer.DestroyOffscreenSurface();
+    delete _spriteShader;
     delete _renderSprite;
 
     delete _viewMatrix;
@@ -95,15 +96,14 @@ void LAppMinimumView::Initialize()
             ViewLogicalMaxBottom,
             ViewLogicalMaxTop
     );
-}
 
-void LAppMinimumView::InitializeShader()
-{
-    _programId = LAppMinimumDelegate::GetInstance()->CreateShader();
+    // シェーダー作成委譲クラス
+    _spriteShader = new LAppSpriteShader();
 }
 
 void LAppMinimumView::InitializeSprite()
 {
+    GLuint programId = _spriteShader->GetShaderId();
     int width = LAppMinimumDelegate::GetInstance()->GetWindowWidth();
     int height = LAppMinimumDelegate::GetInstance()->GetWindowHeight();
 
@@ -113,7 +113,7 @@ void LAppMinimumView::InitializeSprite()
 
     if (!_renderSprite)
     {
-        _renderSprite = new LAppSprite(x, y, width, height, 0, _programId);
+        _renderSprite = new LAppSprite(x, y, width, height, 0, programId);
     }
     else
     {

@@ -37,6 +37,13 @@ namespace LAppDefine {
     // 終了ボタン
     const csmChar* PowerImageName = "close.png";
 
+    // シェーダー相対パス
+    const csmChar* ShaderPath = "";
+    // 頂点シェーダー
+    const csmChar* VertShaderName = "VertSprite.vert";
+    // フラグメントシェーダー
+    const csmChar* FragShaderName = "FragSprite.frag";
+
     // モデル定義------------------------------------------
     // モデルを配置したディレクトリ名の配列
     // ディレクトリ名とmodel3.jsonの名前を一致させておくこと

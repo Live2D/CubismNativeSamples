@@ -15,6 +15,7 @@
 #include "LAppDefine.hpp"
 #include "TouchManager.hpp"
 #include "LAppSprite.hpp"
+#include "LAppSpritePipeline.hpp"
 #include "LAppModel.hpp"
 
 using namespace std;
@@ -26,11 +27,7 @@ LAppView::LAppView():
                     , _power(NULL)
                     , _renderSprite(NULL)
                     , _renderTarget(SelectTarget_None)
-                    , _fragShaderModule(VK_NULL_HANDLE)
-                    , _vertShaderModule(VK_NULL_HANDLE)
-                    , _descriptorSetLayout(VK_NULL_HANDLE)
-                    , _pipeline(VK_NULL_HANDLE)
-                    , _pipelineLayout(VK_NULL_HANDLE)
+                    , _spritePipeline(NULL)
 {
     _clearColor[0] = 1.0f;
     _clearColor[1] = 1.0f;
@@ -50,12 +47,7 @@ LAppView::LAppView():
 LAppView::~LAppView()
 {
     VkDevice device = LAppDelegate::GetInstance()->GetVulkanManager()->GetDevice();
-    Cleanup(device);
-    vkDestroyDescriptorSetLayout(device, _descriptorSetLayout, nullptr);
-    vkDestroyShaderModule(device, _vertShaderModule, nullptr);
-    vkDestroyShaderModule(device, _fragShaderModule, nullptr);
     _renderBuffer.DestroyOffscreenSurface(device);
-    delete _renderSprite;
     delete _viewMatrix;
     delete _deviceToScreen;
     delete _touchManager;
@@ -66,9 +58,12 @@ LAppView::~LAppView()
     _back->Release(device);
     _gear->Release(device);
     _power->Release(device);
+    _renderSprite->Release(device);
     delete _back;
     delete _gear;
     delete _power;
+    delete _renderSprite;
+    delete _spritePipeline;
 }
 
 void LAppView::Initialize()
@@ -145,6 +140,21 @@ void LAppView::BeginRendering(VkCommandBuffer commandBuffer, float r, float g, f
     vkCmdBeginRendering(commandBuffer, &renderingInfo);
 }
 
+void LAppView::ChangeEndLayout(VkCommandBuffer commandBuffer)
+{
+    VulkanManager* vkManager = LAppDelegate::GetInstance()->GetVulkanManager();
+    VkImageMemoryBarrier memoryBarrier{};
+    memoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    memoryBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    memoryBarrier.dstAccessMask = 0;
+    memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    memoryBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    memoryBarrier.image = vkManager->GetSwapchainImage();
+    memoryBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+    vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &memoryBarrier);
+}
+
 void LAppView::EndRendering(VkCommandBuffer commandBuffer)
 {
     vkCmdEndRendering(commandBuffer);
@@ -166,10 +176,10 @@ void LAppView::Render()
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     VkCommandBuffer commandBuffer = vkManager->BeginSingleTimeCommands();
     BeginRendering(commandBuffer, 0.0, 0.0, 0.0, 1.0, true);
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
-    _back->Render(commandBuffer, _pipelineLayout, vkManager, width, height);
-    _gear->Render(commandBuffer, _pipelineLayout, vkManager, width, height);
-    _power->Render(commandBuffer, _pipelineLayout, vkManager, width, height);
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _spritePipeline->GetPipeline());
+    _back->Render(commandBuffer, vkManager, width, height);
+    _gear->Render(commandBuffer, vkManager, width, height);
+    _power->Render(commandBuffer, vkManager, width, height);
     EndRendering(commandBuffer);
     vkManager->SubmitCommand(commandBuffer, true);
 
@@ -190,196 +200,22 @@ void LAppView::Render()
                                                         model->GetRenderBuffer().GetTextureView(),
                                                         model->GetRenderBuffer().GetTextureSampler());
             BeginRendering(commandBuffer, 0.f, 0.f, 0.3, 1.f, false);
-            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
+            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _spritePipeline->GetPipeline());
 
             float alpha = i < 1 ? 1.0f : model->GetOpacity(); // サンプルとしてαに適当な差をつける
             _renderSprite->SetColor(1.0f, 1.0f, 1.0f, alpha);
             if (model)
             {
-                _renderSprite->Render(commandBuffer, _pipelineLayout, vkManager, width, height);
+                _renderSprite->Render(commandBuffer, vkManager, width, height);
             }
             EndRendering(commandBuffer);
             vkManager->SubmitCommand(commandBuffer);
         }
     }
-}
 
-VkShaderModule LAppView::CreateShaderModule(VkDevice device, std::string filename)
-{
-    std::ifstream file(filename, std::ios::ate | std::ios::binary);
-
-    if (!file.is_open())
-    {
-        CubismLogError("failed to open file!");
-    }
-
-    csmInt32 fileSize = (csmInt32)file.tellg();
-    csmVector<char> buffer(fileSize);
-
-    file.seekg(0);
-    file.read(buffer.GetPtr(), fileSize);
-    file.close();
-
-    VkShaderModuleCreateInfo createInfo{};
-    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    createInfo.codeSize = fileSize;
-    createInfo.pCode = reinterpret_cast<const csmUint32*>(buffer.GetPtr());
-
-    VkShaderModule shaderModule;
-    if (vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
-    {
-        CubismLogError("failed to create shader module!");
-    }
-
-    return shaderModule;
-}
-
-void LAppView::CreateDescriptorSetLayout(VkDevice device)
-{
-    VkDescriptorSetLayoutBinding bindings[2];
-
-    bindings[0].binding = 0;
-    bindings[0].descriptorCount = 1;
-    bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    bindings[0].pImmutableSamplers = nullptr;
-    bindings[0].stageFlags = VK_SHADER_STAGE_ALL;
-
-    bindings[1].binding = 1;
-    bindings[1].descriptorCount = 1;
-    bindings[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    bindings[1].pImmutableSamplers = nullptr;
-    bindings[1].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-    VkDescriptorSetLayoutCreateInfo layoutInfo{};
-    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    layoutInfo.bindingCount = sizeof(bindings) / sizeof(bindings[0]);
-    layoutInfo.pBindings = bindings;
-
-    if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
-    {
-        LAppPal::PrintLogLn("failed to create descriptor set layout!");
-    }
-}
-
-void LAppView::CreateSpriteGraphicsPipeline(VkDevice device, VkExtent2D extent, VkShaderModule vertShaderModule,
-                                            VkShaderModule fragShaderModule, VkFormat swapchainFormat)
-{
-    VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
-    vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-    vertShaderStageInfo.module = vertShaderModule;
-    vertShaderStageInfo.pName = "main";
-
-    VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
-    fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    fragShaderStageInfo.module = fragShaderModule;
-    fragShaderStageInfo.pName = "main";
-
-    VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
-
-    VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
-    vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-
-    VkVertexInputBindingDescription bindingDescription = LAppSprite::SpriteVertex::GetBindingDescription();
-    VkVertexInputAttributeDescription attributeDescriptions[2]{};
-    LAppSprite::SpriteVertex::GetAttributeDescriptions(attributeDescriptions);
-    vertexInputInfo.vertexBindingDescriptionCount = 1;
-    vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
-    vertexInputInfo.vertexAttributeDescriptionCount = sizeof(attributeDescriptions) / sizeof(attributeDescriptions[0]);
-    vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions;
-
-    VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
-    inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-    inputAssembly.primitiveRestartEnable = VK_FALSE;
-
-    VkRect2D scissor{};
-    scissor.offset = {0, 0};
-    scissor.extent = extent;
-
-    VkViewport viewport{};
-    viewport.x = 0.0f;
-    viewport.y = 0.0f;
-    viewport.width = (float)scissor.extent.width;
-    viewport.height = (float)scissor.extent.height;
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-
-    VkPipelineViewportStateCreateInfo viewportState{};
-    viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-    viewportState.viewportCount = 1;
-    viewportState.pViewports = &viewport;
-    viewportState.scissorCount = 1;
-    viewportState.pScissors = &scissor;
-
-    VkPipelineRasterizationStateCreateInfo rasterizer{};
-    rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-    rasterizer.depthClampEnable = VK_FALSE;
-    rasterizer.rasterizerDiscardEnable = VK_FALSE;
-    rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
-    rasterizer.lineWidth = 1.0f;
-    rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-    rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-    rasterizer.depthBiasEnable = VK_FALSE;
-
-    VkPipelineMultisampleStateCreateInfo multisampling{};
-    multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-    multisampling.sampleShadingEnable = VK_FALSE;
-    multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-
-    VkPipelineColorBlendAttachmentState colorBlendAttachment{};
-    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT
-            | VK_COLOR_COMPONENT_A_BIT;
-    colorBlendAttachment.blendEnable = VK_TRUE;
-    colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-    colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-    colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-    colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-    colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-    colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
-
-    VkPipelineColorBlendStateCreateInfo colorBlending{};
-    colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-    colorBlending.logicOpEnable = VK_FALSE;
-    colorBlending.logicOp = VK_LOGIC_OP_COPY;
-    colorBlending.attachmentCount = 1;
-    colorBlending.pAttachments = &colorBlendAttachment;
-
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 1;
-    pipelineLayoutInfo.pSetLayouts = &_descriptorSetLayout;
-
-    if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS)
-    {
-        LAppPal::PrintLogLn("failed to create pipeline layout!");
-    }
-
-    VkPipelineRenderingCreateInfo renderingInfo{};
-    renderingInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
-    renderingInfo.colorAttachmentCount = 1;
-    renderingInfo.pColorAttachmentFormats = &swapchainFormat;
-
-    VkGraphicsPipelineCreateInfo pipelineInfo{};
-    pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-    pipelineInfo.stageCount = 2;
-    pipelineInfo.pStages = shaderStages;
-    pipelineInfo.pVertexInputState = &vertexInputInfo;
-    pipelineInfo.pInputAssemblyState = &inputAssembly;
-    pipelineInfo.pViewportState = &viewportState;
-    pipelineInfo.pRasterizationState = &rasterizer;
-    pipelineInfo.pMultisampleState = &multisampling;
-    pipelineInfo.pColorBlendState = &colorBlending;
-    pipelineInfo.layout = _pipelineLayout;
-    pipelineInfo.subpass = 0;
-    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
-    pipelineInfo.pNext = &renderingInfo;
-
-    if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS)
-    {
-        LAppPal::PrintLogLn("failed to create graphics pipeline!");
-    }
+    commandBuffer = vkManager->BeginSingleTimeCommands();
+    ChangeEndLayout(commandBuffer);
+    vkManager->SubmitCommand(commandBuffer);
 }
 
 void LAppView::InitializeSprite()
@@ -388,11 +224,7 @@ void LAppView::InitializeSprite()
     VkDevice device = vkManager->GetDevice();
     VkPhysicalDevice physicalDevice = vkManager->GetPhysicalDevice();
     SwapchainManager* swapchainManager = vkManager->GetSwapchainManager();
-    _vertShaderModule = CreateShaderModule(device, "SampleShaders/VertSprite.spv");
-    _fragShaderModule = CreateShaderModule(device, "SampleShaders/FragSprite.spv");
-    CreateDescriptorSetLayout(device);
-    CreateSpriteGraphicsPipeline(device, swapchainManager->GetExtent(), _vertShaderModule, _fragShaderModule,
-                                 vkManager->GetSwapchainManager()->GetSwapchainImageFormat());
+    _spritePipeline = new LAppSpritePipeline(device, swapchainManager->GetExtent(), vkManager->GetSwapchainManager()->GetSwapchainImageFormat());
 
     int width, height;
     glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
@@ -411,7 +243,7 @@ void LAppView::InitializeSprite()
     LAppTextureManager::TextureInfo* backgroundTexture = textureManager->CreateTextureFromPngFile(
         resourcesPath + imageName, vkManager->GetImageFormat(), VK_IMAGE_TILING_OPTIMAL,
         VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 0.0);
     LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(backgroundTexture->id, textureImage);
 
     x = width * 0.5f;
@@ -419,13 +251,13 @@ void LAppView::InitializeSprite()
     fWidth = static_cast<float>(backgroundTexture->width * 2.0f);
     fHeight = static_cast<float>(height * 0.95f);
     _back = new LAppSprite(device, physicalDevice, vkManager, x, y, fWidth, fHeight, backgroundTexture->id,
-                           textureImage.GetView(), textureImage.GetSampler(), _descriptorSetLayout);
+                           _spritePipeline, textureImage.GetView(), textureImage.GetSampler());
 
     imageName = GearImageName;
     LAppTextureManager::TextureInfo* gearTexture = textureManager->CreateTextureFromPngFile(
         resourcesPath + imageName, vkManager->GetImageFormat(), VK_IMAGE_TILING_OPTIMAL,
         VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 0.0);
     LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(gearTexture->id, textureImage);
 
     //X：右向き正、Y：下向き正
@@ -434,13 +266,13 @@ void LAppView::InitializeSprite()
     fWidth = static_cast<float>(gearTexture->width);
     fHeight = static_cast<float>(gearTexture->height);
     _gear = new LAppSprite(device, physicalDevice, vkManager, x, y, fWidth, fHeight, gearTexture->id,
-                           textureImage.GetView(), textureImage.GetSampler(), _descriptorSetLayout);
+                           _spritePipeline, textureImage.GetView(), textureImage.GetSampler());
 
     imageName = PowerImageName;
     LAppTextureManager::TextureInfo* powerTexture = textureManager->CreateTextureFromPngFile(
         resourcesPath + imageName, vkManager->GetImageFormat(), VK_IMAGE_TILING_OPTIMAL,
         VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 0.0);
     LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(powerTexture->id, textureImage);
 
     //X：右向き正、Y：下向き正
@@ -449,13 +281,13 @@ void LAppView::InitializeSprite()
     fWidth = static_cast<float>(powerTexture->width);
     fHeight = static_cast<float>(powerTexture->height);
     _power = new LAppSprite(device, physicalDevice, vkManager, x, y, fWidth, fHeight, powerTexture->id,
-                            textureImage.GetView(), textureImage.GetSampler(), _descriptorSetLayout);
+                            _spritePipeline, textureImage.GetView(), textureImage.GetSampler());
 
     // 画面全体を覆うサイズ
     x = width * 0.5f;
     y = height * 0.5f;
     LAppLive2DManager* live2DManager = LAppLive2DManager::GetInstance();
-    _renderSprite = new LAppSprite(device, physicalDevice, vkManager, x, y, static_cast<float>(width), static_cast<float>(height),0, NULL, NULL, _descriptorSetLayout);
+    _renderSprite = new LAppSprite(device, physicalDevice, vkManager, x, y, static_cast<float>(width), static_cast<float>(height),0, _spritePipeline, NULL, NULL);
 }
 
 void LAppView::OnTouchesBegan(float px, float py) const
@@ -532,12 +364,22 @@ float LAppView::TransformScreenY(float deviceY) const
 
 void LAppView::PreModelDraw(LAppModel& refModel)
 {
-    // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-    Csm::Rendering::CubismOffscreenSurface_Vulkan* useTarget = NULL;
-    useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
-
-    if (_renderTarget != SelectTarget_None)
+    if (_renderTarget == SelectTarget_None)
     {
+        // 通常のスワップチェーンイメージへと描画
+        VulkanManager* vkManager = LAppDelegate::GetInstance()->GetVulkanManager();
+        Csm::Rendering::CubismRenderer_Vulkan::SetRenderTarget(vkManager->GetSwapchainImage(),
+                                                                vkManager->GetSwapchainImageView(),
+                                                                vkManager->GetSwapchainManager()->GetSwapchainImageFormat(),
+                                                                vkManager->GetSwapchainManager()->GetExtent());
+    }
+    else
+    {
+        // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
+        Csm::Rendering::CubismOffscreenSurface_Vulkan* useTarget = NULL;
+        useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer                // LAppView が持つバッファ
+                                                                    : &refModel.GetRenderBuffer();  // Model が持つバッファ
+
         // 別のレンダリングターゲットへ向けて描画する場合
         if (!useTarget->IsValid())
         {
@@ -555,7 +397,10 @@ void LAppView::PreModelDraw(LAppModel& refModel)
                 _renderSprite->SetDescriptorUpdated(false);
             }
         }
-        Csm::Rendering::CubismRenderer_Vulkan::SetRenderTarget(useTarget->GetTextureImage(), useTarget->GetTextureView());
+        // 描画先を別のレンダリングターゲットへ指定
+        Csm::Rendering::CubismRenderer_Vulkan::SetRenderTarget(useTarget->GetTextureImage(), useTarget->GetTextureView(),
+                                                               LAppDelegate::GetInstance()->GetVulkanManager()->GetImageFormat(),
+                                                               VkExtent2D{useTarget->GetBufferWidth(), useTarget->GetBufferHeight()});
     }
 }
 
@@ -581,13 +426,20 @@ void LAppView::PostModelDraw(LAppModel& refModel, csmInt32 modelIndex)
             _renderSprite->UpdateDescriptorSet(vkManager->GetDevice(), useTarget->GetTextureView(),
                                                         useTarget->GetTextureSampler());
             BeginRendering(commandBuffer, 0.f, 0.f, 0.3, 1.f, false);
-            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
+            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _spritePipeline->GetPipeline());
             _renderSprite->SetColor(1.0f, 1.0f, 1.0f, GetSpriteAlpha(0));
-            _renderSprite->Render(commandBuffer, _pipelineLayout, vkManager, width, height);
+            _renderSprite->Render(commandBuffer, vkManager, width, height);
             EndRendering(commandBuffer);
             vkManager->SubmitCommand(commandBuffer);
         }
     }
+
+    // レンダーターゲットをスワップチェーンのものへと戻す
+    VulkanManager* vkManager = LAppDelegate::GetInstance()->GetVulkanManager();
+    Csm::Rendering::CubismRenderer_Vulkan::SetRenderTarget(vkManager->GetSwapchainImage(),
+                                                            vkManager->GetSwapchainImageView(),
+                                                            vkManager->GetSwapchainManager()->GetSwapchainImageFormat(),
+                                                            vkManager->GetSwapchainManager()->GetExtent());
 }
 
 void LAppView::SwitchRenderingTarget(SelectTarget targetType)
@@ -618,20 +470,13 @@ float LAppView::GetSpriteAlpha(int assign) const
     return alpha;
 }
 
-void LAppView::Cleanup(VkDevice device)
-{
-    vkDestroyPipelineLayout(device, _pipelineLayout, nullptr);
-    vkDestroyPipeline(device, _pipeline, nullptr);
-}
-
 void LAppView::ResizeSprite(int width, int height)
 {
     VulkanManager* vkManager = LAppDelegate::GetInstance()->GetVulkanManager();
     VkDevice device = vkManager->GetDevice();
     SwapchainManager* swapchainManager = vkManager->GetSwapchainManager();
-    Cleanup(device);
-    CreateSpriteGraphicsPipeline(device, swapchainManager->GetExtent(), _vertShaderModule, _fragShaderModule,
-                                 vkManager->GetSwapchainManager()->GetSwapchainImageFormat());
+    delete _spritePipeline;
+    _spritePipeline = new LAppSpritePipeline(device, swapchainManager->GetExtent(), vkManager->GetSwapchainManager()->GetSwapchainImageFormat());
 
     LAppTextureManager* textureManager = LAppDelegate::GetInstance()->GetTextureManager();
     if (!textureManager)
@@ -646,6 +491,7 @@ void LAppView::ResizeSprite(int width, int height)
 
     if (_back)
     {
+        _back->SetPipeline(_spritePipeline);
         uint32_t id = _back->GetTextureId();
         LAppTextureManager::TextureInfo* texInfo = textureManager->GetTextureInfoById(id);
         if (texInfo)
@@ -660,6 +506,7 @@ void LAppView::ResizeSprite(int width, int height)
 
     if (_power)
     {
+        _power->SetPipeline(_spritePipeline);
         uint32_t id = _power->GetTextureId();
         LAppTextureManager::TextureInfo* texInfo = textureManager->GetTextureInfoById(id);
         if (texInfo)
@@ -674,6 +521,7 @@ void LAppView::ResizeSprite(int width, int height)
 
     if (_gear)
     {
+        _gear->SetPipeline(_spritePipeline);
         uint32_t id = _gear->GetTextureId();
         LAppTextureManager::TextureInfo* texInfo = textureManager->GetTextureInfoById(id);
         if (texInfo)
@@ -687,6 +535,7 @@ void LAppView::ResizeSprite(int width, int height)
     }
     if (_renderSprite)
     {
+        _renderSprite->SetPipeline(_spritePipeline);
         x = width * 0.5f;
         y = height * 0.5f;
         _renderSprite->ResetRect(x, y, static_cast<float>(width), static_cast<float>(height));

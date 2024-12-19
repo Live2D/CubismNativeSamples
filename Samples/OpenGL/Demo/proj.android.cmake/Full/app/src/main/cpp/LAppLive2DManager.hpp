@@ -92,12 +92,6 @@ public:
     void ChangeScene(Csm::csmInt32 index);
 
     /**
-    * @brief   シーンインデックスの取得
-    * @return  シーンインデックスを返す
-    */
-    Csm::csmInt32 GetSceneIndex() { return _sceneIndex; }
-
-    /**
      * @brief   モデル個数を得る
      * @return  所持モデル個数
      */
@@ -121,7 +115,6 @@ private:
 
     Csm::CubismMatrix44*        _viewMatrix; ///< モデル描画に用いるView行列
     Csm::csmVector<LAppModel*>  _models; ///< モデルインスタンスのコンテナ
-    Csm::csmInt32               _sceneIndex; ///< 表示するシーンのインデックス値
 
     Csm::csmVector<Csm::csmString> _modelDir; ///< モデルディレクトリ名のコンテナ
 };

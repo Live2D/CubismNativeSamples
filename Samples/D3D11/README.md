@@ -11,7 +11,6 @@ This is a sample implementation of an application implemented with DirectX 11.
 
 | Development Kit | Visual Studio | Version |
 | --- | --- | --- |
-| [DirectXTK] | 2013 | April 23, 2018 |
 | [DirectXTK] | 2015 | December 17, 2019 |
 | [DirectXTK] | 2017 | March 24, 2022 |
 | [DirectXTK] | 2019 / 2022 | December 31, 2023 |
@@ -72,7 +71,6 @@ Download DirectXTK and build the library by running the script in the `script` d
 
 | Visual Studio | Script Name |
 | --- | --- |
-| 2013 | `setup_msvc2013.bat` |
 | 2015 | `setup_msvc2015.bat` |
 | 2017 | `setup_msvc2017.bat` |
 | 2019 | `setup_msvc2019.bat` |

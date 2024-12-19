@@ -12,7 +12,7 @@
 #include <CubismFramework.hpp>
 #include <Type/CubismBasicType.hpp>
 
-
+class LAppSpriteShader;
 
 /**
 * @brief スプライトを実装するクラス。
@@ -51,9 +51,10 @@ public:
      * @param[in]       width        横幅
      * @param[in]       height       高さ
      * @param[in]       textureId    テクスチャID
+     * @param[in]       shader       シェーダー設定
      * @param[in]       device       D3Dデバイス
      */
-    LAppSprite(float x, float y, float width, float height, Csm::csmUint64 textureId, ID3D11Device* device);
+    LAppSprite(float x, float y, float width, float height, Csm::csmUint64 textureId, LAppSpriteShader* shader, ID3D11Device* device);
 
     /**
      * @brief デストラクタ
@@ -119,4 +120,6 @@ private:
     ID3D11Buffer* _constantBuffer;  ///< 定数バッファ
 
     DirectX::XMFLOAT4   _color;     ///< スプライトカラー
+
+    LAppSpriteShader* _shader;
 };

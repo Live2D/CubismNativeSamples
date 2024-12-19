@@ -202,22 +202,10 @@ void MinLAppModel::PreloadMotionGroup(const csmChar* group)
         csmByte* buffer;
         csmSizeInt size;
         buffer = CreateBuffer(path.GetRawString(), &size);
-        CubismMotion* tmpMotion = static_cast<CubismMotion*>(LoadMotion(buffer, size, name.GetRawString()));
+        CubismMotion* tmpMotion = static_cast<CubismMotion*>(LoadMotion(buffer, size, name.GetRawString(), NULL, NULL, _modelSetting, group, i));
 
         if (tmpMotion)
         {
-            csmFloat32 fadeTime = _modelSetting->GetMotionFadeInTimeValue(group, i);
-            if (fadeTime >= 0.0f)
-            {
-                tmpMotion->SetFadeInTime(fadeTime);
-            }
-
-            fadeTime = _modelSetting->GetMotionFadeOutTimeValue(group, i);
-            if (fadeTime >= 0.0f)
-            {
-                tmpMotion->SetFadeOutTime(fadeTime);
-            }
-
             if (_motions[name] != NULL)
             {
                 ACubismMotion::Delete(_motions[name]);
@@ -339,7 +327,7 @@ void MinLAppModel::Update()
 
 }
 
-CubismMotionQueueEntryHandle MinLAppModel::StartMotion(const csmChar* group, csmInt32 no, csmInt32 priority, ACubismMotion::FinishedMotionCallback onFinishedMotionHandler)
+CubismMotionQueueEntryHandle MinLAppModel::StartMotion(const csmChar* group, csmInt32 no, csmInt32 priority)
 {
     if (priority == PriorityForce)
     {
@@ -369,29 +357,14 @@ CubismMotionQueueEntryHandle MinLAppModel::StartMotion(const csmChar* group, csm
         csmByte* buffer;
         csmSizeInt size;
         buffer = CreateBuffer(path.GetRawString(), &size);
-        motion = static_cast<CubismMotion*>(LoadMotion(buffer, size, NULL, onFinishedMotionHandler));
+        motion = static_cast<CubismMotion*>(LoadMotion(buffer, size, NULL, NULL, NULL, _modelSetting, group, no));
 
         if (motion)
         {
-            csmFloat32 fadeTime = _modelSetting->GetMotionFadeInTimeValue(group, no);
-            if (fadeTime >= 0.0f)
-            {
-                motion->SetFadeInTime(fadeTime);
-            }
-
-            fadeTime = _modelSetting->GetMotionFadeOutTimeValue(group, no);
-            if (fadeTime >= 0.0f)
-            {
-                motion->SetFadeOutTime(fadeTime);
-            }
             autoDelete = true; // 終了時にメモリから削除
         }
 
         DeleteBuffer(buffer, path.GetRawString());
-    }
-    else
-    {
-        motion->SetFinishedMotionHandler(onFinishedMotionHandler);
     }
 
     if (_debugMode)
@@ -424,7 +397,7 @@ void MinLAppModel::SetExpression(const csmChar* expressionID)
 
     if (motion != NULL)
     {
-        _expressionManager->StartMotionPriority(motion, false, PriorityForce);
+        _expressionManager->StartMotion(motion, false);
     }
     else
     {

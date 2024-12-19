@@ -37,6 +37,13 @@ namespace LAppDefine {
     // 終了ボタン
     const csmChar* PowerImageName = "close.png";
 
+    // シェーダー相対パス
+    const csmChar* ShaderPath = "";
+    // 頂点シェーダー
+    const csmChar* VertShaderName = "VertSprite.vert";
+    // フラグメントシェーダー
+    const csmChar* FragShaderName = "FragSprite.frag";
+
     // モデル定義------------------------------------------
     // 外部定義ファイル(json)と合わせる
     const csmChar* MotionGroupIdle = "Idle"; // アイドリング

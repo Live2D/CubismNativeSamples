@@ -118,6 +118,7 @@
 {
     for (Csm::csmUint32 i = 0; i < _textures.GetSize(); i++)
     {
+        glDeleteTextures(1, &(_textures[i]->id));
         delete _textures[i];
     }
 
@@ -132,6 +133,7 @@
         {
             continue;
         }
+        glDeleteTextures(1, &(_textures[i]->id));
         delete _textures[i];
         _textures.Remove(i);
         break;
@@ -144,6 +146,7 @@
     {
         if (_textures[i]->fileName == fileName)
         {
+            glDeleteTextures(1, &(_textures[i]->id));
             delete _textures[i];
             _textures.Remove(i);
             break;

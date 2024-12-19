@@ -35,7 +35,6 @@ Cubism 5 Editorに搭載された新機能のSDK対応については [こちら
 ├─ Core             # Live2D Cubism Core が含まれるディレクトリ
 ├─ Framework        # レンダリングやアニメーション機能などのソースコードが含まれるディレクトリ
 └─ Samples
-   ├─ Cocos2d-x     # Cocos2d-x のサンプルプロジェクトが含まれるディレクトリ
    ├─ D3D9          # DirectX 9.0c のサンプルプロジェクトが含まれるディレクトリ
    ├─ D3D11         # DirectX 11 のサンプルプロジェクトが含まれるディレクトリ
    ├─ Metal         # Metal のサンプルプロジェクトが含まれるディレクトリ
@@ -111,36 +110,37 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 | 開発ツール | バージョン |
 | --- | --- |
-| Android Studio | Iguana 2023.2.1 |
-| CMake | 3.28.3 |
-| Visual Studio 2013 | Update 5 |
+| Android Studio | Ladybug 2024.2.1 Patch 3 |
+| DevEco Studio | 5.0.5.306 |
+| CMake | 3.31.2 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.60 |
-| Visual Studio 2019 | 16.11.34 |
-| Visual Studio 2022 | 17.9.4 |
-| Xcode | 15.3 |
+| Visual Studio 2017 | 15.9.68 |
+| Visual Studio 2019 | 16.11.42 |
+| Visual Studio 2022 | 17.12.3 |
+| Xcode | 16.2 |
 
 ### Android
 
 | Android SDK tools | バージョン |
 | --- | --- |
-| Android NDK | 26.2.11394342 |
-| Android SDK | 34.0.0 |
+| Android NDK | 26.3.11579264 |
+| Android SDK | 35.0.0 |
 | CMake | 3.22.1 |
+
+### HarmonyOS
+
+| HarmonyOS SDK tools | バージョン |
+| --- | --- |
+| HarmonyOS SDK | 5.0.1.112 |
 
 ### Linux
 
 | 系統 | ディストリビューション・バージョン | Docker イメージ | GCC |
 | --- | --- | --- | --- |
 | Red Hat | Amazon Linux 2 |  `amazonlinux:2` | 7.3.1 |
-| Red Hat | CentOS 7 | `centos:7` | 4.8.5 |
-| Red Hat | CentOS Stream 8 *1 | `centos:latest` | 8.5.0 |
-| Red Hat | CentOS Stream 9 | - | 12.2.1 |
 | Red Hat | AlmaLinux | `almalinux:latest` | 11.4.1 |
-| Debian | Ubuntu 18.04 | `ubuntu:18.04` | 7.5.0 |
 | Debian | Ubuntu 22.04.4 | `ubuntu:22.04` | 11.4.0 |
-
-*1 CentOS 8はサポートしておりません
+| Debian | Ubuntu 24.04.1 | `ubuntu:24.04` | 13.3.0 |
 
 #### Mesa ライブラリ
 
@@ -156,17 +156,23 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 | プラットフォーム | バージョン |
 | --- | --- |
-| iOS / iPadOS | 17.4 |
-| macOS | 14.4 |
-| Windows 10 | 22H2 |
-| Windows 11 | 22H2 |
+| iOS / iPadOS | 18.2 |
+| macOS | 15.2 |
+| Windows 10 | 23H2 |
+| Windows 11 | 23H2 |
 
 ### Android
 
 | バージョン | デバイス | Tegra |
 | --- | --- | --- |
-| 13 | Pixel 7a | |
+| 15 | Pixel 7a | |
 | 7.1.1 | Nexus 9 | ✔︎ |
+
+### HarmonyOS
+
+| バージョン | デバイス |
+| --- | --- |
+| NEXT.0.0.71 | HUAWEI Mate 60 Pro |
 
 ### Linux
 
@@ -174,7 +180,7 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 | --- | --- | --- |
 | Red Hat | Amazon Linux | 2 |
 | Red Hat | AlmaLinux | 9 |
-| Debian | Ubuntu | 22.04.4 |
+| Debian | Ubuntu | 24.04.1 |
 
 ## プロジェクトへの貢献
 

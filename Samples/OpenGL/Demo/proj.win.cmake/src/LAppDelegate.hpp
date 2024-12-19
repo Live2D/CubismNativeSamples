@@ -70,11 +70,6 @@ public:
     void OnMouseCallBack(GLFWwindow* window, double x, double y);
 
     /**
-    * @brief シェーダーを登録する。
-    */
-    GLuint CreateShader();
-
-    /**
     * @brief   Window情報を取得する。
     */
     GLFWwindow* GetWindow() { return _window; }
@@ -111,11 +106,6 @@ private:
     * @brief   Cubism SDK の初期化
     */
     void InitializeCubism();
-
-    /**
-     * @brief   CreateShader内部関数 エラーチェック
-     */
-    bool CheckShader(GLuint shaderId);
 
     LAppAllocator _cubismAllocator;              ///< Cubism SDK Allocator
     Csm::CubismFramework::Option _cubismOption;  ///< Cubism SDK Option

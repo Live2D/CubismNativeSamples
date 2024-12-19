@@ -7,9 +7,6 @@
 
 #include "LAppPal.hpp"
 
-#include <d3dcompiler.h>
-#include <Rendering/D3D11/CubismNativeInclude_D3D11.hpp>
-
 #include "CubismDirectXRenderer.hpp"
 #include "CubismDirectXView.hpp"
 #include "CubismTextureManager.hpp"
@@ -38,8 +35,6 @@ CubismDirectXRenderer::CubismDirectXRenderer()
     , _deviceLostStep(LostStep::LostStep_None)
     , _lostCounter(0)
     , _isFullScreen(false)
-    , _shaderEffect(nullptr)
-    , _vertexFormat(nullptr)
     , _model(nullptr)
 {
     _textureManager = new CubismTextureManager();
@@ -102,102 +97,6 @@ void CubismDirectXRenderer::GetClientSize(int& rWidth, int& rHeight)
     rHeight = (clientRect.bottom - clientRect.top);
 }
 
-bool CubismDirectXRenderer::CreateShader()
-{
-    // 一旦削除する
-    ReleaseShader();
-
-    static const csmChar* SpriteShaderEffectSrc =
-        "float4x4 projectMatrix;"\
-        "float4 baseColor;"\
-        "texture mainTexture;"\
-        \
-        "sampler mainSampler = sampler_state{"\
-        "texture = <mainTexture>;"\
-        "};"\
-        \
-        "struct VS_IN {"\
-        "float2 pos : POSITION;"\
-        "float2 uv : TEXCOORD0;"\
-        "};"\
-        "struct VS_OUT {"\
-        "float4 Position : POSITION0;"\
-        "float2 uv : TEXCOORD0;"\
-        "float4 clipPosition : TEXCOORD1;"\
-        "};"\
-        \
-        "/* Vertex Shader */"\
-        "/* normal */"\
-        "VS_OUT VertNormal(VS_IN In) {"\
-        "VS_OUT Out = (VS_OUT)0;"\
-        "Out.Position = mul(float4(In.pos, 0.0f, 1.0f), projectMatrix);"\
-        "Out.uv.x = In.uv.x;"\
-        "Out.uv.y = 1.0 - +In.uv.y;"\
-        "return Out;"\
-        "}"\
-        \
-        "/* Pixel Shader */"\
-        "/* normal */"\
-        "float4 PixelNormal(VS_OUT In) : COLOR0{"\
-        "float4 color = tex2D(mainSampler, In.uv) * baseColor;"\
-        "return color;"\
-        "}"\
-        \
-        "/* Technique */"\
-        "technique ShaderNames_Normal {"\
-        "pass p0{"\
-        "VertexShader = compile vs_2_0 VertNormal();"\
-        "PixelShader = compile ps_2_0 PixelNormal();"\
-        "}"\
-        "}";
-
-    ID3DXBuffer* error = 0;
-    if (FAILED(D3DXCreateEffect(_device, SpriteShaderEffectSrc, static_cast<UINT>(strlen(SpriteShaderEffectSrc)), 0, 0, 0, 0, &_shaderEffect, &error)))
-    {
-        LAppPal::PrintLogLn("Cannot load the shaders");
-        return false;
-    }
-
-    // この描画で使用する頂点フォーマット
-    D3DVERTEXELEMENT9 elems[] = {
-        { 0, 0, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
-        { 0, sizeof(float) * 2, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
-        D3DDECL_END()
-    };
-    if (_device->CreateVertexDeclaration(elems, &_vertexFormat))
-    {
-        LAppPal::PrintLogLn("CreateVertexDeclaration failed");
-        CSM_ASSERT(0);
-    }
-
-    return true;
-}
-
-ID3DXEffect* CubismDirectXRenderer::SetupShader()
-{
-    if (_device == nullptr || _vertexFormat == nullptr || _shaderEffect == nullptr)
-    {
-        return nullptr;
-    }
-
-    _device->SetVertexDeclaration(_vertexFormat);
-    return _shaderEffect;
-}
-
-void CubismDirectXRenderer::ReleaseShader()
-{
-    if (_vertexFormat)
-    {
-        _vertexFormat->Release();
-        _vertexFormat = nullptr;
-    }
-    if (_shaderEffect)
-    {
-        _shaderEffect->Release();
-        _shaderEffect = nullptr;
-    }
-}
-
 void CubismDirectXRenderer::RecreateDevice()
 {
     // Viewロスト処理
@@ -251,13 +150,6 @@ void CubismDirectXRenderer::StartFrame() const
 
 void CubismDirectXRenderer::EndFrame(CubismUserModel* userModel)
 {
-    // テクスチャの参照を外しておく
-    if (_shaderEffect)
-    {
-        _shaderEffect->SetTexture("mainTexture", NULL);
-        _shaderEffect->CommitChanges();
-    }
-
     if (_device)
     {
         //シーンの終了

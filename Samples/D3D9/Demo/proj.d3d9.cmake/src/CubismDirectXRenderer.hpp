@@ -53,21 +53,6 @@ public:
     void ReleaseInstance();
 
     /**
-    * @brief   スプライト描画用シェーダの作成と頂点宣言の作成を行う
-    */
-    bool CreateShader();
-
-    /**
-    * @brief   シェーダをコンテキストにセット
-    */
-    ID3DXEffect* SetupShader();
-
-    /**
-    * @brief   CreateShaderで確保したオブジェクトの開放
-    */
-    void ReleaseShader();
-
-    /**
     * @brief   デバイス再作成 ウィンドウサイズ変更の時など
     *           ロスト対応の+α処理を行う
     */
@@ -115,9 +100,6 @@ public:
     bool                    _isFullScreen;  ///< フルスクリーン中か
     D3DPRESENT_PARAMETERS    _presentParameters; ///< プレゼントパラメータ
     D3DPRESENT_PARAMETERS   _presentParametersFull;     ///< プレゼントパラメータ フルスクリーン
-
-    ID3DXEffect*                    _shaderEffect;  ///< スプライト描画用シェーダ
-    IDirect3DVertexDeclaration9*    _vertexFormat;  ///< スプライト描画用型宣言
 
     CubismTextureManager* _textureManager;         ///< テクスチャマネージャー
 

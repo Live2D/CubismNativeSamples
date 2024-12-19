@@ -8,6 +8,7 @@
 #include "LAppView.hpp"
 #include <math.h>
 #include <string>
+#include <d3dcompiler.h>
 #include "LAppPal.hpp"
 #include "LAppDelegate.hpp"
 #include "LAppLive2DManager.hpp"
@@ -25,7 +26,8 @@ LAppView::LAppView():
     _gear(NULL),
     _power(NULL),
     _renderSprite(NULL),
-    _renderTarget(SelectTarget_None)
+    _renderTarget(SelectTarget_None),
+    _shader(NULL)
 {
     _clearColor[0] = 1.0f;
     _clearColor[1] = 1.0f;
@@ -119,12 +121,6 @@ void LAppView::Render()
         return;
     }
 
-    ID3DXEffect* shaderEffect = LAppDelegate::GetInstance()->SetupShader();
-    if (!shaderEffect)
-    {
-        return;
-    }
-
     // スプライト描画
     int width, height;
     LAppDelegate::GetInstance()->GetClientSize(width, height);
@@ -134,17 +130,17 @@ void LAppView::Render()
         if (_back)
         {
             textureManager->GetTexture(_back->GetTextureId(), texture);
-            _back->RenderImmidiate(device, shaderEffect, width, height, texture);
+            _back->RenderImmidiate(device, width, height, texture);
         }
         if (_gear)
         {
             textureManager->GetTexture(_gear->GetTextureId(), texture);
-            _gear->RenderImmidiate(device, shaderEffect, width, height, texture);
+            _gear->RenderImmidiate(device, width, height, texture);
         }
         if (_power)
         {
             textureManager->GetTexture(_power->GetTextureId(), texture);
-            _power->RenderImmidiate(device, shaderEffect, width, height, texture);
+            _power->RenderImmidiate(device, width, height, texture);
         }
     }
 
@@ -164,7 +160,7 @@ void LAppView::Render()
 
             if (model)
             {
-                _renderSprite->RenderImmidiate(device, shaderEffect, width, height, model->GetRenderBuffer().GetTexture());
+                _renderSprite->RenderImmidiate(device, width, height, model->GetRenderBuffer().GetTexture());
             }
         }
     }
@@ -172,6 +168,9 @@ void LAppView::Render()
 
 void LAppView::InitializeSprite()
 {
+    // シェーダ作成
+    _shader = new LAppSpriteShader();
+
     int width, height;
     LAppDelegate::GetInstance()->GetClientSize(width, height);
 
@@ -186,7 +185,7 @@ void LAppView::InitializeSprite()
     float y = height * 0.5f;
     float fWidth = static_cast<float>(backgroundTexture->width * 2.0f);
     float fHeight = static_cast<float>(height * 0.95f);
-    _back = new LAppSprite(x, y, fWidth, fHeight, backgroundTexture->id);
+    _back = new LAppSprite(x, y, fWidth, fHeight, backgroundTexture->id, _shader);
 
     imageName = GearImageName;
     LAppTextureManager::TextureInfo* gearTexture = textureManager->CreateTextureFromPngFile(resourcesPath + imageName, false,
@@ -196,7 +195,7 @@ void LAppView::InitializeSprite()
     y = static_cast<float>(height - gearTexture->height * 0.5f);
     fWidth = static_cast<float>(gearTexture->width);
     fHeight = static_cast<float>(gearTexture->height);
-    _gear = new LAppSprite(x, y, fWidth, fHeight, gearTexture->id);
+    _gear = new LAppSprite(x, y, fWidth, fHeight, gearTexture->id, _shader);
 
     imageName = PowerImageName;
     LAppTextureManager::TextureInfo* powerTexture = textureManager->CreateTextureFromPngFile(resourcesPath + imageName, false,
@@ -206,15 +205,12 @@ void LAppView::InitializeSprite()
     y = static_cast<float>(powerTexture->height * 0.5f);
     fWidth = static_cast<float>(powerTexture->width);
     fHeight = static_cast<float>(powerTexture->height);
-    _power = new LAppSprite(x, y, fWidth, fHeight, powerTexture->id);
+    _power = new LAppSprite(x, y, fWidth, fHeight, powerTexture->id, _shader);
 
     // 画面全体を覆うサイズ
     x = width * 0.5f;
     y = height * 0.5f;
-    _renderSprite = new LAppSprite(x, y, static_cast<float>(width), static_cast<float>(height), 0);
-
-    // シェーダ作成
-    LAppDelegate::GetInstance()->CreateShader();
+    _renderSprite = new LAppSprite(x, y, static_cast<float>(width), static_cast<float>(height), 0, _shader);
 }
 
 void LAppView::ReleaseSprite()
@@ -228,19 +224,19 @@ void LAppView::ReleaseSprite()
     delete _renderSprite;
     _renderSprite = NULL;
 
-    if (_power)
-    {
-        textureManager->ReleaseTexture(_power->GetTextureId());
-    }
-    delete _power;
-    _power = NULL;
-
     if (_gear)
     {
         textureManager->ReleaseTexture(_gear->GetTextureId());
     }
     delete _gear;
     _gear = NULL;
+
+    if (_power)
+    {
+        textureManager->ReleaseTexture(_power->GetTextureId());
+    }
+    delete _power;
+    _power = NULL;
 
     if (_back)
     {
@@ -250,7 +246,12 @@ void LAppView::ReleaseSprite()
     _back = NULL;
 
     // スプライト用のシェーダ・頂点宣言も開放
-    LAppDelegate::GetInstance()->ReleaseShader();
+    if (_shader)
+    {
+      _shader->ReleaseShader();
+    }
+    delete _shader;
+    _shader = NULL;
 }
 
 void LAppView::OnDeviceLost()
@@ -379,15 +380,13 @@ void LAppView::PostModelDraw(LAppModel &refModel)
         // LAppViewの持つフレームバッファを使うなら、スプライトへの描画はここ
         if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderSprite)
         {
-            ID3DXEffect* shaderEffect = LAppDelegate::GetInstance()->SetupShader();
-
             // スプライト描画
             int width, height;
             LAppDelegate::GetInstance()->GetClientSize(width, height);
 
             _renderSprite->SetColor(1.0f, 1.0f, 1.0f, GetSpriteAlpha(0));
             _renderSprite->RenderImmidiate(LAppDelegate::GetInstance()->GetD3dDevice(),
-                                           shaderEffect, width, height, useTarget->GetTexture());
+                                           width, height, useTarget->GetTexture());
         }
     }
 }

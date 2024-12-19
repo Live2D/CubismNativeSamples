@@ -86,28 +86,6 @@ public:
     static void PrintLogLn(const char*, ...);
 
     /**
-    * @brief ログを出力する wchar版
-    *
-    * ログを出力する
-    *
-    * @param[in]   format  書式付文字列
-    * @param[in]   ...     (可変長引数)文字列
-    *
-    */
-    static void PrintLogW(const wchar_t*, ...);
-
-    /**
-    * @brief ログを出力し最後に改行する wchar版
-    *
-    * ログを出力し最後に改行する
-    *
-    * @param[in]   format  書式付文字列
-    * @param[in]   ...     (可変長引数)文字列
-    *
-    */
-    static void PrintLogLnW(const wchar_t*, ...);
-
-    /**
     * @brief メッセージを出力する
     *
     * メッセージを出力する
@@ -140,8 +118,21 @@ public:
     static void CoordinateWindowToFullScreen(float clientWidth, float clientHeight, float windowX, float windowY, float& retFullScreenX, float& retFullScreenY);
 
     /**
-     * @brief   MbcからWcharに変換
+     * @brief マルチバイト文字からワイド文字に変換する
+     *
+     * @param[in]   multiByte 変換元
+     * @param[in]   wide      格納先
+     * @param[in]   wideSize  格納先の大きさ
      */
-    static void MbcToWchar(const char* src, size_t srcLength, wchar_t* dest, size_t destLength);
+    static bool ConvertMultiByteToWide(const Csm::csmChar* multiByte, wchar_t* wide, int wideSize);
+
+    /**
+     * @brief ワイド文字からマルチバイト文字に変換する
+     *
+     * @param[in]   wide          変換元
+     * @param[in]   multiByte     格納先
+     * @param[in]   multiByteSize 格納先の大きさ
+     */
+    static bool ConvertWideToMultiByte(const wchar_t* wide, Csm::csmChar* multiByte, int multiByteSize);
 };
 

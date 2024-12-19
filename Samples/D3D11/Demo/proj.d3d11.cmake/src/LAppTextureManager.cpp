@@ -31,7 +31,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
     // wcharに変換
     const int WCHAR_LENGTH = 512;
     wchar_t wchrStr[WCHAR_LENGTH] = L"";
-    LAppPal::MbcToWchar(fileName.c_str(), fileName.length(), wchrStr, sizeof(wchrStr));
+    LAppPal::ConvertMultiByteToWide(fileName.c_str(), wchrStr, sizeof(wchrStr));
 
     ID3D11Resource* texture = NULL;
     ID3D11ShaderResourceView* textureView = NULL;

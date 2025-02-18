@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
+## [5-r.3] - 2025-02-18
+
+### Fixed
+
+* Fix an issue in the GitHub repository where some files in the `thirdParty` directory were missing and excluded from tracking.
+
+
 ## [5-r.2] - 2024-12-19
 
 ### Added
@@ -461,6 +468,7 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[5-r.3]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.2...5-r.3
 [5-r.2]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1...5-r.2
 [5-r.1]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1-beta.4...5-r.1
 [5-r.1-beta.4]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1-beta.3...5-r.1-beta.4

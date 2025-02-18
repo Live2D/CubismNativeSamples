@@ -12,10 +12,8 @@
 Samples/OpenGL/Demo/proj.harmonyos.cmake/Full/entry/src/main/resources/rawfile/
 # Sample third party files
 /Samples/**/thirdParty/*
-!/Samples/**/thirdParty/scripts/*
-!/Samples/OpenGL/thirdParty/stb/*
-!/Samples/Metal/thirdParty/stb/*
-!/Samples/Vulkan/thirdParty/stb/*
+!/Samples/**/thirdParty/scripts/
+!/Samples/**/thirdParty/stb/
 # Other files
 /build/
 .vs/

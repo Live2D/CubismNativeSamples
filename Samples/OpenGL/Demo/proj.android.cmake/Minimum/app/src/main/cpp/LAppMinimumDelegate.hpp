@@ -9,7 +9,7 @@
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
-#include "LAppAllocator.hpp"
+#include "LAppAllocator_Common.hpp"
 
 class LAppMinimumView;
 class LAppTextureManager;
@@ -132,10 +132,10 @@ private:
     */
     ~LAppMinimumDelegate();
 
-    LAppAllocator _cubismAllocator;              ///< Cubism SDK Allocator
+    LAppAllocator_Common _cubismAllocator;       ///< Cubism SDK Allocator
     Csm::CubismFramework::Option _cubismOption;  ///< Cubism SDK Option
     LAppTextureManager* _textureManager;         ///< テクスチャマネージャー
-    LAppMinimumView* _view;                             ///< View情報
+    LAppMinimumView* _view;                      ///< View情報
     int _width;                                  ///< Windowの幅
     int _height;                                 ///< windowの高さ
     bool _captured;                              ///< クリックしているか

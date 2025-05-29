@@ -95,6 +95,8 @@ bool LAppDelegate::Initialize()
     //setup cubism
     _cubismOption.LogFunction = LAppPal::PrintMessage;
     _cubismOption.LoggingLevel = LAppDefine::CubismLoggingLevel;
+    _cubismOption.LoadFileFunction = LAppPal::LoadFileAsBytes;
+    _cubismOption.ReleaseBytesFunction = LAppPal::ReleaseBytes;
     Csm::CubismFramework::StartUp(&_cubismAllocator, &_cubismOption);
 
     // vulkanデバイスの作成
@@ -112,7 +114,7 @@ bool LAppDelegate::Initialize()
     _textureManager = new LAppTextureManager();
 
     //AppViewの初期化
-    _view->Initialize();
+    _view->Initialize(width, height);
 
     // Cubism SDK の初期化
     InitializeCubism();
@@ -162,7 +164,7 @@ bool LAppDelegate::RecreateSwapchain()
         );
 
         // AppViewの初期化
-        _view->Initialize();
+        _view->Initialize(width, height);
         // スプライトサイズを再設定
         _view->ResizeSprite(width, height);
         // オフスクリーンを再作成する

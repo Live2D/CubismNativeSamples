@@ -11,12 +11,13 @@
 #include <Math/CubismMatrix44.hpp>
 #include "CubismFramework.hpp"
 
-#include "MouseActionManager.hpp"
+#include "MouseActionManager_Common.hpp"
 #include "CubismUserModelExtend.hpp"
 #include "CubismSprite.hpp"
 #include "CubismSpriteShader.hpp"
+#include "LAppView_Common.hpp"
 
-class CubismDirectXView
+class CubismDirectXView : public LAppView_Common
 {
 public:
     /**
@@ -50,7 +51,7 @@ public:
     /**
     * @brief 初期化する。
     */
-    void Initialize();
+    virtual void Initialize(int width, int height) override;
 
     /**
     * @brief 描画する。
@@ -71,34 +72,6 @@ public:
     * @brief スプライト系のサイズ再設定
     */
     void ResizeSprite();
-
-    /**
-    * @brief X座標をView座標に変換する。
-    *
-    * @param[in]       deviceX            デバイスX座標
-    */
-    float TransformViewX(float deviceX) const;
-
-    /**
-    * @brief Y座標をView座標に変換する。
-    *
-    * @param[in]       deviceY            デバイスY座標
-    */
-    float TransformViewY(float deviceY) const;
-
-    /**
-    * @brief X座標をScreen座標に変換する。
-    *
-    * @param[in]       deviceX            デバイスX座標
-    */
-    float TransformScreenX(float deviceX) const;
-
-    /**
-    * @brief Y座標をScreen座標に変換する。
-    *
-    * @param[in]       deviceY            デバイスY座標
-    */
-    float TransformScreenY(float deviceY) const;
 
     /**
     * @brief   モデル1体を描画する直前にコールされる
@@ -140,8 +113,7 @@ public:
     void OnDeviceLost();
 
 private:
-    MouseActionManager* _mouseActionManager;                 ///< マウスアクションマネージャー
-    Csm::CubismMatrix44* _deviceToScreen;      ///< デバイスからスクリーンへの行列
+    MouseActionManager_Common* _mouseActionManager;                 ///< マウスアクションマネージャー
     int _windowWidth;    ///< 画面の幅
     int _windowHeight;    ///< 画面の高さ
 

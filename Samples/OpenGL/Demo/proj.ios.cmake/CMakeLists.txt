@@ -9,6 +9,7 @@ set(FRAMEWORK_PATH ${SDK_ROOT_PATH}/Framework)
 set(THIRD_PARTY_PATH ${SDK_ROOT_PATH}/Samples/OpenGL/thirdParty)
 set(STB_PATH ${THIRD_PARTY_PATH}/stb)
 set(RES_PATH ${SDK_ROOT_PATH}/Samples/Resources)
+set(FRAMEWORK_SHADER_PATH ${FRAMEWORK_PATH}/src/Rendering/OpenGL/Shaders/StandardES)
 
 # Set project.
 project(${APP_NAME})
@@ -96,6 +97,9 @@ add_custom_command(
   COMMAND
     ${CMAKE_COMMAND} -E
       copy_directory ${RES_PATH} $<TARGET_FILE_DIR:${APP_NAME}>/Res
+  COMMAND
+    ${CMAKE_COMMAND} -E
+      copy_directory ${FRAMEWORK_SHADER_PATH} $<TARGET_FILE_DIR:${APP_NAME}>/FrameworkShaders
 )
 
 # Add information aboud XCode project.

@@ -8,12 +8,12 @@
 #pragma once
 
 #include <CubismFramework.hpp>
-#include <Model/CubismUserModel.hpp>
 #include <ICubismModelSetting.hpp>
 #include <Type/csmRectF.hpp>
 #include <Rendering/D3D11/CubismOffscreenSurface_D3D11.hpp>
 
-#include "LAppWavFileHandler.hpp"
+#include "LAppWavFileHandler_Common.hpp"
+#include "LAppModel_Common.hpp"
 
 
 /**
@@ -21,7 +21,7 @@
  *         モデル生成、機能コンポーネント生成、更新処理とレンダリングの呼び出しを行う。
  *
  */
-class LAppModel : public Csm::CubismUserModel
+class LAppModel : public LAppModel_Common
 {
 public:
     /**
@@ -203,7 +203,7 @@ private:
 
     Csm::csmVector<Csm::csmUint64> _bindTextureId; ///< テクスチャID
 
-    LAppWavFileHandler _wavFileHandler; ///< wavファイルハンドラ
+    LAppWavFileHandler_Common _wavFileHandler; ///< wavファイルハンドラ
 
     bool _deleteModel;  ///< 実体消滅予定フラグ Drawを呼ばない
 

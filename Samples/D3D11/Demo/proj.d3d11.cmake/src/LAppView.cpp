@@ -13,7 +13,7 @@
 #include "LAppLive2DManager.hpp"
 #include "LAppTextureManager.hpp"
 #include "LAppDefine.hpp"
-#include "TouchManager.hpp"
+#include "TouchManager_Common.hpp"
 #include "LAppSprite.hpp"
 #include "LAppSpriteShader.hpp"
 #include "LAppModel.hpp"
@@ -22,12 +22,14 @@ using namespace std;
 using namespace LAppDefine;
 
 LAppView::LAppView():
+    LAppView_Common(),
     _back(NULL),
     _gear(NULL),
     _power(NULL),
     _renderSprite(NULL),
     _renderTarget(SelectTarget_None),
-    _shader(NULL)
+    _spriteShader(NULL),
+    _modelSpriteShader(NULL)
 {
     _clearColor[0] = 1.0f;
     _clearColor[1] = 1.0f;
@@ -35,16 +37,13 @@ LAppView::LAppView():
     _clearColor[3] = 0.0f;
 
     // タッチ関係のイベント管理
-    _touchManager = new TouchManager();
-
-    // デバイス座標からスクリーン座標に変換するための
-    _deviceToScreen = new CubismMatrix44();
-
-    // 画面の表示の拡大縮小や移動の変換を行う行列
-    _viewMatrix = new CubismViewMatrix();
+    _touchManager = new TouchManager_Common();
 
     // スプライト用シェーダー
-    _shader = new LAppSpriteShader();
+    _spriteShader = new LAppSpriteShader();
+
+    // モデルスプライト用シェーダー
+    _modelSpriteShader = new LAppModelSpriteShader();
 }
 
 LAppView::~LAppView()
@@ -52,61 +51,30 @@ LAppView::~LAppView()
     _renderBuffer.DestroyOffscreenSurface();
 
     ReleaseSprite();
-    _shader->ReleaseShader();
 
-    delete _shader;
-    delete _viewMatrix;
-    delete _deviceToScreen;
-    delete _touchManager;
+    if (_spriteShader)
+    {
+        _spriteShader->ReleaseShader();
+        delete _spriteShader;
+    }
+    if (_modelSpriteShader)
+    {
+        _modelSpriteShader->ReleaseShader();
+        delete _modelSpriteShader;
+    }
+    if (_touchManager)
+    {
+        delete _touchManager;
+    }
 }
 
-void LAppView::Initialize()
+void LAppView::Initialize(int width, int height)
 {
-    int width, height;
-    LAppDelegate::GetClientSize(width, height);
-
-    if(width==0 || height==0)
-    {
-        return;
-    }
-
-    // 縦サイズを基準とする
-    float ratio = static_cast<float>(width) / static_cast<float>(height);
-    float left = -ratio;
-    float right = ratio;
-    float bottom = ViewLogicalLeft;
-    float top = ViewLogicalRight;
-
-    _viewMatrix->SetScreenRect(left, right, bottom, top); // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
-    _viewMatrix->Scale(ViewScale, ViewScale);
-
-    _deviceToScreen->LoadIdentity(); // サイズが変わった際などリセット必須
-    if (width > height)
-    {
-        float screenW = fabsf(right - left);
-        _deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
-    }
-    else
-    {
-        float screenH = fabsf(top - bottom);
-        _deviceToScreen->ScaleRelative(screenH / height, -screenH / height);
-    }
-    _deviceToScreen->TranslateRelative(-width * 0.5f, -height * 0.5f);
-
-    // 表示範囲の設定
-    _viewMatrix->SetMaxScale(ViewMaxScale); // 限界拡大率
-    _viewMatrix->SetMinScale(ViewMinScale); // 限界縮小率
-
-    // 表示できる最大範囲
-    _viewMatrix->SetMaxScreenRect(
-        ViewLogicalMaxLeft,
-        ViewLogicalMaxRight,
-        ViewLogicalMaxBottom,
-        ViewLogicalMaxTop
-    );
+    LAppView_Common::Initialize(width, height);
 
     // シェーダー作成
-    _shader->CreateShader();
+    _spriteShader->CreateShader();
+    _modelSpriteShader->CreateShader();
 }
 
 void LAppView::Render()
@@ -124,6 +92,10 @@ void LAppView::Render()
     // デバイスコンテキスト取得
     ID3D11DeviceContext* renderContext = LAppDelegate::GetD3dContext();
 
+    // デバイス取得
+    ID3D11Device* device = LAppDelegate::GetInstance()->GetD3dDevice();
+
+    // 透過設定
     if (_back)
     {
         ID3D11ShaderResourceView* textureView = NULL;
@@ -148,14 +120,14 @@ void LAppView::Render()
     // Cubism更新・描画
     live2DManager->OnUpdate();
 
-    // 各モデルが持つ描画ターゲットをテクスチャとする場合
-    if (_renderTarget == SelectTarget_ModelFrameBuffer && _renderSprite)
+    // 透過設定
+    if (_renderTarget == SelectTarget_ModelFrameBuffer)
     {
-        for(csmUint32 i=0; i<live2DManager->GetModelNum(); i++)
+        for (csmUint32 i = 0; i < live2DManager->GetModelNum(); i++)
         {
             LAppModel* model = live2DManager->GetModel(i);
-            float alpha = i < 1 ? 1.0f : model->GetOpacity(); // サンプルとしてαに適当な差をつける
-            _renderSprite->SetColor(1.0f, 1.0f, 1.0f, alpha);
+            float alpha = i < 1 ? 1.0f : model->GetOpacity(); // 片方のみ不透明度を取得できるようにする
+            _renderSprite->SetColor(1.0f * alpha, 1.0f * alpha, 1.0f * alpha, alpha);
 
             if (model)
             {
@@ -187,7 +159,7 @@ void LAppView::InitializeSprite()
     y = height * 0.5f;
     fWidth = static_cast<float>(backgroundTexture->width * 2);
     fHeight = static_cast<float>(height) * 0.95f;
-    _back = new LAppSprite(x, y, fWidth, fHeight, backgroundTexture->id, _shader, device);
+    _back = new LAppSprite(x, y, fWidth, fHeight, backgroundTexture->id, _spriteShader, device);
 
     imageName = resourcesPath + GearImageName;
     LAppTextureManager::TextureInfo* gearTexture = textureManager->CreateTextureFromPngFile(imageName, false);
@@ -195,7 +167,7 @@ void LAppView::InitializeSprite()
     y = static_cast<float>(height - gearTexture->height * 0.5f);
     fWidth = static_cast<float>(gearTexture->width);
     fHeight = static_cast<float>(gearTexture->height);
-    _gear = new LAppSprite(x, y, fWidth, fHeight, gearTexture->id, _shader, device);
+    _gear = new LAppSprite(x, y, fWidth, fHeight, gearTexture->id, _spriteShader, device);
 
     imageName = resourcesPath + PowerImageName;
     LAppTextureManager::TextureInfo* powerTexture = textureManager->CreateTextureFromPngFile(imageName, false);
@@ -203,11 +175,11 @@ void LAppView::InitializeSprite()
     y = static_cast<float>(powerTexture->height * 0.5f);
     fWidth = static_cast<float>(powerTexture->width);
     fHeight = static_cast<float>(powerTexture->height);
-    _power = new LAppSprite(x, y, fWidth, fHeight, powerTexture->id, _shader, device);
+    _power = new LAppSprite(x, y, fWidth, fHeight, powerTexture->id, _spriteShader, device);
 
     x = width * 0.5f;
     y = height * 0.5f;
-    _renderSprite = new LAppSprite(x, y, static_cast<float>(width), static_cast<float>(height), 0, _shader, device);
+    _renderSprite = new LAppSprite(x, y, static_cast<float>(width), static_cast<float>(height), 0, _modelSpriteShader, device);
 }
 
 void LAppView::ReleaseSprite()
@@ -358,28 +330,6 @@ void LAppView::OnTouchesEnded(float px, float py) const
     }
 }
 
-float LAppView::TransformViewX(float deviceX) const
-{
-    float screenX = _deviceToScreen->TransformX(deviceX); // 論理座標変換した座標を取得。
-    return _viewMatrix->InvertTransformX(screenX); // 拡大、縮小、移動後の値。
-}
-
-float LAppView::TransformViewY(float deviceY) const
-{
-    float screenY = _deviceToScreen->TransformY(deviceY); // 論理座標変換した座標を取得。
-    return _viewMatrix->InvertTransformY(screenY); // 拡大、縮小、移動後の値。
-}
-
-float LAppView::TransformScreenX(float deviceX) const
-{
-    return _deviceToScreen->TransformX(deviceX);
-}
-
-float LAppView::TransformScreenY(float deviceY) const
-{
-    return _deviceToScreen->TransformY(deviceY);
-}
-
 void LAppView::PreModelDraw(LAppModel& refModel)
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
@@ -431,7 +381,8 @@ void LAppView::PostModelDraw(LAppModel& refModel)
             int width, height;
             LAppDelegate::GetInstance()->GetClientSize(width, height);
 
-            _renderSprite->SetColor(1.0f, 1.0f, 1.0f, GetSpriteAlpha(0));
+            float alpha = GetSpriteAlpha(0);
+            _renderSprite->SetColor(alpha, alpha, alpha, alpha);
             _renderSprite->RenderImmidiate(width, height, useTarget->GetTextureView(), LAppDelegate::GetInstance()->GetD3dContext());
         }
     }
@@ -457,7 +408,7 @@ void LAppView::DestroyOffscreenSurface()
 float LAppView::GetSpriteAlpha(int assign) const
 {
     // assignの数値に応じて適当に決定
-    float alpha = 0.25f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける
+    float alpha = 0.4f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける
     if (alpha > 1.0f)
     {
         alpha = 1.0f;

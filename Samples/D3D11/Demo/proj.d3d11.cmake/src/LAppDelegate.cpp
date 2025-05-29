@@ -9,6 +9,7 @@
 
 #include <Rendering/D3D11/CubismRenderer_D3D11.hpp>
 
+#include <tchar.h>
 #include "LAppLive2DManager.hpp"
 #include "LAppView.hpp"
 #include "LAppPal.hpp"
@@ -23,7 +24,7 @@ using namespace LAppDefine;
 namespace {
     LAppDelegate* s_instance = NULL;
 
-    const LPCSTR ClassName = "Cubism DirectX11 Sample";
+    const LPCTSTR ClassName = _T("Cubism DirectX11 Sample");
 
     const csmInt32 BackBufferNum = 1; // バックバッファ枚数
 }
@@ -148,7 +149,9 @@ bool LAppDelegate::Initialize()
     _textureManager = new LAppTextureManager();
 
     //AppViewの初期化
-    _view->Initialize();
+    int clientWidth, clientHeight;
+    GetClientSize(clientWidth, clientHeight);
+    _view->Initialize(clientWidth, clientHeight);
 
     // Cubism SDK の初期化
     InitializeCubism();
@@ -339,6 +342,8 @@ void LAppDelegate::InitializeCubism()
     //setup cubism
     _cubismOption.LogFunction = LAppPal::PrintMessage;
     _cubismOption.LoggingLevel = LAppDefine::CubismLoggingLevel;
+    _cubismOption.LoadFileFunction = LAppPal::LoadFileAsBytes;
+    _cubismOption.ReleaseBytesFunction = LAppPal::ReleaseBytes;
     Csm::CubismFramework::StartUp(&_cubismAllocator, &_cubismOption);
 
     //Initialize cubism
@@ -485,7 +490,9 @@ void LAppDelegate::ResizeDevice()
                     if (_view)
                     {
                         // パラメータ、スプライトサイズなど再設定
-                        _view->Initialize();
+                        int clientWidth, clientHeight;
+                        GetClientSize(clientWidth, clientHeight);
+                        _view->Initialize(clientWidth, clientHeight);
                         _view->ResizeSprite();
                         _view->DestroyOffscreenSurface();
                     }

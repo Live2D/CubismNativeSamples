@@ -12,12 +12,11 @@
 #include <GLFW/glfw3.h>
 
 #include "LAppDefine.hpp"
-#include "LAppAllocator.hpp"
+#include "LAppAllocator_Common.hpp"
 #include "LAppTextureManager.hpp"
 #include "LAppPal.hpp"
-#include "TouchManager.hpp"
+#include "TouchManager_Common.hpp"
 #include "CubismUserModelExtend.hpp"
-#include "CubismSampleViewMatrix.hpp"
 #include "MouseActionManager.hpp"
 
 #include <CubismFramework.hpp>
@@ -62,7 +61,7 @@ Csm::csmFloat32 _accelerationY;                 ///< Y軸方向の加速度
 Csm::csmFloat32 _accelerationZ;                 ///< Z軸方向の加速度
 
 static Csm::CubismFramework::Option _cubismOption; ///< CubismFrameworkに関するオプション
-static LAppAllocator _cubismAllocator; ///< メモリのアロケーター
+static LAppAllocator_Common _cubismAllocator; ///< メモリのアロケーター
 
 static LAppTextureManager* _textureManager; ///< テクスチャの管理
 
@@ -83,6 +82,8 @@ static void InitializeCubism()
     //setup cubism
     _cubismOption.LogFunction = LAppPal::PrintMessage;
     _cubismOption.LoggingLevel = Csm::CubismFramework::Option::LogLevel_Verbose;
+    _cubismOption.LoadFileFunction = LAppPal::LoadFileAsBytes;
+    _cubismOption.ReleaseBytesFunction = LAppPal::ReleaseBytes;
     Csm::CubismFramework::StartUp(&_cubismAllocator, &_cubismOption);
 
     //Initialize cubism

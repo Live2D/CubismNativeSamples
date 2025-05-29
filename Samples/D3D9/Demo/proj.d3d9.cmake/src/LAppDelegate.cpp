@@ -8,6 +8,7 @@
 #include "LAppDelegate.hpp"
 
 #include <Rendering/D3D9/CubismRenderer_D3D9.hpp>
+#include <tchar.h>
 #include "LAppView.hpp"
 #include "LAppPal.hpp"
 #include "LAppDefine.hpp"
@@ -21,7 +22,7 @@ using namespace LAppDefine;
 namespace {
     LAppDelegate* s_instance = NULL;
 
-    const LPCSTR ClassName = "Cubism DirectX9 Sample";
+    const LPCTSTR ClassName = _T("Cubism DirectX9 Sample");
 
     // デフォルトバックバッファ作成枚数
     const csmInt32 BackBufferNum = 1;
@@ -122,7 +123,9 @@ bool LAppDelegate::Initialize()
     CheckFullScreen(D3DFMT_X8R8G8B8, RenderTargetWidth, RenderTargetHeight);
 
     //AppViewの初期化
-    _view->Initialize();
+    int clientWidth, clientHeight;
+    GetClientSize(clientWidth, clientHeight);
+    _view->Initialize(clientWidth, clientHeight);
 
     // Cubism SDK の初期化
     InitializeCubism();
@@ -222,6 +225,8 @@ void LAppDelegate::InitializeCubism()
     //setup cubism
     _cubismOption.LogFunction = LAppPal::PrintMessage;
     _cubismOption.LoggingLevel = LAppDefine::CubismLoggingLevel;
+    _cubismOption.LoadFileFunction = LAppPal::LoadFileAsBytes;
+    _cubismOption.ReleaseBytesFunction = LAppPal::ReleaseBytes;
     Csm::CubismFramework::StartUp(&_cubismAllocator, &_cubismOption);
 
     //Initialize cubism
@@ -260,7 +265,7 @@ void LAppDelegate::StartFrame()
         // アルファ・ブレンディングを行う
         _device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
         // α、1-α
-        _device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+        _device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
         _device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
         // 消す面を指定
         _device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
@@ -379,7 +384,9 @@ void LAppDelegate::EndFrame()
                 Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D9::InitializeConstantSettings(BackBufferNum, _device);
 
                 // 描画のパラメータをウィンドウサイズに合わせて新設定
-                _view->Initialize();
+                int clientWidth, clientHeight;
+                GetClientSize(clientWidth, clientHeight);
+                _view->Initialize(clientWidth, clientHeight);
 
                 // スプライト再作成
                 _view->InitializeSprite();

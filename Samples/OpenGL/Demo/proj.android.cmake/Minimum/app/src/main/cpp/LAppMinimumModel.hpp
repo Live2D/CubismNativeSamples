@@ -9,17 +9,17 @@
 
 #include <string>
 #include <CubismFramework.hpp>
-#include <Model/CubismUserModel.hpp>
 #include <CubismModelSettingJson.hpp>
 #include <Type/csmRectF.hpp>
 #include <Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp>
+#include "LAppModel_Common.hpp"
 
 /**
  * @brief ユーザーが実際に使用するモデルの実装クラス<br>
  *         モデル生成、機能コンポーネント生成、更新処理とレンダリングの呼び出しを行う。
  *
  */
-class LAppMinimumModel : public Csm::CubismUserModel
+class LAppMinimumModel : public LAppModel_Common
 {
 public:
     /**

@@ -16,7 +16,7 @@
 #include "LAppPal.hpp"
 
 
-CubismTextureManager::CubismTextureManager()
+CubismTextureManager::CubismTextureManager() : LAppTextureManager_Common()
 {
     _sequenceId = 0;
 }
@@ -62,7 +62,7 @@ CubismTextureManager::TextureInfo* CubismTextureManager::CreateTextureFromPngFil
         if (textureInfo)
         {
             // 次のID
-            const Csm::csmUint64 addId = _sequenceId + 1;
+            const Csm::csmUint32 addId = _sequenceId + 1;
 
             _textures.PushBack(texture);
 
@@ -117,7 +117,7 @@ CubismTextureManager::TextureInfo* CubismTextureManager::CreateTextureFromPngFil
     return nullptr;
 }
 
-bool CubismTextureManager::GetTexture(Csm::csmUint64 textureId, IDirect3DTexture9*& retTexture) const
+bool CubismTextureManager::GetTexture(Csm::csmUint32 textureId, IDirect3DTexture9*& retTexture) const
 {
     retTexture = NULL;
     for (Csm::csmUint32 i = 0; i < _texturesInfo.GetSize(); i++)
@@ -151,7 +151,7 @@ void CubismTextureManager::ReleaseTextures()
     _textures.Clear();
 }
 
-void CubismTextureManager::ReleaseTexture(Csm::csmUint64 textureId)
+void CubismTextureManager::ReleaseTexture(Csm::csmUint32 textureId)
 {
     for (Csm::csmUint32 i = 0; i < _texturesInfo.GetSize(); i++)
     {

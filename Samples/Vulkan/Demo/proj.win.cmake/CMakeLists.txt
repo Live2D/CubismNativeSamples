@@ -19,6 +19,7 @@ set(GLFW_PATH ${THIRD_PARTY_PATH}/glfw)
 set(RES_PATH ${SDK_ROOT_PATH}/Samples/Resources)
 set(SAMPLE_SHADER_PATH ${SDK_ROOT_PATH}/Samples/Vulkan/Shaders)
 set(FRAMEWORK_SHADER_PATH ${FRAMEWORK_PATH}/src/Rendering/Vulkan/Shaders)
+set(COMMON_SRC_PATH ${SDK_ROOT_PATH}/Samples/Common)
 
 # Set project.
 project(${APP_NAME})
@@ -104,6 +105,8 @@ find_package(Vulkan REQUIRED)
 
 # Make executable app.
 add_executable(${APP_NAME})
+# Add common source files.
+add_subdirectory(${COMMON_SRC_PATH} ${CMAKE_CURRENT_BINARY_DIR}/src/Common)
 # Add source files.
 add_subdirectory(src)
 # Add shader files.

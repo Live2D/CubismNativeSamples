@@ -8,6 +8,7 @@
 #pragma once
 
 #include <Rendering/D3D11/CubismNativeInclude_D3D11.hpp>
+#include <LAppView.hpp>
 
 /**
  * @brief   スプライト用のシェーダー設定を保持するクラス。
@@ -42,12 +43,38 @@ public:
      */
     void ReleaseShader();
 
+    /**
+     * @brief 背景素材用のブレンドステート作成
+     */
+    virtual bool CreateBlendState(ID3D11Device* device);
+
+protected:
+    /**
+     * @brief ブレンドステート作成
+     */
+    bool CreateBlendState(D3D11_BLEND_DESC& blendDesc, ID3D11Device* device);
+
+protected:
+    ID3D11BlendState* _blendState; ///< ブレンドステート
+
 private:
 
     ID3D11RasterizerState*  _rasterizer;    ///< ラスタライザ
     ID3D11SamplerState*     _samplerState;  ///< サンプラーステート
-    ID3D11BlendState*       _blendState;    ///< ブレンドステート
     ID3D11VertexShader*     _vertexShader;  ///< 頂点シェーダ
     ID3D11PixelShader*      _pixelShader;   ///< ピクセルシェーダ
     ID3D11InputLayout*      _vertexFormat;  ///< 頂点フォーマット
+};
+
+/**
+ * @brief   モデルスプライト用のシェーダー設定を保持するクラス。
+ */
+class LAppModelSpriteShader : public LAppSpriteShader
+{
+public:
+
+    /**
+     * @brief ブレンドステート作成
+     */
+    bool CreateBlendState(ID3D11Device* device);
 };

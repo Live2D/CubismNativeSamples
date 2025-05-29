@@ -14,13 +14,13 @@ using namespace Csm;
 LAppSprite::LAppSprite(
     VkDevice device, VkPhysicalDevice physicalDevice, VulkanManager* vkManager, float x, float y, float width, float height,
     Csm::csmUint32 textureId, VkImageView view, VkSampler sampler, VkDescriptorSetLayout descriptorSetLayout)
-    : _rect()
-    , _textureId(textureId)
+    : LAppSprite_Common(textureId)
+    , _rect()
 {
-    _rect.Left = (x - width * 0.5f);
-    _rect.Right = (x + width * 0.5f);
-    _rect.Up = (y - height * 0.5f);
-    _rect.Down = (y + height * 0.5f);
+    _rect.left = (x - width * 0.5f);
+    _rect.right = (x + width * 0.5f);
+    _rect.up = (y - height * 0.5f);
+    _rect.down = (y + height * 0.5f);
 
     _spriteColor[0] = 1.0f;
     _spriteColor[1] = 1.0f;
@@ -138,14 +138,14 @@ void LAppSprite::UpdateData(VulkanManager* vkManager, int maxWidth, int maxHeigh
         {0.5f, 0.5f, 1.0f, 1.0f},
     };
 
-    vtx[0].X = (_rect.Left - maxWidth * 0.5f) / (maxWidth * 0.5f);
-    vtx[0].Y = (_rect.Down - maxHeight * 0.5f) / (maxHeight * 0.5f);
-    vtx[1].X = (_rect.Right - maxWidth * 0.5f) / (maxWidth * 0.5f);
-    vtx[1].Y = (_rect.Down - maxHeight * 0.5f) / (maxHeight * 0.5f);
-    vtx[2].X = (_rect.Left - maxWidth * 0.5f) / (maxWidth * 0.5f);
-    vtx[2].Y = (_rect.Up - maxHeight * 0.5f) / (maxHeight * 0.5f);
-    vtx[3].X = (_rect.Right - maxWidth * 0.5f) / (maxWidth * 0.5f);
-    vtx[3].Y = (_rect.Up - maxHeight * 0.5f) / (maxHeight * 0.5f);
+    vtx[0].X = (_rect.left - maxWidth * 0.5f) / (maxWidth * 0.5f);
+    vtx[0].Y = (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f);
+    vtx[1].X = (_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f);
+    vtx[1].Y = (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f);
+    vtx[2].X = (_rect.left - maxWidth * 0.5f) / (maxWidth * 0.5f);
+    vtx[2].Y = (_rect.up - maxHeight * 0.5f) / (maxHeight * 0.5f);
+    vtx[3].X = (_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f);
+    vtx[3].Y = (_rect.up - maxHeight * 0.5f) / (maxHeight * 0.5f);
 
     SpriteVertex vertex;
     csmVector<SpriteVertex> vertices;
@@ -238,7 +238,7 @@ bool LAppSprite::IsHit(int windowWidth, int windowHeight, float pointX, float po
     }
     float y = pointY;
 
-    return (pointX >= _rect.Left && pointX <= _rect.Right && y >= _rect.Up && y <= _rect.Down);
+    return (pointX >= _rect.left && pointX <= _rect.right && y >= _rect.up && y <= _rect.down);
 }
 
 void LAppSprite::SetColor(float r, float g, float b, float a)
@@ -251,8 +251,8 @@ void LAppSprite::SetColor(float r, float g, float b, float a)
 
 void LAppSprite::ResetRect(float x, float y, float width, float height)
 {
-    _rect.Left = (x - width * 0.5f);
-    _rect.Right = (x + width * 0.5f);
-    _rect.Up = (y - height * 0.5f);
-    _rect.Down = (y + height * 0.5f);
+    _rect.left = (x - width * 0.5f);
+    _rect.right = (x + width * 0.5f);
+    _rect.up = (y - height * 0.5f);
+    _rect.down = (y + height * 0.5f);
 }

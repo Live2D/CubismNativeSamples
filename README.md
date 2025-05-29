@@ -109,14 +109,14 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 | Development Tool | Version |
 | --- | --- |
-| Android Studio | Ladybug 2024.2.1 Patch 3 |
+| Android Studio | Meerkat Feature Drop 2024.3.2 |
 | DevEco Studio | 5.0.5.306 |
-| CMake | 3.31.2 |
+| CMake | 3.31.7 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.68 |
-| Visual Studio 2019 | 16.11.42 |
-| Visual Studio 2022 | 17.12.3 |
-| Xcode | 16.2 |
+| Visual Studio 2017 | 15.9.73 |
+| Visual Studio 2019 | 16.11.47 |
+| Visual Studio 2022 | 17.14.2 |
+| Xcode | 16.3 |
 
 ### Android
 
@@ -139,7 +139,7 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 | Red Hat | Amazon Linux 2 |  `amazonlinux:2` | 7.3.1 |
 | Red Hat | AlmaLinux | `almalinux:latest` | 11.4.1 |
 | Debian | Ubuntu 22.04.4 | `ubuntu:22.04` | 11.4.0 |
-| Debian | Ubuntu 24.04.1 | `ubuntu:24.04` | 13.3.0 |
+| Debian | Ubuntu 24.04.2 | `ubuntu:24.04` | 13.3.0 |
 
 #### Mesa library
 
@@ -155,10 +155,10 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 | Platform | Version |
 | --- | --- |
-| iOS / iPadOS | 18.2 |
-| macOS | 15.2 |
+| iOS / iPadOS | 18.5 |
+| macOS | 15.5 |
 | Windows 10 | 23H2 |
-| Windows 11 | 23H2 |
+| Windows 11 | 24H2 |
 
 ### Android
 
@@ -179,7 +179,7 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 | --- | --- | --- |
 | Red Hat | Amazon Linux | 2 |
 | Red Hat | AlmaLinux | 9 |
-| Debian | Ubuntu | 24.04.1 |
+| Debian | Ubuntu | 24.04.2 |
 
 ## Contributing
 

@@ -25,34 +25,18 @@ using namespace Live2D::Cubism::Framework;
 using namespace Live2D::Cubism::Framework::DefaultParameterId;
 using namespace LAppDefine;
 
-namespace {
-    csmByte* CreateBuffer(const csmChar* path, csmSizeInt* size)
-    {
-        if (DebugLogEnable)
-        {
-            LAppPal::PrintLogLn("[APP]create buffer: %s ", path);
-        }
-        return LAppPal::LoadFileAsBytes(path, size);
-    }
-
-    void DeleteBuffer(csmByte* buffer, const csmChar* path = "")
-    {
-        if (DebugLogEnable)
-        {
-            LAppPal::PrintLogLn("[APP]delete buffer: %s", path);
-        }
-        LAppPal::ReleaseBytes(buffer);
-    }
-}
-
 LAppModel::LAppModel()
-    : CubismUserModel()
+    : LAppModel_Common()
     , _modelSetting(NULL)
     , _userTimeSeconds(0.0f)
 {
     if (MocConsistencyValidationEnable)
     {
         _mocConsistency = true;
+    }
+    if (MotionConsistencyValidationEnable)
+    {
+        _motionConsistency = true;
     }
 
     if (DebugLogEnable)
@@ -280,7 +264,7 @@ void LAppModel::PreloadMotionGroup(const csmChar* group)
         csmByte* buffer;
         csmSizeInt size;
         buffer = CreateBuffer(path.GetRawString(), &size);
-        CubismMotion* tmpMotion = static_cast<CubismMotion*>(LoadMotion(buffer, size, name.GetRawString(), NULL, NULL, _modelSetting, group, i));
+        CubismMotion* tmpMotion = static_cast<CubismMotion*>(LoadMotion(buffer, size, name.GetRawString(), NULL, NULL, _modelSetting, group, i, _motionConsistency));
 
         if (tmpMotion)
         {
@@ -466,12 +450,20 @@ CubismMotionQueueEntryHandle LAppModel::StartMotion(const csmChar* group, csmInt
         csmByte* buffer;
         csmSizeInt size;
         buffer = CreateBuffer(path.GetRawString(), &size);
-        motion = static_cast<CubismMotion*>(LoadMotion(buffer, size, NULL, onFinishedMotionHandler, onBeganMotionHandler, _modelSetting, group, no));
+        motion = static_cast<CubismMotion*>(LoadMotion(buffer, size, NULL, onFinishedMotionHandler, onBeganMotionHandler, _modelSetting, group, no, _motionConsistency));
 
-        if  (motion)
+        if (motion)
         {
             motion->SetEffectIds(_eyeBlinkIds, _lipSyncIds);
             autoDelete = true; // 終了時にメモリから削除
+        }
+        else
+        {
+            CubismLogError("Can't start motion %s .", path.GetRawString());
+            // ロードできなかったモーションのReservePriorityをリセットする
+            _motionManager->SetReservePriority(PriorityNone);
+            DeleteBuffer(buffer, path.GetRawString());
+            return InvalidMotionQueueEntryHandleValue;
         }
 
         DeleteBuffer(buffer, path.GetRawString());

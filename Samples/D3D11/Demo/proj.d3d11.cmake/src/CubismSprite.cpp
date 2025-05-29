@@ -16,13 +16,19 @@
 #include "CubismSpriteShader.hpp"
 
 CubismSprite::CubismSprite()
-    : _rect(),_vertexBuffer(nullptr),_indexBuffer(nullptr),_constantBuffer(nullptr),_shader(NULL)
+    : LAppSprite_Common(),
+    _rect(),
+    _vertexBuffer(nullptr),
+    _indexBuffer(nullptr),
+    _constantBuffer(nullptr),
+    _shader(NULL)
 {
     _color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 CubismSprite::CubismSprite(float x, float y, float width, float height, Csm::csmUint64 textureId, CubismSpriteShader* shader)
-    : _rect(),
+    : LAppSprite_Common(textureId),
+    _rect(),
     _vertexBuffer(NULL),
     _indexBuffer(NULL),
     _constantBuffer(NULL),
@@ -34,7 +40,6 @@ CubismSprite::CubismSprite(float x, float y, float width, float height, Csm::csm
     _rect.right = (x + width * 0.5f);
     _rect.up = (y + height * 0.5f);
     _rect.down = (y - height * 0.5f);
-    _textureId = textureId;
 
     ID3D11Device* device = CubismDirectXRenderer::GetInstance()->GetD3dDevice();
 

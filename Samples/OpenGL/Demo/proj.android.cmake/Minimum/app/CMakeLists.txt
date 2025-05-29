@@ -7,6 +7,7 @@ set(SDK_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../..)
 set(CORE_PATH ${SDK_ROOT_PATH}/Core)
 set(FRAMEWORK_PATH ${SDK_ROOT_PATH}/Framework)
 set(THIRD_PARTY_PATH ${SDK_ROOT_PATH}/Samples/OpenGL/thirdParty)
+set(COMMON_SRC_PATH ${SDK_ROOT_PATH}/Samples/Common)
 set(STB_PATH ${THIRD_PARTY_PATH}/stb)
 
 # Specify version of compiler.
@@ -35,6 +36,8 @@ target_compile_definitions(Framework PUBLIC CSM_TARGET_ANDROID_ES2)
 
 # Make library for android app.
 add_library(${APP_NAME} SHARED)
+# Add common source files.
+add_subdirectory(${COMMON_SRC_PATH} ${CMAKE_CURRENT_BINARY_DIR}/src/Common)
 # Add source files.
 add_subdirectory(src/main/cpp)
 # Link libraries to app.

@@ -25,28 +25,8 @@ using namespace Live2D::Cubism::Framework;
 using namespace Live2D::Cubism::Framework::DefaultParameterId;
 using namespace LAppDefine;
 
-namespace {
-    csmByte* CreateBuffer(const csmChar* path, csmSizeInt* size)
-    {
-        if (DebugLogEnable)
-        {
-            LAppPal::PrintLogLn("[APP]create buffer: %s ", path);
-        }
-        return LAppPal::LoadFileAsBytes(path, size);
-    }
-
-    void DeleteBuffer(csmByte* buffer, const csmChar* path = "")
-    {
-        if (DebugLogEnable)
-        {
-            LAppPal::PrintLogLn("[APP]delete buffer: %s", path);
-        }
-        LAppPal::ReleaseBytes(buffer);
-    }
-}
-
 LAppModel::LAppModel()
-    : CubismUserModel()
+    : LAppModel_Common()
     , _modelSetting(NULL)
     , _userTimeSeconds(0.0f)
 {
@@ -623,7 +603,7 @@ void LAppModel::SetupTextures(VkDevice device, VkFormat surfaceFormat)
 
         if (texture)
         {
-            const csmUint32 textureManageId = texture->Id;
+            const csmUint32 textureManageId = texture->id;
             CubismImageVulkan image;
             if (LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(textureManageId, image))
             {

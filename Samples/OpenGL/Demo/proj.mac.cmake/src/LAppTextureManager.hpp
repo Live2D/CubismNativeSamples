@@ -11,27 +11,16 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <Type/csmVector.hpp>
+#include "LAppTextureManager_Common.hpp"
 
 /**
 * @brief テクスチャ管理クラス
 *
 * 画像読み込み、管理を行うクラス。
 */
-class LAppTextureManager
+class LAppTextureManager : public LAppTextureManager_Common
 {
 public:
-
-    /**
-    * @brief 画像情報構造体
-    */
-    struct TextureInfo
-    {
-        GLuint id;              ///< テクスチャID
-        int width;              ///< 横幅
-        int height;             ///< 高さ
-        std::string fileName;   ///< ファイル名
-    };
-
     /**
     * @brief コンストラクタ
     */
@@ -42,27 +31,6 @@ public:
     *
     */
     ~LAppTextureManager();
-
-
-    /**
-    * @brief プリマルチプライ処理
-    *
-    * @param[in] red  画像のRed値
-    * @param[in] green  画像のGreen値
-    * @param[in] blue  画像のBlue値
-    * @param[in] alpha  画像のAlpha値
-    *
-    * @return プリマルチプライ処理後のカラー値
-    */
-    inline unsigned int Premultiply(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha)
-    {
-        return static_cast<unsigned>(\
-            (red * (alpha + 1) >> 8) | \
-            ((green * (alpha + 1) >> 8) << 8) | \
-            ((blue * (alpha + 1) >> 8) << 16) | \
-            (((alpha)) << 24)   \
-            );
-    }
 
     /**
     * @brief 画像読み込み
@@ -94,15 +62,4 @@ public:
     * @param[in] fileName  解放する画像ファイルパス名
     **/
     void ReleaseTexture(std::string fileName);
-
-    /**
-     * @brief テクスチャIDからテクスチャ情報を得る
-     *
-     * @param[in] textureId  取得したいテクスチャID
-     * @return テクスチャが存在していればTextureInfoが返る
-     **/
-    TextureInfo* GetTextureInfoById(GLuint textureId) const;
-
-private:
-    Csm::csmVector<TextureInfo*> _textures;
 };

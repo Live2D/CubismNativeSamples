@@ -17,7 +17,8 @@ using namespace LAppDefine;
 using namespace DirectX;
 
 LAppSprite::LAppSprite()
-    : _rect(),
+    : LAppSprite_Common(),
+    _rect(),
     _vertexBuffer(NULL),
     _indexBuffer(NULL),
     _constantBuffer(NULL),
@@ -26,8 +27,9 @@ LAppSprite::LAppSprite()
     _color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint64 textureId, LAppSpriteShader* shader, ID3D11Device* device)
-    : _rect(),
+LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint32 textureId, LAppSpriteShader* shader, ID3D11Device* device)
+    : LAppSprite_Common(textureId),
+    _rect(),
     _vertexBuffer(NULL),
     _indexBuffer(NULL),
     _constantBuffer(NULL),
@@ -39,7 +41,6 @@ LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint
     _rect.right = (x + width * 0.5f);
     _rect.up = (y + height * 0.5f);
     _rect.down = (y - height * 0.5f);
-    _textureId = textureId;
 
     if (!device)
     {

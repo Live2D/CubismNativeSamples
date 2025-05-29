@@ -13,26 +13,16 @@
 #include <Type/CubismBasicType.hpp>
 #include <Type/csmVector.hpp>
 
+#include "LAppTextureManager_Common.hpp"
+
  /**
  * @brief テクスチャ管理クラス
  *
  * 画像読み込み、管理を行うクラス。
  */
-class CubismTextureManager
+class CubismTextureManager : public LAppTextureManager_Common
 {
 public:
-
-    /**
-    * @brief 画像情報構造体
-    */
-    struct TextureInfo
-    {
-        Csm::csmUint64 id;      ///< テクスチャID
-        int width;              ///< 横幅
-        int height;             ///< 高さ
-        std::string fileName;   ///< ファイル名
-    };
-
     /**
     * @brief コンストラクタ
     */
@@ -43,26 +33,6 @@ public:
     *
     */
     ~CubismTextureManager();
-
-    /**
-    * @brief プリマルチプライ処理
-    *
-    * @param[in] red  画像のRed値
-    * @param[in] green  画像のGreen値
-    * @param[in] blue  画像のBlue値
-    * @param[in] alpha  画像のAlpha値
-    *
-    * @return プリマルチプライ処理後のカラー値
-    */
-    unsigned int Premultiply(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha)
-    {
-        return static_cast<unsigned>(\
-            (red * (alpha + 1) >> 8) | \
-            ((green * (alpha + 1) >> 8) << 8) | \
-            ((blue * (alpha + 1) >> 8) << 16) | \
-            (((alpha)) << 24)   \
-            );
-    }
 
     /**
     * @brief 画像読み込み
@@ -84,7 +54,7 @@ public:
     * @param   retTexture[out]    成功時、IDirect3DTexture9へのポインタが返る
     * @return  テクスチャが存在していればtrueが返る
     */
-    bool GetTexture(Csm::csmUint64 textureId, IDirect3DTexture9*& retTexture) const;
+    bool GetTexture(Csm::csmUint32 textureId, IDirect3DTexture9*& retTexture) const;
 
     /**
     * @brief 画像の解放
@@ -99,7 +69,7 @@ public:
     * 指定したテクスチャIDの画像を解放する
     * @param[in] textureId  解放するテクスチャID
     **/
-    void ReleaseTexture(Csm::csmUint64 textureId);
+    void ReleaseTexture(Csm::csmUint32 textureId);
 
     /**
     * @brief 画像の解放
@@ -110,9 +80,6 @@ public:
     void ReleaseTexture(std::string fileName);
 
 private:
-
     Csm::csmVector<IDirect3DTexture9*>             _textures;          ///< DX11テクスチャ
-    Csm::csmVector<TextureInfo*>                _texturesInfo;      ///< テクスチャ情報
-
-    Csm::csmUint64   _sequenceId;    ///< 付与するための通しID
+    Csm::csmUint32   _sequenceId;    ///< 付与するための通しID
 };

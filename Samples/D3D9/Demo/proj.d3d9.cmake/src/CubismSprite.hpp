@@ -13,6 +13,7 @@
 #include <Type/CubismBasicType.hpp>
 
 #include "CubismSpriteShader.hpp"
+#include "LAppSprite_Common.hpp"
 
  /**
  * @brief スプライトを実装するクラス。
@@ -20,21 +21,9 @@
  * テクスチャID、Rectの管理。
  *
  */
-class CubismSprite
+class CubismSprite : public LAppSprite_Common
 {
 public:
-    /**
-    * @brief Rect 構造体。
-    */
-    struct Rect
-    {
-    public:
-        float left;     ///< 左辺
-        float right;    ///< 右辺
-        float up;       ///< 上辺
-        float down;     ///< 下辺
-    };
-
     struct SpriteVertex
     {
         float x, y;     // Position
@@ -62,12 +51,6 @@ public:
     * @brief デストラクタ
     */
     ~CubismSprite();
-
-    /**
-    * @brief Getter テクスチャID
-    * @return テクスチャIDを返す
-    */
-    Csm::csmUint64 GetTextureId() const { return _textureId; }
 
     /**
     * @brief 描画する
@@ -111,7 +94,6 @@ public:
 
 private:
 
-    Csm::csmUint64 _textureId;  ///< テクスチャID
     Rect _rect;                 ///< 矩形
 
     SpriteVertex* _vertexStore;   ///< 頂点をストアしておく領域

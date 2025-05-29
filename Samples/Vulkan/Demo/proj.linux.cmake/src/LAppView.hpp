@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
@@ -11,15 +11,16 @@
 #include <Math/CubismMatrix44.hpp>
 #include <Math/CubismViewMatrix.hpp>
 #include "CubismFramework.hpp"
+#include "LAppView_Common.hpp"
 
-class TouchManager;
+class TouchManager_Common;
 class LAppSprite;
 class LAppModel;
 
 /**
 * @brief 描画クラス
 */
-class LAppView
+class LAppView : public LAppView_Common
 {
 public:
 
@@ -45,8 +46,10 @@ public:
 
     /**
     * @brief 初期化する。
+    * @param[in]  width    -> ウィンドウ幅
+    * @param[in]  height   -> ウィンドウ高さ
     */
-    void Initialize();
+    virtual void Initialize(int width, int height) override;
 
     /**
     * @brief レイアウトを変更する。
@@ -105,9 +108,15 @@ public:
      * @param[in]       extent                  フレームバッファのサイズ
      * @param[in]       vertShaderModule        頂点シェーダのモジュール
      * @param[in]       fragShaderModule        フラグメントシェーダのモジュール
+     * @param[in]       swapchainFormat         スワップチェインフォーマット
+     * @param[in]       colorBlendAttachment    カラーブレンディングアタッチメント
+     * @param[out]      _pipelineLayout         パイプラインレイアウト
+     * @param[out]      _pipeline               パイプライン
      */
     void CreateSpriteGraphicsPipeline(VkDevice device, VkExtent2D extent, VkShaderModule vertShaderModule,
-        VkShaderModule fragShaderModule, VkFormat swapchainFormat);
+        VkShaderModule fragShaderModule, VkFormat swapchainFormat,
+        const VkPipelineColorBlendAttachmentState& colorBlendAttachment,
+        VkPipelineLayout& _pipelineLayout, VkPipeline& pipeline);
 
     /**
     * @brief 画像の初期化を行う。
@@ -137,34 +146,6 @@ public:
     * @param[in]       pointY            スクリーンY座標
     */
     void OnTouchesEnded(float pointX, float pointY) const;
-
-    /**
-    * @brief X座標をView座標に変換する。
-    *
-    * @param[in]       deviceX            デバイスX座標
-    */
-    float TransformViewX(float deviceX) const;
-
-    /**
-    * @brief Y座標をView座標に変換する。
-    *
-    * @param[in]       deviceY            デバイスY座標
-    */
-    float TransformViewY(float deviceY) const;
-
-    /**
-    * @brief X座標をScreen座標に変換する。
-    *
-    * @param[in]       deviceX            デバイスX座標
-    */
-    float TransformScreenX(float deviceX) const;
-
-    /**
-    * @brief Y座標をScreen座標に変換する。
-    *
-    * @param[in]       deviceY            デバイスY座標
-    */
-    float TransformScreenY(float deviceY) const;
 
     /**
      * @brief   モデル1体を描画した直後にコールされる
@@ -221,9 +202,7 @@ public:
     void DestroyOffscreenSurface();
 
 private:
-    TouchManager* _touchManager;                 ///< タッチマネージャー
-    Csm::CubismMatrix44* _deviceToScreen;    ///< デバイスからスクリーンへの行列
-    Csm::CubismViewMatrix* _viewMatrix;      ///< viewMatrix
+    TouchManager_Common* _touchManager;                 ///< タッチマネージャー
     LAppSprite* _back;                       ///< 背景画像
     LAppSprite* _gear;                       ///< ギア画像
     LAppSprite* _power;                      ///< 電源画像
@@ -236,6 +215,18 @@ private:
     VkShaderModule _vertShaderModule;                          ///< 頂点シェーダーモジュール
     VkShaderModule _fragShaderModule;                          ///< フラグメントシェーダーモジュール
     VkDescriptorSetLayout _descriptorSetLayout;                ///< ディスクリプタセットのレイアウト, UBOが1つとテクスチャが1つずつ
-    VkPipelineLayout _pipelineLayout;                          ///< スプライト描画に使うパイプラインのレイアウト
-    VkPipeline _pipeline;                                      ///< スプライト描画に使うパイプライン
+    VkPipelineLayout _spritePipelineLayout;                          ///< スプライト描画に使うパイプラインのレイアウト
+    VkPipeline _spritePipeline;                                      ///< スプライト描画に使うパイプライン
+    VkPipelineLayout _modelSpritePipelineLayout;                     ///< モデルスプライト描画に使うパイプラインのレイアウト
+    VkPipeline _modelSpritePipeline;                                 ///< モデルスプライト描画に使うパイプライン
+
+
+    VkPipelineColorBlendAttachmentState CreateSpriteColorBlendAttachment();
+    VkPipelineColorBlendAttachmentState CreateModelSpriteColorBlendAttachment();
+    //
+    // スプライト用のブレンド設定
+    VkPipelineColorBlendAttachmentState spriteColorBlendAttachment;
+    // モデルスプライト用のブレンド設定
+    VkPipelineColorBlendAttachmentState modelSpriteColorBlendAttachment;
+
 };

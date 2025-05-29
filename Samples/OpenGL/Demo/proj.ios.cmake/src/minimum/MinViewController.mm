@@ -93,7 +93,7 @@ using namespace MinLAppDefine;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
 
     glGenBuffers(1, &_vertexBufferId);
@@ -172,7 +172,7 @@ using namespace MinLAppDefine;
             };
 
             float a = [self GetSpriteAlpha:2]; // サンプルとしてαに適当な差をつける
-            [_renderSprite SetColor:1.0f g:1.0f b:1.0f a:a];
+            [_renderSprite SetColor:1.0f * a g:1.0f * a b:1.0f * a a:a];
 
             MinLAppModel* model = [Live2DManager getModel];
             if (model)
@@ -290,6 +290,9 @@ using namespace MinLAppDefine;
     if (_renderTarget != SelectTarget_None)
     {// 別のレンダリングターゲットへ向けて描画する場合
 
+        // 透過設定
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
         // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
 
@@ -343,7 +346,7 @@ using namespace MinLAppDefine;
             };
 
             float a = [self GetSpriteAlpha:0];
-            [_renderSprite SetColor:1.0f g:1.0f b:1.0f a:a];
+            [_renderSprite SetColor:1.0f * a g:1.0f * a b:1.0f * a a:a];
             [_renderSprite renderImmidiate:_vertexBufferId fragmentBufferID:_fragmentBufferId TextureId:useTarget->GetColorBuffer() uvArray:uvVertex];
         }
     }
@@ -364,7 +367,7 @@ using namespace MinLAppDefine;
 - (float)GetSpriteAlpha:(int)assign
 {
     // assignの数値に応じて適当に決定
-    float alpha = 0.25f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける
+    float alpha = 0.4f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける
     if (alpha > 1.0f)
     {
         alpha = 1.0f;

@@ -8,7 +8,7 @@
 #pragma once
 
 #include <Rendering/D3D9/CubismNativeInclude_D3D9.hpp>
-#include "LAppAllocator.hpp"
+#include "LAppAllocator_Common.hpp"
 
 class LAppView;
 class LAppTextureManager;
@@ -138,7 +138,7 @@ private:
     bool CheckFullScreen(D3DFORMAT format, UINT width, UINT height);
 
 
-    LAppAllocator _cubismAllocator;              ///< Cubism SDK Allocator
+    LAppAllocator_Common _cubismAllocator;              ///< Cubism SDK Allocator
     Csm::CubismFramework::Option _cubismOption;  ///< Cubism SDK Option
 
     LAppView* _view;                             ///< View情報

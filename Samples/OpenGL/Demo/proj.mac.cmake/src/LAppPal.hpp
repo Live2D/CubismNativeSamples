@@ -51,7 +51,7 @@ public:
     static void UpdateTime();
 
     /**
-    * @brief ログを出力し最後に改行する
+    * @brief ログを出力し最後に改行する
     *
     * ログを出力し最後に改行する
     *
@@ -71,9 +71,20 @@ public:
     */
     static void PrintMessageLn(const Csm::csmChar* message);
 
+    /**
+     * @brief アプリケーションの実行パスの設定
+     *
+     * LAppDelegate等で取得した、アプリケーションの実行パスを設定する
+     * LoadFileAsBytes()で相対パスが指定された場合に、このパスを使用して絶対パスを作成する
+     *
+     * @param[in]   path    アプリケーションの実行パス
+     */
+    static void SetExecutableAbsolutePath(const std::string& path);
+
 private:
     static double s_currentFrame;
     static double s_lastFrame;
     static double s_deltaTime;
+    static std::string s_executeAbsolutePath;
 };
 

@@ -14,7 +14,7 @@
 #include "LAppLive2DManager.hpp"
 #include "LAppTextureManager.hpp"
 #include "LAppDefine.hpp"
-#include "TouchManager.hpp"
+#include "TouchManager_Common.hpp"
 #include "LAppSprite.hpp"
 #include "LAppModel.hpp"
 
@@ -22,6 +22,7 @@ using namespace std;
 using namespace LAppDefine;
 
 LAppView::LAppView():
+    LAppView_Common(),
     _back(NULL),
     _gear(NULL),
     _power(NULL),
@@ -35,13 +36,7 @@ LAppView::LAppView():
     _clearColor[3] = 0.0f;
 
     // タッチ関係のイベント管理
-    _touchManager = new TouchManager();
-
-    // デバイス座標からスクリーン座標に変換するための
-    _deviceToScreen = new CubismMatrix44();
-
-    // 画面の表示の拡大縮小や移動の変換を行う行列
-    _viewMatrix = new CubismViewMatrix();
+    _touchManager = new TouchManager_Common();
 }
 
 LAppView::~LAppView()
@@ -49,56 +44,16 @@ LAppView::~LAppView()
     _renderBuffer.DestroyOffscreenSurface();
 
     ReleaseSprite();
+    _shader->ReleaseShader();
 
-    delete _viewMatrix;
-    delete _deviceToScreen;
-    delete _touchManager;
-}
-
-void LAppView::Initialize()
-{
-    int width, height;
-    LAppDelegate::GetClientSize(width, height);
-
-    if (width == 0 || height == 0)
+   if (_shader)
     {
-        return;
+        delete _shader;
     }
-
-    // 縦サイズを基準とする
-    float ratio = static_cast<float>(width) / static_cast<float>(height);
-    float left = -ratio;
-    float right = ratio;
-    float bottom = ViewLogicalLeft;
-    float top = ViewLogicalRight;
-
-    _viewMatrix->SetScreenRect(left, right, bottom, top); // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
-    _viewMatrix->Scale(ViewScale, ViewScale);
-
-    _deviceToScreen->LoadIdentity(); // サイズが変わった際などリセット必須
-    if (width > height)
+    if (_touchManager)
     {
-        float screenW = fabsf(right - left);
-        _deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
+        delete _touchManager;
     }
-    else
-    {
-        float screenH = fabsf(top - bottom);
-        _deviceToScreen->ScaleRelative(screenH / height, -screenH / height);
-    }
-    _deviceToScreen->TranslateRelative(-width * 0.5f, -height * 0.5f);
-
-    // 表示範囲の設定
-    _viewMatrix->SetMaxScale(ViewMaxScale); // 限界拡大率
-    _viewMatrix->SetMinScale(ViewMinScale); // 限界縮小率
-
-    // 表示できる最大範囲
-    _viewMatrix->SetMaxScreenRect(
-        ViewLogicalMaxLeft,
-        ViewLogicalMaxRight,
-        ViewLogicalMaxBottom,
-        ViewLogicalMaxTop
-    );
 }
 
 void LAppView::Render()
@@ -127,6 +82,10 @@ void LAppView::Render()
 
     {
         IDirect3DTexture9* texture = NULL;
+        // 透過設定
+        device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+        device->SetRenderState(D3DRS_SRCBLENDALPHA, D3DBLEND_SRCALPHA);
+
         if (_back)
         {
             textureManager->GetTexture(_back->GetTextureId(), texture);
@@ -156,7 +115,7 @@ void LAppView::Render()
         {
             LAppModel* model = live2DManager->GetModel(i);
             float alpha = i < 1 ? 1.0f : model->GetOpacity(); // 片方のみ不透明度を取得できるようにする
-            _renderSprite->SetColor(1.0f, 1.0f, 1.0f, alpha);
+            _renderSprite->SetColor(1.0f * alpha, 1.0f * alpha, 1.0f * alpha, alpha);
 
             if (model)
             {
@@ -244,6 +203,12 @@ void LAppView::ReleaseSprite()
     }
     delete _back;
     _back = NULL;
+}
+
+void LAppView::OnDeviceLost()
+{
+    // スプライト開放
+    ReleaseSprite();
 
     // スプライト用のシェーダ・頂点宣言も開放
     if (_shader)
@@ -252,12 +217,6 @@ void LAppView::ReleaseSprite()
     }
     delete _shader;
     _shader = NULL;
-}
-
-void LAppView::OnDeviceLost()
-{
-    // スプライト開放
-    ReleaseSprite();
 
     // レンダリングターゲット開放
     _renderBuffer.DestroyOffscreenSurface();
@@ -311,28 +270,6 @@ void LAppView::OnTouchesEnded(float px, float py) const
     }
 }
 
-float LAppView::TransformViewX(float deviceX) const
-{
-    float screenX = _deviceToScreen->TransformX(deviceX); // 論理座標変換した座標を取得。
-    return _viewMatrix->InvertTransformX(screenX); // 拡大、縮小、移動後の値。
-}
-
-float LAppView::TransformViewY(float deviceY) const
-{
-    float screenY = _deviceToScreen->TransformY(deviceY); // 論理座標変換した座標を取得。
-    return _viewMatrix->InvertTransformY(screenY); // 拡大、縮小、移動後の値。
-}
-
-float LAppView::TransformScreenX(float deviceX) const
-{
-    return _deviceToScreen->TransformX(deviceX);
-}
-
-float LAppView::TransformScreenY(float deviceY) const
-{
-    return _deviceToScreen->TransformY(deviceY);
-}
-
 void LAppView::PreModelDraw(LAppModel &refModel)
 {
     if (_renderTarget != SelectTarget_None && !LAppDelegate::GetInstance()->IsLostStep())
@@ -367,6 +304,10 @@ void LAppView::PostModelDraw(LAppModel &refModel)
 {
     if (_renderTarget != SelectTarget_None && !LAppDelegate::GetInstance()->IsLostStep())
     {// 別のレンダリングターゲットへ向けて描画する場合
+        LPDIRECT3DDEVICE9 device = LAppDelegate::GetInstance()->GetD3dDevice();
+        // 透過設定
+        device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+        device->SetRenderState(D3DRS_SRCBLENDALPHA, D3DBLEND_ONE);
 
         // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
         Csm::Rendering::CubismOffscreenSurface_D3D9* useTarget = NULL;
@@ -384,7 +325,7 @@ void LAppView::PostModelDraw(LAppModel &refModel)
             int width, height;
             LAppDelegate::GetInstance()->GetClientSize(width, height);
 
-            _renderSprite->SetColor(1.0f, 1.0f, 1.0f, GetSpriteAlpha(0));
+            _renderSprite->SetColor(1.0f * GetSpriteAlpha(0), 1.0f * GetSpriteAlpha(0), 1.0f * GetSpriteAlpha(0), GetSpriteAlpha(0));
             _renderSprite->RenderImmidiate(LAppDelegate::GetInstance()->GetD3dDevice(),
                                            width, height, useTarget->GetTexture());
         }
@@ -407,7 +348,7 @@ void LAppView::SetRenderTargetClearColor(float r, float g, float b)
 float LAppView::GetSpriteAlpha(int assign) const
 {
     // assignの数値に応じて適当に決定
-    float alpha = 0.25f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける
+    float alpha = 0.4f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける
     if (alpha > 1.0f)
     {
         alpha = 1.0f;

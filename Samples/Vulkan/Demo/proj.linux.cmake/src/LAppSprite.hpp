@@ -8,6 +8,8 @@
 #pragma once
 #include <Rendering/Vulkan/CubismClass_Vulkan.hpp>
 
+#include "LAppSprite_Common.hpp"
+
 // 前方宣言
 class VulkanManager;
 
@@ -17,20 +19,9 @@ class VulkanManager;
 * テクスチャID、Rectの管理。
 *
 */
-class LAppSprite
+class LAppSprite : public LAppSprite_Common
 {
 public:
-    /**
-    * @brief Rect 構造体。
-    */
-    struct Rect
-    {
-    public:
-        float Left;     ///< 左辺
-        float Right;    ///< 右辺
-        float Up;       ///< 上辺
-        float Down;     ///< 下辺
-    };
     /**
      * @brief   頂点情報を保持する構造体
      *
@@ -183,17 +174,10 @@ public:
      */
     void ResetRect(float x, float y, float width, float height);
 
-    /**
-    * @brief Getter テクスチャID
-    * @return テクスチャIDを返す
-    */
-    uint32_t GetTextureId() { return _textureId; }
-
 
 private:
     static const uint16_t VertexNum = 4;
     static const uint16_t IndexNum = 6;
-    Csm::csmUint32 _textureId;   ///< テクスチャID
     Rect _rect;          ///< 矩形
     float _spriteColor[4];  ///< 表示カラー
     Live2D::Cubism::Framework::CubismBufferVulkan _vertexBuffer; ///< 頂点バッファ

@@ -12,6 +12,8 @@
 #include <CubismFramework.hpp>
 #include <Type/CubismBasicType.hpp>
 
+#include "LAppSprite_Common.hpp"
+
 class LAppSpriteShader;
 
 /**
@@ -20,21 +22,9 @@ class LAppSpriteShader;
 * テクスチャID、Rectの管理。
 *
 */
-class LAppSprite
+class LAppSprite : public LAppSprite_Common
 {
 public:
-    /**
-    * @brief Rect 構造体。
-    */
-    struct Rect
-    {
-    public:
-        float left;     ///< 左辺
-        float right;    ///< 右辺
-        float up;       ///< 上辺
-        float down;     ///< 下辺
-    };
-
     struct SpriteVertex
     {
         float x, y;     // Position
@@ -54,18 +44,12 @@ public:
      * @param[in]       shader       シェーダー設定
      * @param[in]       device       D3Dデバイス
      */
-    LAppSprite(float x, float y, float width, float height, Csm::csmUint64 textureId, LAppSpriteShader* shader, ID3D11Device* device);
+    LAppSprite(float x, float y, float width, float height, Csm::csmUint32 textureId, LAppSpriteShader* shader, ID3D11Device* device);
 
     /**
      * @brief デストラクタ
      */
     ~LAppSprite();
-
-    /**
-     * @brief Getter テクスチャID
-     * @return テクスチャIDを返す
-     */
-    Csm::csmUint64 GetTextureId() { return _textureId; }
 
     /**
      * @brief テクスチャを指定しての描画
@@ -111,8 +95,6 @@ public:
     static const int INDEX_NUM = 6;
 
 private:
-
-    Csm::csmUint64 _textureId;  ///< テクスチャID
     Rect _rect;                 ///< 矩形
 
     ID3D11Buffer* _vertexBuffer;    ///< 頂点バッファ

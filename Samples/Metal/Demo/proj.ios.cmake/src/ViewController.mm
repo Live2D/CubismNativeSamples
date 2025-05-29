@@ -34,7 +34,7 @@ using namespace LAppDefine;
 @property (nonatomic) LAppSprite *back; //背景画像
 @property (nonatomic) LAppSprite *gear; //歯車画像
 @property (nonatomic) LAppSprite *power; //電源画像
-@property (nonatomic) LAppSprite *renderSprite; //レンダリングターゲット描画用
+@property (nonatomic) LAppModelSprite *renderSprite; //レンダリングターゲット描画用
 @property (nonatomic) TouchManager *touchManager; ///< タッチマネージャー
 @property (nonatomic) Csm::CubismMatrix44 *deviceToScreen;///< デバイスからスクリーンへの行列
 @property (nonatomic) Csm::CubismViewMatrix *viewMatrix;

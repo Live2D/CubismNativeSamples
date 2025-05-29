@@ -31,65 +31,12 @@ void MouseActionManager::ReleaseInstance()
     instance = NULL;
 }
 
-MouseActionManager::MouseActionManager()
+MouseActionManager::MouseActionManager() : MouseActionManager_Common()
 {
 }
 
 MouseActionManager::~MouseActionManager()
 {
-    // 行列データの解放
-    delete _viewMatrix;
-
-    delete _touchManager;
-}
-
-void MouseActionManager::Initialize(int windowWidth, int windowHeight)
-{
-    // 行列の初期化
-    ViewInitialize(windowWidth, windowHeight);
-
-    // タッチ関係のイベント管理
-    _touchManager = new TouchManager();
-
-    _captured = false;
-    _mouseX = 0.0f;
-    _mouseY = 0.0f;
-}
-
-void MouseActionManager::ViewInitialize(int windowWidth, int windowHeight)
-{
-    _deviceToScreen = new Csm::CubismMatrix44();
-    _viewMatrix = new CubismSampleViewMatrix(_deviceToScreen, windowWidth, windowHeight);
-}
-
-void MouseActionManager::OnDrag(Csm::csmFloat32 x, Csm::csmFloat32 y)
-{
-    _userModel->SetDragging(x, y);
-}
-
-void MouseActionManager::OnTouchesBegan(float px, float py)
-{
-    _touchManager->TouchesBegan(px, py);
-}
-
-void MouseActionManager::OnTouchesMoved(float px, float py)
-{
-    float screenX = _deviceToScreen->TransformX(_touchManager->GetX()); // 論理座標変換した座標を取得。
-    float viewX = _viewMatrix->InvertTransformX(screenX); // 拡大、縮小、移動後の値。
-
-    float screenY = _deviceToScreen->TransformY(_touchManager->GetY()); // 論理座標変換した座標を取得。
-    float viewY = _viewMatrix->InvertTransformY(screenY); // 拡大、縮小、移動後の値。
-
-    _touchManager->TouchesMoved(px, py);
-
-    // ドラッグ情報を設定
-    _userModel->SetDragging(viewX, viewY);
-}
-
-void MouseActionManager::OnTouchesEnded(float px, float py)
-{
-    // タッチ終了
-    OnDrag(0.0f, 0.0f);
 }
 
 void MouseActionManager::OnMouseCallBack(GLFWwindow* window, int button, int action, int modify)
@@ -125,14 +72,4 @@ void MouseActionManager::OnMouseCallBack(GLFWwindow* window, double x, double y)
     }
 
     OnTouchesMoved(_mouseX, _mouseY);
-}
-
-CubismSampleViewMatrix * MouseActionManager::GetViewMatrix()
-{
-    return _viewMatrix;
-}
-
-void MouseActionManager::SetUserModel(Csm::CubismUserModel * userModel)
-{
-    _userModel = userModel;
 }

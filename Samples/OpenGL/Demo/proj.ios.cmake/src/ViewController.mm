@@ -102,7 +102,7 @@ using namespace LAppDefine;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
 
     glGenBuffers(1, &_vertexBufferId);
@@ -190,7 +190,7 @@ using namespace LAppDefine;
             {
                 LAppModel* model = [Live2DManager getModel:i];
                 float a = i < 1 ? 1.0f : model->GetOpacity(); // 片方のみ不透明度を取得できるようにする
-                [_renderSprite SetColor:1.0f g:1.0f b:1.0f a:a];
+                [_renderSprite SetColor:1.0f * a g:1.0f * a b:1.0f * a a:a];
 
                 if (model)
                 {
@@ -342,6 +342,9 @@ using namespace LAppDefine;
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
     Csm::Rendering::CubismOffscreenSurface_OpenGLES2* useTarget = NULL;
 
+    // 透過設定
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
     if (_renderTarget != SelectTarget_None)
     {// 別のレンダリングターゲットへ向けて描画する場合
 
@@ -390,7 +393,7 @@ using namespace LAppDefine;
             };
 
             float a = [self GetSpriteAlpha:0];
-            [_renderSprite SetColor:1.0f g:1.0f b:1.0f a:a];
+            [_renderSprite SetColor:1.0f * a g:1.0f * a b:1.0f * a a:a];
             [_renderSprite renderImmidiate:_vertexBufferId fragmentBufferID:_fragmentBufferId TextureId:useTarget->GetColorBuffer() uvArray:uvVertex];
         }
     }
@@ -411,7 +414,7 @@ using namespace LAppDefine;
 - (float)GetSpriteAlpha:(int)assign
 {
     // assignの数値に応じて適当に決定
-    float alpha = 0.25f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける
+    float alpha = 0.4f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける
     if (alpha > 1.0f)
     {
         alpha = 1.0f;

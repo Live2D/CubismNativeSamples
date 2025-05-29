@@ -248,7 +248,7 @@ void CubismDirectXRenderer::ResizeDevice(CubismUserModel* userModel)
                     if (CubismDirectXView::GetInstance())
                     {
                         // パラメータ、スプライトサイズなど再設定
-                        CubismDirectXView::GetInstance()->Initialize();
+                        CubismDirectXView::GetInstance()->Initialize(nowWidth, nowHeight);
                         CubismDirectXView::GetInstance()->ResizeSprite();
                         CubismDirectXView::GetInstance()->DestroyOffscreenSurface();
                     }

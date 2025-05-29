@@ -10,13 +10,13 @@
 #include <functional>
 
 #include <CubismFramework.hpp>
-#include <Model/CubismUserModel.hpp>
 #include <CubismModelSettingJson.hpp>
 
 #include "LAppDefine.hpp"
 #include "CubismTextureManager.hpp"
 #include "Rendering/D3D9/CubismRenderer_D3D9.hpp"
 #include "Rendering/D3D9/CubismOffscreenSurface_D3D9.hpp"
+#include "LAppModel_Common.hpp"
 
 /**
  * @brief CubismUserModelを継承するサンプルクラス
@@ -25,8 +25,7 @@
  * このクラスを拡張し、独自の処理を実装する。
  *
  */
-class CubismUserModelExtend :
-    public Csm::CubismUserModel
+class CubismUserModelExtend : public LAppModel_Common
 {
 public:
     CubismUserModelExtend(const std::string modelDirectoryName, const std::string _currentModelDirectory); ///< コンストラクタ

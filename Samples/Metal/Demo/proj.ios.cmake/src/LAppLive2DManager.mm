@@ -80,6 +80,7 @@ Csm::csmString GetPath(CFURLRef url)
     self = [super init];
     if ( self ) {
         _renderBuffer = nil;
+        _modelSprite = nil;
         _sprite = nil;
         _viewMatrix = nil;
         _sceneIndex = 0;
@@ -115,9 +116,15 @@ Csm::csmString GetPath(CFURLRef url)
         _renderPassDescriptor = nil;
     }
 
+    if (_modelSprite != nil)
+    {
+        [_modelSprite release];
+        _modelSprite = nil;
+    }
+
     if (_sprite != nil)
     {
-        [_sprite release];
+       [_sprite release];
         _sprite = nil;
     }
 
@@ -241,6 +248,8 @@ Csm::csmString GetPath(CFURLRef url)
             {
                 _sprite = [[LAppSprite alloc] initWithMyVar:width * 0.5f Y:height * 0.5f Width:width Height:height
                                                    MaxWidth:width MaxHeight:height Texture:_renderBuffer->GetColorBuffer()];
+                _modelSprite = [[LAppModelSprite alloc] initWithMyVar:width * 0.5f Y:height * 0.5f Width:width Height:height
+                                                   MaxWidth:width MaxHeight:height Texture:_renderBuffer->GetColorBuffer()];
             }
         }
 
@@ -303,7 +312,7 @@ Csm::csmString GetPath(CFURLRef url)
         model->Update();
         model->Draw(projection);///< 参照渡しなのでprojectionは変質する
 
-        if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderBuffer && _sprite)
+        if (_renderTarget == SelectTarget_ViewFrameBuffer && _renderBuffer && _modelSprite)
         {
             MTLRenderPassDescriptor *renderPassDescriptor = [[[MTLRenderPassDescriptor alloc] init] autorelease];
             renderPassDescriptor.colorAttachments[0].texture = drawable.texture;
@@ -311,8 +320,9 @@ Csm::csmString GetPath(CFURLRef url)
             renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
             renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1);
             id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
-            [_sprite SetColor:1.0f g:1.0f b:1.0f a:0.25f];
-            [_sprite renderImmidiate:renderEncoder];
+            float alpha = 0.4f;
+            [_modelSprite SetColor:1.0f * alpha g:1.0f * alpha b:1.0f * alpha a:alpha];
+            [_modelSprite renderImmidiate:renderEncoder];
             [renderEncoder endEncoding];
         }
 
@@ -332,10 +342,10 @@ Csm::csmString GetPath(CFURLRef url)
             id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
 
             Csm::Rendering::CubismOffscreenSurface_Metal& useTarget = model->GetRenderBuffer();
-            LAppSprite* depthSprite = [[LAppSprite alloc] initWithMyVar:width * 0.5f Y:height * 0.5f Width:width Height:height
+            LAppModelSprite* depthSprite = [[LAppModelSprite alloc] initWithMyVar:width * 0.5f Y:height * 0.5f Width:width Height:height
                                                                MaxWidth:width MaxHeight:height Texture:useTarget.GetColorBuffer()];
             float a = i < 1 ? 1.0f : model->GetOpacity(); // 片方のみ不透明度を取得できるようにする
-            [depthSprite SetColor:1.0f g:1.0f b:1.0f a:a];
+            [depthSprite SetColor:1.0f * a g:1.0f * a b:1.0f * a a:a];
             [depthSprite renderImmidiate:renderEncoder];
             [renderEncoder endEncoding];
             [depthSprite dealloc];

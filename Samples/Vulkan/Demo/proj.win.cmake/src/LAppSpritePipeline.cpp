@@ -13,11 +13,30 @@
 #include "LAppDefine.hpp"
 #include "LAppDelegate.hpp"
 
+LAppSpritePipeline::LAppSpritePipeline(VkDevice device)
+    : _pipeline(NULL)
+{
+    CreateDescriptorSetLayout(device);
+    CreatePipelineLayout(device, _descriptorSetLayout);
+}
+
 LAppSpritePipeline::LAppSpritePipeline(VkDevice device, VkExtent2D extent, VkFormat swapchainFormat)
 {
     CreateDescriptorSetLayout(device);
     CreatePipelineLayout(device, _descriptorSetLayout);
-    CreatePipeline(device, extent, swapchainFormat);
+
+    // ブレンドステート
+    VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    colorBlendAttachment.blendEnable = VK_TRUE;
+    colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+    colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+    colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+    colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+
+    CreatePipeline(device, extent, swapchainFormat, colorBlendAttachment);
 }
 
 LAppSpritePipeline::~LAppSpritePipeline()
@@ -93,7 +112,7 @@ void LAppSpritePipeline::CreatePipelineLayout(VkDevice device, VkDescriptorSetLa
     }
 }
 
-void LAppSpritePipeline::CreatePipeline(VkDevice device, VkExtent2D extent, VkFormat swapchainFormat)
+void LAppSpritePipeline::CreatePipeline(VkDevice device, VkExtent2D extent, VkFormat swapchainFormat, const VkPipelineColorBlendAttachmentState& colorBlendAttachment)
 {
     // シェーダーのパスの作成
     Csm::csmString vertShaderFile(LAppDefine::ShaderPath);
@@ -118,7 +137,7 @@ void LAppSpritePipeline::CreatePipeline(VkDevice device, VkExtent2D extent, VkFo
     fragShaderStageInfo.module = fragShaderModule;
     fragShaderStageInfo.pName = "main";
 
-    VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
+    VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
 
 
     // 頂点入力バインド
@@ -141,7 +160,7 @@ void LAppSpritePipeline::CreatePipeline(VkDevice device, VkExtent2D extent, VkFo
 
     // ビューポート
     VkRect2D scissor{};
-    scissor.offset = {0, 0};
+    scissor.offset = { 0, 0 };
     scissor.extent = extent;
 
     VkViewport viewport{};
@@ -175,18 +194,6 @@ void LAppSpritePipeline::CreatePipeline(VkDevice device, VkExtent2D extent, VkFo
     multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
     multisampling.sampleShadingEnable = VK_FALSE;
     multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-
-    // ブレンドステート
-    VkPipelineColorBlendAttachmentState colorBlendAttachment{};
-    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT
-            | VK_COLOR_COMPONENT_A_BIT;
-    colorBlendAttachment.blendEnable = VK_TRUE;
-    colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-    colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-    colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-    colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-    colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-    colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
     VkPipelineColorBlendStateCreateInfo colorBlending{};
     colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;

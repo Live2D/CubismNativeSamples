@@ -24,7 +24,8 @@
 using namespace Live2D::Cubism::Framework;
 
 LAppTextureManager::LAppTextureManager()
-    : _sequenceId(0)
+    : LAppTextureManager_Common()
+    , _sequenceId(0)
     , _mipLevels(0)
 {
 }
@@ -55,7 +56,7 @@ void LAppTextureManager::CopyBufferToImage(VkCommandBuffer commandBuffer, const 
     vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 }
 
-void LAppTextureManager::GenerateMipmaps(CubismImageVulkan image, uint32_t texWidth, uint32_t texHeight,
+void LAppTextureManager::GenerateMipmaps(CubismImageVulkan image, uint32_t texwidth, uint32_t texheight,
                                          uint32_t mipLevels)
 {
     VkCommandBuffer commandBuffer = VulkanManager::GetInstance()->BeginSingleTimeCommands();
@@ -70,8 +71,8 @@ void LAppTextureManager::GenerateMipmaps(CubismImageVulkan image, uint32_t texWi
     barrier.subresourceRange.layerCount = 1;
     barrier.subresourceRange.levelCount = 1;
 
-    int32_t mipWidth = texWidth;
-    int32_t mipHeight = texHeight;
+    int32_t mipwidth = texwidth;
+    int32_t mipheight = texheight;
 
     for (uint32_t i = 1; i < mipLevels; i++)
     {
@@ -89,13 +90,13 @@ void LAppTextureManager::GenerateMipmaps(CubismImageVulkan image, uint32_t texWi
 
         VkImageBlit blit{};
         blit.srcOffsets[0] = {0, 0, 0};
-        blit.srcOffsets[1] = {mipWidth, mipHeight, 1};
+        blit.srcOffsets[1] = {mipwidth, mipheight, 1};
         blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
         blit.srcSubresource.mipLevel = i - 1;
         blit.srcSubresource.baseArrayLayer = 0;
         blit.srcSubresource.layerCount = 1;
         blit.dstOffsets[0] = {0, 0, 0};
-        blit.dstOffsets[1] = {mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1};
+        blit.dstOffsets[1] = {mipwidth > 1 ? mipwidth / 2 : 1, mipheight > 1 ? mipheight / 2 : 1, 1};
         blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
         blit.dstSubresource.mipLevel = i;
         blit.dstSubresource.baseArrayLayer = 0;
@@ -118,14 +119,14 @@ void LAppTextureManager::GenerateMipmaps(CubismImageVulkan image, uint32_t texWi
                              0, nullptr,
                              1, &barrier);
 
-        if (mipWidth > 1)
+        if (mipwidth > 1)
         {
-            mipWidth /= 2;
+            mipwidth /= 2;
         }
 
-        if (mipHeight > 1)
+        if (mipheight > 1)
         {
-            mipHeight /= 2;
+            mipheight /= 2;
         }
     }
 
@@ -154,7 +155,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(
     //search loaded texture already.
     for (Csm::csmUint32 i = 0; i < _texturesInfo.GetSize(); i++)
     {
-        if (_texturesInfo[i]->FileName == fileName)
+        if (_texturesInfo[i]->fileName == fileName)
         {
             return _texturesInfo[i];
         }
@@ -223,10 +224,10 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(
     if (textureInfo != NULL)
     {
         _sequenceId++;
-        textureInfo->FileName = fileName;
-        textureInfo->Width = width;
-        textureInfo->Height = height;
-        textureInfo->Id = _sequenceId;
+        textureInfo->fileName = fileName;
+        textureInfo->width = width;
+        textureInfo->height = height;
+        textureInfo->id = _sequenceId;
         _texturesInfo.PushBack(textureInfo);
     }
     stagingBuffer.Destroy(device);
@@ -252,7 +253,7 @@ void LAppTextureManager::ReleaseTexture(Csm::csmUint32 textureId)
 
     for (Csm::csmUint32 i = 0; i < _texturesInfo.GetSize(); i++)
     {
-        if (_texturesInfo[i]->Id != textureId)
+        if (_texturesInfo[i]->id != textureId)
         {
             continue;
         }
@@ -261,13 +262,25 @@ void LAppTextureManager::ReleaseTexture(Csm::csmUint32 textureId)
         delete _texturesInfo[i];
 
         // 実体除去
-        VkDevice device = VulkanManager::GetInstance()->GetDevice();
-        _textures[i].Destroy(device);
-
+        if (_texturesInfo[i] != VK_NULL_HANDLE)
+        {
+            VkDevice device = VulkanManager::GetInstance()->GetDevice();
+            _textures[i].Destroy(device);
+            _texturesInfo[i] = VK_NULL_HANDLE;
+        }
         _texturesInfo.Remove(i);
         _textures.Remove(i);
         _sequenceId--;
         break;
+    }
+
+    if (_texturesInfo.GetSize() == 0)
+    {
+        _texturesInfo.Clear();
+    }
+    if (_textures.GetSize() == 0)
+    {
+        _textures.Clear();
     }
 }
 
@@ -275,7 +288,7 @@ void LAppTextureManager::ReleaseTexture(std::string fileName)
 {
     for (Csm::csmUint32 i = 0; i < _texturesInfo.GetSize(); i++)
     {
-        if (_texturesInfo[i]->FileName == fileName)
+        if (_texturesInfo[i]->fileName == fileName)
         {
             // info除去
             delete _texturesInfo[i];
@@ -288,7 +301,7 @@ void LAppTextureManager::ReleaseTexture(std::string fileName)
                 _texturesInfo[i] = VK_NULL_HANDLE;
             }
             _texturesInfo.Remove(i);
-            _texturesInfo.Remove(i);
+            _textures.Remove(i);
             break;
         }
     }
@@ -303,24 +316,11 @@ void LAppTextureManager::ReleaseTexture(std::string fileName)
 
 }
 
-LAppTextureManager::TextureInfo* LAppTextureManager::GetTextureInfoById(uint32_t textureId) const
+bool LAppTextureManager::GetTexture(Csm::csmUint32 textureId, CubismImageVulkan& retTexture) const
 {
     for (Csm::csmUint32 i = 0; i < _texturesInfo.GetSize(); i++)
     {
-        if (_texturesInfo[i]->Id == textureId)
-        {
-            return _texturesInfo[i];
-        }
-    }
-
-    return NULL;
-}
-
-bool LAppTextureManager::GetTexture(Csm::csmUint64 textureId, CubismImageVulkan& retTexture) const
-{
-    for (Csm::csmUint32 i = 0; i < _texturesInfo.GetSize(); i++)
-    {
-        if (_texturesInfo[i]->Id == textureId)
+        if (_texturesInfo[i]->id == textureId)
         {
             retTexture = _textures[i];
             return true;

@@ -17,6 +17,7 @@
 using namespace Live2D::Cubism::Framework;
 
 LAppTextureManager::LAppTextureManager()
+    : LAppTextureManager_Common()
 {
     _sequenceId = 0;
 }
@@ -293,20 +294,7 @@ void LAppTextureManager::ReleaseTexture(std::string fileName)
 
 }
 
-LAppTextureManager::TextureInfo* LAppTextureManager::GetTextureInfoById(uint32_t textureId) const
-{
-    for (Csm::csmUint32 i = 0; i < _texturesInfo.GetSize(); i++)
-    {
-        if (_texturesInfo[i]->id == textureId)
-        {
-            return _texturesInfo[i];
-        }
-    }
-
-    return NULL;
-}
-
-bool LAppTextureManager::GetTexture(Csm::csmUint64 textureId, CubismImageVulkan& retTexture) const
+bool LAppTextureManager::GetTexture(Csm::csmUint32 textureId, CubismImageVulkan& retTexture) const
 {
     for (Csm::csmUint32 i = 0; i < _texturesInfo.GetSize(); i++)
     {

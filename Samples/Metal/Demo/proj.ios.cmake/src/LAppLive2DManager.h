@@ -13,7 +13,7 @@
 #import <Type/csmVector.hpp>
 #import <Type/csmString.hpp>
 #import "LAppModel.h"
-#import "LAppSprite.h"
+#import "LAppModelSprite.h"
 
 @interface LAppLive2DManager : NSObject
 
@@ -30,6 +30,7 @@ typedef NS_ENUM(NSUInteger, SelectTarget)
 @property (nonatomic) SelectTarget renderTarget;
 @property (nonatomic) Csm::Rendering::CubismOffscreenSurface_Metal* renderBuffer;
 @property (nonatomic) LAppSprite* sprite;
+@property (nonatomic) LAppModelSprite* modelSprite;
 @property (nonatomic) MTLRenderPassDescriptor* renderPassDescriptor;
 @property (nonatomic) float clearColorR;
 @property (nonatomic) float clearColorG;

@@ -14,7 +14,8 @@
 using namespace LAppDefine;
 
 LAppSprite::LAppSprite()
-    : _rect(),
+    : LAppSprite_Common(),
+    _rect(),
     _vertexStore(NULL),
     _indexStore(NULL),
     _shader(NULL)
@@ -23,7 +24,8 @@ LAppSprite::LAppSprite()
 }
 
 LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint64 textureId, LAppSpriteShader* shader)
-    : _rect(),
+    : LAppSprite_Common(textureId),
+    _rect(),
     _vertexStore(NULL),
     _indexStore(NULL),
     _shader(shader)
@@ -32,7 +34,6 @@ LAppSprite::LAppSprite(float x, float y, float width, float height, Csm::csmUint
     _rect.right = (x + width * 0.5f);
     _rect.up = (y + height * 0.5f);
     _rect.down = (y - height * 0.5f);
-    _textureId = textureId;
 
     _color = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -101,7 +102,6 @@ void LAppSprite::RenderImmidiate(LPDIRECT3DDEVICE9 device, int maxWidth, int max
 
     {
         // レンダーステート
-        device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
         device->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
         device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 

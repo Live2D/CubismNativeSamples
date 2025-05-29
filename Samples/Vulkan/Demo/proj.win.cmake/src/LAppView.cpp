@@ -13,20 +13,23 @@
 #include "LAppLive2DManager.hpp"
 #include "LAppTextureManager.hpp"
 #include "LAppDefine.hpp"
-#include "TouchManager.hpp"
+#include "TouchManager_Common.hpp"
 #include "LAppSprite.hpp"
 #include "LAppSpritePipeline.hpp"
+#include "LAppModelSpritePipeline.hpp"
 #include "LAppModel.hpp"
 
 using namespace std;
 using namespace LAppDefine;
 
 LAppView::LAppView():
-                    _back(NULL)
+                    LAppView_Common()
+                    , _back(NULL)
                     , _gear(NULL)
                     , _power(NULL)
                     , _renderSprite(NULL)
                     , _renderTarget(SelectTarget_None)
+                    , _modelSpritePipeline(NULL)
                     , _spritePipeline(NULL)
 {
     _clearColor[0] = 1.0f;
@@ -35,22 +38,13 @@ LAppView::LAppView():
     _clearColor[3] = 0.0f;
 
     // タッチ関係のイベント管理
-    _touchManager = new TouchManager();
-
-    // デバイス座標からスクリーン座標に変換するための
-    _deviceToScreen = new CubismMatrix44();
-
-    // 画面の表示の拡大縮小や移動の変換を行う行列
-    _viewMatrix = new CubismViewMatrix();
+    _touchManager = new TouchManager_Common();
 }
 
 LAppView::~LAppView()
 {
     VkDevice device = LAppDelegate::GetInstance()->GetVulkanManager()->GetDevice();
     _renderBuffer.DestroyOffscreenSurface(device);
-    delete _viewMatrix;
-    delete _deviceToScreen;
-    delete _touchManager;
 
     LAppDelegate::GetInstance()->GetTextureManager()->ReleaseTexture(_back->GetTextureId());
     LAppDelegate::GetInstance()->GetTextureManager()->ReleaseTexture(_gear->GetTextureId());
@@ -59,57 +53,40 @@ LAppView::~LAppView()
     _gear->Release(device);
     _power->Release(device);
     _renderSprite->Release(device);
-    delete _back;
-    delete _gear;
-    delete _power;
-    delete _renderSprite;
-    delete _spritePipeline;
+
+    if (_renderSprite)
+    {
+        delete _renderSprite;
+    }
+    if (_spritePipeline)
+    {
+        delete _spritePipeline;
+    }
+    if (_modelSpritePipeline)
+    {
+        delete _modelSpritePipeline;
+    }
+    if (_touchManager)
+    {
+        delete _touchManager;
+    }
+    if (_back)
+    {
+        delete _back;
+    }
+    if (_gear)
+    {
+        delete _gear;
+    }
+    if (_power)
+    {
+        delete _power;
+    }
 }
 
-void LAppView::Initialize()
+void LAppView::Initialize(int width, int height)
 {
-    int width, height;
-    glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
-
-    if (width == 0 || height == 0)
-    {
-        return;
-    }
-
-    // 縦サイズを基準とする
-    float ratio = static_cast<float>(width) / static_cast<float>(height);
-    float left = -ratio;
-    float right = ratio;
-    float bottom = ViewLogicalLeft;
-    float top = ViewLogicalRight;
-
-    _viewMatrix->SetScreenRect(left, right, bottom, top); // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
-    _viewMatrix->Scale(ViewScale, ViewScale);
-
-    _deviceToScreen->LoadIdentity(); // サイズが変わった際などリセット必須
-    if (width > height)
-    {
-        float screenW = fabsf(right - left);
-        _deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
-    }
-    else
-    {
-        float screenH = fabsf(top - bottom);
-        _deviceToScreen->ScaleRelative(screenH / height, -screenH / height);
-    }
-    _deviceToScreen->TranslateRelative(-width * 0.5f, -height * 0.5f);
-
-    // 表示範囲の設定
-    _viewMatrix->SetMaxScale(ViewMaxScale); // 限界拡大率
-    _viewMatrix->SetMinScale(ViewMinScale); // 限界縮小率
-
-    // 表示できる最大範囲
-    _viewMatrix->SetMaxScreenRect(
-        ViewLogicalMaxLeft,
-        ViewLogicalMaxRight,
-        ViewLogicalMaxBottom,
-        ViewLogicalMaxTop
-    );
+    LAppView_Common::Initialize(width, height);
 }
 
 void LAppView::BeginRendering(VkCommandBuffer commandBuffer, float r, float g, float b, float a, bool isClear)
@@ -200,10 +177,10 @@ void LAppView::Render()
                                                         model->GetRenderBuffer().GetTextureView(),
                                                         model->GetRenderBuffer().GetTextureSampler());
             BeginRendering(commandBuffer, 0.f, 0.f, 0.3, 1.f, false);
-            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _spritePipeline->GetPipeline());
+            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _modelSpritePipeline->GetPipeline());
 
-            float alpha = i < 1 ? 1.0f : model->GetOpacity(); // サンプルとしてαに適当な差をつける
-            _renderSprite->SetColor(1.0f, 1.0f, 1.0f, alpha);
+            float alpha = i < 1 ? 1.0f : model->GetOpacity(); // 片方のみ不透明度を取得できるようにする
+            _renderSprite->SetColor(alpha, alpha, alpha, alpha);
             if (model)
             {
                 _renderSprite->Render(commandBuffer, vkManager, width, height);
@@ -225,6 +202,7 @@ void LAppView::InitializeSprite()
     VkPhysicalDevice physicalDevice = vkManager->GetPhysicalDevice();
     SwapchainManager* swapchainManager = vkManager->GetSwapchainManager();
     _spritePipeline = new LAppSpritePipeline(device, swapchainManager->GetExtent(), vkManager->GetSwapchainManager()->GetSwapchainImageFormat());
+    _modelSpritePipeline = new LAppModelSpritePipeline(device, swapchainManager->GetExtent(), vkManager->GetSwapchainManager()->GetSwapchainImageFormat());
 
     int width, height;
     glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
@@ -287,7 +265,7 @@ void LAppView::InitializeSprite()
     x = width * 0.5f;
     y = height * 0.5f;
     LAppLive2DManager* live2DManager = LAppLive2DManager::GetInstance();
-    _renderSprite = new LAppSprite(device, physicalDevice, vkManager, x, y, static_cast<float>(width), static_cast<float>(height),0, _spritePipeline, NULL, NULL);
+    _renderSprite = new LAppSprite(device, physicalDevice, vkManager, x, y, static_cast<float>(width), static_cast<float>(height),0, _modelSpritePipeline, NULL, NULL);
 }
 
 void LAppView::OnTouchesBegan(float px, float py) const
@@ -339,29 +317,6 @@ void LAppView::OnTouchesEnded(float px, float py) const
     }
 }
 
-float LAppView::TransformViewX(float deviceX) const
-{
-    float screenX = _deviceToScreen->TransformX(deviceX); // 論理座標変換した座標を取得。
-    return _viewMatrix->InvertTransformX(screenX); // 拡大、縮小、移動後の値。
-}
-
-float LAppView::TransformViewY(float deviceY) const
-{
-    float screenY = _deviceToScreen->TransformY(deviceY); // 論理座標変換した座標を取得。
-    return _viewMatrix->InvertTransformY(screenY); // 拡大、縮小、移動後の値。
-}
-
-float LAppView::TransformScreenX(float deviceX) const
-{
-    return _deviceToScreen->TransformX(deviceX);
-}
-
-float LAppView::TransformScreenY(float deviceY) const
-{
-    return _deviceToScreen->TransformY(deviceY);
-}
-
-
 void LAppView::PreModelDraw(LAppModel& refModel)
 {
     if (_renderTarget == SelectTarget_None)
@@ -398,6 +353,7 @@ void LAppView::PreModelDraw(LAppModel& refModel)
             }
         }
         // 描画先を別のレンダリングターゲットへ指定
+        LAppLive2DManager* live2DManager = LAppLive2DManager::GetInstance();
         Csm::Rendering::CubismRenderer_Vulkan::SetRenderTarget(useTarget->GetTextureImage(), useTarget->GetTextureView(),
                                                                LAppDelegate::GetInstance()->GetVulkanManager()->GetImageFormat(),
                                                                VkExtent2D{useTarget->GetBufferWidth(), useTarget->GetBufferHeight()});
@@ -426,8 +382,9 @@ void LAppView::PostModelDraw(LAppModel& refModel, csmInt32 modelIndex)
             _renderSprite->UpdateDescriptorSet(vkManager->GetDevice(), useTarget->GetTextureView(),
                                                         useTarget->GetTextureSampler());
             BeginRendering(commandBuffer, 0.f, 0.f, 0.3, 1.f, false);
-            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _spritePipeline->GetPipeline());
-            _renderSprite->SetColor(1.0f, 1.0f, 1.0f, GetSpriteAlpha(0));
+            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _modelSpritePipeline->GetPipeline());
+            float alpha = GetSpriteAlpha(0);
+            _renderSprite->SetColor(alpha, alpha, alpha, alpha);
             _renderSprite->Render(commandBuffer, vkManager, width, height);
             EndRendering(commandBuffer);
             vkManager->SubmitCommand(commandBuffer);
@@ -457,7 +414,7 @@ void LAppView::SetRenderTargetClearColor(float r, float g, float b)
 float LAppView::GetSpriteAlpha(int assign) const
 {
     // assignの数値に応じて適当に決定
-    float alpha = 0.25f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける
+    float alpha = 0.4f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける
     if (alpha > 1.0f)
     {
         alpha = 1.0f;
@@ -475,8 +432,16 @@ void LAppView::ResizeSprite(int width, int height)
     VulkanManager* vkManager = LAppDelegate::GetInstance()->GetVulkanManager();
     VkDevice device = vkManager->GetDevice();
     SwapchainManager* swapchainManager = vkManager->GetSwapchainManager();
-    delete _spritePipeline;
+    if (_spritePipeline)
+    {
+        delete _spritePipeline;
+    }
+    if (_modelSpritePipeline)
+    {
+        delete _modelSpritePipeline;
+    }
     _spritePipeline = new LAppSpritePipeline(device, swapchainManager->GetExtent(), vkManager->GetSwapchainManager()->GetSwapchainImageFormat());
+    _modelSpritePipeline = new LAppModelSpritePipeline(device, swapchainManager->GetExtent(), vkManager->GetSwapchainManager()->GetSwapchainImageFormat());
 
     LAppTextureManager* textureManager = LAppDelegate::GetInstance()->GetTextureManager();
     if (!textureManager)
@@ -535,7 +500,7 @@ void LAppView::ResizeSprite(int width, int height)
     }
     if (_renderSprite)
     {
-        _renderSprite->SetPipeline(_spritePipeline);
+        _renderSprite->SetPipeline(_modelSpritePipeline);
         x = width * 0.5f;
         y = height * 0.5f;
         _renderSprite->ResetRect(x, y, static_cast<float>(width), static_cast<float>(height));

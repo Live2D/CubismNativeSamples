@@ -25,6 +25,9 @@ using namespace LAppDefine;
 double LAppPal::s_currentFrame = 0.0;
 double LAppPal::s_lastFrame = 0.0;
 double LAppPal::s_deltaTime = 0.0;
+#ifdef CSM_FIXED_FRAME_RATE
+int LAppPal::s_frame = 0;
+#endif
 
 csmByte* LAppPal::LoadFileAsBytes(const string filePath, csmSizeInt* outSize)
 {
@@ -92,7 +95,12 @@ csmFloat32  LAppPal::GetDeltaTime()
 
 void LAppPal::UpdateTime()
 {
+#ifndef CSM_FIXED_FRAME_RATE
     s_currentFrame = glfwGetTime();
+#else
+    s_frame += 1;
+    s_currentFrame = s_frame / CSM_FIXED_FRAME_RATE;
+#endif
     s_deltaTime = s_currentFrame - s_lastFrame;
     s_lastFrame = s_currentFrame;
 }

@@ -11,7 +11,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Type/csmVector.hpp"
-#include "LAppAllocator.hpp"
+#include "LAppAllocator_Common.hpp"
 
 class LAppView;
 class LAppTextureManager;
@@ -72,6 +72,11 @@ public:
     void OnMouseCallBack(GLFWwindow* window, double x, double y);
 
     /**
+     * @brief   ウィンドウクライアント領域の幅、高さ取得
+     */
+    static void GetClientSize(int& rWidth, int& rHeight);
+
+    /**
     * @brief   Window情報を取得する。
     */
     GLFWwindow* GetWindow() { return _window; }
@@ -122,7 +127,7 @@ private:
     */
     void InitializeCubism();
 
-    LAppAllocator _cubismAllocator;              ///< Cubism3 Allocator
+    LAppAllocator_Common _cubismAllocator;              ///< Cubism3 Allocator
     Csm::CubismFramework::Option _cubismOption;  ///< Cubism3 Option
     GLFWwindow* _window;                         ///< OpenGL ウィンドウ
     LAppView* _view;                             ///< View情報

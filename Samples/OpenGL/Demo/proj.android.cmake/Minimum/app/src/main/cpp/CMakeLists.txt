@@ -2,8 +2,6 @@ target_sources(${APP_NAME}
   PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/JniBridgeC.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/JniBridgeC.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/LAppAllocator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/LAppAllocator.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/LAppDefine.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/LAppDefine.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/LAppMinimumDelegate.cpp
@@ -22,6 +20,6 @@ target_sources(${APP_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/LAppTextureManager.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/LAppMinimumView.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/LAppMinimumView.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/TouchManager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/TouchManager.hpp
 )
+
+target_include_directories(${APP_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

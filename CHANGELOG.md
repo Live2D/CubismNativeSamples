@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
+## [5-r.4] - 2025-05-29
+
+### Added
+
+* Add a feature to fix the frame rate to a specified value in Windows OpenGL.
+* Add a flag to enable the function that verifies the consistency when loading `motion3.json`.
+
+### Changed
+
+* Move some overlapping functions to `Common`.
+* Change the default version of the JDK used for compilation to be fixed at 17.
+* Change the blend mode when using the USERENDERTARGET or USEMODELRENDER_TARGET macro, and apply Premultiplied Alpha to the color settings of rendering targets.
+Also adjust the return value of the GetSproteAlpha function.
+* Change to separate shader code from the framework layer.
+* Change `LAppPal::LoadFileAsBytes()` behaviour on macOS.
+  * Convert to an absolute path, if a relative path is specified.
+
+### Fixed
+
+* Fix the errors that occur when building in a Unicode environment with D3D9 and D3D11.
+* Fix an issue where the priority was not reset if the motion was not read correctly.
+
+
 ## [5-r.3] - 2025-02-18
 
 ### Fixed
@@ -468,6 +491,7 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[5-r.4]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.3...5-r.4
 [5-r.3]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.2...5-r.3
 [5-r.2]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1...5-r.2
 [5-r.1]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1-beta.4...5-r.1

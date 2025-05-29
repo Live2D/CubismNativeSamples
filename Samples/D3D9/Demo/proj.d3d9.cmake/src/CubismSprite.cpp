@@ -16,7 +16,8 @@
 #include "Rendering/D3D9/CubismType_D3D9.hpp"
 
 CubismSprite::CubismSprite()
-    : _rect(),
+    : LAppSprite_Common(),
+    _rect(),
     _vertexStore(nullptr),
     _indexStore(nullptr)
 {
@@ -24,7 +25,8 @@ CubismSprite::CubismSprite()
 }
 
 CubismSprite::CubismSprite(float x, float y, float width, float height, Csm::csmUint64 textureId, CubismSpriteShader* shader)
-    : _rect(),
+    : LAppSprite_Common(textureId),
+    _rect(),
     _vertexStore(nullptr),
     _indexStore(nullptr),
     _shader(shader)
@@ -35,7 +37,6 @@ CubismSprite::CubismSprite(float x, float y, float width, float height, Csm::csm
     _rect.right = (x + width * 0.5f);
     _rect.up = (y + height * 0.5f);
     _rect.down = (y - height * 0.5f);
-    _textureId = textureId;
 
     if (!(CubismDirectXRenderer::GetInstance()->_device))
     {

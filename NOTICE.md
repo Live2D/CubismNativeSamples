@@ -4,6 +4,39 @@
 
 # Notices
 
+## [Notes] Building with Visual Studio 2017 (2025-05-29)
+
+Visual Studio 2017 provides Windows 10 SDK versions up to 10.0.17763.0 only, which may cause execution issues in some situations.  
+If you are building on Visual Studio 2017, please manually install and use the latest version of the Windows SDK.
+
+## [Notes] Building Metal Renderer for Mac Catalyst (2025-05-29)
+
+When building Metal renderer for Mac Catalyst, an issue has been confirmed in which an error ("NSURL not found") occurs with CMake versions 3.27 or higher.  
+If you're utilizing this platform, please use CMake version 3.26 or earlier.
+
+## [Caution] Support for CMake 4.0 in Linux OpenGL Environment (2025-05-29)
+
+Regarding support for CMake 4.0, the product currently uses `GLEW 2.2.0`, which does not support CMake 4.0.
+Therefore, this sample is not compatible with CMake 4.0. We will update accordingly once GLEW supports it, so please be aware of this in advance.
+
+Please refer to the issue below for details.
+
+* [GLEW issue](https://github.com/nigels-com/glew/issues/432)
+
+## [Caution] Regarding iOS ARM Builds (2025-05-29)
+
+Regarding ARM builds for deployment on physical iOS devices, we have identified an issue causing installation errors on devices due to ios-cmake 4.5.0 used in Cubism SDK for Native.
+We are continuing to investigate this issue.
+
+### Workaround
+
+1. Revert ios-cmake to version 4.4.1 or another stable version.
+
+2. In your .xcodeproj settings, select your build target (such as "Demo") under "TARGETS", then in Build Settings > User-Defined, set the following all to YES:
+  2.1. CODE_SIGNING_ALLOWED and all child settings under this key
+  2.2. CODE_SIGNING_REQUIRED and all child settings under this key
+
+
 ## [Caution] Regarding Cubism SDK for Native Cocos2d-x Support (2024-12-19)
 
 Support for Cocos2d-x in the Cubism SDK for Native has been discontinued starting with Cubism 5 SDK for Native R2. 

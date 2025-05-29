@@ -95,6 +95,8 @@ bool LAppDelegate::Initialize()
     //setup cubism
     _cubismOption.LogFunction = LAppPal::PrintMessage;
     _cubismOption.LoggingLevel = LAppDefine::CubismLoggingLevel;
+    _cubismOption.LoadFileFunction = LAppPal::LoadFileAsBytes;
+    _cubismOption.ReleaseBytesFunction = LAppPal::ReleaseBytes;
     Csm::CubismFramework::StartUp(&_cubismAllocator, &_cubismOption);
 
     // CubismSDKの初期化
@@ -113,7 +115,7 @@ bool LAppDelegate::Initialize()
     );
 
     //AppViewの初期化
-    _view->Initialize();
+    _view->Initialize(width, height);
 
     SetExecuteAbsolutePath();
 
@@ -165,7 +167,7 @@ bool LAppDelegate::RecreateSwapchain()
         );
 
         // AppViewの初期化
-        _view->Initialize();
+        _view->Initialize(width, height);
         // スプライトサイズを再設定
         _view->ResizeSprite(width, height);
         // オフスクリーンを再作成する

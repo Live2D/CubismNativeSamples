@@ -10,27 +10,17 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "LAppSprite_Common.hpp"
+
 /**
 * @brief スプライトを実装するクラス。
 *
 * テクスチャID、Rectの管理。
 *
 */
-class LAppSprite
+class LAppSprite : public LAppSprite_Common
 {
 public:
-    /**
-    * @brief Rect 構造体。
-    */
-    struct Rect
-    {
-    public:
-        float left;     ///< 左辺
-        float right;    ///< 右辺
-        float up;       ///< 上辺
-        float down;     ///< 下辺
-    };
-
     /**
     * @brief コンストラクタ
     *
@@ -47,12 +37,6 @@ public:
     * @brief デストラクタ
     */
     ~LAppSprite();
-
-    /**
-    * @brief Getter テクスチャID
-    * @return テクスチャIDを返す
-    */
-    GLuint GetTextureId() { return _textureId; }
 
     /**
     * @brief 描画する
@@ -103,7 +87,6 @@ public:
     void SetWindowSize(int width, int height);
 
 private:
-    GLuint _textureId;      ///< テクスチャID
     Rect _rect;             ///< 矩形
     int _positionLocation;  ///< 位置アトリビュート
     int _uvLocation;        ///< UVアトリビュート

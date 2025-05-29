@@ -55,6 +55,7 @@ namespace LAppDefine {
     extern const csmInt32 PriorityForce;            ///< モーションの優先度定数: 3
 
     extern const csmBool MocConsistencyValidationEnable; ///< MOC3の整合性検証機能の有効・無効
+    extern const csmBool MotionConsistencyValidationEnable; ///< motion3.jsonの整合性検証機能の有効・無効
 
                                                     // デバッグ用ログの表示
     extern const csmBool DebugLogEnable;            ///< デバッグ用ログ表示の有効・無効

@@ -13,7 +13,7 @@
 #include "LAppDefine.hpp"
 #include "LAppTextureManager.hpp"
 #include "LAppMinimumLive2DManager.hpp"
-#include "TouchManager.hpp"
+#include "TouchManager_Common.hpp"
 #include "LAppSprite.hpp"
 #include "LAppSpriteShader.hpp"
 #include "LAppMinimumModel.hpp"
@@ -27,9 +27,10 @@ using namespace std;
 using namespace LAppDefine;
 using namespace Csm;
 
-LAppMinimumView::LAppMinimumView():
-        _renderSprite(nullptr),
-        _renderTarget(SelectTarget_None)
+LAppMinimumView::LAppMinimumView()
+    : LAppView_Common()
+    , _renderSprite(nullptr)
+    , _renderTarget(SelectTarget_None)
 {
     _clearColor[0] = 1.0f;
     _clearColor[1] = 1.0f;
@@ -37,13 +38,7 @@ LAppMinimumView::LAppMinimumView():
     _clearColor[3] = 0.0f;
 
     // タッチ関係のイベント管理
-    _touchManager = new TouchManager();
-
-    // デバイス座標からスクリーン座標に変換するための
-    _deviceToScreen = new CubismMatrix44();
-
-    // 画面の表示の拡大縮小や移動の変換を行う行列
-    _viewMatrix = new CubismViewMatrix();
+    _touchManager = new TouchManager_Common();
 }
 
 LAppMinimumView::~LAppMinimumView()
@@ -51,51 +46,12 @@ LAppMinimumView::~LAppMinimumView()
     _renderBuffer.DestroyOffscreenSurface();
     delete _spriteShader;
     delete _renderSprite;
-
-    delete _viewMatrix;
-    delete _deviceToScreen;
     delete _touchManager;
 }
 
-void LAppMinimumView::Initialize()
+void LAppMinimumView::Initialize(int width, int height)
 {
-    int width = LAppMinimumDelegate::GetInstance()->GetWindowWidth();
-    int height = LAppMinimumDelegate::GetInstance()->GetWindowHeight();
-
-    // 縦サイズを基準とする
-    float ratio = static_cast<float>(width) / static_cast<float>(height);
-    float left = -ratio;
-    float right = ratio;
-    float bottom = ViewLogicalLeft;
-    float top = ViewLogicalRight;
-
-    _viewMatrix->SetScreenRect(left, right, bottom, top); // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
-    _viewMatrix->Scale(ViewScale, ViewScale);
-
-    _deviceToScreen->LoadIdentity();
-    if (width > height)
-    {
-        float screenW = fabsf(right - left);
-        _deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
-    }
-    else
-    {
-        float screenH = fabsf(top - bottom);
-        _deviceToScreen->ScaleRelative(screenH / height, -screenH / height);
-    }
-    _deviceToScreen->TranslateRelative(-width * 0.5f, -height * 0.5f);
-
-    // 表示範囲の設定
-    _viewMatrix->SetMaxScale(ViewMaxScale); // 限界拡大率
-    _viewMatrix->SetMinScale(ViewMinScale); // 限界縮小率
-
-    // 表示できる最大範囲
-    _viewMatrix->SetMaxScreenRect(
-            ViewLogicalMaxLeft,
-            ViewLogicalMaxRight,
-            ViewLogicalMaxBottom,
-            ViewLogicalMaxTop
-    );
+    LAppView_Common::Initialize(width, height);
 
     // シェーダー作成委譲クラス
     _spriteShader = new LAppSpriteShader();
@@ -142,7 +98,7 @@ void LAppMinimumView::Render()
                 };
 
         float alpha = GetSpriteAlpha(2); // サンプルとしてαに適当な差をつける
-        _renderSprite->SetColor(1.0f, 1.0f, 1.0f, alpha);
+        _renderSprite->SetColor(1.0f * alpha, 1.0f * alpha, 1.0f * alpha, alpha);
 
         LAppMinimumModel *model = Live2DManager->GetModel();
         if (model)
@@ -189,28 +145,6 @@ void LAppMinimumView::OnTouchesEnded(float pointX, float pointY)
     }
 }
 
-float LAppMinimumView::TransformViewX(float deviceX) const
-{
-    float screenX = _deviceToScreen->TransformX(deviceX); // 論理座標変換した座標を取得。
-    return _viewMatrix->InvertTransformX(screenX); // 拡大、縮小、移動後の値。
-}
-
-float LAppMinimumView::TransformViewY(float deviceY) const
-{
-    float screenY = _deviceToScreen->TransformY(deviceY); // 論理座標変換した座標を取得。
-    return _viewMatrix->InvertTransformY(screenY); // 拡大、縮小、移動後の値。
-}
-
-float LAppMinimumView::TransformScreenX(float deviceX) const
-{
-    return _deviceToScreen->TransformX(deviceX);
-}
-
-float LAppMinimumView::TransformScreenY(float deviceY) const
-{
-    return _deviceToScreen->TransformY(deviceY);
-}
-
 void LAppMinimumView::PreModelDraw(LAppMinimumModel &refModel)
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
@@ -245,6 +179,9 @@ void LAppMinimumView::PostModelDraw(LAppMinimumModel &refModel)
     if (_renderTarget != SelectTarget_None)
     {// 別のレンダリングターゲットへ向けて描画する場合
 
+        //透過設定
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
         // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
 
@@ -262,7 +199,8 @@ void LAppMinimumView::PostModelDraw(LAppMinimumModel &refModel)
                             1.0f, 0.0f,
                     };
 
-            _renderSprite->SetColor(1.0f, 1.0f, 1.0f, GetSpriteAlpha(0));
+            _renderSprite->SetColor(1.0f * GetSpriteAlpha(0), 1.0f * GetSpriteAlpha(0), 1.0f *
+                    GetSpriteAlpha(0) , GetSpriteAlpha(0));
 
             // 画面サイズを取得する
             int maxWidth = LAppMinimumDelegate::GetInstance()->GetWindowWidth();
@@ -289,7 +227,7 @@ void LAppMinimumView::SetRenderTargetClearColor(float r, float g, float b)
 float LAppMinimumView::GetSpriteAlpha(int assign) const
 {
     // assignの数値に応じて適当に決定
-    float alpha = 0.25f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける
+    float alpha = 0.4f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける
     if (alpha > 1.0f)
     {
         alpha = 1.0f;

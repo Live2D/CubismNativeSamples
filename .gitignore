@@ -5,9 +5,12 @@
 /Core/**/*.dylib
 /Core/**/*.lib
 /Core/**/*.so
+#Core development files
+/.CoreDev/Archive/
 
 # Sample build directories
 /Samples/**/build/
+/.ci/DllTest/**/build/
 # HarmonyOS files
 Samples/OpenGL/Demo/proj.harmonyos.cmake/Full/entry/src/main/resources/rawfile/
 # Sample third party files

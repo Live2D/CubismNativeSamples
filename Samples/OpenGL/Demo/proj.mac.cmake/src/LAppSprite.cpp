@@ -8,7 +8,8 @@
 #include "LAppSprite.hpp"
 
 LAppSprite::LAppSprite(float x, float y, float width, float height, GLuint textureId, GLuint programId)
-    : _rect()
+    : LAppSprite_Common(textureId)
+    , _rect()
 {
     _rect.left = (x - width * 0.5f);
     _rect.right = (x + width * 0.5f);
@@ -46,6 +47,9 @@ void LAppSprite::Render() const
         0.0f, 1.0f,
         1.0f, 1.0f,
     };
+
+    //透過設定
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // attribute属性を有効にする
     glEnableVertexAttribArray(_positionLocation);

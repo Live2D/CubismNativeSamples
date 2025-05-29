@@ -14,6 +14,10 @@ target_sources(${APP_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/LAppPal.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/LAppSprite.h
     ${CMAKE_CURRENT_SOURCE_DIR}/LAppSprite.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppSprite.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppSprite.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppModelSprite.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/LAppModelSprite.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/LAppTextureManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/LAppTextureManager.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/main.m

@@ -8,7 +8,7 @@
 #include "CubismDirectXView.hpp"
 
 #include "CubismDirectXRenderer.hpp"
-#include "CubismSampleViewMatrix.hpp"
+#include "CubismSampleViewMatrix_Common.hpp"
 #include "CubismSpriteShader.hpp"
 
 namespace {
@@ -26,22 +26,25 @@ CubismDirectXView* CubismDirectXView::GetInstance()
 }
 
 CubismDirectXView::CubismDirectXView()
-    :_windowWidth(0), _windowHeight(0), _renderSprite(nullptr), _renderTarget(SelectTarget_None), _shader(NULL)
+    : LAppView_Common(),
+    _windowWidth(0),
+    _windowHeight(0),
+    _renderSprite(nullptr),
+    _renderTarget(SelectTarget_None),
+    _shader(NULL)
 {
     _clearColor[0] = 1.0f;
     _clearColor[1] = 1.0f;
     _clearColor[2] = 1.0f;
     _clearColor[3] = 0.0f;
 
-    _mouseActionManager = MouseActionManager::GetInstance();
-
-    // デバイス座標からスクリーン座標に変換するための行列
-    _deviceToScreen = new CubismMatrix44();
+    _mouseActionManager = MouseActionManager_Common::GetInstance();
 
     // スプライト用シェーダー
     _shader = new CubismSpriteShader();
 
-    Initialize();
+    CubismDirectXRenderer::GetInstance()->GetClientSize(_windowWidth, _windowHeight);
+    Initialize(_windowWidth, _windowHeight);
 }
 
 CubismDirectXView::~CubismDirectXView()
@@ -49,17 +52,16 @@ CubismDirectXView::~CubismDirectXView()
     _renderBuffer.DestroyOffscreenSurface();
 
     _shader->ReleaseShader();
+    ReleaseSprite();
 
     delete _shader;
-    delete _renderSprite;
-    delete _deviceToScreen;
-
-    ReleaseSprite();
 }
 
-void CubismDirectXView::Initialize()
+void CubismDirectXView::Initialize(int width, int height)
 {
     CubismDirectXRenderer::GetInstance()->GetClientSize(_windowWidth, _windowHeight);
+
+    LAppView_Common::Initialize(_windowWidth, _windowHeight);
 
     // シェーダー作成
     _shader->CreateShader();
@@ -73,7 +75,7 @@ void CubismDirectXView::Render(CubismUserModel* userModel)
     CubismDirectXRenderer::GetInstance()->GetClientSize(_windowWidth, _windowHeight);
 
     //AppViewの初期化
-    MouseActionManager::GetInstance()->ViewInitialize(_windowWidth, _windowHeight);
+    MouseActionManager_Common::GetInstance()->ViewInitialize(_windowWidth, _windowHeight);
 
     CubismUserModelExtend* model = static_cast<CubismUserModelExtend*>(userModel);
 
@@ -124,30 +126,6 @@ void CubismDirectXView::ResizeSprite()
         float y = _windowHeight * 0.5f;
         _renderSprite->ResetRect(x, y, static_cast<float>(_windowWidth), static_cast<float>(_windowHeight));
     }
-}
-
-float CubismDirectXView::TransformViewX(float deviceX) const
-{
-    CubismSampleViewMatrix* viewMatrix = MouseActionManager::GetInstance()->GetViewMatrix();
-    float screenX = _deviceToScreen->TransformX(deviceX); // 論理座標変換した座標を取得。
-    return viewMatrix->InvertTransformX(screenX); // 拡大、縮小、移動後の値。
-}
-
-float CubismDirectXView::TransformViewY(float deviceY) const
-{
-    CubismSampleViewMatrix* viewMatrix = MouseActionManager::GetInstance()->GetViewMatrix();
-    float screenY = _deviceToScreen->TransformY(deviceY); // 論理座標変換した座標を取得。
-    return viewMatrix->InvertTransformY(screenY); // 拡大、縮小、移動後の値。
-}
-
-float CubismDirectXView::TransformScreenX(float deviceX) const
-{
-    return _deviceToScreen->TransformX(deviceX);
-}
-
-float CubismDirectXView::TransformScreenY(float deviceY) const
-{
-    return _deviceToScreen->TransformY(deviceY);
 }
 
 void CubismDirectXView::PreModelDraw(CubismUserModelExtend& refModel)

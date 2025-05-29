@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "LAppAllocator.hpp"
+#include "LAppAllocator_Common.hpp"
 #include "VulkanManager.hpp"
 
 class LAppView;
@@ -115,7 +115,7 @@ private:
     void InitializeCubism();
 
     GLFWwindow* window;
-    LAppAllocator _cubismAllocator; ///< Cubism SDK Allocator
+    LAppAllocator_Common _cubismAllocator; ///< Cubism SDK Allocator
     Csm::CubismFramework::Option _cubismOption; ///< Cubism SDK Option
     LAppView* _view; ///< View情報
     bool _captured; ///< クリックしているか

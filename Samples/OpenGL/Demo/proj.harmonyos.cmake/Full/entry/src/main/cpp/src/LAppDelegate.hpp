@@ -10,7 +10,7 @@
 #include <GLES3/gl3.h>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
-#include "LAppAllocator.hpp"
+#include "LAppAllocator_Common.hpp"
 
 class LAppView;
 class LAppTextureManager;
@@ -139,7 +139,7 @@ private:
     */
     ~LAppDelegate();
 
-    LAppAllocator _cubismAllocator;              ///< Cubism SDK Allocator
+    LAppAllocator_Common _cubismAllocator;       ///< Cubism SDK Allocator
     Csm::CubismFramework::Option _cubismOption;  ///< Cubism SDK Option
     LAppTextureManager* _textureManager;         ///< テクスチャマネージャー
     LAppView* _view;                             ///< View情報

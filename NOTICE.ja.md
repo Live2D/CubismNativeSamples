@@ -4,6 +4,39 @@
 
 # お知らせ
 
+## [注意事項] Visual Studio 2017 ビルドについて (2025-05-29)
+
+Visual Studio 2017 は Windows 10 SDK 10.0.17763.0 までの提供となっており、その状態では実行に問題が発生する場合がございます。
+Visual Studio 2017 で動作させる場合は手動でWindows SDKの最新版をインストールしてご利用ください。
+
+## [注意事項] Mac CatalystにおけるMetalレンダラのビルドについて (2025-05-29)
+
+Mac CatalystにおけるMetalレンダラのビルドにつきまして、CMakeが3.27未満でないとNSURLが見つからないというエラーが発生する現象を確認しております。
+本プラットフォーム利用時はCMakeを3.26以前をご利用ください。
+
+## [注意事項] CMake 4.0 の対応について (2025-05-29)
+
+CMake 4.0対応につきまして、本製品で利用している `GLEW 2.2.0` がCMake 4.0に対応していないため、本サンプルはCMake 4.0に対応しておりません。
+GLEWが対応され次第追従いたしますのであらかじめご了承ください。
+
+詳しくは以下のissueをご参照ください。
+
+* [GLEW issue](https://github.com/nigels-com/glew/issues/432)
+
+## [注意事項] iOS ARM ビルドについて (2025-05-29)
+
+iOS実機端末で利用する ARM ビルドにつきまして、Cubism SDK for Nativeで使用している ios-cmake 4.5.0 の影響で実機端末へのインストール時にエラーが発生することを確認しております。
+詳細については継続して調査いたします。
+
+### 回避方法
+
+1. ios-cmake のバージョンを 4.4.1 等に戻す
+
+2. .xcodeproj の設定画面にて TARGETS で Demo 等ビルドするアプリを選択し、Build Setting > User-Defined から以下をすべてYESに変更する
+  2.1. CODE_SIGNING_ALLOWED 及びそのツリー内部
+  2.2. CODE_SIGNING_REQUIED 及びそのツリー内部
+
+
 ## [注意事項] Cubism SDK for NativeのCocos2d-xサポートについて (2024-12-19)
 
 Cubism SDK for NativeのCocos2d-x対応につきまして、Cubism 5 SDK for Native R2でサポートを終了いたしました。

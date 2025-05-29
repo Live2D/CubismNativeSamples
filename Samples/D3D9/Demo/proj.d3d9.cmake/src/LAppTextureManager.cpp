@@ -15,7 +15,7 @@
 
 using namespace LAppDefine;
 
-LAppTextureManager::LAppTextureManager()
+LAppTextureManager::LAppTextureManager() : LAppTextureManager_Common()
 {
     _sequenceId = 0;
 }
@@ -66,7 +66,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
         if (textureInfo)
         {
             // 次のID
-            const Csm::csmUint64 addId = _sequenceId + 1;
+            const Csm::csmUint32 addId = _sequenceId + 1;
 
             _textures.PushBack(texture);
 
@@ -140,7 +140,7 @@ void LAppTextureManager::ReleaseTextures()
     _textures.Clear();
 }
 
-void LAppTextureManager::ReleaseTexture(Csm::csmUint64 textureId)
+void LAppTextureManager::ReleaseTexture(Csm::csmUint32 textureId)
 {
     for (Csm::csmUint32 i = 0; i < _texturesInfo.GetSize(); i++)
     {
@@ -208,8 +208,7 @@ void LAppTextureManager::ReleaseTexture(std::string fileName)
     }
 }
 
-
-bool LAppTextureManager::GetTexture(Csm::csmUint64 textureId, IDirect3DTexture9*& retTexture) const
+bool LAppTextureManager::GetTexture(Csm::csmUint32 textureId, IDirect3DTexture9*& retTexture) const
 {
     retTexture = NULL;
     for (Csm::csmUint32 i = 0; i < _texturesInfo.GetSize(); i++)
@@ -222,17 +221,4 @@ bool LAppTextureManager::GetTexture(Csm::csmUint64 textureId, IDirect3DTexture9*
     }
 
     return false;
-}
-
-LAppTextureManager::TextureInfo* LAppTextureManager::GetTextureInfoByName(std::string& fileName) const
-{
-    for (Csm::csmUint32 i = 0; i < _texturesInfo.GetSize(); i++)
-    {
-        if (_texturesInfo[i]->fileName == fileName)
-        {
-            return _texturesInfo[i];
-        }
-    }
-
-    return NULL;
 }

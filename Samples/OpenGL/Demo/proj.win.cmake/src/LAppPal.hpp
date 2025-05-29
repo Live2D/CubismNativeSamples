@@ -11,6 +11,13 @@
 #include <string>
 
 /**
+ * @brief フレームレート固定機能
+ *
+ * フレームレートを指定の値に固定する
+ */
+//#define CSM_FIXED_FRAME_RATE 30.0
+
+/**
 * @brief プラットフォーム依存機能を抽象化する Cubism Platform Abstraction Layer.
 *
 * ファイル読み込みや時刻取得等のプラットフォームに依存する関数をまとめる
@@ -114,5 +121,9 @@ private:
     static double s_currentFrame;
     static double s_lastFrame;
     static double s_deltaTime;
+#ifdef CSM_FIXED_FRAME_RATE
+    static int s_frame;
+#endif
+
 };
 

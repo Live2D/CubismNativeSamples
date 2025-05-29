@@ -89,6 +89,8 @@
 {
     _cubismOption.LogFunction = LAppPal::PrintMessageLn;
     _cubismOption.LoggingLevel = LAppDefine::CubismLoggingLevel;
+    _cubismOption.LoadFileFunction = LAppPal::LoadFileAsBytes;
+    _cubismOption.ReleaseBytesFunction = LAppPal::ReleaseBytes;
 
     Csm::CubismFramework::StartUp(&_cubismAllocator,&_cubismOption);
 

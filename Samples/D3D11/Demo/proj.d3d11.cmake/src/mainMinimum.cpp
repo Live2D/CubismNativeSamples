@@ -10,10 +10,10 @@
 #include <Rendering/D3D11/CubismRenderer_D3D11.hpp>
 
 #include "LAppDefine.hpp"
-#include "LAppAllocator.hpp"
+#include "LAppAllocator_Common.hpp"
 #include "LAppPal.hpp"
 #include "CubismUserModelExtend.hpp"
-#include "MouseActionManager.hpp"
+#include "MouseActionManager_Common.hpp"
 #include "CubismDirectXRenderer.hpp"
 #include "CubismDirectXView.hpp"
 #include "CubismTextureManager.hpp"
@@ -59,7 +59,7 @@ Csm::csmFloat32 _accelerationY;                 ///< Y軸方向の加速度
 Csm::csmFloat32 _accelerationZ;                 ///< Z軸方向の加速度
 
 static Csm::CubismFramework::Option _cubismOption; ///< CubismFrameworkに関するオプション
-static LAppAllocator _cubismAllocator; ///< メモリのアロケーター
+static LAppAllocator_Common _cubismAllocator; ///< メモリのアロケーター
 
 static CubismTextureManager* _textureManager; ///< テクスチャの管理
 
@@ -78,6 +78,8 @@ static void InitializeCubism()
     //setup cubism
     _cubismOption.LogFunction = LAppPal::PrintMessage;
     _cubismOption.LoggingLevel = LAppDefine::CubismLoggingLevel;
+    _cubismOption.LoadFileFunction = LAppPal::LoadFileAsBytes;
+    _cubismOption.ReleaseBytesFunction = LAppPal::ReleaseBytes;
     Csm::CubismFramework::StartUp(&_cubismAllocator, &_cubismOption);
 
     //Initialize cubism
@@ -102,7 +104,7 @@ LRESULT WINAPI MsgProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam)
         return 0;
 
     case WM_SIZE:   // ウィンドウサイズ変更
-        if (MouseActionManager::GetInstance() && CubismDirectXRenderer::GetInstance()->_device && CubismDirectXRenderer::GetInstance()->_deviceStep != CubismDirectXRenderer::DeviceStep_Lost)
+        if (MouseActionManager_Common::GetInstance() && CubismDirectXRenderer::GetInstance()->_device && CubismDirectXRenderer::GetInstance()->_deviceStep != CubismDirectXRenderer::DeviceStep_Lost)
         {
             // _device作成前にCreateWindowをやった時もここに来るので、_deviceのNullチェックは必須
             // Resize指示を出す
@@ -111,7 +113,7 @@ LRESULT WINAPI MsgProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam)
         return 0;
 
     case WM_LBUTTONDOWN:
-        if (!MouseActionManager::GetInstance())
+        if (!MouseActionManager_Common::GetInstance())
         {
             return 0;
         }
@@ -121,12 +123,12 @@ LRESULT WINAPI MsgProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
         {
             _captured = true;
-            MouseActionManager::GetInstance()->OnTouchesBegan(_mouseX, _mouseY);
+            MouseActionManager_Common::GetInstance()->OnTouchesBegan(_mouseX, _mouseY);
         }
         return 0;
 
     case WM_LBUTTONUP:
-        if (MouseActionManager::GetInstance() == nullptr)
+        if (MouseActionManager_Common::GetInstance() == nullptr)
         {
             return 0;
         }
@@ -138,7 +140,7 @@ LRESULT WINAPI MsgProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam)
             if (_captured)
             {
                 _captured = false;
-                MouseActionManager::GetInstance()->OnTouchesEnded(_mouseX, _mouseY);
+                MouseActionManager_Common::GetInstance()->OnTouchesEnded(_mouseX, _mouseY);
             }
         }
         return 0;
@@ -151,12 +153,12 @@ LRESULT WINAPI MsgProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
             return 0;
         }
-        if (MouseActionManager::GetInstance() == nullptr)
+        if (MouseActionManager_Common::GetInstance() == nullptr)
         {
             return 0;
         }
 
-        MouseActionManager::GetInstance()->OnTouchesMoved(_mouseX, _mouseY);
+        MouseActionManager_Common::GetInstance()->OnTouchesMoved(_mouseX, _mouseY);
         return 0;
 
     default:
@@ -210,7 +212,7 @@ static bool InitializeSystem()
     directXRenderer->GetClientSize(windowWidth, windowHeight);
 
     // ドラッグ入力管理クラスの初期化
-    MouseActionManager::GetInstance()->Initialize(windowWidth, windowHeight);
+    MouseActionManager_Common::GetInstance()->Initialize(windowWidth, windowHeight);
 
     // デバイス設定
     memset(&directXRenderer->_presentParameters, 0, sizeof(directXRenderer->_presentParameters));
@@ -272,7 +274,7 @@ static bool InitializeSystem()
     _textureManager = new CubismTextureManager();
 
     //MouseActionManagerの初期化
-    MouseActionManager::GetInstance()->Initialize(windowWidth, windowHeight);
+    MouseActionManager_Common::GetInstance()->Initialize(windowWidth, windowHeight);
 
     // Cubism SDK の初期化
     InitializeCubism();
@@ -296,7 +298,7 @@ void Release()
     CubismDirectXRenderer::GetInstance()->ReleaseInstance();
 
     // MouseActionManagerの解放
-    MouseActionManager::ReleaseInstance();
+    MouseActionManager_Common::ReleaseInstance();
 
     // Cubism SDK の解放
     Csm::CubismFramework::Dispose();
@@ -331,7 +333,7 @@ void LoadModel(const std::string modelDirectoryName)
     static_cast<CubismUserModelExtend*>(_userModel)->SetupModel();
 
     // ユーザーモデルをMouseActionManagerへ渡す
-    MouseActionManager::GetInstance()->SetUserModel(_userModel);
+    MouseActionManager_Common::GetInstance()->SetUserModel(_userModel);
 }
 
 void Run()

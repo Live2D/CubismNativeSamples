@@ -87,6 +87,11 @@ typedef struct
  */
 - (void)SetMTLRenderPipelineDescriptor:(id <MTLDevice>)device vertexProgram:(id <MTLFunction>)vertexProgram fragmentProgram:(id <MTLFunction>)fragmentProgram;
 
+/**
+ * @brief MTLRenderPipelineState設定
+ */
+- (void)SetMTLRenderPipelineState:(id <MTLDevice>)device pipelineDescriptor:(MTLRenderPipelineDescriptor*)pipelineDescriptor;
+
 @end
 
 #endif /* LAppSprite_h */

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <wrl/client.h>
+#include <tchar.h>
 
 #include "CubismTextureManager.hpp"
 #include "CubismUserModelExtend.hpp"
@@ -78,7 +79,7 @@ public:
     */
     bool CheckFullScreen(D3DFORMAT format, UINT width, UINT height);
 
-    const LPCSTR ClassName = "Cubism DirectX9 Sample";
+    const LPCTSTR ClassName = _T("Cubism DirectX9 Sample");
     const csmInt32 BackBufferNum = 1; // バックバッファ枚数
 
     enum LostStep

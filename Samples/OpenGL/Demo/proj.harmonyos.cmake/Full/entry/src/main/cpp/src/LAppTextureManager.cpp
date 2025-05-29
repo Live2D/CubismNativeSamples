@@ -13,7 +13,7 @@
 #include "stb_image.h"
 #include "LAppPal.hpp"
 
-LAppTextureManager::LAppTextureManager()
+LAppTextureManager::LAppTextureManager() : LAppTextureManager_Common()
 {
 }
 
@@ -25,11 +25,11 @@ LAppTextureManager::~LAppTextureManager()
 LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(std::string fileName)
 {
     //search loaded texture already.
-    for (Csm::csmUint32 i = 0; i < _textures.GetSize(); i++)
+    for (Csm::csmUint32 i = 0; i < _texturesInfo.GetSize(); i++)
     {
-        if (_textures[i]->fileName == fileName)
+        if (_texturesInfo[i]->fileName == fileName)
         {
-            return _textures[i];
+            return _texturesInfo[i];
         }
     }
 
@@ -81,7 +81,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
         textureInfo->height = height;
         textureInfo->id = textureId;
 
-        _textures.PushBack(textureInfo);
+        _texturesInfo.PushBack(textureInfo);
     }
 
     return textureInfo;
@@ -90,39 +90,39 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
 
 void LAppTextureManager::ReleaseTextures()
 {
-    for (Csm::csmUint32 i = 0; i < _textures.GetSize(); i++)
+    for (Csm::csmUint32 i = 0; i < _texturesInfo.GetSize(); i++)
     {
-        glDeleteTextures(1, &(_textures[i]->id));
-        delete _textures[i];
+        glDeleteTextures(1, &(_texturesInfo[i]->id));
+        delete _texturesInfo[i];
     }
 
-    _textures.Clear();
+    _texturesInfo.Clear();
 }
 
 void LAppTextureManager::ReleaseTexture(Csm::csmUint32 textureId)
 {
-    for (Csm::csmUint32 i = 0; i < _textures.GetSize(); i++)
+    for (Csm::csmUint32 i = 0; i < _texturesInfo.GetSize(); i++)
     {
-        if (_textures[i]->id != textureId)
+        if (_texturesInfo[i]->id != textureId)
         {
             continue;
         }
-        glDeleteTextures(1, &(_textures[i]->id));
-        delete _textures[i];
-        _textures.Remove(i);
+        glDeleteTextures(1, &(_texturesInfo[i]->id));
+        delete _texturesInfo[i];
+        _texturesInfo.Remove(i);
         break;
     }
 }
 
 void LAppTextureManager::ReleaseTexture(std::string fileName)
 {
-    for (Csm::csmUint32 i = 0; i < _textures.GetSize(); i++)
+    for (Csm::csmUint32 i = 0; i < _texturesInfo.GetSize(); i++)
     {
-        if (_textures[i]->fileName == fileName)
+        if (_texturesInfo[i]->fileName == fileName)
         {
-            glDeleteTextures(1, &(_textures[i]->id));
-            delete _textures[i];
-            _textures.Remove(i);
+            glDeleteTextures(1, &(_texturesInfo[i]->id));
+            delete _texturesInfo[i];
+            _texturesInfo.Remove(i);
             break;
         }
     }

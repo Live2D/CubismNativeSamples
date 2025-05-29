@@ -9,7 +9,7 @@ This is a sample implementation of an application implemented with Vulkan.
 | --- | --- |
 | [GLFW] | 3.4 |
 | [stb_image.h] | 2.30 |
-| [Vulkan SDK] | 1.3.296 |
+| [Vulkan SDK] | 1.4.313.0 |
 
 For other development environment and operation environment, refer to [README.md](/README.md) in the top directory.
 

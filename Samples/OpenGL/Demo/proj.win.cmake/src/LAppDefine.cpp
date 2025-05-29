@@ -61,6 +61,8 @@ namespace LAppDefine {
 
     // MOC3の整合性検証オプション
     const csmBool MocConsistencyValidationEnable = true;
+    // motion3.jsonの整合性検証オプション
+    const csmBool MotionConsistencyValidationEnable = true;
 
     // デバッグ用ログの表示オプション
     const csmBool DebugLogEnable = true;

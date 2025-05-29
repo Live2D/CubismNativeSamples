@@ -259,7 +259,7 @@ void CubismDirectXRenderer::EndFrame(CubismUserModel* userModel)
                 Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D9::InitializeConstantSettings(1, _device);
 
                 // 描画のパラメータをウィンドウサイズに合わせて新設定
-                CubismDirectXView::GetInstance()->Initialize();
+                CubismDirectXView::GetInstance()->Initialize(nowWidth, nowHeight);
 
                 // スプライト再作成
                 CubismDirectXView::GetInstance()->InitializeSprite();

@@ -26,30 +26,8 @@ using namespace Live2D::Cubism::Framework;
 using namespace DefaultParameterId;
 using namespace LAppDefine;
 
-namespace {
-    /**
-    * @bref バッファの作成
-    *
-    * ファイルをバイトデータとして読み込む
-    */
-    csmByte* CreateBuffer(const csmChar* path, csmSizeInt* size)
-    {
-        return LAppPal::LoadFileAsBytes(path, size);
-    }
-
-    /**
-    * @bref バッファの消去
-    *
-    * バイトデータの解放
-    */
-    void DeleteBuffer(csmByte* buffer, const csmChar* path = "")
-    {
-        LAppPal::ReleaseBytes(buffer);
-    }
-}
-
 CubismUserModelExtend::CubismUserModelExtend(const std::string modelDirectoryName, const std::string _currentModelDirectory)
-    : CubismUserModel()
+    : LAppModel_Common()
     , _modelJson(NULL)
     , _userTimeSeconds(0.0f)
     , _modelDirName(modelDirectoryName)
@@ -448,7 +426,7 @@ void CubismUserModelExtend::SetupTextures()
 
         if (texture)
         {
-            const csmUint32 textureManageId = texture->Id;
+            const csmUint32 textureManageId = texture->id;
             CubismImageVulkan image;
             if (_textureManager->GetTexture(textureManageId, image))
             {

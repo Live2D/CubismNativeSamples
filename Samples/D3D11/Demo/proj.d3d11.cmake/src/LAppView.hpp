@@ -14,15 +14,18 @@
 #include <Math/CubismViewMatrix.hpp>
 #include "CubismFramework.hpp"
 
-class TouchManager;
+#include "LAppView_Common.hpp"
+
+class TouchManager_Common;
 class LAppSprite;
 class LAppSpriteShader;
+class LAppModelSpriteShader;
 class LAppModel;
 
 /**
 * @brief 描画クラス
 */
-class LAppView
+class LAppView : public LAppView_Common
 {
 public:
 
@@ -49,7 +52,7 @@ public:
     /**
     * @brief 初期化する。
     */
-    void Initialize();
+    virtual void Initialize(int width, int height) override;
 
     /**
     * @brief 描画する。
@@ -96,34 +99,6 @@ public:
     void OnTouchesEnded(float pointX, float pointY) const;
 
     /**
-    * @brief X座標をView座標に変換する。
-    *
-    * @param[in]       deviceX            デバイスX座標
-    */
-    float TransformViewX(float deviceX) const;
-
-    /**
-    * @brief Y座標をView座標に変換する。
-    *
-    * @param[in]       deviceY            デバイスY座標
-    */
-    float TransformViewY(float deviceY) const;
-
-    /**
-    * @brief X座標をScreen座標に変換する。
-    *
-    * @param[in]       deviceX            デバイスX座標
-    */
-    float TransformScreenX(float deviceX) const;
-
-    /**
-    * @brief Y座標をScreen座標に変換する。
-    *
-    * @param[in]       deviceY            デバイスY座標
-    */
-    float TransformScreenY(float deviceY) const;
-
-    /**
      * @brief   モデル1体を描画する直前にコールされる
      */
     void PreModelDraw(LAppModel& refModel);
@@ -158,9 +133,7 @@ public:
     void DestroyOffscreenSurface();
 
 private:
-    TouchManager* _touchManager;                 ///< タッチマネージャー
-    Csm::CubismMatrix44* _deviceToScreen;    ///< デバイスからスクリーンへの行列
-    Csm::CubismViewMatrix* _viewMatrix;      ///< viewMatrix
+    TouchManager_Common* _touchManager;                 ///< タッチマネージャー
 
     LAppSprite* _back;                       ///< 背景画像
     LAppSprite* _gear;                       ///< ギア画像
@@ -172,5 +145,6 @@ private:
     SelectTarget _renderTarget;     ///< レンダリング先の選択肢
     float _clearColor[4];           ///< レンダリングターゲットのクリアカラー
 
-    LAppSpriteShader* _shader;      ///< スプライト用のシェーダー準備クラス
+    LAppSpriteShader* _spriteShader;      ///< スプライト用のシェーダー準備クラス
+    LAppModelSpriteShader* _modelSpriteShader; ///< モデルスプライト用のシェーダー準備クラス
 };

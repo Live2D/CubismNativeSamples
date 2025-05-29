@@ -17,13 +17,14 @@ LAppSprite::LAppSprite(
     float x, float y, float width, float height,
     Csm::csmUint32 textureId, LAppSpritePipeline* pipeline,
     VkImageView view, VkSampler sampler)
-    : _rect(), _pipeline(pipeline)
+    : LAppSprite_Common(textureId),
+    _rect(),
+    _pipeline(pipeline)
 {
     _rect.left = (x - width * 0.5f);
     _rect.right = (x + width * 0.5f);
     _rect.up = (y - height * 0.5f);
     _rect.down = (y + height * 0.5f);
-    _textureId = textureId;
 
     _spriteColor[0] = 1.0f;
     _spriteColor[1] = 1.0f;

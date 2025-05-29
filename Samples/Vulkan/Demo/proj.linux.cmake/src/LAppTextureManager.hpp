@@ -10,26 +10,16 @@
 #include <vulkan/vulkan.h>
 #include <Type/csmVector.hpp>
 #include <Rendering/Vulkan/CubismClass_Vulkan.hpp>
+#include "LAppTextureManager_Common.hpp"
 
 /**
 * @brief テクスチャ管理クラス
 *
 * 画像読み込み、管理を行うクラス。
 */
-class LAppTextureManager
+class LAppTextureManager : public LAppTextureManager_Common
 {
 public:
-    /**
-    * @brief 画像情報構造体
-    */
-    struct TextureInfo
-    {
-        uint32_t Id;              ///< テクスチャID
-        int Width = 0;              ///< 横幅
-        int Height = 0;             ///< 高さ
-        std::string FileName;   ///< ファイル名
-    };
-
     /**
     * @brief コンストラクタ
     */
@@ -40,26 +30,6 @@ public:
     *
     */
     ~LAppTextureManager();
-
-    /**
-    * @brief プリマルチプライ処理
-    *
-    * @param[in] red  画像のRed値
-    * @param[in] green  画像のGreen値
-    * @param[in] blue  画像のBlue値
-    * @param[in] alpha  画像のAlpha値
-    *
-    * @return プリマルチプライ処理後のカラー値
-    */
-    inline unsigned int Premultiply(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha)
-    {
-        return static_cast<unsigned>(\
-            (red * (alpha + 1) >> 8) | \
-            ((green * (alpha + 1) >> 8) << 8) | \
-            ((blue * (alpha + 1) >> 8) << 16) | \
-            (((alpha)) << 24)   \
-            );
-    }
 
     /**
   * @brief   バッファをイメージにコピーする
@@ -127,23 +97,13 @@ public:
      * @brief テクスチャIDからテクスチャ情報を得る
      *
      * @param   textureId[in]       取得したいテクスチャID
-     *
-     * @return  テクスチャが存在していればTextureInfoが返る
-     */
-    TextureInfo* GetTextureInfoById(uint32_t textureId) const;
-
-    /**
-     * @brief テクスチャIDからテクスチャ情報を得る
-     *
-     * @param   textureId[in]       取得したいテクスチャID
      * @param   retTexture          取得したいテクスチャを入れる変数
      *
      * @return  テクスチャが存在していればTextureInfoが返る
      */
-    bool GetTexture(Csm::csmUint64 textureId, Live2D::Cubism::Framework::CubismImageVulkan& retTexture) const;
+    bool GetTexture(Csm::csmUint32 textureId, Live2D::Cubism::Framework::CubismImageVulkan& retTexture) const;
 
 private:
-    Csm::csmVector<TextureInfo*> _texturesInfo;
     Csm::csmVector<Live2D::Cubism::Framework::CubismImageVulkan> _textures;
     Csm::csmUint32 _sequenceId; ///< イメージのインデックス
     uint32_t _mipLevels; ///< ミップレベル

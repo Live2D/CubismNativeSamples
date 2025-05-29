@@ -16,26 +16,16 @@
 #include <Type/CubismBasicType.hpp>
 #include <Type/csmVector.hpp>
 
+#include "LAppTextureManager_Common.hpp"
+
 /**
 * @brief テクスチャ管理クラス
 *
 * 画像読み込み、管理を行うクラス。
 */
-class LAppTextureManager
+class LAppTextureManager : public LAppTextureManager_Common
 {
 public:
-
-    /**
-    * @brief 画像情報構造体
-    */
-    struct TextureInfo
-    {
-        Csm::csmUint64 id;      ///< テクスチャID
-        int width;              ///< 横幅
-        int height;             ///< 高さ
-        std::string fileName;   ///< ファイル名
-    };
-
     /**
     * @brief コンストラクタ
     */
@@ -46,27 +36,6 @@ public:
     *
     */
     ~LAppTextureManager();
-
-
-    /**
-    * @brief プリマルチプライ処理
-    *
-    * @param[in] red  画像のRed値
-    * @param[in] green  画像のGreen値
-    * @param[in] blue  画像のBlue値
-    * @param[in] alpha  画像のAlpha値
-    *
-    * @return プリマルチプライ処理後のカラー値
-    */
-    inline unsigned int Premultiply(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha)
-    {
-        return static_cast<unsigned>(\
-            (red * (alpha + 1) >> 8) | \
-            ((green * (alpha + 1) >> 8) << 8) | \
-            ((blue * (alpha + 1) >> 8) << 16) | \
-            (((alpha)) << 24)   \
-            );
-    }
 
     /**
      * @brief 画像読み込み
@@ -91,7 +60,7 @@ public:
      * 指定したテクスチャIDの画像を解放する
      * @param[in] textureId  解放するテクスチャID
      **/
-    void ReleaseTexture(Csm::csmUint64 textureId);
+    void ReleaseTexture(Csm::csmUint32 textureId);
 
     /**
     * @brief 画像の解放
@@ -108,29 +77,12 @@ public:
      * @param   retTexture[out]    成功時、IDirect3DTexture9へのポインタが返る
      * @return  テクスチャが存在していればtrueが返る
      */
-    bool GetTexture(Csm::csmUint64 textureId, ID3D11ShaderResourceView*& retTexture) const;
-
-    /**
-     * @brief ファイル名からテクスチャ情報を得る
-     *
-     * @param   fileName[in]       取得したいテクスチャファイル名
-     * @return  テクスチャが存在していればTextureInfoが返る
-     */
-    TextureInfo* GetTextureInfoByName(std::string& fileName) const;
-
-    /**
-     * @brief ファイル名からテクスチャ情報を得る
-     *
-     * @param   textureId[in]       取得したいテクスチャID
-     * @return  テクスチャが存在していればTextureInfoが返る
-     */
-    TextureInfo* GetTextureInfoById(Csm::csmUint64 textureId) const;
+    bool GetTexture(Csm::csmUint32 textureId, ID3D11ShaderResourceView*& retTexture) const;
 
 private:
 
     Csm::csmVector<ID3D11Resource*>             _textures;          ///< DX11テクスチャ
     Csm::csmVector<ID3D11ShaderResourceView*>   _textureView;       ///< DX11テクスチャ
-    Csm::csmVector<TextureInfo*>                _texturesInfo;      ///< テクスチャ情報
 
-    Csm::csmUint64   _sequenceId;    ///< 付与するための通しID
+    Csm::csmUint32   _sequenceId;    ///< 付与するための通しID
 };

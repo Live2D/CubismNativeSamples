@@ -13,7 +13,7 @@
 #include <Id/CubismIdManager.hpp>
 
 #include "LAppPal.hpp"
-#include "MouseActionManager.hpp"
+#include "MouseActionManager_Common.hpp"
 
 #include "CubismFramework.hpp"
 #include "CubismUserModelExtend.hpp"
@@ -23,30 +23,8 @@ using namespace Live2D::Cubism::Framework;
 using namespace Live2D::Cubism::Framework::DefaultParameterId;
 using namespace LAppDefine;
 
-namespace {
-    /**
-    * @bref バッファの作成
-    *
-    * ファイルをバイトデータとして読み込む
-    */
-    csmByte* CreateBuffer(const csmChar* path, csmSizeInt* size)
-    {
-        return LAppPal::LoadFileAsBytes(path, size);
-    }
-
-    /**
-    * @bref バッファの消去
-    *
-    * バイトデータの解放
-    */
-    void DeleteBuffer(csmByte* buffer, const csmChar* path = "")
-    {
-        LAppPal::ReleaseBytes(buffer);
-    }
-}
-
 CubismUserModelExtend::CubismUserModelExtend(const std::string modelDirectoryName, const std::string _currentModelDirectory)
-    : CubismUserModel()
+    : LAppModel_Common()
     , _modelJson(NULL)
     , _userTimeSeconds(0.0f)
     , _modelDirName(modelDirectoryName)
@@ -485,9 +463,9 @@ void CubismUserModelExtend::ModelOnUpdate()
     }
 
     // 必要があればここで乗算
-    if (MouseActionManager::GetInstance()->GetViewMatrix())
+    if (MouseActionManager_Common::GetInstance()->GetViewMatrix())
     {
-        projection.MultiplyByMatrix(MouseActionManager::GetInstance()->GetViewMatrix());
+        projection.MultiplyByMatrix(MouseActionManager_Common::GetInstance()->GetViewMatrix());
     }
 
     // モデルのパラメータを更新

@@ -94,7 +94,7 @@ bool LAppDelegate::Initialize()
 
     //透過設定
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     //コールバック関数の登録
     glfwSetMouseButtonCallback(_window, EventHandler::OnMouseCallBack);
@@ -116,7 +116,7 @@ bool LAppDelegate::Initialize()
     LAppLive2DManager::GetInstance();
 
     //AppViewの初期化
-    _view->Initialize();
+    _view->Initialize(width, height);
     _view->InitializeSprite();
 
     return GL_TRUE;
@@ -148,7 +148,7 @@ void LAppDelegate::Run()
         glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
         if((_windowWidth!=width || _windowHeight!=height) && width>0 && height>0)
         {
-            _view->Initialize();
+            _view->Initialize(width, height);
             _view->ResizeSprite();
 
             _windowWidth = width;
@@ -204,6 +204,8 @@ void LAppDelegate::InitializeCubism()
     //setup cubism
     _cubismOption.LogFunction = LAppPal::PrintMessage;
     _cubismOption.LoggingLevel = LAppDefine::CubismLoggingLevel;
+    _cubismOption.LoadFileFunction = LAppPal::LoadFileAsBytes;
+    _cubismOption.ReleaseBytesFunction = LAppPal::ReleaseBytes;
     Csm::CubismFramework::StartUp(&_cubismAllocator, &_cubismOption);
 
     //Initialize cubism
@@ -256,6 +258,11 @@ void LAppDelegate::OnMouseCallBack(GLFWwindow* window, double x, double y)
     }
 
     _view->OnTouchesMoved(_mouseX, _mouseY);
+}
+
+void LAppDelegate::GetClientSize(int& rWidth, int& rHeight)
+{
+    glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &rWidth, &rHeight);
 }
 
 void LAppDelegate::SetExecuteAbsolutePath()

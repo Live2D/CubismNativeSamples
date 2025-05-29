@@ -110,7 +110,7 @@ void LAppDelegate::OnSurfaceCreate()
 
     //透過設定
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     if (_textureManager == nullptr)
     {
@@ -150,9 +150,8 @@ void LAppDelegate::OnSurfaceChanged(float width, float height)
     _width = width;
     _height = height;
 
-    // AppViewの初期化
-    _view->Initialize();
-    // Spriteの初期化
+    //AppViewの初期化
+    _view->Initialize(width, height);
     _view->InitializeSprite();
 }
 
@@ -174,6 +173,8 @@ LAppDelegate::LAppDelegate():
     // Setup Cubism
     _cubismOption.LogFunction = LAppPal::PrintMessageLn;
     _cubismOption.LoggingLevel = LAppDefine::CubismLoggingLevel;
+    _cubismOption.LoadFileFunction = LAppPal::LoadFileAsBytes;
+    _cubismOption.ReleaseBytesFunction = LAppPal::ReleaseBytes;
     CubismFramework::CleanUp();
     CubismFramework::StartUp(&_cubismAllocator, &_cubismOption);
 }

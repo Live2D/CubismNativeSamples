@@ -89,23 +89,8 @@ bool LAppSpriteShader::CreateShader()
             break;
         }
 
-        // レンダリングステートオブジェクト
-        D3D11_BLEND_DESC blendDesc;
-        memset(&blendDesc, 0, sizeof(blendDesc));
-        blendDesc.AlphaToCoverageEnable = FALSE;
-        blendDesc.IndependentBlendEnable = FALSE;   // falseの場合はRenderTarget[0]しか使用しなくなる
-        blendDesc.RenderTarget[0].BlendEnable = TRUE;
-        blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-        blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-        blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-        blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-        blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-        blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-        blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-        result = device->CreateBlendState(&blendDesc, &_blendState);
-        if (FAILED(result))
+        if (!CreateBlendState(device))
         {
-            LAppPal::PrintLog("Fail Create BlendState 0x%x", result);
             break;
         }
 
@@ -277,4 +262,53 @@ void LAppSpriteShader::ReleaseShader()
         _vertexFormat->Release();
         _vertexFormat = NULL;
     }
+}
+
+bool LAppSpriteShader::CreateBlendState(D3D11_BLEND_DESC& blendDesc, ID3D11Device* device)
+{
+    HRESULT result = device->CreateBlendState(&blendDesc, &_blendState);
+    if (FAILED(result))
+    {
+        LAppPal::PrintLog("Fail Create BlendState 0x%x", result);
+        return false;
+    }
+    return true;
+}
+
+bool LAppSpriteShader::CreateBlendState(ID3D11Device* device)
+{
+    // レンダリングステートオブジェクト
+    D3D11_BLEND_DESC blendDesc;
+    memset(&blendDesc, 0, sizeof(blendDesc));
+    blendDesc.AlphaToCoverageEnable = FALSE;
+    blendDesc.IndependentBlendEnable = FALSE;   // falseの場合はRenderTarget[0]しか使用しなくなる
+    blendDesc.RenderTarget[0].BlendEnable = TRUE;
+    blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+    blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+    blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
+    blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+    blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+    return CreateBlendState(blendDesc, device);
+}
+
+bool LAppModelSpriteShader::CreateBlendState(ID3D11Device* device)
+{
+    // レンダリングステートオブジェクト
+    D3D11_BLEND_DESC blendDesc;
+    memset(&blendDesc, 0, sizeof(blendDesc));
+    blendDesc.AlphaToCoverageEnable = FALSE;
+    blendDesc.IndependentBlendEnable = FALSE;   // falseの場合はRenderTarget[0]しか使用しなくなる
+    blendDesc.RenderTarget[0].BlendEnable = TRUE;
+    blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+    blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+    blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+    blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+    blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+    return LAppSpriteShader::CreateBlendState(blendDesc, device);
 }

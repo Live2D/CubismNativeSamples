@@ -12,6 +12,7 @@
 #include <CubismFramework.hpp>
 #include <Type/CubismBasicType.hpp>
 
+#include "LAppSprite_Common.hpp"
 #include "LAppSpriteShader.hpp"
 
 /**
@@ -20,21 +21,9 @@
 * テクスチャID、Rectの管理。
 *
 */
-class LAppSprite
+class LAppSprite : public LAppSprite_Common
 {
 public:
-    /**
-    * @brief Rect 構造体。
-    */
-    struct Rect
-    {
-    public:
-        float left;     ///< 左辺
-        float right;    ///< 右辺
-        float up;       ///< 上辺
-        float down;     ///< 下辺
-    };
-
     struct SpriteVertex
     {
         float x, y;     // Position
@@ -63,12 +52,6 @@ public:
     * @brief デストラクタ
     */
     ~LAppSprite();
-
-    /**
-    * @brief Getter テクスチャID
-    * @return テクスチャIDを返す
-    */
-    Csm::csmUint64 GetTextureId() { return _textureId; }
 
     /**
      * @brief テクスチャを指定しての描画
@@ -105,7 +88,6 @@ public:
 
 private:
 
-    Csm::csmUint64 _textureId;  ///< テクスチャID
     Rect _rect;                 ///< 矩形
 
     SpriteVertex*                           _vertexStore;   ///< 頂点をストアしておく領域

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
@@ -13,7 +13,7 @@
 #include "LAppLive2DManager.hpp"
 #include "LAppTextureManager.hpp"
 #include "LAppDefine.hpp"
-#include "TouchManager.hpp"
+#include "TouchManager_Common.hpp"
 #include "LAppSprite.hpp"
 #include "LAppModel.hpp"
 
@@ -21,6 +21,7 @@ using namespace std;
 using namespace LAppDefine;
 
 LAppView::LAppView():
+    LAppView_Common(),
     _back(NULL),
     _gear(NULL),
     _power(NULL),
@@ -29,8 +30,10 @@ LAppView::LAppView():
     _fragShaderModule(VK_NULL_HANDLE),
     _vertShaderModule(VK_NULL_HANDLE),
     _descriptorSetLayout(VK_NULL_HANDLE),
-    _pipeline(VK_NULL_HANDLE),
-    _pipelineLayout(VK_NULL_HANDLE)
+    _spritePipeline(VK_NULL_HANDLE),
+    _spritePipelineLayout(VK_NULL_HANDLE),
+    _modelSpritePipeline(VK_NULL_HANDLE),
+    _modelSpritePipelineLayout(VK_NULL_HANDLE)
 {
     _clearColor[0] = 1.0f;
     _clearColor[1] = 1.0f;
@@ -38,81 +41,53 @@ LAppView::LAppView():
     _clearColor[3] = 0.0f;
 
     // タッチ関係のイベント管理
-    _touchManager = new TouchManager();
-
-    // デバイス座標からスクリーン座標に変換するための
-    _deviceToScreen = new CubismMatrix44();
-
-    // 画面の表示の拡大縮小や移動の変換を行う行列
-    _viewMatrix = new CubismViewMatrix();
+    _touchManager = new TouchManager_Common();
 }
 
 LAppView::~LAppView()
 {
     VkDevice device = VulkanManager::GetInstance()->GetDevice();
+    _renderBuffer.DestroyOffscreenSurface(device);
+
+    // Vulkan のリソース削除
     Cleanup(device);
     vkDestroyDescriptorSetLayout(device, _descriptorSetLayout, nullptr);
     vkDestroyShaderModule(device, _vertShaderModule, nullptr);
     vkDestroyShaderModule(device, _fragShaderModule, nullptr);
-    _renderBuffer.DestroyOffscreenSurface(device);
-    delete _viewMatrix;
-    delete _deviceToScreen;
-    delete _touchManager;
 
+    LAppDelegate::GetInstance()->GetTextureManager()->ReleaseTexture(_back->GetTextureId());
+    LAppDelegate::GetInstance()->GetTextureManager()->ReleaseTexture(_gear->GetTextureId());
+    LAppDelegate::GetInstance()->GetTextureManager()->ReleaseTexture(_gear->GetTextureId());
     _back->Release(device);
     _gear->Release(device);
     _power->Release(device);
     _renderSprite->Release(device);
-    delete _back;
-    delete _gear;
-    delete _power;
-    delete _renderSprite;
+
+    if (_renderSprite)
+    {
+        delete _renderSprite;
+    }
+    if (_touchManager)
+    {
+        delete _touchManager;
+    }
+    if (_back)
+    {
+        delete _back;
+    }
+    if (_gear)
+    {
+        delete _gear;
+    }
+    if (_power)
+    {
+        delete _power;
+    }
 }
 
-void LAppView::Initialize()
+void LAppView::Initialize(int width, int height)
 {
-    int width, height;
-    glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
-
-    if(width==0 || height==0)
-    {
-        return;
-    }
-
-    // 縦サイズを基準とする
-    float ratio = static_cast<float>(width) / static_cast<float>(height);
-    float left = -ratio;
-    float right = ratio;
-    float bottom = ViewLogicalLeft;
-    float top = ViewLogicalRight;
-
-    _viewMatrix->SetScreenRect(left, right, bottom, top); // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
-    _viewMatrix->Scale(ViewScale, ViewScale);
-
-    _deviceToScreen->LoadIdentity();
-    if (width > height)
-    {
-        float screenW = fabsf(right - left);
-        _deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
-    }
-    else
-    {
-        float screenH = fabsf(top - bottom);
-        _deviceToScreen->ScaleRelative(screenH / height, -screenH / height);
-    }
-    _deviceToScreen->TranslateRelative(-width * 0.5f, -height * 0.5f);
-
-    // 表示範囲の設定
-    _viewMatrix->SetMaxScale(ViewMaxScale); // 限界拡大率
-    _viewMatrix->SetMinScale(ViewMinScale); // 限界縮小率
-
-    // 表示できる最大範囲
-    _viewMatrix->SetMaxScreenRect(
-        ViewLogicalMaxLeft,
-        ViewLogicalMaxRight,
-        ViewLogicalMaxBottom,
-        ViewLogicalMaxTop
-    );
+    LAppView_Common::Initialize(width, height);
 }
 
 void LAppView::ChangeBeginLayout(VkCommandBuffer commandBuffer)
@@ -193,10 +168,10 @@ void LAppView::Render()
     VkCommandBuffer commandBuffer = vkManager->BeginSingleTimeCommands();
     ChangeBeginLayout(commandBuffer);
     BeginRendering(commandBuffer, 0.0, 0.0, 0.0, 1.0, true);
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
-    _back->Render(commandBuffer, _pipelineLayout, vkManager, width, height);
-    _gear->Render(commandBuffer, _pipelineLayout, vkManager, width, height);
-    _power->Render(commandBuffer, _pipelineLayout, vkManager, width, height);
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _spritePipeline);
+    _back->Render(commandBuffer, _spritePipelineLayout, vkManager, width, height);
+    _gear->Render(commandBuffer, _spritePipelineLayout, vkManager, width, height);
+    _power->Render(commandBuffer, _spritePipelineLayout, vkManager, width, height);
     EndRendering(commandBuffer);
     vkManager->SubmitCommand(commandBuffer, true);
 
@@ -217,13 +192,13 @@ void LAppView::Render()
                                                         model->GetRenderBuffer().GetTextureView(),
                                                         model->GetRenderBuffer().GetTextureSampler());
             BeginRendering(commandBuffer, 0.f, 0.f, 0.3, 1.f, false);
-            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
+            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _modelSpritePipeline);
 
-            float alpha = i < 1 ? 1.0f : model->GetOpacity(); // サンプルとしてαに適当な差をつける
-            _renderSprite->SetColor(1.0f, 1.0f, 1.0f, alpha);
+            float alpha = i < 1 ? 1.0f : model->GetOpacity(); // 片方のみ不透明度を取得できるようにする
+            _renderSprite->SetColor(1.0f * alpha, 1.0f * alpha, 1.0f * alpha, alpha);
             if (model)
             {
-                _renderSprite->Render(commandBuffer, _pipelineLayout, vkManager, width, height);
+                _renderSprite->Render(commandBuffer, _modelSpritePipelineLayout, vkManager, width, height);
             }
             EndRendering(commandBuffer);
             vkManager->SubmitCommand(commandBuffer);
@@ -293,7 +268,9 @@ void LAppView::CreateDescriptorSetLayout(VkDevice device)
 }
 
 void LAppView::CreateSpriteGraphicsPipeline(VkDevice device, VkExtent2D extent, VkShaderModule vertShaderModule,
-                                            VkShaderModule fragShaderModule, VkFormat swapchainFormat)
+                                            VkShaderModule fragShaderModule, VkFormat swapchainFormat,
+                                            const VkPipelineColorBlendAttachmentState& colorBlendAttachment,
+                                            VkPipelineLayout& pipelineLayout, VkPipeline& pipeline)
 {
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -359,17 +336,6 @@ void LAppView::CreateSpriteGraphicsPipeline(VkDevice device, VkExtent2D extent, 
     multisampling.sampleShadingEnable = VK_FALSE;
     multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 
-    VkPipelineColorBlendAttachmentState colorBlendAttachment{};
-    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT
-            | VK_COLOR_COMPONENT_A_BIT;
-    colorBlendAttachment.blendEnable = VK_TRUE;
-    colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-    colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-    colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-    colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-    colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-    colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
-
     VkPipelineColorBlendStateCreateInfo colorBlending{};
     colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
     colorBlending.logicOpEnable = VK_FALSE;
@@ -382,7 +348,7 @@ void LAppView::CreateSpriteGraphicsPipeline(VkDevice device, VkExtent2D extent, 
     pipelineLayoutInfo.setLayoutCount = 1;
     pipelineLayoutInfo.pSetLayouts = &_descriptorSetLayout;
 
-    if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS)
+    if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
     {
         LAppPal::PrintLogLn("failed to create pipeline layout!");
     }
@@ -402,12 +368,12 @@ void LAppView::CreateSpriteGraphicsPipeline(VkDevice device, VkExtent2D extent, 
     pipelineInfo.pRasterizationState = &rasterizer;
     pipelineInfo.pMultisampleState = &multisampling;
     pipelineInfo.pColorBlendState = &colorBlending;
-    pipelineInfo.layout = _pipelineLayout;
+    pipelineInfo.layout = pipelineLayout;
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
     pipelineInfo.pNext = &renderingInfo;
 
-    if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS)
+    if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline) != VK_SUCCESS)
     {
         LAppPal::PrintLogLn("failed to create graphics pipeline!");
     }
@@ -422,8 +388,20 @@ void LAppView::InitializeSprite()
     _vertShaderModule = CreateShaderModule(device, "SampleShaders/VertSprite.spv");
     _fragShaderModule = CreateShaderModule(device, "SampleShaders/FragSprite.spv");
     CreateDescriptorSetLayout(device);
+    // スプライト用のブレンド設定
+    spriteColorBlendAttachment = CreateSpriteColorBlendAttachment();
+    // モデルスプライト用のブレンド設定
+    modelSpriteColorBlendAttachment = CreateModelSpriteColorBlendAttachment();
+
+    // スプライト用のパイプライン作成
     CreateSpriteGraphicsPipeline(device, swapchainManager->GetExtent(), _vertShaderModule, _fragShaderModule,
-                                 vkManager->GetSwapchainManager()->GetSwapchainImageFormat());
+                                 vkManager->GetSwapchainManager()->GetSwapchainImageFormat(),
+                                 spriteColorBlendAttachment, _spritePipelineLayout, _spritePipeline);
+
+    // モデルスプライト用のパイプライン作成
+    CreateSpriteGraphicsPipeline(device, swapchainManager->GetExtent(), _vertShaderModule, _fragShaderModule,
+                                 vkManager->GetSwapchainManager()->GetSwapchainImageFormat(),
+                                 modelSpriteColorBlendAttachment, _modelSpritePipelineLayout, _modelSpritePipeline);
 
     int width, height;
     glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
@@ -443,13 +421,13 @@ void LAppView::InitializeSprite()
         resourcesPath + imageName, vkManager->GetTextureFormat(), VK_IMAGE_TILING_OPTIMAL,
         VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-    LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(backgroundTexture->Id, textureImage);
+    LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(backgroundTexture->id, textureImage);
 
     x = width * 0.5f;
     y = height * 0.5f;
-    fWidth = static_cast<float>(backgroundTexture->Width * 2.0f);
+    fWidth = static_cast<float>(backgroundTexture->width * 2.0f);
     fHeight = static_cast<float>(height * 0.95f);
-    _back = new LAppSprite(device, physicalDevice, vkManager, x, y, fWidth, fHeight, backgroundTexture->Id,
+    _back = new LAppSprite(device, physicalDevice, vkManager, x, y, fWidth, fHeight, backgroundTexture->id,
                            textureImage.GetView(), textureImage.GetSampler(), _descriptorSetLayout);
 
     imageName = GearImageName;
@@ -457,14 +435,14 @@ void LAppView::InitializeSprite()
         resourcesPath + imageName, vkManager->GetTextureFormat(), VK_IMAGE_TILING_OPTIMAL,
         VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-    LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(gearTexture->Id, textureImage);
+    LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(gearTexture->id, textureImage);
 
     //X：右向き正、Y：下向き正
-    x = static_cast<float>(width - gearTexture->Width * 0.5f);
-    y = static_cast<float>(gearTexture->Height * 0.5f);
-    fWidth = static_cast<float>(gearTexture->Width);
-    fHeight = static_cast<float>(gearTexture->Height);
-    _gear = new LAppSprite(device, physicalDevice, vkManager, x, y, fWidth, fHeight, gearTexture->Id,
+    x = static_cast<float>(width - gearTexture->width * 0.5f);
+    y = static_cast<float>(gearTexture->height * 0.5f);
+    fWidth = static_cast<float>(gearTexture->width);
+    fHeight = static_cast<float>(gearTexture->height);
+    _gear = new LAppSprite(device, physicalDevice, vkManager, x, y, fWidth, fHeight, gearTexture->id,
                            textureImage.GetView(), textureImage.GetSampler(), _descriptorSetLayout);
 
     imageName = PowerImageName;
@@ -472,14 +450,14 @@ void LAppView::InitializeSprite()
         resourcesPath + imageName, vkManager->GetTextureFormat(), VK_IMAGE_TILING_OPTIMAL,
         VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-    LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(powerTexture->Id, textureImage);
+    LAppDelegate::GetInstance()->GetTextureManager()->GetTexture(powerTexture->id, textureImage);
 
     //X：右向き正、Y：下向き正
-    x = static_cast<float>(width - powerTexture->Width * 0.5f);
-    y = static_cast<float>(height - powerTexture->Height * 0.5f);
-    fWidth = static_cast<float>(powerTexture->Width);
-    fHeight = static_cast<float>(powerTexture->Height);
-    _power = new LAppSprite(device, physicalDevice, vkManager, x, y, fWidth, fHeight, powerTexture->Id,
+    x = static_cast<float>(width - powerTexture->width * 0.5f);
+    y = static_cast<float>(height - powerTexture->height * 0.5f);
+    fWidth = static_cast<float>(powerTexture->width);
+    fHeight = static_cast<float>(powerTexture->height);
+    _power = new LAppSprite(device, physicalDevice, vkManager, x, y, fWidth, fHeight, powerTexture->id,
                             textureImage.GetView(), textureImage.GetSampler(), _descriptorSetLayout);
 
     // 画面全体を覆うサイズ
@@ -535,28 +513,6 @@ void LAppView::OnTouchesEnded(float px, float py) const
             LAppDelegate::GetInstance()->AppEnd();
         }
     }
-}
-
-float LAppView::TransformViewX(float deviceX) const
-{
-    float screenX = _deviceToScreen->TransformX(deviceX); // 論理座標変換した座標を取得。
-    return _viewMatrix->InvertTransformX(screenX); // 拡大、縮小、移動後の値。
-}
-
-float LAppView::TransformViewY(float deviceY) const
-{
-    float screenY = _deviceToScreen->TransformY(deviceY); // 論理座標変換した座標を取得。
-    return _viewMatrix->InvertTransformY(screenY); // 拡大、縮小、移動後の値。
-}
-
-float LAppView::TransformScreenX(float deviceX) const
-{
-    return _deviceToScreen->TransformX(deviceX);
-}
-
-float LAppView::TransformScreenY(float deviceY) const
-{
-    return _deviceToScreen->TransformY(deviceY);
 }
 
 void LAppView::PreModelDraw(LAppModel &refModel)
@@ -623,9 +579,9 @@ void LAppView::PostModelDraw(LAppModel &refModel)
             _renderSprite->UpdateDescriptorSet(vkManager->GetDevice(), useTarget->GetTextureView(),
                                                         useTarget->GetTextureSampler());
             BeginRendering(commandBuffer, 0.f, 0.f, 0.3, 1.f, false);
-            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
-            _renderSprite->SetColor(1.0f, 1.0f, 1.0f, GetSpriteAlpha(0));
-            _renderSprite->Render(commandBuffer, _pipelineLayout, vkManager, width, height);
+            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _modelSpritePipeline);
+            _renderSprite->SetColor(1.0f * GetSpriteAlpha(0), 1.0f * GetSpriteAlpha(0), 1.0f * GetSpriteAlpha(0), GetSpriteAlpha(0));
+            _renderSprite->Render(commandBuffer, _spritePipelineLayout, vkManager, width, height);
             EndRendering(commandBuffer);
             vkManager->SubmitCommand(commandBuffer);
         }
@@ -654,7 +610,7 @@ void LAppView::SetRenderTargetClearColor(float r, float g, float b)
 float LAppView::GetSpriteAlpha(int assign) const
 {
     // assignの数値に応じて適当に決定
-    float alpha = 0.25f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける
+    float alpha = 0.4f + static_cast<float>(assign) * 0.5f; // サンプルとしてαに適当な差をつける
     if (alpha > 1.0f)
     {
         alpha = 1.0f;
@@ -669,8 +625,8 @@ float LAppView::GetSpriteAlpha(int assign) const
 
 void LAppView::Cleanup(VkDevice device)
 {
-    vkDestroyPipelineLayout(device, _pipelineLayout, nullptr);
-    vkDestroyPipeline(device, _pipeline, nullptr);
+    vkDestroyPipelineLayout(device, _spritePipelineLayout, nullptr);
+    vkDestroyPipeline(device, _spritePipeline, nullptr);
 }
 
 void LAppView::ResizeSprite(int width, int height)
@@ -679,8 +635,21 @@ void LAppView::ResizeSprite(int width, int height)
     VkDevice device = vkManager->GetDevice();
     SwapchainManager* swapchainManager = vkManager->GetSwapchainManager();
     Cleanup(device);
+    // CreateSpriteGraphicsPipeline(device, swapchainManager->GetExtent(), _vertShaderModule, _fragShaderModule,
+    //                              vkManager->GetSwapchainManager()->GetSwapchainImageFormat());
+    // スプライト用のブレンド設定
+    // VkPipelineColorBlendAttachmentState spriteColorBlendAttachment = CreateSpriteColorBlendAttachment();
+    // モデルスプライト用のブレンド設定
+    // VkPipelineColorBlendAttachmentState modelSpriteColorBlendAttachment = CreateModelSpriteColorBlendAttachment();
+    // スプライト用のパイプライン作成
     CreateSpriteGraphicsPipeline(device, swapchainManager->GetExtent(), _vertShaderModule, _fragShaderModule,
-                                 vkManager->GetSwapchainManager()->GetSwapchainImageFormat());
+                                 vkManager->GetSwapchainManager()->GetSwapchainImageFormat(),
+                                 spriteColorBlendAttachment, _spritePipelineLayout, _spritePipeline);
+
+    // モデルスプライト用のパイプライン作成
+    CreateSpriteGraphicsPipeline(device, swapchainManager->GetExtent(), _vertShaderModule, _fragShaderModule,
+                                 vkManager->GetSwapchainManager()->GetSwapchainImageFormat(),
+                                 modelSpriteColorBlendAttachment, _modelSpritePipelineLayout, _modelSpritePipeline);
 
     LAppTextureManager* textureManager = LAppDelegate::GetInstance()->GetTextureManager();
     if (!textureManager)
@@ -701,7 +670,7 @@ void LAppView::ResizeSprite(int width, int height)
         {
             x = width * 0.5f;
             y = height * 0.5f;
-            fWidth = static_cast<float>(texInfo->Width * 2);
+            fWidth = static_cast<float>(texInfo->width * 2);
             fHeight = static_cast<float>(height) * 0.95f;
             _back->ResetRect(x, y, fWidth, fHeight);
         }
@@ -713,10 +682,10 @@ void LAppView::ResizeSprite(int width, int height)
         LAppTextureManager::TextureInfo* texInfo = textureManager->GetTextureInfoById(id);
         if (texInfo)
         {
-            x = static_cast<float>(width - texInfo->Width * 0.5f);
-            y = static_cast<float>(height - texInfo->Height * 0.5f);
-            fWidth = static_cast<float>(texInfo->Width);
-            fHeight = static_cast<float>(texInfo->Height);
+            x = static_cast<float>(width - texInfo->width * 0.5f);
+            y = static_cast<float>(height - texInfo->height * 0.5f);
+            fWidth = static_cast<float>(texInfo->width);
+            fHeight = static_cast<float>(texInfo->height);
             _power->ResetRect(x, y, fWidth, fHeight);
         }
     }
@@ -727,10 +696,10 @@ void LAppView::ResizeSprite(int width, int height)
         LAppTextureManager::TextureInfo* texInfo = textureManager->GetTextureInfoById(id);
         if (texInfo)
         {
-            x = static_cast<float>(width - texInfo->Width * 0.5f);
-            y = static_cast<float>(texInfo->Height * 0.5f);
-            fWidth = static_cast<float>(texInfo->Width);
-            fHeight = static_cast<float>(texInfo->Height);
+            x = static_cast<float>(width - texInfo->width * 0.5f);
+            y = static_cast<float>(texInfo->height * 0.5f);
+            fWidth = static_cast<float>(texInfo->width);
+            fHeight = static_cast<float>(texInfo->height);
             _gear->ResetRect(x, y, fWidth, fHeight);
         }
     }
@@ -759,4 +728,37 @@ void LAppView::DestroyOffscreenSurface()
                    DestroyOffscreenSurface(VulkanManager::GetInstance()->GetDevice());
         }
     }
+}
+
+VkPipelineColorBlendAttachmentState LAppView::CreateSpriteColorBlendAttachment()
+{
+
+    VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT
+            | VK_COLOR_COMPONENT_A_BIT;
+    colorBlendAttachment.blendEnable = VK_TRUE;
+    colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+    colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+    colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+    colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+
+    return colorBlendAttachment;
+}
+
+VkPipelineColorBlendAttachmentState LAppView::CreateModelSpriteColorBlendAttachment()
+{
+    VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT
+            | VK_COLOR_COMPONENT_A_BIT;
+    colorBlendAttachment.blendEnable = VK_TRUE;
+    colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
+    colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+    colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+    colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+
+    return colorBlendAttachment;
 }

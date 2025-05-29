@@ -9,8 +9,10 @@ set(CORE_PATH ${SDK_ROOT_PATH}/Core)
 set(FRAMEWORK_PATH ${SDK_ROOT_PATH}/Framework)
 set(THIRD_PARTY_PATH ${SDK_ROOT_PATH}/Samples/OpenGL/thirdParty)
 set(STB_PATH ${THIRD_PARTY_PATH}/stb)
+set(COMMON_SRC_PATH ${SDK_ROOT_PATH}/Samples/Common)
 set(RES_PATH ${SDK_ROOT_PATH}/Samples/Resources)
 set(SHADER_PATH ${SDK_ROOT_PATH}/Samples/OpenGL/Shaders/StandardES)
+set(FRAMEWORK_SHADER_PATH ${FRAMEWORK_PATH}/src/Rendering/OpenGL/Shaders/StandardES)
 set(COPY_RES_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../resources/rawfile)
 
 # Specify version of compiler.
@@ -41,6 +43,8 @@ target_compile_definitions(Framework PUBLIC CSM_TARGET_HARMONYOS_ES3)
 
 # Make library for android app.
 add_library(${APP_NAME} SHARED)
+# Add common source files.
+add_subdirectory(${COMMON_SRC_PATH} ${CMAKE_CURRENT_BINARY_DIR}/src/Common)
 # Add source files.
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
 # Link libraries to app.
@@ -68,6 +72,9 @@ add_custom_command(
   COMMAND
     ${CMAKE_COMMAND} -E
       copy_directory ${SHADER_PATH} ${COPY_RES_PATH}/Shader
+  COMMAND
+    ${CMAKE_COMMAND} -E
+      copy_directory ${FRAMEWORK_SHADER_PATH} ${COPY_RES_PATH}/FrameworkShaders
 )
 
 #

@@ -16,6 +16,14 @@
 */
 class LAppSpritePipeline
 {
+protected:
+    /**
+     * @brief   コンストラクタ
+     *
+     * @param[in]  device             論理デバイス
+     */
+    LAppSpritePipeline(VkDevice device);
+
 public:
     /**
      * @brief   コンストラクタ
@@ -62,6 +70,7 @@ private:
      */
     void CreatePipelineLayout(VkDevice device, VkDescriptorSetLayout descriptorSetLayout);
 
+protected:
     /**
      * @brief スプライト用のパイプラインを作成する。
      *
@@ -69,7 +78,7 @@ private:
      * @param[in]       extent                  フレームバッファのサイズ
      * @param[in]       swapchainFormat         スワップチェーンフォーマット
      */
-    void CreatePipeline(VkDevice device, VkExtent2D extent, VkFormat swapchainFormat);
+    void CreatePipeline(VkDevice device, VkExtent2D extent, VkFormat swapchainFormat, const VkPipelineColorBlendAttachmentState& colorBlendAttachment);
 
     /**
      * @brief   シェーダーモジュ―ルを作成する

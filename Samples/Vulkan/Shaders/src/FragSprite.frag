@@ -21,6 +21,6 @@ layout(location = 0) out vec4 outColor;
 
 void main()
 {
-    vec4 color = texture(s_texture0, v_texCoord);
-    outColor = vec4(color.rgb * color.a, color.a) * ubo.u_baseColor;
+    vec4 color = texture(s_texture0, v_texCoord) * ubo.u_baseColor;
+    outColor = color;
 }

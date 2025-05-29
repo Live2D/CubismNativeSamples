@@ -8,19 +8,19 @@
 #pragma once
 
 #include <CubismFramework.hpp>
-#include <Model/CubismUserModel.hpp>
 #include <ICubismModelSetting.hpp>
 #include <Type/csmRectF.hpp>
 #include <Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp>
 
-#include "LAppWavFileHandler.hpp"
+#include "LAppWavFileHandler_Common.hpp"
+#include "LAppModel_Common.hpp"
 
 /**
  * @brief ユーザーが実際に使用するモデルの実装クラス<br>
  *         モデル生成、機能コンポーネント生成、更新処理とレンダリングの呼び出しを行う。
  *
  */
-class LAppModel : public Csm::CubismUserModel
+class LAppModel : public LAppModel_Common
 {
 public:
     /**
@@ -193,7 +193,7 @@ private:
     const Csm::CubismId* _idParamEyeBallX; ///< パラメータID: ParamEyeBallX
     const Csm::CubismId* _idParamEyeBallY; ///< パラメータID: ParamEyeBallXY
 
-    LAppWavFileHandler _wavFileHandler; ///< wavファイルハンドラ
+    LAppWavFileHandler_Common _wavFileHandler; ///< wavファイルハンドラ
 
     Csm::Rendering::CubismOffscreenSurface_OpenGLES2  _renderBuffer;   ///< フレームバッファ以外の描画先
 };

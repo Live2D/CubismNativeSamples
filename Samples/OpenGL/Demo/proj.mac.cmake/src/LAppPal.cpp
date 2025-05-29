@@ -26,11 +26,15 @@ using namespace LAppDefine;
 double LAppPal::s_currentFrame = 0.0;
 double LAppPal::s_lastFrame = 0.0;
 double LAppPal::s_deltaTime = 0.0;
+string LAppPal::s_executeAbsolutePath;
 
 csmByte* LAppPal::LoadFileAsBytes(const string filePath, csmSizeInt* outSize)
 {
-    //filePath;//
-    const char* path = filePath.c_str();
+    string fullPath = (filePath.length() > 0) && (filePath[0] != '/')
+        ? (s_executeAbsolutePath + filePath)
+        : filePath;
+
+    const char* path = fullPath.c_str();
 
     int size = 0;
     struct stat statBuf;
@@ -105,4 +109,9 @@ void LAppPal::PrintLogLn(const csmChar* format, ...)
 void LAppPal::PrintMessageLn(const csmChar* message)
 {
     PrintLogLn("%s", message);
+}
+
+void LAppPal::SetExecutableAbsolutePath(const std::string& path)
+{
+    s_executeAbsolutePath = path;
 }

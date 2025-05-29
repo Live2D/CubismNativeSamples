@@ -47,6 +47,13 @@ android {
     sourceSets.main {
         assets.srcDir "../../../../../Resources"
         assets.srcDir "../../../../Shaders/StandardES"
+        assets.srcDir "../../../../../../Framework/src/Rendering/OpenGL/Shaders/StandardES"
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 

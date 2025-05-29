@@ -14,6 +14,8 @@ set(CORE_PATH ${SDK_ROOT_PATH}/Core)
 set(FRAMEWORK_PATH ${SDK_ROOT_PATH}/Framework)
 set(RES_PATH ${SDK_ROOT_PATH}/Samples/Resources)
 set(SAMPLE_SHADER_PATH ${SDK_ROOT_PATH}/Samples/D3D9/Shaders)
+set(FRAMEWORK_SHADER_PATH ${FRAMEWORK_PATH}/src/Rendering/D3D9/Shaders)
+set(COMMON_SRC_PATH ${SDK_ROOT_PATH}/Samples/Common)
 
 # Set project.
 project(${APP_NAME})
@@ -99,6 +101,8 @@ target_link_libraries(Framework
 
 # Make executable app.
 add_executable(${APP_NAME} WIN32)
+# Add common source files.
+add_subdirectory(${COMMON_SRC_PATH} ${CMAKE_CURRENT_BINARY_DIR}/src/Common)
 # Add source files.
 add_subdirectory(src)
 
@@ -122,6 +126,10 @@ add_custom_command(
   COMMAND
     ${CMAKE_COMMAND} -E
       copy_directory ${SAMPLE_SHADER_PATH} $<TARGET_FILE_DIR:${APP_NAME}>/SampleShaders
+  # Framework shaders need to be copied!
+  COMMAND
+    ${CMAKE_COMMAND} -E
+      copy_directory ${FRAMEWORK_SHADER_PATH} $<TARGET_FILE_DIR:${APP_NAME}>/FrameworkShaders
 )
 
 # Set project properties.

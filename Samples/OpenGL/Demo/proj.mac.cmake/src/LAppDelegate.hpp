@@ -11,7 +11,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Type/csmVector.hpp"
-#include "LAppAllocator.hpp"
+#include "LAppAllocator_Common.hpp"
 
 class LAppView;
 class LAppTextureManager;
@@ -122,7 +122,7 @@ private:
     */
     void InitializeCubism();
 
-    LAppAllocator _cubismAllocator;              ///< Cubism SDK Allocator
+    LAppAllocator_Common _cubismAllocator;              ///< Cubism SDK Allocator
     Csm::CubismFramework::Option _cubismOption;  ///< Cubism SDK Option
     GLFWwindow* _window;                         ///< OpenGL ウィンドウ
     LAppView* _view;                             ///< View情報

@@ -10,12 +10,12 @@
 #include <functional>
 
 #include <CubismFramework.hpp>
-#include <Model/CubismUserModel.hpp>
 #include <ICubismModelSetting.hpp>
 #include <Motion/CubismMotionQueueEntry.hpp>
 #include <CubismModelSettingJson.hpp>
 
 #include "LAppDefine.hpp"
+#include "LAppModel_Common.hpp"
 #include "CubismTextureManager.hpp"
 
  /**
@@ -26,7 +26,7 @@
  *
  */
 class CubismUserModelExtend :
-    public Csm::CubismUserModel
+    public LAppModel_Common
 {
 public:
     CubismUserModelExtend(const std::string modelDirectoryName, const std::string _currentModelDirectory); ///< コンストラクタ

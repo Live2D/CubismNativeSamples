@@ -13,7 +13,7 @@
 #include <GLFW/glfw3.h>
 
 #include "LAppDefine.hpp"
-#include "LAppAllocator.hpp"
+#include "LAppAllocator_Common.hpp"
 #include "LAppTextureManager.hpp"
 #include "LAppPal.hpp"
 #include "CubismUserModelExtend.hpp"
@@ -35,7 +35,7 @@ static const Csm::csmChar* _modelDirectoryName = "Hiyori";
 
 static Csm::CubismUserModel* _userModel; ///< ユーザーが実際に使用するモデル
 static Csm::CubismFramework::Option _cubismOption; ///< CubismFrameworkに関するオプション
-static LAppAllocator _cubismAllocator; ///< メモリのアロケーター
+static LAppAllocator_Common _cubismAllocator; ///< メモリのアロケーター
 
 static std::string _executeAbsolutePath; ///< アプリケーションの実行パス
 static std::string _currentModelDirectory; ///< 現在のモデルのディレクトリ名
@@ -120,6 +120,8 @@ static bool InitializeSystem()
     // Cubism SDK の初期化
     _cubismOption.LogFunction = LAppPal::PrintMessage;
     _cubismOption.LoggingLevel = Csm::CubismFramework::Option::LogLevel_Verbose;
+    _cubismOption.LoadFileFunction = LAppPal::LoadFileAsBytes;
+    _cubismOption.ReleaseBytesFunction = LAppPal::ReleaseBytes;
     Csm::CubismFramework::StartUp(&_cubismAllocator, &_cubismOption);
 
     InitializeCubism();

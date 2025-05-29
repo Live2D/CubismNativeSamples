@@ -13,8 +13,9 @@
 #include <Math/CubismViewMatrix.hpp>
 #include "CubismFramework.hpp"
 #include <Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp>
+#include "LAppView_Common.hpp"
 
-class TouchManager;
+class TouchManager_Common;
 class LAppSprite;
 class LAppSpriteShader;
 class LAppModel;
@@ -22,7 +23,7 @@ class LAppModel;
 /**
 * @brief 描画クラス
 */
-class LAppView
+class LAppView : public LAppView_Common
 {
 public:
 
@@ -49,7 +50,7 @@ public:
     /**
     * @brief 初期化する。
     */
-    void Initialize();
+    virtual void Initialize(int width, int height) override;
 
     /**
     * @brief 描画する。
@@ -86,34 +87,6 @@ public:
     void OnTouchesEnded(float pointX, float pointY);
 
     /**
-    * @brief X座標をView座標に変換する。
-    *
-    * @param[in]       deviceX            デバイスX座標
-    */
-    float TransformViewX(float deviceX) const;
-
-    /**
-    * @brief Y座標をView座標に変換する。
-    *
-    * @param[in]       deviceY            デバイスY座標
-    */
-    float TransformViewY(float deviceY) const;
-
-    /**
-    * @brief X座標をScreen座標に変換する。
-    *
-    * @param[in]       deviceX            デバイスX座標
-    */
-    float TransformScreenX(float deviceX) const;
-
-    /**
-    * @brief Y座標をScreen座標に変換する。
-    *
-    * @param[in]       deviceY            デバイスY座標
-    */
-    float TransformScreenY(float deviceY) const;
-
-    /**
      * @brief   モデル1体を描画する直前にコールされる
      */
     void PreModelDraw(LAppModel &refModel);
@@ -143,9 +116,7 @@ public:
     void SetRenderTargetClearColor(float r, float g, float b);
 
 private:
-    TouchManager* _touchManager;                 ///< タッチマネージャー
-    Csm::CubismMatrix44* _deviceToScreen;    ///< デバイスからスクリーンへの行列
-    Csm::CubismViewMatrix* _viewMatrix;      ///< viewMatrix
+    TouchManager_Common* _touchManager;             ///< タッチマネージャー
     LAppSprite* _back;                       ///< 背景画像
     LAppSprite* _gear;                       ///< ギア画像
     LAppSprite* _power;                      ///< 電源画像

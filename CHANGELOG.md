@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
+## [Unreleased]
+
+## Fixed
+
+* Fix unintended object recreating when resizing the window in the OpenGL Linux sample program.
+
+
 ## [5-r.4] - 2025-05-29
 
 ### Added

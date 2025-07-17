@@ -191,14 +191,14 @@ bool LAppSpriteShader::CreateShader()
     return true;
 }
 
-void LAppSpriteShader::SetupShader()
+bool LAppSpriteShader::SetupShader()
 {
     ID3D11DeviceContext* deviceContext = LAppDelegate::GetD3dContext();
 
     if (_rasterizer == NULL || _samplerState == NULL || _blendState == NULL ||
         _vertexShader == NULL || _pixelShader == NULL || _vertexFormat == NULL)
     {
-        return;
+        return false;
     }
 
     // 現在のウィンドウサイズの取得
@@ -228,6 +228,8 @@ void LAppSpriteShader::SetupShader()
 
     float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
     deviceContext->OMSetBlendState(_blendState, blendFactor, 0xffffffff);
+
+    return true;
 }
 
 void LAppSpriteShader::ReleaseShader()

@@ -168,10 +168,13 @@ void LAppView::Render()
     VkCommandBuffer commandBuffer = vkManager->BeginSingleTimeCommands();
     ChangeBeginLayout(commandBuffer);
     BeginRendering(commandBuffer, 0.0, 0.0, 0.0, 1.0, true);
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _spritePipeline);
-    _back->Render(commandBuffer, _spritePipelineLayout, vkManager, width, height);
-    _gear->Render(commandBuffer, _spritePipelineLayout, vkManager, width, height);
-    _power->Render(commandBuffer, _spritePipelineLayout, vkManager, width, height);
+    if(_spritePipeline != VK_NULL_HANDLE && _spritePipelineLayout != VK_NULL_HANDLE)
+    {
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _spritePipeline);
+        _back->Render(commandBuffer, _spritePipelineLayout, vkManager, width, height);
+        _gear->Render(commandBuffer, _spritePipelineLayout, vkManager, width, height);
+        _power->Render(commandBuffer, _spritePipelineLayout, vkManager, width, height);
+    }
     EndRendering(commandBuffer);
     vkManager->SubmitCommand(commandBuffer, true);
 
@@ -183,25 +186,28 @@ void LAppView::Render()
     // 各モデルが持つ描画ターゲットをテクスチャとする場合
     if (_renderTarget == SelectTarget_ModelFrameBuffer && _renderSprite)
     {
-        for (csmUint32 i = 0; i < live2DManager->GetModelNum(); i++)
+        if(_modelSpritePipeline != VK_NULL_HANDLE && _modelSpritePipelineLayout != VK_NULL_HANDLE)
         {
-            LAppModel* model = live2DManager->GetModel(i);
-            commandBuffer = vkManager->BeginSingleTimeCommands();
-            _renderSprite->SetDescriptorUpdated(false);
-            _renderSprite->UpdateDescriptorSet(vkManager->GetDevice(),
-                                                        model->GetRenderBuffer().GetTextureView(),
-                                                        model->GetRenderBuffer().GetTextureSampler());
-            BeginRendering(commandBuffer, 0.f, 0.f, 0.3, 1.f, false);
-            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _modelSpritePipeline);
-
-            float alpha = i < 1 ? 1.0f : model->GetOpacity(); // 片方のみ不透明度を取得できるようにする
-            _renderSprite->SetColor(1.0f * alpha, 1.0f * alpha, 1.0f * alpha, alpha);
-            if (model)
+            for (csmUint32 i = 0; i < live2DManager->GetModelNum(); i++)
             {
-                _renderSprite->Render(commandBuffer, _modelSpritePipelineLayout, vkManager, width, height);
+                LAppModel* model = live2DManager->GetModel(i);
+                commandBuffer = vkManager->BeginSingleTimeCommands();
+                _renderSprite->SetDescriptorUpdated(false);
+                _renderSprite->UpdateDescriptorSet(vkManager->GetDevice(),
+                                                            model->GetRenderBuffer().GetTextureView(),
+                                                            model->GetRenderBuffer().GetTextureSampler());
+                BeginRendering(commandBuffer, 0.f, 0.f, 0.3, 1.f, false);
+                vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _modelSpritePipeline);
+
+                float alpha = i < 1 ? 1.0f : model->GetOpacity(); // 片方のみ不透明度を取得できるようにする
+                _renderSprite->SetColor(1.0f * alpha, 1.0f * alpha, 1.0f * alpha, alpha);
+                if (model)
+                {
+                    _renderSprite->Render(commandBuffer, _modelSpritePipelineLayout, vkManager, width, height);
+                }
+                EndRendering(commandBuffer);
+                vkManager->SubmitCommand(commandBuffer);
             }
-            EndRendering(commandBuffer);
-            vkManager->SubmitCommand(commandBuffer);
         }
     }
 
@@ -217,6 +223,7 @@ VkShaderModule LAppView::CreateShaderModule(VkDevice device, std::string filenam
     if (!file.is_open())
     {
         CubismLogError("failed to open file!");
+        return NULL;
     }
 
     csmInt32 fileSize = (csmInt32)file.tellg();
@@ -394,15 +401,17 @@ void LAppView::InitializeSprite()
     modelSpriteColorBlendAttachment = CreateModelSpriteColorBlendAttachment();
 
     // スプライト用のパイプライン作成
-    CreateSpriteGraphicsPipeline(device, swapchainManager->GetExtent(), _vertShaderModule, _fragShaderModule,
-                                 vkManager->GetSwapchainManager()->GetSwapchainImageFormat(),
-                                 spriteColorBlendAttachment, _spritePipelineLayout, _spritePipeline);
+    if(_vertShaderModule != NULL && _fragShaderModule != NULL)
+    {
+        CreateSpriteGraphicsPipeline(device, swapchainManager->GetExtent(), _vertShaderModule, _fragShaderModule,
+                                    vkManager->GetSwapchainManager()->GetSwapchainImageFormat(),
+                                    spriteColorBlendAttachment, _spritePipelineLayout, _spritePipeline);
 
-    // モデルスプライト用のパイプライン作成
-    CreateSpriteGraphicsPipeline(device, swapchainManager->GetExtent(), _vertShaderModule, _fragShaderModule,
-                                 vkManager->GetSwapchainManager()->GetSwapchainImageFormat(),
-                                 modelSpriteColorBlendAttachment, _modelSpritePipelineLayout, _modelSpritePipeline);
-
+        // モデルスプライト用のパイプライン作成
+        CreateSpriteGraphicsPipeline(device, swapchainManager->GetExtent(), _vertShaderModule, _fragShaderModule,
+                                    vkManager->GetSwapchainManager()->GetSwapchainImageFormat(),
+                                    modelSpriteColorBlendAttachment, _modelSpritePipelineLayout, _modelSpritePipeline);
+    }
     int width, height;
     glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
 
@@ -579,9 +588,12 @@ void LAppView::PostModelDraw(LAppModel &refModel)
             _renderSprite->UpdateDescriptorSet(vkManager->GetDevice(), useTarget->GetTextureView(),
                                                         useTarget->GetTextureSampler());
             BeginRendering(commandBuffer, 0.f, 0.f, 0.3, 1.f, false);
-            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _modelSpritePipeline);
-            _renderSprite->SetColor(1.0f * GetSpriteAlpha(0), 1.0f * GetSpriteAlpha(0), 1.0f * GetSpriteAlpha(0), GetSpriteAlpha(0));
-            _renderSprite->Render(commandBuffer, _spritePipelineLayout, vkManager, width, height);
+            if(_modelSpritePipeline != VK_NULL_HANDLE && _modelSpritePipelineLayout != VK_NULL_HANDLE)
+            {
+                vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _modelSpritePipeline);
+                _renderSprite->SetColor(1.0f * GetSpriteAlpha(0), 1.0f * GetSpriteAlpha(0), 1.0f * GetSpriteAlpha(0), GetSpriteAlpha(0));
+                _renderSprite->Render(commandBuffer, _spritePipelineLayout, vkManager, width, height);
+            }
             EndRendering(commandBuffer);
             vkManager->SubmitCommand(commandBuffer);
         }

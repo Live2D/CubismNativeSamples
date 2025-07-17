@@ -30,7 +30,8 @@ LAppView::LAppView() :
     _gear(NULL),
     _power(NULL),
     _renderSprite(NULL),
-    _renderTarget(SelectTarget_None)
+    _renderTarget(SelectTarget_None),
+    _spriteShader(NULL)
 {
     _clearColor[0] = 1.0f;
     _clearColor[1] = 1.0f;
@@ -77,6 +78,12 @@ void LAppView::Initialize(int width, int height)
     // シェーダー作成
     _spriteShader = new LAppSpriteShader();
 }
+
+void LAppView::ResizeWindow(int width, int height)
+{
+    LAppView_Common::Initialize(width, height);
+}
+
 
 void LAppView::Render()
 {

@@ -148,7 +148,7 @@ void LAppDelegate::Run()
         glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
         if((_windowWidth!=width || _windowHeight!=height) && width>0 && height>0)
         {
-            _view->Initialize(width, height);
+            _view->ResizeWindow(width, height);
             _view->ResizeSprite();
 
             _windowWidth = width;

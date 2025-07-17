@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Fixed
 
-* Fix unintended object recreating when resizing the window in the OpenGL Linux sample program.
+* Fix unintended object recreating when resizing the window in the OpenGL Linux sample program. by [@KhangPham9](https://github.com/Live2D/CubismNativeSamples/pull/50)
 
 
 ## [5-r.4.1] - 2025-07-17

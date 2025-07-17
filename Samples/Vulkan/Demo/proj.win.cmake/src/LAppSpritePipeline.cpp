@@ -21,6 +21,7 @@ LAppSpritePipeline::LAppSpritePipeline(VkDevice device)
 }
 
 LAppSpritePipeline::LAppSpritePipeline(VkDevice device, VkExtent2D extent, VkFormat swapchainFormat)
+    : _pipeline(NULL)
 {
     CreateDescriptorSetLayout(device);
     CreatePipelineLayout(device, _descriptorSetLayout);
@@ -53,6 +54,11 @@ VkShaderModule LAppSpritePipeline::CreateShaderModule(VkDevice device, Csm::csmS
     const uint32_t* shaderCode;
     Csm::csmSizeInt shaderSize;
     shaderCode = reinterpret_cast<const uint32_t*>(LAppPal::LoadFileAsBytes(filename.GetRawString(), &shaderSize));
+    if(shaderCode == NULL)
+    {
+        CubismLogError("failed to load shader file!");
+        return NULL;
+    }
 
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -121,7 +127,16 @@ void LAppSpritePipeline::CreatePipeline(VkDevice device, VkExtent2D extent, VkFo
     fragShaderFile += LAppDefine::FragShaderName;
 
     VkShaderModule vertShaderModule = CreateShaderModule(device, vertShaderFile);
+    if(vertShaderModule == NULL)
+    {
+        return;
+    }
+
     VkShaderModule fragShaderModule = CreateShaderModule(device, fragShaderFile);
+    if(fragShaderModule == NULL)
+    {
+        return;
+    }
 
     // 頂点シェーダー
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};

@@ -208,7 +208,10 @@ void LAppSprite::RenderImmidiate(int width, int height, ID3D11ShaderResourceView
         renderContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
         // シェーダーセット
-        _shader->SetupShader();
+        if(!_shader->SetupShader())
+        {
+            return;
+        }
 
         // テクスチャセット
         {

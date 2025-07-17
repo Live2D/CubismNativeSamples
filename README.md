@@ -109,7 +109,7 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 | Development Tool | Version |
 | --- | --- |
-| Android Studio | Meerkat Feature Drop 2024.3.2 |
+| Android Studio | Narwhal 2025.1.1 Patch 1 |
 | DevEco Studio | 5.0.5.306 |
 | CMake | 3.31.7 |
 | Visual Studio 2015 | Update 3 |
@@ -136,7 +136,7 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 | System | Distribution version | Docker image | GCC |
 | --- | --- | --- | --- |
-| Red Hat | Amazon Linux 2 |  `amazonlinux:2` | 7.3.1 |
+| Red Hat | Amazon Linux 2 | `amazonlinux:2` | 7.3.1 |
 | Red Hat | AlmaLinux | `almalinux:latest` | 11.4.1 |
 | Debian | Ubuntu 22.04.4 | `ubuntu:22.04` | 11.4.0 |
 | Debian | Ubuntu 24.04.2 | `ubuntu:24.04` | 13.3.0 |
@@ -162,10 +162,13 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 ### Android
 
-| Version | Device | Tegra |
-| --- | --- | --- |
-| 15 | Pixel 7a | |
-| 7.1.1 | Nexus 9 | ✔︎ |
+| Version | Device | Tegra | 16KB page sizes *1 |
+| --- | --- | --- | --- |
+| 16 | Pixel 9 | | ✔︎ |
+| 15 | Pixel 7a | |  |
+| 7.1.1 | Nexus 9 | ✔︎ | |
+
+*1 This environment has been enabled using developer options.
 
 ### HarmonyOS
 

@@ -12,6 +12,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 * Fix unintended object recreating when resizing the window in the OpenGL Linux sample program.
 
 
+## [5-r.4.1] - 2025-07-17
+
+### Changed
+
+* Implement support for Android 16KB page size.
+
+### Fixed
+
+* Fix app crashing when shader files could not be loaded.
+
+
 ## [5-r.4] - 2025-05-29
 
 ### Added
@@ -498,6 +509,7 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[5-r.4.1]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.4...5-r.4.1
 [5-r.4]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.3...5-r.4
 [5-r.3]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.2...5-r.3
 [5-r.2]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.1...5-r.2

@@ -36,7 +36,7 @@ public:
      * @brief   スプライトの描画直前に呼び出される
      *          シェーダーのセットを行う
      */
-    void SetupShader();
+    bool SetupShader();
 
     /**
      * @brief   シェーダーの解放を行う

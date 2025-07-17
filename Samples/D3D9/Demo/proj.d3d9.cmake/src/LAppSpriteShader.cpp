@@ -17,7 +17,6 @@ LAppSpriteShader::LAppSpriteShader()
     : _shaderEffect(nullptr)
     , _vertexFormat(nullptr)
 {
-    CreateShader();
 }
 
 LAppSpriteShader::~LAppSpriteShader()

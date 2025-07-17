@@ -49,6 +49,9 @@ target_link_libraries(${APP_NAME}
 )
 # Specify include directories.
 target_include_directories(${APP_NAME} PRIVATE ${STB_PATH})
+# Android 16KB page-size option(NDK r26 and lower)
+# https://developer.android.com/guide/practices/page-sizes?hl=en#compile-16-kb-alignment
+target_link_options(${APP_NAME} PRIVATE "-Wl,-z,max-page-size=16384")
 
 #
 # * USE_RENDER_TARGET

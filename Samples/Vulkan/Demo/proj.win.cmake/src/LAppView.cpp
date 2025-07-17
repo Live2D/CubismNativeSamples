@@ -153,10 +153,13 @@ void LAppView::Render()
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     VkCommandBuffer commandBuffer = vkManager->BeginSingleTimeCommands();
     BeginRendering(commandBuffer, 0.0, 0.0, 0.0, 1.0, true);
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _spritePipeline->GetPipeline());
-    _back->Render(commandBuffer, vkManager, width, height);
-    _gear->Render(commandBuffer, vkManager, width, height);
-    _power->Render(commandBuffer, vkManager, width, height);
+    if(_spritePipeline->GetPipeline() != NULL && _spritePipeline->GetPipelineLayout() != NULL)
+    {
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _spritePipeline->GetPipeline());
+        _back->Render(commandBuffer, vkManager, width, height);
+        _gear->Render(commandBuffer, vkManager, width, height);
+        _power->Render(commandBuffer, vkManager, width, height);
+    }
     EndRendering(commandBuffer);
     vkManager->SubmitCommand(commandBuffer, true);
 
@@ -168,25 +171,28 @@ void LAppView::Render()
     // 各モデルが持つ描画ターゲットをテクスチャとする場合
     if (_renderTarget == SelectTarget_ModelFrameBuffer && _renderSprite)
     {
-        for (csmUint32 i = 0; i < live2DManager->GetModelNum(); i++)
+        if(_modelSpritePipeline->GetPipeline() != NULL && _modelSpritePipeline->GetPipelineLayout() != NULL)
         {
-            LAppModel* model = live2DManager->GetModel(i);
-            commandBuffer = vkManager->BeginSingleTimeCommands();
-            _renderSprite->SetDescriptorUpdated(false);
-            _renderSprite->UpdateDescriptorSet(vkManager->GetDevice(),
-                                                        model->GetRenderBuffer().GetTextureView(),
-                                                        model->GetRenderBuffer().GetTextureSampler());
-            BeginRendering(commandBuffer, 0.f, 0.f, 0.3, 1.f, false);
-            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _modelSpritePipeline->GetPipeline());
-
-            float alpha = i < 1 ? 1.0f : model->GetOpacity(); // 片方のみ不透明度を取得できるようにする
-            _renderSprite->SetColor(alpha, alpha, alpha, alpha);
-            if (model)
+            for (csmUint32 i = 0; i < live2DManager->GetModelNum(); i++)
             {
-                _renderSprite->Render(commandBuffer, vkManager, width, height);
+                LAppModel* model = live2DManager->GetModel(i);
+                commandBuffer = vkManager->BeginSingleTimeCommands();
+                _renderSprite->SetDescriptorUpdated(false);
+                _renderSprite->UpdateDescriptorSet(vkManager->GetDevice(),
+                                                            model->GetRenderBuffer().GetTextureView(),
+                                                            model->GetRenderBuffer().GetTextureSampler());
+                BeginRendering(commandBuffer, 0.f, 0.f, 0.3, 1.f, false);
+                vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _modelSpritePipeline->GetPipeline());
+
+                float alpha = i < 1 ? 1.0f : model->GetOpacity(); // 片方のみ不透明度を取得できるようにする
+                _renderSprite->SetColor(alpha, alpha, alpha, alpha);
+                if (model)
+                {
+                    _renderSprite->Render(commandBuffer, vkManager, width, height);
+                }
+                EndRendering(commandBuffer);
+                vkManager->SubmitCommand(commandBuffer);
             }
-            EndRendering(commandBuffer);
-            vkManager->SubmitCommand(commandBuffer);
         }
     }
 
@@ -382,10 +388,13 @@ void LAppView::PostModelDraw(LAppModel& refModel, csmInt32 modelIndex)
             _renderSprite->UpdateDescriptorSet(vkManager->GetDevice(), useTarget->GetTextureView(),
                                                         useTarget->GetTextureSampler());
             BeginRendering(commandBuffer, 0.f, 0.f, 0.3, 1.f, false);
-            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _modelSpritePipeline->GetPipeline());
-            float alpha = GetSpriteAlpha(0);
-            _renderSprite->SetColor(alpha, alpha, alpha, alpha);
-            _renderSprite->Render(commandBuffer, vkManager, width, height);
+            if(_modelSpritePipeline->GetPipeline() != NULL && _modelSpritePipeline->GetPipelineLayout() != NULL)
+            {
+                vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _modelSpritePipeline->GetPipeline());
+                float alpha = GetSpriteAlpha(0);
+                _renderSprite->SetColor(alpha, alpha, alpha, alpha);
+                _renderSprite->Render(commandBuffer, vkManager, width, height);
+            }
             EndRendering(commandBuffer);
             vkManager->SubmitCommand(commandBuffer);
         }

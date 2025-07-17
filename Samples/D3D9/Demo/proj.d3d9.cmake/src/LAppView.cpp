@@ -129,6 +129,10 @@ void LAppView::InitializeSprite()
 {
     // シェーダ作成
     _shader = new LAppSpriteShader();
+    if (!_shader->CreateShader())
+    {
+      return;
+    }
 
     int width, height;
     LAppDelegate::GetInstance()->GetClientSize(width, height);

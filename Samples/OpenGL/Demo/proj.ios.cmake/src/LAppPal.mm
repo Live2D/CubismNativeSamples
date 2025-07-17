@@ -38,6 +38,11 @@ csmByte* LAppPal::LoadFileAsBytes(const string filePath, csmSizeInt* outSize)
                               ofType:[NSString stringWithUTF8String:extname.c_str()]
                               inDirectory:[NSString stringWithUTF8String:pathname.c_str()]];
 
+    if(castFilePath == NULL)
+    {
+      return NULL;
+    }
+
     NSError *errorMsg = nil;
     NSData *data = [NSData dataWithContentsOfFile:castFilePath options:NULL error: &errorMsg];
 

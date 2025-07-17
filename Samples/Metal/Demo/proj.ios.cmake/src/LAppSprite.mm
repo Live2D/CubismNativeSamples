@@ -99,7 +99,10 @@ typedef struct
 
     [renderEncoder setVertexBuffer:_vertexBuffer offset:0 atIndex:0];
     [renderEncoder setVertexBuffer:_fragmentBuffer offset:0 atIndex:1];
-
+    if(_pipelineState == NULL)
+    {
+      return;
+    }
     // パイプライン状態オブジェクトを設定する
     [renderEncoder setRenderPipelineState:_pipelineState];
 
@@ -176,6 +179,11 @@ typedef struct
     Csm::csmString shaderFilePath(LAppDefine::ShaderPath);
     shaderFilePath += LAppDefine::ShaderName;
     unsigned char* shaderRawString = LAppPal::LoadFileAsBytes(shaderFilePath.GetRawString(), &size);
+    if(shaderRawString == NULL)
+    {
+      return;
+    }
+
     NSString* shader = [NSString stringWithUTF8String:(char *)shaderRawString];
 
     NSError* compileError;

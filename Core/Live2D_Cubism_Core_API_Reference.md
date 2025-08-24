@@ -139,7 +139,7 @@ In this document, you can learn functions of Live2D Cubism Core (Core) in Live2D
 The following chart shows the relationship between the Application and Core and Framework, and their roles.
 Core is called from both Application and Framework.
 
-![Core and Framework](assets/l2d1.png)
+![Core and Framework](assets/01.png)
 
 ### What is Core?
 
@@ -170,13 +170,13 @@ The data is in accordance with the coordinate system of OpenGL.
 
 The following chart shows the flow of processing for loading a model file (.moc3).
 
-![Loading a model file (.moc3)](assets/l2d2.png)
+![Loading a model file (.moc3)](assets/02.png)
 
 > Yellow node shows Application, purple node means a segment Framework should process. Nodes with arrow to the Core indicate calls to API of the Core.
 
 The following chart shows the refresh cycle of rendering.
 
-![Refresh cycle of rendering](assets/l2d3.png)
+![Refresh cycle of rendering](assets/03.png)
 
 > Same as the first chart, yellow node shows Application, purple node means a segment Framework should process. Nodes with arrow to the Core indicate calls to API of the Core. The sections surrounded by solid lines are simplified explanation.
 
@@ -411,7 +411,7 @@ Release memory targeting not addresses of `csmMoc` or `csmModel` but its of `moc
 
 The following chart shows the flow about securing and releasing memory.
 
-![Securing and releasing memory](assets/l2d4.png)
+![Securing and releasing memory](assets/04.png)
 
 **Link to the used API**
 - [`csmReviveMocInPlace`](#csmrevivemocinplace)
@@ -422,9 +422,9 @@ The following chart shows the flow about securing and releasing memory.
 
 canvas size displayed as work area in Editor, center position and unit position that can be specified when model file is exported can be obtained.
 
-![Save Settings](assets/l2d5.png)
+![Save Settings](assets/05.png)
 
-![Export Settings](assets/l2d6.png)
+![Export Settings](assets/06.png)
 
 *(Description of Editor UI for Export Settings)*
 The export settings dialog allows specifying canvas properties:
@@ -462,7 +462,7 @@ An array obtained with an API such as `csmGetDrawableTextureIndices` is the star
 Arrays in each API have the same sequences. When it is necessary to look for a particular parameter, the parameter needs to be searched in the array obtained by `csmGetDrawableIds`.
 Parameters, parts, etc are described the same manner.
 
-![Structure of Array (SOA) for csmModel](assets/l2d7.png)
+![Structure of Array (SOA) for csmModel](assets/07.png)
 
 >*(A detailed diagram on page 21 shows the Structure Of Array (SOA) layout for Drawables, where functions like `csmGetDrawableIds`, `csmGetDrawableConstantFlags`, `csmGetDrawableVertexCounts`, etc., return pointers to parallel arrays. Blue APIs are static, Orange APIs are dynamic.)*
 
@@ -565,7 +565,7 @@ Vertex X,Y obtained by `csmGetDrawableVertexPositions` are influenced by `Pixels
 
 The value of X and Y are shown as a unit. The value can be calculated by the following formula.
 
-![Export Settings description](assets/l2d8.png)
+![Export Settings description](assets/08.png)
 
 Using the numbered items from the [Export Settings description](#get-rendering-size-of-model):
 >`X = (localX / [5]) - ([1] * [3])`
@@ -634,7 +634,7 @@ It is necessary to understand each element of the parameter to manipulate the mo
 - Minimum value
 - Initial value
 
-![Model Parameter List Array Description](assets/l2d9.png)
+![Model Parameter List Array Description](assets/09.png)
 
 **Access to the elements of each parameter**
 ```c
@@ -718,7 +718,7 @@ for( i = 0; i < parameterCount ;++i)
 
 #### Gets the parent parts of parts
 
-![Cubism Editor Parts Tree Structure](assets/l2d10.png)
+![Cubism Editor Parts Tree Structure](assets/10.png)
 
 Parts are made of tree structure. 
 
@@ -1013,7 +1013,7 @@ enum
 
 **Flow chart of Flag Confirmation Process**
 
-![Flow chart of Flag Confirmation Process](assets/l2d11.png)
+![Flow chart of Flag Confirmation Process](assets/11.png)
 
 **Link to the used API**
 [`csmGetDrawableDynamicFlags`](#csmgetdrawabledynamicflags)
@@ -1063,7 +1063,7 @@ The drawing order (`DrawOrder`) and the rendering order (`RenderOrder`) seem to 
 
 The drawing order is the value to be referred to for determination of the order of drawing on the art mesh on the Editor.
 
-![Draw Order in Editor](assets/l2d12.png)
+![Draw Order in Editor](assets/12.png)
 
 The value output by `csmGetDrawableDrawOrders` is the value in Cubism Editor's inspector. Calculation of drawing order group is not related.
 

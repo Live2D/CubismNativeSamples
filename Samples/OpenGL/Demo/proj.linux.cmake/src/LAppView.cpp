@@ -76,14 +76,11 @@ void LAppView::Initialize(int width, int height)
     LAppView_Common::Initialize(width, height);
 
     // シェーダー作成
-    _spriteShader = new LAppSpriteShader();
+    if(_spriteShader == NULL)
+    {
+        _spriteShader = new LAppSpriteShader();
+    }
 }
-
-void LAppView::ResizeWindow(int width, int height)
-{
-    LAppView_Common::Initialize(width, height);
-}
-
 
 void LAppView::Render()
 {

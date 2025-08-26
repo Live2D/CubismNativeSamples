@@ -4,6 +4,20 @@
 
 # お知らせ
 
+## [制限事項] Cubism 5 SDK for Native R5 beta1 の動作環境について (2025-08-26)
+
+Cubism 5 SDK for Native R5 beta1 は、以下のプラットフォームにてビルド動作確認をしております。
+
+- OpenGL
+  - Windows
+  - macOS
+  - iOS
+  - Android
+
+それ以外の環境では**ビルドができません**ので、あらかじめご了承ください。
+ビルド未対応のレンダラ及びプラットフォームの動作については Cubism 5 SDK for Native R5 beta2 以降の対応を予定しています。 
+
+
 ## [注意事項] Visual Studio 2017 ビルドについて (2025-05-29)
 
 Visual Studio 2017 は Windows 10 SDK 10.0.17763.0 までの提供となっており、その状態では実行に問題が発生する場合がございます。

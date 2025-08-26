@@ -34,6 +34,8 @@ using namespace MinLAppDefine;
 @property (nonatomic) MinTouchManager *touchManager; ///< タッチマネージャー
 @property (nonatomic) Csm::CubismMatrix44 *deviceToScreen;///< デバイスからスクリーンへの行列
 @property (nonatomic) Csm::CubismViewMatrix *viewMatrix;
+@property (nonatomic) int windowWidth;
+@property (nonatomic) int windowHeight;
 
 @end
 
@@ -42,7 +44,7 @@ using namespace MinLAppDefine;
 
 - (void)releaseView
 {
-    _renderBuffer.DestroyOffscreenSurface();
+    _renderBuffer.DestroyRenderTarget();
 
     _renderSprite = nil;
 
@@ -109,6 +111,10 @@ using namespace MinLAppDefine;
     int width = screenRect.size.width;
     int height = screenRect.size.height;
 
+    const CGFloat retinaScale = [[UIScreen mainScreen] scale];
+    _windowWidth = width * retinaScale;
+    _windowHeight = height * retinaScale;
+
     // 縦サイズを基準とする
     float ratio = static_cast<float>(width) / static_cast<float>(height);
     float left = -ratio;
@@ -123,13 +129,13 @@ using namespace MinLAppDefine;
     _deviceToScreen->LoadIdentity(); // サイズが変わった際などリセット必須
     if (width > height)
     {
-      float screenW = fabsf(right - left);
-      _deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
+        float screenW = fabsf(right - left);
+        _deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
     }
     else
     {
-      float screenH = fabsf(top - bottom);
-      _deviceToScreen->ScaleRelative(screenH / height, -screenH / height);
+        float screenH = fabsf(top - bottom);
+        _deviceToScreen->ScaleRelative(screenH / height, -screenH / height);
     }
     _deviceToScreen->TranslateRelative(-width * 0.5f, -height * 0.5f);
 
@@ -177,7 +183,7 @@ using namespace MinLAppDefine;
             MinLAppModel* model = [Live2DManager getModel];
             if (model)
             {
-                Csm::Rendering::CubismOffscreenSurface_OpenGLES2& useTarget = model->GetRenderBuffer();
+                Csm::Rendering::CubismRenderTarget_OpenGLES2& useTarget = model->GetRenderBuffer();
                 GLuint id = useTarget.GetColorBuffer();
                 [_renderSprite renderImmidiate:_vertexBufferId fragmentBufferID:_fragmentBufferId TextureId:id uvArray:uvVertex];
             }
@@ -285,7 +291,7 @@ using namespace MinLAppDefine;
 - (void)PreModelDraw:(MinLAppModel&)refModel
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-    Csm::Rendering::CubismOffscreenSurface_OpenGLES2* useTarget = NULL;
+    Csm::Rendering::CubismRenderTarget_OpenGLES2* useTarget = NULL;
 
     if (_renderTarget != SelectTarget_None)
     {// 別のレンダリングターゲットへ向けて描画する場合
@@ -306,11 +312,11 @@ using namespace MinLAppDefine;
             // PadとPhoneで縦横を変えている
             if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
             {
-                useTarget->CreateOffscreenSurface(height, width);
+                useTarget->CreateRenderTarget(height, width);
             }
             else
             {
-                useTarget->CreateOffscreenSurface(width, height);
+                useTarget->CreateRenderTarget(width, height);
             }
         }
 
@@ -323,7 +329,7 @@ using namespace MinLAppDefine;
 - (void)PostModelDraw:(MinLAppModel&)refModel
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-    Csm::Rendering::CubismOffscreenSurface_OpenGLES2* useTarget = NULL;
+    Csm::Rendering::CubismRenderTarget_OpenGLES2* useTarget = NULL;
 
     if (_renderTarget != SelectTarget_None)
     {// 別のレンダリングターゲットへ向けて描画する場合
@@ -378,6 +384,16 @@ using namespace MinLAppDefine;
     }
 
     return alpha;
+}
+
+- (int)GetWindowWidth
+{
+    return _windowWidth;
+}
+
+- (int)GetWindowHeight;
+{
+    return _windowHeight;
 }
 
 @end

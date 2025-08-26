@@ -18,7 +18,6 @@
 #include "LAppSpriteShader.hpp"
 #include "LAppModel.hpp"
 
-#include <Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp>
 #include <Rendering/OpenGL/CubismRenderer_OpenGLES2.hpp>
 
 #include "JniBridgeC.hpp"
@@ -47,7 +46,7 @@ LAppView::LAppView()
 
 LAppView::~LAppView()
 {
-    _renderBuffer.DestroyOffscreenSurface();
+    _renderBuffer.DestroyRenderTarget();
     if (_renderSprite)
     {
         delete _renderSprite;
@@ -78,7 +77,10 @@ void LAppView::Initialize(int width, int height)
 {
     LAppView_Common::Initialize(width, height);
 
-    _spriteShader = new LAppSpriteShader();
+    if(_spriteShader == NULL)
+    {
+        _spriteShader = new LAppSpriteShader();
+    }
 }
 
 void LAppView::InitializeSprite()
@@ -257,7 +259,7 @@ void LAppView::OnTouchesEnded(float pointX, float pointY)
 void LAppView::PreModelDraw(LAppModel &refModel)
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-    Csm::Rendering::CubismOffscreenSurface_OpenGLES2* useTarget = NULL;
+    Csm::Rendering::CubismRenderTarget_OpenGLES2* useTarget = NULL;
 
     if (_renderTarget != SelectTarget_None)
     {// 別のレンダリングターゲットへ向けて描画する場合
@@ -274,7 +276,7 @@ void LAppView::PreModelDraw(LAppModel &refModel)
             int height = LAppDelegate::GetInstance()->GetWindowHeight();
 
             // モデル描画キャンバス
-            useTarget->CreateOffscreenSurface(static_cast<csmUint32>(width), static_cast<csmUint32>(height));
+            useTarget->CreateRenderTarget(static_cast<csmUint32>(width), static_cast<csmUint32>(height));
         }
 
         // レンダリング開始
@@ -286,7 +288,7 @@ void LAppView::PreModelDraw(LAppModel &refModel)
 void LAppView::PostModelDraw(LAppModel &refModel)
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-    Csm::Rendering::CubismOffscreenSurface_OpenGLES2* useTarget = NULL;
+    Csm::Rendering::CubismRenderTarget_OpenGLES2* useTarget = NULL;
 
     if (_renderTarget != SelectTarget_None)
     {// 別のレンダリングターゲットへ向けて描画する場合

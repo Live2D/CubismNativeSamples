@@ -110,22 +110,22 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 | 開発ツール | バージョン |
 | --- | --- |
-| Android Studio | Narwhal 2025.1.1 Patch 1 |
+| Android Studio | Narwhal 2025.1.2 Patch 1 |
 | DevEco Studio | 5.0.5.306 |
-| CMake | 3.31.7 |
+| CMake | 3.31.8 |
 | Visual Studio 2015 | Update 3 |
-| Visual Studio 2017 | 15.9.73 |
-| Visual Studio 2019 | 16.11.47 |
-| Visual Studio 2022 | 17.14.2 |
-| Xcode | 16.3 |
+| Visual Studio 2017 | 15.9.76 |
+| Visual Studio 2019 | 16.11.50 |
+| Visual Studio 2022 | 17.14.13 |
+| Xcode | 16.4 |
 
 ### Android
 
 | Android SDK tools | バージョン |
 | --- | --- |
-| Android NDK | 26.3.11579264 |
-| Android SDK | 35.0.0 |
-| CMake | 3.22.1 |
+| Android NDK | 29.0.13846066 |
+| Android SDK | 36.0.0 |
+| CMake | 4.1.0 |
 
 ### HarmonyOS
 
@@ -140,7 +140,7 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 | Red Hat | Amazon Linux 2 | `amazonlinux:2` | 7.3.1 |
 | Red Hat | AlmaLinux | `almalinux:latest` | 11.4.1 |
 | Debian | Ubuntu 22.04.4 | `ubuntu:22.04` | 11.4.0 |
-| Debian | Ubuntu 24.04.2 | `ubuntu:24.04` | 13.3.0 |
+| Debian | Ubuntu 24.04.3 | `ubuntu:24.04` | 13.3.0 |
 
 #### Mesa ライブラリ
 
@@ -156,8 +156,8 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 | プラットフォーム | バージョン |
 | --- | --- |
-| iOS / iPadOS | 18.5 |
-| macOS | 15.5 |
+| iOS / iPadOS | 18.6.1 |
+| macOS | 15.6 |
 | Windows 10 | 23H2 |
 | Windows 11 | 24H2 |
 
@@ -166,7 +166,7 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 | バージョン | デバイス | Tegra | 16KB ページサイズ *1 |
 | --- | --- | --- | --- |
 | 16 | Pixel 9 | | ✔︎ |
-| 15 | Pixel 7a | |  |
+| 16 | Pixel 7a | |  |
 | 7.1.1 | Nexus 9 | ✔︎ | |
 
 *1 開発者向けオプションを使用して有効にした環境となります

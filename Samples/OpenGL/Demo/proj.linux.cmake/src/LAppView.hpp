@@ -54,14 +54,6 @@ public:
     virtual void Initialize(int width, int height) override;
 
     /**
-    * @brief Resize the window view 
-    * 
-    * @param[in]       width        new view width
-    * @param[in]       height       new view height
-    */
-    void ResizeWindow(int width, int height);
-
-    /**
     * @brief 描画する。
     */
     void Render();

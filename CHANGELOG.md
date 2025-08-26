@@ -5,11 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
-## [Unreleased]
+## [5-r.5-beta.1] - 2025-08-26
+
+### Added
+
+* Add `Ren` model.
+* Add support for Blend mode and Offscreen drawing.
+  * In `5-r.5-beta.1`, the OpenGL renderer works only on Windows, macOS, iOS, and Android. The SDK does not function in other environments. Please check `NOTICE.md`
+  
+### Changed
+
+* Rename CubismOffscreenSurface_OpenGLES2 class in Framework to CubismRenderTarget_OpenGLES2 from Framework.
+* Change the compile and target SDK version of Android OS to 16.0 (API 36).
+  * Upgrade the version of Android Gradle Plugin from 8.6.1 to 8.9.1.
+  * Upgrade the version of Gradle from 8.7 to 8.11.1.
 
 ## Fixed
 
-* Fix unintended object recreating when resizing the window in the OpenGL Linux sample program. by [@KhangPham9](https://github.com/Live2D/CubismNativeSamples/pull/50)
+* Fix unintended object recreating when resizing the window in the OpenGL sample program. by [@KhangPham9](https://github.com/Live2D/CubismNativeSamples/pull/50)
 
 
 ## [5-r.4.1] - 2025-07-17
@@ -509,6 +522,7 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[5-r.5-beta.1]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.4.1...5-r.5-beta.1
 [5-r.4.1]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.4...5-r.4.1
 [5-r.4]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.3...5-r.4
 [5-r.3]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.2...5-r.3

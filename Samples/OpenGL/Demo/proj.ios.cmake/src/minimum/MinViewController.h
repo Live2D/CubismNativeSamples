@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 #import <GLKit/GLKit.h>
 
-#include <Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp>
+#include <Rendering/OpenGL/CubismRenderTarget_OpenGLES2.hpp>
 #import "MinLAppModel.h"
 
 @interface MinViewController : GLKViewController <GLKViewDelegate>
@@ -26,7 +26,7 @@ typedef NS_ENUM(NSUInteger, SelectTarget)
 @property (nonatomic) GLuint programId;
 
 @property (nonatomic) bool anotherTarget;
-@property (nonatomic) Csm::Rendering::CubismOffscreenSurface_OpenGLES2 renderBuffer;
+@property (nonatomic) Csm::Rendering::CubismRenderTarget_OpenGLES2 renderBuffer;
 
 @property (nonatomic) float spriteColorR;
 @property (nonatomic) float spriteColorG;
@@ -104,5 +104,17 @@ typedef NS_ENUM(NSUInteger, SelectTarget)
  * @param[in]   b   青(0.0~1.0)
  */
 - (void)SetRenderTargetClearColor:(float)r g:(float)g b:(float)b;
+
+/**
+ * @brief   ウインドウの幅を取得する
+ *
+ */
+- (int)GetWindowWidth;
+
+/**
+ * @brief   ウインドウの高さを取得する
+ *
+ */
+- (int)GetWindowHeight;
 
 @end

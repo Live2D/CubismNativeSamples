@@ -103,6 +103,16 @@ LAppModel* LAppLive2DManager::GetModel(csmUint32 no) const
     return NULL;
 }
 
+void LAppLive2DManager::SetRenderTargetSize(csmUint32 width, csmUint32 height)
+{
+    for (csmUint32 i = 0; i < _models.GetSize(); i++)
+    {
+        LAppModel* model = GetModel(i);
+
+        model->SetRenderTargetSize(width, height);
+    }
+}
+
 void LAppLive2DManager::SetUpModel()
 {
     // ResourcesPathの中にあるフォルダ名を全てクロールし、モデルが存在するフォルダを定義する。

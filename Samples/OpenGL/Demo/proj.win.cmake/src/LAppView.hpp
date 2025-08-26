@@ -7,12 +7,8 @@
 
 #pragma once
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <Math/CubismMatrix44.hpp>
-#include <Math/CubismViewMatrix.hpp>
 #include "CubismFramework.hpp"
-#include <Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp>
+#include <Rendering/OpenGL/CubismRenderTarget_OpenGLES2.hpp>
 
 #include "LAppView_Common.hpp"
 
@@ -129,7 +125,7 @@ private:
 
     // レンダリング先を別ターゲットにする方式の場合に使用
     LAppSprite* _renderSprite;                                      ///< モードによっては_renderBufferのテクスチャを描画
-    Csm::Rendering::CubismOffscreenSurface_OpenGLES2 _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング
+    Csm::Rendering::CubismRenderTarget_OpenGLES2 _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング
     SelectTarget _renderTarget;     ///< レンダリング先の選択肢
     float _clearColor[4];           ///< レンダリングターゲットのクリアカラー
 

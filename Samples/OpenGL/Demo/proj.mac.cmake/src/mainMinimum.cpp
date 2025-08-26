@@ -28,6 +28,9 @@
 #include <Rendering/OpenGL/CubismRenderer_OpenGLES2.hpp>
 #include <Utils/CubismString.hpp>
 
+// Retina display mode
+// #define IS_RETINA
+
 /**
 *@brief モデルデータのディレクトリ名
 * このディレクトリ名と同名の.model3.jsonを読み込む
@@ -214,7 +217,7 @@ void LoadModel(const std::string modelDirectoryName)
     // モデルデータの読み込み及び生成とセットアップを行う
     std::string json = ".model3.json";
     std::string fileName = _modelDirectoryName + json;
-    static_cast<CubismUserModelExtend*>(_userModel)->LoadAssets(fileName.c_str());
+    static_cast<CubismUserModelExtend*>(_userModel)->LoadAssets(fileName.c_str(), windowWidth, windowHeight);
 
     // ユーザーモデルをMouseActionManagerへ渡す
     MouseActionManager::GetInstance()->SetUserModel(_userModel);
@@ -226,13 +229,21 @@ void Run()
     while (glfwWindowShouldClose(_window) == GL_FALSE)
     {
         int width, height;
+        int retinaSize = 1;
 
+#ifdef IS_RETINA
+        glfwGetFramebufferSize(_window, &width, &height);
+        retinaSize = 2;
+#else
         // ウィンドウサイズ記憶
         glfwGetWindowSize(_window, &width, &height);
+#endif
         if ((windowWidth != width || windowHeight != height) && width > 0 && height > 0)
         {
-            //AppViewの初期化
-            MouseActionManager::GetInstance()->ViewInitialize(width, height);
+            // AppViewの初期化
+            MouseActionManager::GetInstance()->ViewInitialize(width / retinaSize, height / retinaSize);
+            // オフスクリーンのサイズ変更
+            _userModel->SetRenderTargetSize(width, height);
             // サイズを保存しておく
             windowWidth = width;
             windowHeight = height;

@@ -162,7 +162,7 @@ void LAppMinimumModel::SetupModel()
     _motionManager->StopAllMotions();
 
     // レンダラの作成
-    CreateRenderer();
+    CreateRenderer(LAppMinimumDelegate::GetInstance()->GetWindowWidth(), LAppMinimumDelegate::GetInstance()->GetWindowHeight());
 
     // テクスチャのセットアップ
     SetupTextures();
@@ -204,7 +204,7 @@ void LAppMinimumModel::PreloadMotionGroup(const csmChar* group)
         DeleteBuffer(buffer, path.GetRawString());
     }
 
-    CreateRenderer();
+    CreateRenderer(LAppMinimumDelegate::GetInstance()->GetWindowWidth(), LAppMinimumDelegate::GetInstance()->GetWindowHeight());
 
     SetupTextures();
 }
@@ -419,7 +419,7 @@ void LAppMinimumModel::ReloadRenderer()
 {
     DeleteRenderer();
 
-    CreateRenderer();
+    CreateRenderer(LAppMinimumDelegate::GetInstance()->GetWindowWidth(), LAppMinimumDelegate::GetInstance()->GetWindowHeight());
 
     SetupTextures();
 }
@@ -457,7 +457,7 @@ void LAppMinimumModel::MotionEventFired(const csmString& eventValue)
     CubismLogInfo("%s is fired on LAppMinimumModel!!", eventValue.GetRawString());
 }
 
-Csm::Rendering::CubismOffscreenSurface_OpenGLES2 &LAppMinimumModel::GetRenderBuffer()
+Csm::Rendering::CubismRenderTarget_OpenGLES2 &LAppMinimumModel::GetRenderBuffer()
 {
     return _renderBuffer;
 }

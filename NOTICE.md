@@ -4,6 +4,20 @@
 
 # Notices
 
+## [Restrictions] Operating Environment for Cubism 5 SDK for Native R5 beta1 (2025-08-26)
+
+Cubism 5 SDK for Native R5 beta1 has been tested for build operation on the following platforms:
+
+- OpenGL
+  - Windows
+  - macOS
+  - iOS
+  - Android
+
+Please note that **building is not supported** on other environments. 
+We plan to support the functionality of unsupported renderers and platforms in Cubism 5 SDK for Native R5 beta2 and later.
+
+
 ## [Notes] Building with Visual Studio 2017 (2025-05-29)
 
 Visual Studio 2017 provides Windows 10 SDK versions up to 10.0.17763.0 only, which may cause execution issues in some situations.  

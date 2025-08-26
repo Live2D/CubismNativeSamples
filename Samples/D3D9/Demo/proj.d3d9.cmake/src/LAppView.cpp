@@ -131,7 +131,7 @@ void LAppView::InitializeSprite()
     _shader = new LAppSpriteShader();
     if (!_shader->CreateShader())
     {
-      return;
+        return;
     }
 
     int width, height;

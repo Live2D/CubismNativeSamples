@@ -11,7 +11,6 @@
 #import "LAppPal.h"
 #import <CubismFramework.hpp>
 #import <Rendering/Metal/CubismRenderer_Metal.hpp>
-#import "Rendering/Metal/CubismRenderingInstanceSingleton_Metal.h"
 
 #define BUFFER_OFFSET(bytes) ((GLubyte *)NULL + (bytes))
 

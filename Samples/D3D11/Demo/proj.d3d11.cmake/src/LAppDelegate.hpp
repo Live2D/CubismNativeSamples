@@ -102,6 +102,16 @@ public:
      */
     void EndFrame();
 
+    /**
+    * @brief   ウインドウの幅を取得する。
+    */
+    int GetWindowWidth() { return _presentParameters.BufferDesc.Width; }
+
+    /**
+    * @brief   ウインドウの高さを取得する。
+    */
+    int GetWindowHeight() { return _presentParameters.BufferDesc.Height; }
+
 private:
 
     enum DeviceStep

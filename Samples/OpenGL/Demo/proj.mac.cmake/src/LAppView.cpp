@@ -231,12 +231,12 @@ void LAppView::PreModelDraw(LAppModel &refModel)
         // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
 
-        if (!useTarget->IsValid())
-        {// 描画ターゲット内部未作成の場合はここで作成
-            int bufWidth, bufHeight;
-            glfwGetFramebufferSize(LAppDelegate::GetInstance()->GetWindow(), &bufWidth, &bufHeight);
+        int bufWidth, bufHeight;
+        glfwGetFramebufferSize(LAppDelegate::GetInstance()->GetWindow(), &bufWidth, &bufHeight);
 
-            if(bufWidth!=0 && bufHeight!=0)
+        if (!useTarget->IsValid() || useTarget->GetBufferWidth() != static_cast<csmUint32>(bufWidth) || useTarget->GetBufferHeight() != static_cast<csmUint32>(bufHeight))
+        {// 描画ターゲット内部が未作成の場合は作成し、レンダーターゲットのバッファサイズがフレームバッファサイズと異なる場合は再作成する
+            if(bufWidth > 0 && bufHeight > 0)
             {
                 // モデル描画キャンバス
                 useTarget->CreateRenderTarget(static_cast<csmUint32>(bufWidth), static_cast<csmUint32>(bufHeight));
@@ -372,5 +372,13 @@ void LAppView::ResizeSprite()
             fHeight = static_cast<float>(texInfo->height);
             _gear->ResetRect(x, y, fWidth, fHeight);
         }
+    }
+
+    if(_renderSprite)
+    {
+        // 画面全体を覆うサイズ
+        x = width * 0.5f;
+        y = height * 0.5f;
+        _renderSprite->ResetRect(x, y, width, height);
     }
 }

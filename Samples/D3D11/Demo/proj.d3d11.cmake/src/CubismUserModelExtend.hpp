@@ -37,10 +37,10 @@ public:
     *
     * model3.jsonの記述に従ってモデル生成、モーション、物理演算などのコンポーネント生成を行う
     *
-    * @param[in]   setting     ICubismModelSettingのインスタンス
-    *
+    * @param[in]   width       ウインドウの幅
+    * @param[in]   height      ウインドウの高さ
     */
-    void SetupModel();
+    void SetupModel(Csm::csmUint32 width, Csm::csmUint32 height);
 
     /**
     * @brief モデルの更新
@@ -52,7 +52,7 @@ public:
     /**
     * @brief   別ターゲットに描画する際に使用するバッファの取得
     */
-    Csm::Rendering::CubismOffscreenSurface_D3D11& GetRenderBuffer();
+    Csm::Rendering::CubismRenderTarget_D3D11& GetRenderBuffer();
 
 private:
     /**
@@ -142,5 +142,5 @@ private:
 
     Csm::csmVector<Csm::csmUint64> _bindTextureId; ///< テクスチャID
 
-    Csm::Rendering::CubismOffscreenSurface_D3D11 _renderBuffer;   ///< フレームバッファ以外の描画先
+    Csm::Rendering::CubismRenderTarget_D3D11 _renderBuffer;   ///< フレームバッファ以外の描画先
 };

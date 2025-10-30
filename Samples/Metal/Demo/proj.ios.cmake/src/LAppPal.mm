@@ -50,8 +50,9 @@ csmByte* LAppPal::LoadFileAsBytes(const string filePath, csmSizeInt* outSize)
     }
 
     NSUInteger len = [data length];
-    Byte *byteData = (Byte*)malloc(len);
+    Byte *byteData = (Byte*)malloc(len + 1);
     memcpy(byteData, [data bytes], len);
+    byteData[len] = 0;
 
     *outSize = static_cast<Csm::csmSizeInt>(len);
     return static_cast<Csm::csmByte*>(byteData);

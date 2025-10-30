@@ -86,7 +86,7 @@ static void InitializeCubism()
     CubismFramework::Initialize();
 
     // モデルロード前に必ず呼び出す必要がある
-    Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D11::InitializeConstantSettings(CubismDirectXRenderer::GetInstance()->BackBufferNum, CubismDirectXRenderer::GetInstance()->GetD3dDevice());
+    Live2D::Cubism::Framework::Rendering::DeviceInfo_D3D11::SetConstantSettings(CubismDirectXRenderer::GetInstance()->BackBufferNum, CubismDirectXRenderer::GetInstance()->GetD3dDevice());
 
     LAppPal::UpdateTime();
 }
@@ -330,7 +330,7 @@ void LoadModel(const std::string modelDirectoryName)
     _userModel = new CubismUserModelExtend(modelDirectoryName, _currentModelDirectory);
 
     // モデルデータの読み込み及び生成とセットアップを行う
-    static_cast<CubismUserModelExtend*>(_userModel)->SetupModel();
+    static_cast<CubismUserModelExtend*>(_userModel)->SetupModel(LAppDefine::RenderTargetWidth, LAppDefine::RenderTargetHeight);
 
     // ユーザーモデルをMouseActionManagerへ渡す
     MouseActionManager_Common::GetInstance()->SetUserModel(_userModel);

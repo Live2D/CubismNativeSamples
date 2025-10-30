@@ -18,9 +18,6 @@
 #include "LAppLive2DManager.hpp"
 #include "LAppTextureManager.hpp"
 
-// Retina display mode
-// #define IS_RETINA
-
 using namespace Csm;
 using namespace std;
 using namespace LAppDefine;
@@ -147,18 +144,22 @@ void LAppDelegate::Run()
     while (glfwWindowShouldClose(_window) == GL_FALSE && !_isEnd)
     {
         int width, height;
-        int retinaSize = 1;
+        float scaleWidth, scaleHeight;
 
-#ifdef IS_RETINA
         glfwGetFramebufferSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
-        retinaSize = 2;
-#else
-        glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
-#endif
+        glfwGetWindowContentScale(LAppDelegate::GetInstance()->GetWindow(), &scaleWidth, &scaleHeight);
+        if (scaleWidth == 0.0f)
+        {
+            scaleWidth = 1.0f;
+        }
+        if (scaleHeight == 0.0f)
+        {
+            scaleHeight = 1.0f;
+        }
 
         if((_windowWidth!=width || _windowHeight!=height) && width>0 && height>0)
         {
-            _view->Initialize(width / retinaSize, height / retinaSize);
+            _view->Initialize(width / scaleWidth, height / scaleHeight);
             _view->ResizeSprite();
             // オフスクリーンのサイズ変更
             LAppLive2DManager::GetInstance()->SetRenderTargetSize(width, height);

@@ -52,7 +52,7 @@ CubismUserModelExtend::~CubismUserModelExtend()
     delete _textureManager;
 }
 
-void CubismUserModelExtend::LoadAssets(const Csm::csmChar* fileName)
+void CubismUserModelExtend::LoadAssets(const Csm::csmChar* fileName, csmUint32 width, csmUint32 height)
 {
     csmSizeInt size;
     const csmString path = csmString(_currentModelDirectory.c_str()) + fileName;
@@ -62,10 +62,10 @@ void CubismUserModelExtend::LoadAssets(const Csm::csmChar* fileName)
     DeleteBuffer(buffer, path.GetRawString());
 
     // モデルの生成
-    SetupModel();
+    SetupModel(width, height);
 }
 
-void CubismUserModelExtend::SetupModel()
+void CubismUserModelExtend::SetupModel(csmUint32 width, csmUint32 height)
 {
     _updating = true;
     _initialized = false;
@@ -163,7 +163,7 @@ void CubismUserModelExtend::SetupModel()
     _motionManager->StopAllMotions();
 
     // レンダラの作成
-    CreateRenderer();
+    CreateRenderer(width, height);
 
     // テクスチャのセットアップ
     SetupTextures();

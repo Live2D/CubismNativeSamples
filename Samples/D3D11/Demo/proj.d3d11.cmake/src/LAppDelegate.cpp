@@ -350,7 +350,7 @@ void LAppDelegate::InitializeCubism()
     CubismFramework::Initialize();
 
     // モデルロード前に必ず呼び出す必要がある
-    Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D11::InitializeConstantSettings(BackBufferNum, _device);
+    Live2D::Cubism::Framework::Rendering::DeviceInfo_D3D11::SetConstantSettings(BackBufferNum, _device);
 
     //load model
     LAppLive2DManager::GetInstance();
@@ -466,6 +466,8 @@ void LAppDelegate::ResizeDevice()
         _presentParameters.BufferDesc.Width = nowWidth;
         _presentParameters.BufferDesc.Height = nowHeight;
 
+        LAppLive2DManager::GetInstance()->SetRenderTargetSize(nowWidth, nowHeight);
+
         if (_swapChain)
         {
             // サイズを変更
@@ -494,7 +496,7 @@ void LAppDelegate::ResizeDevice()
                         GetClientSize(clientWidth, clientHeight);
                         _view->Initialize(clientWidth, clientHeight);
                         _view->ResizeSprite();
-                        _view->DestroyOffscreenSurface();
+                        _view->DestroyRenderTarget();
                     }
 
                     // マネージャにサイズ変更通知

@@ -28,9 +28,6 @@
 #include <Rendering/OpenGL/CubismRenderer_OpenGLES2.hpp>
 #include <Utils/CubismString.hpp>
 
-// Retina display mode
-// #define IS_RETINA
-
 /**
 *@brief モデルデータのディレクトリ名
 * このディレクトリ名と同名の.model3.jsonを読み込む
@@ -229,19 +226,23 @@ void Run()
     while (glfwWindowShouldClose(_window) == GL_FALSE)
     {
         int width, height;
-        int retinaSize = 1;
+        float scaleWidth, scaleHeight;
 
-#ifdef IS_RETINA
         glfwGetFramebufferSize(_window, &width, &height);
-        retinaSize = 2;
-#else
-        // ウィンドウサイズ記憶
-        glfwGetWindowSize(_window, &width, &height);
-#endif
+        glfwGetWindowContentScale(_window, &scaleWidth, &scaleHeight);
+        if (scaleWidth == 0.0f)
+        {
+            scaleWidth = 1.0f;
+        }
+        if (scaleHeight == 0.0f)
+        {
+            scaleHeight = 1.0f;
+        }
+
         if ((windowWidth != width || windowHeight != height) && width > 0 && height > 0)
         {
             // AppViewの初期化
-            MouseActionManager::GetInstance()->ViewInitialize(width / retinaSize, height / retinaSize);
+            MouseActionManager::GetInstance()->ViewInitialize(width / scaleWidth, height / scaleHeight);
             // オフスクリーンのサイズ変更
             _userModel->SetRenderTargetSize(width, height);
             // サイズを保存しておく

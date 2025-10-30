@@ -29,6 +29,7 @@ using namespace Csm;
 LAppMinimumView::LAppMinimumView()
     : LAppView_Common()
     , _renderSprite(nullptr)
+    , _spriteShader(nullptr)
     , _renderTarget(SelectTarget_None)
 {
     _clearColor[0] = 1.0f;

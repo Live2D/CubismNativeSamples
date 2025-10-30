@@ -70,6 +70,7 @@
     self.viewController.mOpenGLRun = true;
 
     _textureManager = [[LAppTextureManager alloc]init];
+    [self.viewController initializeSprite];
 
     [[LAppLive2DManager getInstance] changeScene:_sceneIndex];
 }

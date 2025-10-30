@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
+## [5-r.5-beta.2] - 2025-10-30
+
+### Added
+
+* Add support for Blend modes and Offscreen rendering.
+  * In `5-r.5-beta.2`, an OpenGL renderer for Linux and HarmonyOS has been added, alongside the D3D9, D3D11 and Metal renderers.
+
+### Changed
+
+* Rename CubismOffscreenSurface_D3D9 class in Framework to CubismRenderTarget_D3D9 from Framework.
+* Rename CubismOffscreenSurface_D3D11 class in Framework to CubismRenderTarget_D3D11 from Framework.
+* Rename CubismOffscreenSurface_Metal class in Framework to CubismRenderTarget_Metal from Framework.
+* Change to the implementation now enables support for multiple devices instead of a single one.
+  * In Metal, the device is now managed on the sample side.
+
+## Fixed
+
+* Fix OpenGL renderer now supports Retina displays on macOS.
+* Fix warnings occurs during build on OpenGL-Android.
+* Fix rendering corruption when the `USE_MODEL_RENDER_TARGET` macro is enabled in the OpenGL sample on macOS.
+* Fix an issue where LAppMinimumView::_spriteShader on OpenGL-Android was not initialized.
+* Fix OpenGL background rendering issue on iOS when returning to the app from the home screen.
+* Fix model distortion when resizing the window while using `USE_MODEL_RENDER_TARGET` with Metal.
+
+### Removed
+
+* Remove Visual Studio 2015 samples.
+
+
 ## [5-r.5-beta.1] - 2025-08-26
 
 ### Added
@@ -522,6 +551,7 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[5-r.5-beta.2]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.5-beta.1...5-r.5-beta.2
 [5-r.5-beta.1]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.4.1...5-r.5-beta.1
 [5-r.4.1]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.4...5-r.4.1
 [5-r.4]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.3...5-r.4

@@ -150,7 +150,8 @@ void LAppDelegate::Run()
         {
             _view->Initialize(width, height);
             _view->ResizeSprite();
-
+            // モデルのレンダーターゲットのサイズ変更
+            LAppLive2DManager::GetInstance()->SetRenderTargetSize(width, height);
             _windowWidth = width;
             _windowHeight = height;
         }

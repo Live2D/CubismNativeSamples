@@ -60,17 +60,14 @@ void CubismDirectXRenderer::Release()
     UnregisterClass(ClassName, _windowClass.hInstance);
 }
 
-void CubismDirectXRenderer::RestoreDeviceLost(LPDIRECT3DDEVICE9 device)
+void CubismDirectXRenderer::RestoreDeviceLost(LPDIRECT3DDEVICE9 device, csmUint32 width, csmUint32 height)
 {
-    _model->ReloadRenderer();
+    _model->ReloadRenderer(width, height);
 }
 
 void CubismDirectXRenderer::OnDeviceLost()
 {
     _model->OnDeviceLost();
-
-    // シェーダ・頂点宣言解放等
-    Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D9::OnDeviceLost();
 }
 
 void CubismDirectXRenderer::ReleaseInstance()
@@ -204,7 +201,7 @@ void CubismDirectXRenderer::EndFrame(CubismUserModel* userModel)
                     // スプライト再作成
                     CubismDirectXView::GetInstance()->InitializeSprite();
                     // レンダラー再生
-                    RestoreDeviceLost(_device);
+                    RestoreDeviceLost(_device, _presentParameters.BackBufferWidth, _presentParameters.BackBufferHeight);
 
                     _deviceLostStep = LostStep::LostStep_None;
                 }
@@ -256,7 +253,8 @@ void CubismDirectXRenderer::EndFrame(CubismUserModel* userModel)
             else
             {
                 // デバイスが変わったことを通知
-                Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D9::InitializeConstantSettings(1, _device);
+                Live2D::Cubism::Framework::Rendering::DeviceInfo_D3D9::SetConstantSettings(1, _device);
+                _model->GetRenderer<Rendering::CubismRenderer_D3D9>()->OnDeviceChanged();
 
                 // 描画のパラメータをウィンドウサイズに合わせて新設定
                 CubismDirectXView::GetInstance()->Initialize(nowWidth, nowHeight);
@@ -264,7 +262,7 @@ void CubismDirectXRenderer::EndFrame(CubismUserModel* userModel)
                 // スプライト再作成
                 CubismDirectXView::GetInstance()->InitializeSprite();
                 // レンダラー再生
-                RestoreDeviceLost(_device);
+                RestoreDeviceLost(_device, nowWidth, nowHeight);
 
                 _deviceLostStep = LostStep::LostStep_None;
             }

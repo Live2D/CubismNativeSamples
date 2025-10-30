@@ -30,14 +30,13 @@ target_sources(${APP_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/MetalView.h
     ${CMAKE_CURRENT_SOURCE_DIR}/MetalView.m
     ${CMAKE_CURRENT_SOURCE_DIR}/Shaders
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../Framework/src/Rendering/Metal/MetalShaders.metal
 )
 
 set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/Shaders PROPERTIES MACOSX_PACKAGE_LOCATION Shaders)
 
 set(RESOURCE_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/Shaders
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../Framework/src/Rendering/Metal/MetalShaders.metal)
+)
 
 set_target_properties(${APP_NAME} PROPERTIES
   MACOSX_BUNDLE TRUE

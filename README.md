@@ -110,13 +110,12 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 | Development Tool | Version |
 | --- | --- |
 | Android Studio | Narwhal 2025.1.2 Patch 1 |
-| DevEco Studio | 5.0.5.306 |
+| DevEco Studio | 6.0.0 |
 | CMake | 3.31.8 |
-| Visual Studio 2015 | Update 3 |
 | Visual Studio 2017 | 15.9.76 |
-| Visual Studio 2019 | 16.11.50 |
-| Visual Studio 2022 | 17.14.13 |
-| Xcode | 16.4 |
+| Visual Studio 2019 | 16.11.51 |
+| Visual Studio 2022 | 17.14.16 |
+| Xcode | 26.0.1 |
 
 ### Android
 
@@ -130,7 +129,7 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 | HarmonyOS SDK tools | Version |
 | --- | --- |
-| HarmonyOS SDK | 5.0.1.112 |
+| HarmonyOS SDK | 6.0.0.47 |
 
 ### Linux
 
@@ -155,8 +154,8 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 | Platform | Version |
 | --- | --- |
-| iOS / iPadOS | 18.6.1 |
-| macOS | 15.6 |
+| iOS / iPadOS | 26.0.1 |
+| macOS | 26.0.1 |
 | Windows 10 | 23H2 |
 | Windows 11 | 24H2 |
 
@@ -174,7 +173,7 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 | Version | Device |
 | --- | --- |
-| NEXT.0.0.71 | HUAWEI Mate 60 Pro |
+| NEXT 5.1.0.150 | HUAWEI Mate 60 Pro |
 
 ### Linux
 
@@ -182,7 +181,7 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 | --- | --- | --- |
 | Red Hat | Amazon Linux | 2 |
 | Red Hat | AlmaLinux | 9 |
-| Debian | Ubuntu | 24.04.2 |
+| Debian | Ubuntu | 24.04.3 |
 
 ## Contributing
 

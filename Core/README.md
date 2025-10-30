@@ -61,7 +61,6 @@ Below is the Visual Studio version for the VC++ version.
 
 | VC++ version | Visual Studio version |
 | ---: | --- |
-| 140 | Visual Studio 2015 |
 | 141 | Visual Studio 2017 |
 | 142 | Visual Studio 2019 |
 | 143 | Visual Studio 2022 |

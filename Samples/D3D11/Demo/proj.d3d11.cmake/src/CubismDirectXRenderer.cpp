@@ -224,6 +224,8 @@ void CubismDirectXRenderer::ResizeDevice(CubismUserModel* userModel)
         _presentParameters.BufferDesc.Width = nowWidth;
         _presentParameters.BufferDesc.Height = nowHeight;
 
+        userModel->SetRenderTargetSize(nowWidth, nowHeight);
+
         if (_swapChain)
         {
             // サイズを変更
@@ -253,7 +255,7 @@ void CubismDirectXRenderer::ResizeDevice(CubismUserModel* userModel)
                         CubismDirectXView::GetInstance()->DestroyOffscreenSurface();
                     }
 
-                    static_cast<CubismUserModelExtend*>(userModel)->GetRenderBuffer().DestroyOffscreenSurface();
+                    static_cast<CubismUserModelExtend*>(userModel)->GetRenderBuffer().DestroyRenderTarget();
 
                     // 通常に戻る
                     _deviceStep = DeviceStep_None;

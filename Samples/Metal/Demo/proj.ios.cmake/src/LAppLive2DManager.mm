@@ -15,7 +15,6 @@
 #import "LAppDefine.h"
 #import "LAppPal.h"
 #import <Rendering/Metal/CubismRenderer_Metal.hpp>
-#import "Rendering/Metal/CubismRenderingInstanceSingleton_Metal.h"
 
 @interface LAppLive2DManager()
 
@@ -105,7 +104,7 @@ Csm::csmString GetPath(CFURLRef url)
 {
     if (_renderBuffer)
     {
-        _renderBuffer->DestroyOffscreenSurface();
+        _renderBuffer->DestroyRenderTarget();
         delete _renderBuffer;
         _renderBuffer = NULL;
     }
@@ -178,6 +177,15 @@ Csm::csmString GetPath(CFURLRef url)
     return nil;
 }
 
+- (void)setRenderTargetSize:(Csm::csmUint32)width height:(Csm::csmUint32)height
+{
+    for(Csm::csmUint32 i = 0; i < _models.GetSize(); i++)
+    {
+        LAppModel* model = [self getModel:i];
+        model->SetRenderTargetSize(width, height);
+    }
+}
+
 - (void)onDrag:(Csm::csmFloat32)x floatY:(Csm::csmFloat32)y
 {
     for (Csm::csmUint32 i = 0; i < _models.GetSize(); i++)
@@ -228,8 +236,7 @@ Csm::csmString GetPath(CFURLRef url)
     Csm::CubismMatrix44 projection;
     Csm::csmUint32 modelCount = _models.GetSize();
 
-    CubismRenderingInstanceSingleton_Metal *single = [CubismRenderingInstanceSingleton_Metal sharedManager];
-    id<MTLDevice> device = [single getMTLDevice];
+    id<MTLDevice> device = [view getDevice];
 
     _renderPassDescriptor.colorAttachments[0].texture = drawable.texture;
     _renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionLoad;
@@ -239,10 +246,10 @@ Csm::csmString GetPath(CFURLRef url)
     {
         if (!_renderBuffer)
         {
-            _renderBuffer = new Csm::Rendering::CubismOffscreenSurface_Metal;
+            _renderBuffer = new Csm::Rendering::CubismRenderTarget_Metal;
             _renderBuffer->SetMTLPixelFormat(MTLPixelFormatBGRA8Unorm);
             _renderBuffer->SetClearColor(0.0, 0.0, 0.0, 0.0);
-            _renderBuffer->CreateOffscreenSurface(static_cast<LAppDefine::csmUint32>(width), static_cast<LAppDefine::csmUint32>(height), nil);
+            _renderBuffer->CreateRenderTarget(device, static_cast<LAppDefine::csmUint32>(width), static_cast<LAppDefine::csmUint32>(height), nil);
 
             if (_renderTarget == SelectTarget_ViewFrameBuffer)
             {
@@ -262,9 +269,12 @@ Csm::csmString GetPath(CFURLRef url)
         //画面クリア
         id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_renderBuffer->GetRenderPassDescriptor()];
         [renderEncoder endEncoding];
-    }
 
-    Csm::Rendering::CubismRenderer_Metal::StartFrame(device, commandBuffer, _renderPassDescriptor);
+        if (_renderTarget == SelectTarget_ViewFrameBuffer)
+        {
+            _renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionLoad;
+        }
+    }
 
     for (Csm::csmUint32 i = 0; i < modelCount; ++i)
     {
@@ -275,6 +285,8 @@ Csm::csmString GetPath(CFURLRef url)
             LAppPal::PrintLogLn("Failed to model->GetModel().");
             continue;
         }
+
+        model->GetRenderer<Csm::Rendering::CubismRenderer_Metal>()->StartFrame(commandBuffer, _renderPassDescriptor);
 
         if (model->GetModel()->GetCanvasWidth() > 1.0f && width < height)
         {
@@ -295,18 +307,27 @@ Csm::csmString GetPath(CFURLRef url)
 
         if (_renderTarget == SelectTarget_ModelFrameBuffer)
         {
-            Csm::Rendering::CubismOffscreenSurface_Metal& useTarget = model->GetRenderBuffer();
+            Csm::Rendering::CubismRenderTarget_Metal& useTarget = model->GetRenderBuffer();
 
             if (!useTarget.IsValid())
             {// 描画ターゲット内部未作成の場合はここで作成
                 // モデル描画キャンバス
                 useTarget.SetMTLPixelFormat(MTLPixelFormatBGRA8Unorm);
-                useTarget.CreateOffscreenSurface(static_cast<LAppDefine::csmUint32>(width), static_cast<LAppDefine::csmUint32>(height));
+                useTarget.CreateRenderTarget(device, static_cast<LAppDefine::csmUint32>(width), static_cast<LAppDefine::csmUint32>(height));
             }
+            else if (useTarget.GetBufferWidth() != static_cast<LAppDefine::csmUint32>(width) || useTarget.GetBufferHeight() != static_cast<LAppDefine::csmUint32>(height))
+            {
+                useTarget.CreateRenderTarget(device, static_cast<LAppDefine::csmUint32>(width), static_cast<LAppDefine::csmUint32>(height));
+            }
+
             _renderPassDescriptor.colorAttachments[0].texture = useTarget.GetColorBuffer();
             _renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
 
-            Csm::Rendering::CubismRenderer_Metal::StartFrame(device, commandBuffer, _renderPassDescriptor);
+            //画面クリア
+            id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_renderPassDescriptor];
+            [renderEncoder endEncoding];
+
+            _renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionLoad;
         }
 
         model->Update();
@@ -341,7 +362,7 @@ Csm::csmString GetPath(CFURLRef url)
             renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1);
             id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
 
-            Csm::Rendering::CubismOffscreenSurface_Metal& useTarget = model->GetRenderBuffer();
+            Csm::Rendering::CubismRenderTarget_Metal& useTarget = model->GetRenderBuffer();
             LAppModelSprite* depthSprite = [[LAppModelSprite alloc] initWithMyVar:width * 0.5f Y:height * 0.5f Width:width Height:height
                                                                MaxWidth:width MaxHeight:height Texture:useTarget.GetColorBuffer()];
             float a = i < 1 ? 1.0f : model->GetOpacity(); // 片方のみ不透明度を取得できるようにする

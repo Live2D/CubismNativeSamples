@@ -45,7 +45,7 @@ LAppModel::LAppModel()
 
 LAppModel::~LAppModel()
 {
-    _renderBuffer.DestroyOffscreenSurface();
+    _renderBuffer.DestroyRenderTarget();
 
     ReleaseMotions();
     ReleaseExpressions();
@@ -82,7 +82,7 @@ void LAppModel::LoadAssets(const csmChar* dir, const csmChar* fileName)
         return;
     }
 
-    CreateRenderer();
+    CreateRenderer(LAppDelegate::GetInstance()->GetWindowWidth(), LAppDelegate::GetInstance()->GetWindowHeight());
 
     SetupTextures();
 }
@@ -567,7 +567,7 @@ void LAppModel::ReloadRenderer()
 {
     DeleteRenderer();
 
-    CreateRenderer();
+    CreateRenderer(LAppDelegate::GetInstance()->GetWindowWidth(), LAppDelegate::GetInstance()->GetWindowHeight());
 
     SetupTextures();
 }
@@ -605,7 +605,7 @@ void LAppModel::MotionEventFired(const csmString& eventValue)
     CubismLogInfo("%s is fired on LAppModel!!", eventValue.GetRawString());
 }
 
-Csm::Rendering::CubismOffscreenSurface_OpenGLES2& LAppModel::GetRenderBuffer()
+Csm::Rendering::CubismRenderTarget_OpenGLES2& LAppModel::GetRenderBuffer()
 {
     return _renderBuffer;
 }

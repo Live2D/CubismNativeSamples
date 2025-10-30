@@ -12,7 +12,7 @@
 #import <Model/CubismUserModel.hpp>
 #import <ICubismModelSetting.hpp>
 #import <Type/csmRectF.hpp>
-#import <Rendering/Metal/CubismOffscreenSurface_Metal.hpp>
+#import <Rendering/Metal/CubismRenderTarget_Metal.hpp>
 
 /**
  * @brief ユーザーが実際に使用するモデルの実装クラス<br>
@@ -113,7 +113,7 @@ public:
     /**
      * @brief   別ターゲットに描画する際に使用するバッファの取得
      */
-    Csm::Rendering::CubismOffscreenSurface_Metal& GetRenderBuffer();
+    Csm::Rendering::CubismRenderTarget_Metal& GetRenderBuffer();
 
     /**
      * @brief   .moc3ファイルの整合性をチェックする
@@ -192,7 +192,7 @@ private:
     const Csm::CubismId* _idParamEyeBallX; ///< パラメータID: ParamEyeBallX
     const Csm::CubismId* _idParamEyeBallY; ///< パラメータID: ParamEyeBallXY
 
-    Live2D::Cubism::Framework::Rendering::CubismOffscreenSurface_Metal _renderBuffer;
+    Live2D::Cubism::Framework::Rendering::CubismRenderTarget_Metal _renderBuffer;
 };
 
 #endif /* LAppModel_h */

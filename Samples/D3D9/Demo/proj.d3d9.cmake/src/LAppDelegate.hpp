@@ -103,6 +103,16 @@ public:
      */
     void EndFrame();
 
+    /**
+    * @brief   ウインドウの幅を取得する。
+    */
+    int GetWindowWidth() { return _presentParameters.BackBufferWidth; }
+
+    /**
+    * @brief   ウインドウの高さを取得する。
+    */
+    int GetWindowHeight() { return _presentParameters.BackBufferHeight; }
+
 private:
 
     enum LostStep

@@ -21,6 +21,7 @@
 #import "MinLAppPal.h"
 #import "MinLAppTextureManager.h"
 #import "MinAppDelegate.h"
+#import "MinViewController.h"
 
 using namespace Live2D::Cubism::Framework;
 using namespace Live2D::Cubism::Framework::DefaultParameterId;
@@ -68,7 +69,7 @@ MinLAppModel::MinLAppModel(const std::string modelDirectryName,const std::string
 
 MinLAppModel::~MinLAppModel()
 {
-    _renderBuffer.DestroyOffscreenSurface();
+    _renderBuffer.DestroyRenderTarget();
 
     ReleaseMotions();
     ReleaseExpressions();
@@ -173,8 +174,13 @@ void MinLAppModel::SetupModel()
 
     _motionManager->StopAllMotions();
 
+    MinAppDelegate* delegate = (MinAppDelegate*) [[UIApplication sharedApplication] delegate];
+    MinViewController* view = [delegate viewController];
+    int width = [view GetWindowWidth];
+    int height = [view GetWindowHeight];
+
     // レンダラの作成
-    CreateRenderer();
+    CreateRenderer(width, height);
 
     // テクスチャのセットアップ
     SetupTextures();
@@ -411,7 +417,12 @@ void MinLAppModel::ReloadRenderer()
 {
     DeleteRenderer();
 
-    CreateRenderer();
+    MinAppDelegate* delegate = (MinAppDelegate*) [[UIApplication sharedApplication] delegate];
+    MinViewController* view = [delegate viewController];
+    int width = [view GetWindowWidth];
+    int height = [view GetWindowHeight];
+
+    CreateRenderer(width, height);
 
     SetupTextures();
 }
@@ -450,7 +461,7 @@ void MinLAppModel::MotionEventFired(const csmString& eventValue)
     CubismLogInfo("%s is fired on MinLAppModel!!", eventValue.GetRawString());
 }
 
-Csm::Rendering::CubismOffscreenSurface_OpenGLES2& MinLAppModel::GetRenderBuffer()
+Csm::Rendering::CubismRenderTarget_OpenGLES2& MinLAppModel::GetRenderBuffer()
 {
     return _renderBuffer;
 }

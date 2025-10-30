@@ -18,7 +18,6 @@
 #include "LAppSpriteShader.hpp"
 #include "LAppMinimumModel.hpp"
 
-#include <Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp>
 #include <Rendering/OpenGL/CubismRenderer_OpenGLES2.hpp>
 
 #include "JniBridgeC.hpp"
@@ -30,6 +29,7 @@ using namespace Csm;
 LAppMinimumView::LAppMinimumView()
     : LAppView_Common()
     , _renderSprite(nullptr)
+    , _spriteShader(nullptr)
     , _renderTarget(SelectTarget_None)
 {
     _clearColor[0] = 1.0f;
@@ -43,7 +43,7 @@ LAppMinimumView::LAppMinimumView()
 
 LAppMinimumView::~LAppMinimumView()
 {
-    _renderBuffer.DestroyOffscreenSurface();
+    _renderBuffer.DestroyRenderTarget();
     delete _spriteShader;
     delete _renderSprite;
     delete _touchManager;
@@ -54,7 +54,10 @@ void LAppMinimumView::Initialize(int width, int height)
     LAppView_Common::Initialize(width, height);
 
     // シェーダー作成委譲クラス
-    _spriteShader = new LAppSpriteShader();
+    if(_spriteShader == NULL)
+    {
+        _spriteShader = new LAppSpriteShader();
+    }
 }
 
 void LAppMinimumView::InitializeSprite()
@@ -148,7 +151,7 @@ void LAppMinimumView::OnTouchesEnded(float pointX, float pointY)
 void LAppMinimumView::PreModelDraw(LAppMinimumModel &refModel)
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-    Csm::Rendering::CubismOffscreenSurface_OpenGLES2* useTarget = nullptr;
+    Csm::Rendering::CubismRenderTarget_OpenGLES2* useTarget = nullptr;
 
     if (_renderTarget != SelectTarget_None)
     {// 別のレンダリングターゲットへ向けて描画する場合
@@ -162,7 +165,7 @@ void LAppMinimumView::PreModelDraw(LAppMinimumModel &refModel)
             int height = LAppMinimumDelegate::GetInstance()->GetWindowHeight();
 
             // モデル描画キャンバス
-            useTarget->CreateOffscreenSurface(static_cast<csmUint32>(width), static_cast<csmUint32>(height));
+            useTarget->CreateRenderTarget(static_cast<csmUint32>(width), static_cast<csmUint32>(height));
         }
 
         // レンダリング開始
@@ -174,7 +177,7 @@ void LAppMinimumView::PreModelDraw(LAppMinimumModel &refModel)
 void LAppMinimumView::PostModelDraw(LAppMinimumModel &refModel)
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-    Csm::Rendering::CubismOffscreenSurface_OpenGLES2* useTarget = nullptr;
+    Csm::Rendering::CubismRenderTarget_OpenGLES2* useTarget = nullptr;
 
     if (_renderTarget != SelectTarget_None)
     {// 別のレンダリングターゲットへ向けて描画する場合

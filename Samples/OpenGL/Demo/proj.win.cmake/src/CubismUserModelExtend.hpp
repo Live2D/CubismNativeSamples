@@ -35,9 +35,11 @@ public:
     * model3.jsonの記述に従ってモデル生成、モーション、物理演算などのコンポーネント生成を行う
     *
     * @param[in]   setting     ICubismModelSettingのインスタンス
+    * @param[in]   width       ウインドウの幅
+    * @param[in]   height      ウインドウの高さ
     *
     */
-    void SetupModel();
+    void SetupModel(Csm::csmUint32 width, Csm::csmUint32 height);
 
     /**
     * @brief モデルの更新

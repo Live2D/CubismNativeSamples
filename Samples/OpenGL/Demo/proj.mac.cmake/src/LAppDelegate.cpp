@@ -144,11 +144,25 @@ void LAppDelegate::Run()
     while (glfwWindowShouldClose(_window) == GL_FALSE && !_isEnd)
     {
         int width, height;
-        glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
+        float scaleWidth, scaleHeight;
+
+        glfwGetFramebufferSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
+        glfwGetWindowContentScale(LAppDelegate::GetInstance()->GetWindow(), &scaleWidth, &scaleHeight);
+        if (scaleWidth == 0.0f)
+        {
+            scaleWidth = 1.0f;
+        }
+        if (scaleHeight == 0.0f)
+        {
+            scaleHeight = 1.0f;
+        }
+
         if((_windowWidth!=width || _windowHeight!=height) && width>0 && height>0)
         {
-            _view->Initialize(width, height);
+            _view->Initialize(width / scaleWidth, height / scaleHeight);
             _view->ResizeSprite();
+            // オフスクリーンのサイズ変更
+            LAppLive2DManager::GetInstance()->SetRenderTargetSize(width, height);
 
             _windowWidth = width;
             _windowHeight = height;

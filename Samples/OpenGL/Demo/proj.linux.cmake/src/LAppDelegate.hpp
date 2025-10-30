@@ -111,20 +111,34 @@ public:
      */
     LAppTextureManager* GetTextureManager() { return _textureManager; }
 
+    /**
+     * @brief ウインドウ幅の取得
+     *
+     * @return ウインドウ幅を返す
+     */
+    int GetWindowWidth() { return _windowWidth; }
+
+    /**
+     * @brief ウインドウ高さの取得
+     *
+     * @return ウインドウ高さを返す
+     */
+    int GetWindowHeight() { return _windowHeight; }
+
 private:
     /**
-    * @brief   コンストラクタ
-    */
+     * @brief   コンストラクタ
+     */
     LAppDelegate();
 
     /**
-    * @brief   デストラクタ
-    */
+     * @brief   デストラクタ
+     */
     ~LAppDelegate();
 
     /**
-    * @brief   Cubism3の初期化
-    */
+     * @brief   Cubism3の初期化
+     */
     void InitializeCubism();
 
     LAppAllocator_Common _cubismAllocator;              ///< Cubism3 Allocator

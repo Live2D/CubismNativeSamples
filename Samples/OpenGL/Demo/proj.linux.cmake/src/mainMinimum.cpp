@@ -219,7 +219,7 @@ void LoadModel(const std::string modelDirectoryName)
     // モデルデータの読み込み及び生成とセットアップを行う
     std::string json = ".model3.json";
     std::string fileName = _modelDirectoryName + json;
-    static_cast<CubismUserModelExtend*>(_userModel)->LoadAssets(fileName.c_str());
+    static_cast<CubismUserModelExtend*>(_userModel)->LoadAssets(fileName.c_str(), windowWidth, windowHeight);
 
     // ユーザーモデルをMouseActionManagerへ渡す
     MouseActionManager::GetInstance()->SetUserModel(_userModel);
@@ -241,6 +241,8 @@ void Run()
         {
             //AppViewの初期化
             MouseActionManager::GetInstance()->ViewInitialize(width, height);
+            // モデルのレンダーターゲットのサイズ変更
+            _userModel->SetRenderTargetSize(width, height);
             // サイズを保存しておく
             windowWidth = width;
             windowHeight = height;

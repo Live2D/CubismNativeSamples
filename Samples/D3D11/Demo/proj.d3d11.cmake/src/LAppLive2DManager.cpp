@@ -176,6 +176,16 @@ LAppModel* LAppLive2DManager::GetModel(csmUint32 no) const
     return NULL;
 }
 
+void LAppLive2DManager::SetRenderTargetSize(csmUint32 width, csmUint32 height)
+{
+    for (csmUint32 i = 0; i < _models.GetSize(); i++)
+    {
+        LAppModel* model = GetModel(i);
+
+        model->SetRenderTargetSize(width, height);
+    }
+}
+
 void LAppLive2DManager::OnDrag(csmFloat32 x, csmFloat32 y) const
 {
     for (csmUint32 i = 0; i < _models.GetSize(); i++)
@@ -219,10 +229,6 @@ void LAppLive2DManager::OnUpdate() const
     int windowWidth, windowHeight;
     LAppDelegate::GetInstance()->GetClientSize(windowWidth, windowHeight);
 
-    // D3D11 フレーム先頭処理
-    // 各フレームでの、Cubism SDK の処理前にコール
-    Rendering::CubismRenderer_D3D11::StartFrame(LAppDelegate::GetInstance()->GetD3dDevice(), LAppDelegate::GetInstance()->GetD3dContext(), windowWidth, windowHeight);
-
     const csmUint32 modelCount = _models.GetSize();
     for (csmUint32 i = 0; i < modelCount; ++i)
     {
@@ -235,6 +241,10 @@ void LAppLive2DManager::OnUpdate() const
             LAppPal::PrintLogLn("Failed to model->GetModel().");
             continue;
         }
+
+        // D3D11 フレーム先頭処理
+        // モデルごとの各フレームでの、Cubism SDK の処理前にコール
+        model->GetRenderer<Rendering::CubismRenderer_D3D11>()->StartFrame(LAppDelegate::GetInstance()->GetD3dContext());
 
         if (model->GetModel()->GetCanvasWidth() > 1.0f && windowWidth < windowHeight)
         {
@@ -262,11 +272,11 @@ void LAppLive2DManager::OnUpdate() const
 
         // モデル1体描画後コール
         LAppDelegate::GetInstance()->GetView()->PostModelDraw(*model);
-    }
 
-    // D3D11 フレーム終了処理
-    // 各フレームでの、Cubism SDK の処理後にコール
-    Rendering::CubismRenderer_D3D11::EndFrame(LAppDelegate::GetInstance()->GetD3dDevice());
+        // D3D11 フレーム終了処理
+        // モデルごとの各フレームでの、Cubism SDK の処理後にコール
+        model->GetRenderer<Rendering::CubismRenderer_D3D11>()->EndFrame();
+    }
 }
 
 void LAppLive2DManager::NextScene()
@@ -360,7 +370,7 @@ void LAppLive2DManager::ResizedWindow()
     const csmUint32 modelCount = _models.GetSize();
     for (csmUint32 i = 0; i < modelCount; ++i)
     {
-        _models[i]->GetRenderBuffer().DestroyOffscreenSurface();
+        _models[i]->GetRenderBuffer().DestroyRenderTarget();
     }
 }
 

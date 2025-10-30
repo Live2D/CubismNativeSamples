@@ -27,7 +27,8 @@ LAppView::LAppView():
     _gear(NULL),
     _power(NULL),
     _renderSprite(NULL),
-    _renderTarget(SelectTarget_None)
+    _renderTarget(SelectTarget_None),
+    _spriteShader(NULL)
 {
     _clearColor[0] = 1.0f;
     _clearColor[1] = 1.0f;
@@ -40,7 +41,7 @@ LAppView::LAppView():
 
 LAppView::~LAppView()
 {
-    _renderBuffer.DestroyOffscreenSurface();
+    _renderBuffer.DestroyRenderTarget();
     if (_renderSprite)
     {
         delete _renderSprite;
@@ -72,7 +73,10 @@ void LAppView::Initialize(int width, int height)
     LAppView_Common::Initialize(width, height);
 
     // シェーダー作成
-    _spriteShader = new LAppSpriteShader();
+    if(_spriteShader == NULL)
+    {
+        _spriteShader = new LAppSpriteShader();
+    }
 
     InitializeSprite();
 }
@@ -215,7 +219,7 @@ void LAppView::OnTouchesEnded(float px, float py) const
 void LAppView::PreModelDraw(LAppModel& refModel)
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-    Csm::Rendering::CubismOffscreenSurface_OpenGLES2* useTarget = NULL;
+    Csm::Rendering::CubismRenderTarget_OpenGLES2* useTarget = NULL;
 
     if (_renderTarget != SelectTarget_None)
     {// 別のレンダリングターゲットへ向けて描画する場合
@@ -233,7 +237,7 @@ void LAppView::PreModelDraw(LAppModel& refModel)
             if (width != 0 && height != 0)
             {
                 // モデル描画キャンバス
-                useTarget->CreateOffscreenSurface(static_cast<csmUint32>(width), static_cast<csmUint32>(height));
+                useTarget->CreateRenderTarget(static_cast<csmUint32>(width), static_cast<csmUint32>(height));
             }
         }
 
@@ -246,7 +250,7 @@ void LAppView::PreModelDraw(LAppModel& refModel)
 void LAppView::PostModelDraw(LAppModel& refModel)
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-    Csm::Rendering::CubismOffscreenSurface_OpenGLES2* useTarget = NULL;
+    Csm::Rendering::CubismRenderTarget_OpenGLES2* useTarget = NULL;
 
     if (_renderTarget != SelectTarget_None)
     {// 別のレンダリングターゲットへ向けて描画する場合

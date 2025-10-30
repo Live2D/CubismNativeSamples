@@ -106,6 +106,16 @@ public:
      */
     LAppTextureManager* GetTextureManager() { return _textureManager; }
 
+    /**
+     * @brief   ウインドウの幅を取得する。
+     */
+    int GetWindowWidth() { return _windowWidth; }
+
+    /**
+     * @brief   ウインドウの高さを取得する。
+     */
+    int GetWindowHeight() { return _windowHeight; }
+
 private:
     /**
     * @brief   コンストラクタ

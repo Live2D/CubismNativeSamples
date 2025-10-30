@@ -21,7 +21,6 @@
 #import "AppDelegate.h"
 #import "ViewController.h"
 #import "MetalUIView.h"
-#import "Rendering/Metal/CubismRenderingInstanceSingleton_Metal.h"
 
 @interface LAppTextureManager()
 
@@ -44,6 +43,8 @@
 
 - (TextureInfo*) createTextureFromPngFile:(std::string)fileName
 {
+    AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
+    ViewController* viewController = delegate.viewController;
 
     //search loaded texture already.
     for (Csm::csmUint32 i = 0; i < _textures.GetSize(); i++)
@@ -98,8 +99,7 @@
     int mipCount = (heightLevels > widthLevels) ? heightLevels : widthLevels;
     textureDescriptor.mipmapLevelCount = mipCount;
 
-    CubismRenderingInstanceSingleton_Metal *single = [CubismRenderingInstanceSingleton_Metal sharedManager];
-    id <MTLDevice> device = [single getMTLDevice];
+    id <MTLDevice> device = [viewController getDevice];
 
     // Create the texture from the device by using the descriptor
     id<MTLTexture> texture = [device newTextureWithDescriptor:textureDescriptor];
@@ -118,8 +118,6 @@
                   withBytes:png
                 bytesPerRow:bytesPerRow];
 
-    AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
-    ViewController* viewController = delegate.viewController;
     id<CAMetalDrawable> drawable = [((MetalUIView*)viewController.view).metalLayer nextDrawable];
     id<MTLCommandBuffer> commandBuffer = [viewController.commandQueue commandBuffer];
     id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];

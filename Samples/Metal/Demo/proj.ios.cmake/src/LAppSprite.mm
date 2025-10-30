@@ -7,11 +7,11 @@
 
 #import "LAppSprite.h"
 #import <Foundation/Foundation.h>
+#import "AppDelegate.h"
 #import "LAppDefine.h"
 #import "LAppPal.h"
 #import <CubismFramework.hpp>
 #import <Rendering/Metal/CubismRenderer_Metal.hpp>
-#import "Rendering/Metal/CubismRenderingInstanceSingleton_Metal.h"
 
 #define BUFFER_OFFSET(bytes) ((GLubyte *)NULL + (bytes))
 
@@ -52,8 +52,9 @@ typedef struct
         _vertexBuffer = nil;
         _fragmentBuffer = nil;
 
-        CubismRenderingInstanceSingleton_Metal *single = [CubismRenderingInstanceSingleton_Metal sharedManager];
-        id <MTLDevice> device = [single getMTLDevice];
+        AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
+        ViewController* viewController = delegate.viewController;
+        id <MTLDevice> device = [viewController getDevice];
 
         [self SetMTLBuffer:device MaxWidth:maxWidth MaxHeight:maxHeight];
 
@@ -88,8 +89,9 @@ typedef struct
 
 - (void)renderImmidiate:(id<MTLRenderCommandEncoder>)renderEncoder
 {
-    CubismRenderingInstanceSingleton_Metal *single = [CubismRenderingInstanceSingleton_Metal sharedManager];
-    id <MTLDevice> device = [single getMTLDevice];
+    AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
+    ViewController* viewController = delegate.viewController;
+    id <MTLDevice> device = [viewController getDevice];
 
     float width = _rect.right - _rect.left;
     float height = _rect.up - _rect.down;
@@ -122,8 +124,9 @@ typedef struct
     _rect.up = (y + height * 0.5f);
     _rect.down = (y - height * 0.5f);
 
-    CubismRenderingInstanceSingleton_Metal *single = [CubismRenderingInstanceSingleton_Metal sharedManager];
-    id <MTLDevice> device = [single getMTLDevice];
+    AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
+    ViewController* viewController = delegate.viewController;
+    id <MTLDevice> device = [viewController getDevice];
     [self SetMTLBuffer:device MaxWidth:maxWidth MaxHeight:maxHeight];
 
     return self;

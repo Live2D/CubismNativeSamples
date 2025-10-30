@@ -153,6 +153,8 @@ void LAppDelegate::OnSurfaceChanged(float width, float height)
     //AppViewの初期化
     _view->Initialize(width, height);
     _view->InitializeSprite();
+    // オフスクリーンのサイズ変更
+    LAppLive2DManager::GetInstance()->SetRenderTargetSize(width, height);
 }
 
 void LAppDelegate::SetSceneIndex(int index)

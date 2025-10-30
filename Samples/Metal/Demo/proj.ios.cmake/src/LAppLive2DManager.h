@@ -28,7 +28,7 @@ typedef NS_ENUM(NSUInteger, SelectTarget)
 @property (nonatomic) Csm::csmVector<LAppModel*> models; //モデルインスタンスのコンテナ
 @property (nonatomic) Csm::csmInt32 sceneIndex; //表示するシーンのインデックス値
 @property (nonatomic) SelectTarget renderTarget;
-@property (nonatomic) Csm::Rendering::CubismOffscreenSurface_Metal* renderBuffer;
+@property (nonatomic) Csm::Rendering::CubismRenderTarget_Metal* renderBuffer;
 @property (nonatomic) LAppSprite* sprite;
 @property (nonatomic) LAppModelSprite* modelSprite;
 @property (nonatomic) MTLRenderPassDescriptor* renderPassDescriptor;
@@ -56,6 +56,14 @@ typedef NS_ENUM(NSUInteger, SelectTarget)
  * @return モデルのインスタンスを返す。インデックス値が範囲外の場合はNULLを返す。
  */
 - (LAppModel*)getModel:(Csm::csmUint32)no;
+
+/**
+ * @brief モデルのオフスクリーンサイズを設定
+ *
+ * @param[in] width ウィンドウの幅
+ * @param[in] height ウィンドウの高さ
+ */
+- (void)setRenderTargetSize:(Csm::csmUint32)width height:(Csm::csmUint32)height;
 
 /**
  * @brief 現在のシーンで保持している全てのモデルを解放する

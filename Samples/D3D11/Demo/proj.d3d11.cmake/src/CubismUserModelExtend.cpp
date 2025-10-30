@@ -10,7 +10,7 @@
 #include <Physics/CubismPhysics.hpp>
 #include <CubismDefaultParameterId.hpp>
 #include <Rendering/D3D11/CubismNativeInclude_D3D11.hpp>
-#include <Rendering/D3D11/CubismOffscreenSurface_D3D11.hpp>
+#include <Rendering/D3D11/CubismRenderTarget_D3D11.hpp>
 #include <Motion/CubismMotionQueueEntry.hpp>
 #include <Id/CubismIdManager.hpp>
 
@@ -47,7 +47,7 @@ CubismUserModelExtend::CubismUserModelExtend(const std::string modelDirectoryNam
 
 CubismUserModelExtend::~CubismUserModelExtend()
 {
-    _renderBuffer.DestroyOffscreenSurface();
+    _renderBuffer.DestroyRenderTarget();
 
     // モデルの設定データの解放
     ReleaseModelSetting();
@@ -93,7 +93,7 @@ void CubismUserModelExtend::LoadAsset(const std::string & fiileName, const std::
     LAppPal::ReleaseBytes(buffer);
 }
 
-void CubismUserModelExtend::SetupModel()
+void CubismUserModelExtend::SetupModel(csmUint32 width, csmUint32 height)
 {
     _updating = true;
     _initialized = false;
@@ -157,7 +157,7 @@ void CubismUserModelExtend::SetupModel()
     _motionManager->StopAllMotions();
 
     // レンダラの作成
-    CreateRenderer();
+    CreateRenderer(width, height);
 
     // テクスチャのセットアップ
     SetupTextures();
@@ -432,7 +432,7 @@ void CubismUserModelExtend::ModelOnUpdate()
 
     // D3D11 フレーム先頭処理
     // 各フレームでの、Cubism SDK の処理前にコール
-    Rendering::CubismRenderer_D3D11::StartFrame(CubismDirectXRenderer::GetInstance()->GetD3dDevice(), CubismDirectXRenderer::GetInstance()->GetD3dContext(), width, height);
+    GetRenderer<Rendering::CubismRenderer_D3D11>()->StartFrame(CubismDirectXRenderer::GetInstance()->GetD3dContext());
 
     Csm::CubismMatrix44 projection;
     // 念のため単位行列に初期化
@@ -462,7 +462,7 @@ void CubismUserModelExtend::ModelOnUpdate()
     Draw(projection); ///< 参照渡しなのでprojectionは変質する
 }
 
-Csm::Rendering::CubismOffscreenSurface_D3D11& CubismUserModelExtend::GetRenderBuffer()
+Csm::Rendering::CubismRenderTarget_D3D11& CubismUserModelExtend::GetRenderBuffer()
 {
     return _renderBuffer;
 }

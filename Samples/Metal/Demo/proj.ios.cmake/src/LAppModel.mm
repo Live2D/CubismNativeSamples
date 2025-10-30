@@ -13,6 +13,7 @@
 #import "LAppPal.h"
 #import "LAppTextureManager.h"
 #import "AppDelegate.h"
+#import "ViewController.h"
 #import <CubismDefaultParameterId.hpp>
 #import <CubismModelSettingJson.hpp>
 #import <Id/CubismIdManager.hpp>
@@ -71,7 +72,7 @@ LAppModel::LAppModel()
 
 LAppModel::~LAppModel()
 {
-    _renderBuffer.DestroyOffscreenSurface();
+    _renderBuffer.DestroyRenderTarget();
 
     ReleaseMotions();
     ReleaseExpressions();
@@ -126,7 +127,15 @@ void LAppModel::LoadAssets(const csmChar* dir, const csmChar* fileName)
         return;
     }
 
-    CreateRenderer();
+    AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
+    ViewController* view = [delegate viewController];
+
+    const CGFloat retinaScale = [[UIScreen mainScreen] scale];
+    // Retinaディスプレイサイズにするため倍率をかける
+    const float width = view.view.frame.size.width * retinaScale;
+    const float height = view.view.frame.size.height * retinaScale;
+
+    CreateRenderer(width, height);
 
     SetupTextures();
 }
@@ -604,7 +613,14 @@ void LAppModel::ReloadRenderer()
 {
     DeleteRenderer();
 
-    CreateRenderer();
+    AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
+    ViewController* view = [delegate viewController];
+
+    const CGFloat retinaScale = [[UIScreen mainScreen] scale];
+    // Retinaディスプレイサイズにするため倍率をかける
+    const float width = view.view.frame.size.width * retinaScale;
+    const float height = view.view.frame.size.height * retinaScale;
+    CreateRenderer(width, height);
 
     SetupTextures();
 }
@@ -643,7 +659,7 @@ void LAppModel::MotionEventFired(const csmString& eventValue)
     CubismLogInfo("%s is fired on LAppModel!!", eventValue.GetRawString());
 }
 
-Csm::Rendering::CubismOffscreenSurface_Metal& LAppModel::GetRenderBuffer()
+Csm::Rendering::CubismRenderTarget_Metal& LAppModel::GetRenderBuffer()
 {
     return _renderBuffer;
 }

@@ -208,7 +208,7 @@ void LoadModel(const std::string modelDirectoryName)
     _userModel = new CubismUserModelExtend(modelDirectoryName, _currentModelDirectory);
 
     // モデルデータの読み込み及び生成とセットアップを行う
-    static_cast<CubismUserModelExtend*>(_userModel)->SetupModel();
+    static_cast<CubismUserModelExtend*>(_userModel)->SetupModel(windowWidth, windowHeight);
 
     // ユーザーモデルをMouseActionManagerへ渡す
     MouseActionManager::GetInstance()->SetUserModel(_userModel);
@@ -228,8 +228,10 @@ void Run()
         glfwGetWindowSize(_window, &width, &height);
         if ((windowWidth != width || windowHeight != height) && width > 0 && height > 0)
         {
-            //AppViewの初期化
+            // AppViewの初期化
             MouseActionManager::GetInstance()->ViewInitialize(width, height);
+            // オフスクリーンのサイズ変更
+            _userModel->SetRenderTargetSize(width, height);
             // サイズを保存しておく
             windowWidth = width;
             windowHeight = height;

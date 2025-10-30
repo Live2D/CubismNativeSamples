@@ -48,7 +48,7 @@ CubismDirectXView::CubismDirectXView()
 
 CubismDirectXView::~CubismDirectXView()
 {
-    _renderBuffer.DestroyOffscreenSurface();
+    _renderBuffer.DestroyRenderTarget();
 
     _shader->ReleaseShader();
     ReleaseSprite();
@@ -130,7 +130,7 @@ void CubismDirectXView::ResizeSprite()
 void CubismDirectXView::PreModelDraw(CubismUserModelExtend& refModel)
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-    Csm::Rendering::CubismOffscreenSurface_D3D9* useTarget = nullptr;
+    Csm::Rendering::CubismRenderTarget_D3D9* useTarget = nullptr;
 
     if (_renderTarget != SelectTarget_None)
     {
@@ -146,7 +146,7 @@ void CubismDirectXView::PreModelDraw(CubismUserModelExtend& refModel)
             if (_windowWidth != 0 && _windowHeight != 0)
             {
                 // モデル描画キャンバス
-                useTarget->CreateOffscreenSurface(CubismDirectXRenderer::GetInstance()->_device,
+                useTarget->CreateRenderTarget(CubismDirectXRenderer::GetInstance()->_device,
                     static_cast<csmUint32>(_windowWidth), static_cast<csmUint32>(_windowHeight));
             }
         }
@@ -163,7 +163,7 @@ void CubismDirectXView::PostModelDraw(CubismUserModelExtend& refModel)
     {// 別のレンダリングターゲットへ向けて描画する場合
 
         // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-        Csm::Rendering::CubismOffscreenSurface_D3D9* useTarget = NULL;
+        Csm::Rendering::CubismRenderTarget_D3D9* useTarget = NULL;
 
         // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
@@ -212,9 +212,9 @@ void CubismDirectXView::SetRenderTargetClearColor(float r, float g, float b)
     _clearColor[2] = b;
 }
 
-void CubismDirectXView::DestroyOffscreenSurface()
+void CubismDirectXView::DestroyRenderTarget()
 {
-    _renderBuffer.DestroyOffscreenSurface();
+    _renderBuffer.DestroyRenderTarget();
 }
 
 void CubismDirectXView::OnDeviceLost()
@@ -228,5 +228,5 @@ void CubismDirectXView::OnDeviceLost()
     ReleaseSprite();
 
     // レンダリングターゲット開放
-    _renderBuffer.DestroyOffscreenSurface();
+    _renderBuffer.DestroyRenderTarget();
 }

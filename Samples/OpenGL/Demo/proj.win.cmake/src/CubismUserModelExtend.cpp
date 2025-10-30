@@ -82,7 +82,7 @@ void CubismUserModelExtend::LoadAsset(const std::string & fiileName, const std::
     LAppPal::ReleaseBytes(buffer);
 }
 
-void CubismUserModelExtend::SetupModel()
+void CubismUserModelExtend::SetupModel(csmUint32 width, csmUint32 height)
 {
     _updating = true;
     _initialized = false;
@@ -146,7 +146,7 @@ void CubismUserModelExtend::SetupModel()
     _motionManager->StopAllMotions();
 
     // レンダラの作成
-    CreateRenderer();
+    CreateRenderer(width, height);
 
     // テクスチャのセットアップ
     SetupTextures();

@@ -138,6 +138,11 @@ public:
     void RestoreDeviceLost(LPDIRECT3DDEVICE9 device);
 
     /**
+     * @brief    デバイスを設定する
+     */
+    void OnDeviceChanged();
+
+    /**
      * @brief   モデル個数を得る
      * @return  所持モデル個数
      */

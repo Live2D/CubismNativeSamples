@@ -135,13 +135,15 @@ void LAppDelegate::Run()
     while (glfwWindowShouldClose(_window) == GL_FALSE && !_isEnd)
     {
         int width, height;
-        glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
+        glfwGetWindowSize(GetInstance()->GetWindow(), &width, &height);
         if( (_windowWidth!=width || _windowHeight!=height) && width>0 && height>0)
         {
-            //AppViewの初期化
+            // AppViewの初期化
             _view->Initialize(width, height);
             // スプライトサイズを再設定
             _view->ResizeSprite();
+            // オフスクリーンのサイズ変更
+            LAppLive2DManager::GetInstance()->SetRenderTargetSize(width, height);
             // サイズを保存しておく
             _windowWidth = width;
             _windowHeight = height;
@@ -170,7 +172,7 @@ void LAppDelegate::Run()
 
     Release();
 
-    LAppDelegate::ReleaseInstance();
+    ReleaseInstance();
 }
 
 LAppDelegate::LAppDelegate():

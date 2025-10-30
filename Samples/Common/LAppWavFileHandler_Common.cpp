@@ -10,6 +10,10 @@
 #include <cstdint>
 #include "LAppPal.hpp"
 
+namespace {
+    const Csm::csmFloat32 MaxPcmValue = 2147483647.0f;
+}
+
 LAppWavFileHandler_Common::LAppWavFileHandler_Common()
     : _rawData(NULL)
     , _rawDataSize(0)
@@ -188,7 +192,7 @@ Csm::csmFloat32 LAppWavFileHandler_Common::NormalizePcmSample(Csm::csmUint32 bit
         break;
     }
 
-    return static_cast<Csm::csmFloat32>(pcm32) / INT32_MAX;
+    return static_cast<Csm::csmFloat32>(pcm32) / MaxPcmValue;
 }
 
 Csm::csmBool LAppWavFileHandler_Common::LoadWavFile(const Csm::csmString& filePath)
@@ -349,5 +353,5 @@ Csm::csmFloat32 LAppWavFileHandler_Common::GetPcmSample()
         break;
     }
 
-    return static_cast<Csm::csmFloat32>(pcm32) / INT32_MAX;
+    return static_cast<Csm::csmFloat32>(pcm32) / MaxPcmValue;
 }

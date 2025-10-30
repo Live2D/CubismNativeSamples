@@ -14,7 +14,7 @@
 #import <Model/CubismUserModel.hpp>
 #import <CubismModelSettingJson.hpp>
 #import <Type/csmRectF.hpp>
-#import <Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp>
+#import <Rendering/OpenGL/CubismRenderTarget_OpenGLES2.hpp>
 
 /**
  * @brief ユーザーが実際に使用するモデルの実装クラス<br>
@@ -86,7 +86,7 @@ public:
     /**
      * @brief   別ターゲットに描画する際に使用するバッファの取得
      */
-    Csm::Rendering::CubismOffscreenSurface_OpenGLES2& GetRenderBuffer();
+    Csm::Rendering::CubismRenderTarget_OpenGLES2& GetRenderBuffer();
 
     /**
      * @brief model3.jsonからモデルを生成する。<br>
@@ -153,7 +153,7 @@ private:
     const Csm::CubismId* _idParamEyeBallX; ///< パラメータID: ParamEyeBallX
     const Csm::CubismId* _idParamEyeBallY; ///< パラメータID: ParamEyeBallXY
 
-    Csm::Rendering::CubismOffscreenSurface_OpenGLES2 _renderBuffer;
+    Csm::Rendering::CubismRenderTarget_OpenGLES2 _renderBuffer;
 };
 
 #endif /* MinLAppModel_h */

@@ -233,7 +233,7 @@ void LAppDelegate::InitializeCubism()
     CubismFramework::Initialize();
 
     // モデルロード前に必ず呼び出す必要がある
-    Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D9::InitializeConstantSettings(BackBufferNum, _device);
+    Live2D::Cubism::Framework::Rendering::DeviceInfo_D3D9::SetConstantSettings(BackBufferNum, _device);
 
     //load model
     LAppLive2DManager::GetInstance();
@@ -381,7 +381,7 @@ void LAppDelegate::EndFrame()
             else
             {
                 // デバイスが変わったことを通知
-                Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D9::InitializeConstantSettings(BackBufferNum, _device);
+                Live2D::Cubism::Framework::Rendering::DeviceInfo_D3D9::SetConstantSettings(BackBufferNum, _device);
 
                 // 描画のパラメータをウィンドウサイズに合わせて新設定
                 int clientWidth, clientHeight;

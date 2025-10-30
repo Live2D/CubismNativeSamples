@@ -45,6 +45,14 @@ public:
     LAppMinimumModel* GetModel() const;
 
     /**
+    * @brief   モデルのオフスクリーンのサイズを設定
+    *
+    * @param[in]   width   ウインドウの幅
+    * @param[in]   height  ウインドウの高さ
+    */
+    void SetRenderTargetSize(Csm::csmUint32 width, Csm::csmUint32 height);
+
+    /**
     * @brief   現在のシーンで保持しているすべてのモデルを解放する
     *
     */

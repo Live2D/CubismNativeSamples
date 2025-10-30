@@ -9,7 +9,7 @@
 
 #include <Rendering/D3D11/CubismNativeInclude_D3D11.hpp>
 #include <Type/csmVector.hpp>
-#include <Rendering/D3D11/CubismOffscreenSurface_D3D11.hpp>
+#include <Rendering/D3D11/CubismRenderTarget_D3D11.hpp>
 #include <Math/CubismMatrix44.hpp>
 #include <Math/CubismViewMatrix.hpp>
 #include "CubismFramework.hpp"
@@ -130,7 +130,7 @@ public:
     /**
      * @brief   内部レンダリングバッファの破棄
      */
-    void DestroyOffscreenSurface();
+    void DestroyRenderTarget();
 
 private:
     TouchManager_Common* _touchManager;                 ///< タッチマネージャー
@@ -141,7 +141,7 @@ private:
 
     // レンダリング先を別ターゲットにする方式の場合に使用
     LAppSprite* _renderSprite;                                  ///< モードによっては_renderBufferのテクスチャを描画
-    Csm::Rendering::CubismOffscreenSurface_D3D11 _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング
+    Csm::Rendering::CubismRenderTarget_D3D11 _renderBuffer;     ///< モードによってはCubismモデル結果をこっちにレンダリング
     SelectTarget _renderTarget;     ///< レンダリング先の選択肢
     float _clearColor[4];           ///< レンダリングターゲットのクリアカラー
 

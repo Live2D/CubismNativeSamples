@@ -125,6 +125,8 @@ When you run these scripts, you can choose to generate the full version or the m
 [GLEW] and [GLFW] are used as additional libraries.
 Please refer to the [thirdParty](#thirdParty) section and download in advance.
 
+When using a Retina display, please uncomment the `IS_RETINA` macro in `LAppDelegate.cpp` for the full version sample and in `mainMinimum.cpp` for the minimum version sample. This will resolve the issue where the drawing area may differ from normal when rendering models that use Blend mode features or Offscreen drawing functionalities.
+
 ### proj.win.cmake
 
 CMake project for Windows.

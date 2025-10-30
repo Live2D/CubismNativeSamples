@@ -23,7 +23,7 @@
 #import "MetalUIView.h"
 #import <Math/CubismMatrix44.hpp>
 #import <Math/CubismViewMatrix.hpp>
-#import "Rendering/Metal/CubismRenderingInstanceSingleton_Metal.h"
+#import <Rendering/Metal/CubismRenderer_Metal.hpp>
 
 #define BUFFER_OFFSET(bytes) ((GLubyte *)NULL + (bytes))
 
@@ -31,6 +31,7 @@ using namespace std;
 using namespace LAppDefine;
 
 @interface ViewController ()
+@property (nonatomic) id<MTLDevice> device; //デバイス
 @property (nonatomic) LAppSprite *back; //背景画像
 @property (nonatomic) LAppSprite *gear; //歯車画像
 @property (nonatomic) LAppSprite *power; //電源画像
@@ -82,24 +83,20 @@ using namespace LAppDefine;
     }
 #endif
 
-    //Fremework層でもMTLDeviceを参照するためシングルトンオブジェクトに登録
-    CubismRenderingInstanceSingleton_Metal *single = [CubismRenderingInstanceSingleton_Metal sharedManager];
-    id<MTLDevice> device = MTLCreateSystemDefaultDevice();
-    [single setMTLDevice:device];
+    _device = MTLCreateSystemDefaultDevice();
 
     MetalUIView *view = (MetalUIView*)self.view;
 
     // Set the device for the layer so the layer can create drawable textures that can be rendered to
     // on this device.
-    view.metalLayer.device = device;
+    view.metalLayer.device = _device;
 
     // Set this class as the delegate to receive resize and render callbacks.
     view.delegate = self;
 
     view.metalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
-    [single setMetalLayer:view.metalLayer];
 
-    _commandQueue = [device newCommandQueue];
+    _commandQueue = [_device newCommandQueue];
 
     _anotherTarget = false;
     _clearColorR = _clearColorG = _clearColorB = 1.0f;
@@ -113,6 +110,9 @@ using namespace LAppDefine;
 
     // 画面の表示の拡大縮小や移動の変換を行う行列
     _viewMatrix = new CubismViewMatrix();
+
+    // モデルロード前に必ず呼び出す必要がある
+    Live2D::Cubism::Framework::Rendering::DeviceInfo_Metal::SetConstantSettings(_device);
 
     [self initializeScreen];
 }
@@ -366,15 +366,18 @@ using namespace LAppDefine;
     return deviceY * -1 + height;
 }
 
+- (id <MTLDevice>)getDevice
+{
+    return _device;
+}
+
 - (void)drawableResize:(CGSize)size
 {
     MTLTextureDescriptor* depthTextureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatDepth32Float width:size.width height:size.height mipmapped:false];
     depthTextureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
     depthTextureDescriptor.storageMode = MTLStorageModePrivate;
 
-    CubismRenderingInstanceSingleton_Metal *single = [CubismRenderingInstanceSingleton_Metal sharedManager];
-    id <MTLDevice> device = [single getMTLDevice];
-    _depthTexture = [device newTextureWithDescriptor:depthTextureDescriptor];
+    _depthTexture = [_device newTextureWithDescriptor:depthTextureDescriptor];
 
     [self resizeScreen];
 }

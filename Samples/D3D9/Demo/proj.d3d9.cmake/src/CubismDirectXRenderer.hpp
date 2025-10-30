@@ -119,8 +119,11 @@ private:
 
     /**
     * @brief   デバイスロスト復帰時の対応
+    *
+    * @param[in]   width       ウインドウの幅
+    * @param[in]   height      ウインドウの高さ
     */
-    void RestoreDeviceLost(LPDIRECT3DDEVICE9 device);
+    void RestoreDeviceLost(LPDIRECT3DDEVICE9 device, Csm::csmUint32 width, Csm::csmUint32 height);
 
     /**
     * @brief   デバイスロスト時の対応

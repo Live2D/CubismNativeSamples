@@ -71,4 +71,11 @@
  */
 - (float)transformScreenY:(float)deviceY;
 
+/**
+ * @brief デバイスを取得する。
+ *
+ * @return  デバイスを返す
+ */
+- (id <MTLDevice>)getDevice;
+
 @end

@@ -10,7 +10,7 @@
 #include <CubismFramework.hpp>
 #include <ICubismModelSetting.hpp>
 #include <Type/csmRectF.hpp>
-#include <Rendering/D3D11/CubismOffscreenSurface_D3D11.hpp>
+#include <Rendering/D3D11/CubismRenderTarget_D3D11.hpp>
 
 #include "LAppWavFileHandler_Common.hpp"
 #include "LAppModel_Common.hpp"
@@ -122,7 +122,7 @@ public:
     /**
      * @brief   別ターゲットに描画する際に使用するバッファの取得
      */
-    Csm::Rendering::CubismOffscreenSurface_D3D11& GetRenderBuffer();
+    Csm::Rendering::CubismRenderTarget_D3D11& GetRenderBuffer();
 
     /**
      * @brief   .moc3ファイルの整合性をチェックする
@@ -207,5 +207,5 @@ private:
 
     bool _deleteModel;  ///< 実体消滅予定フラグ Drawを呼ばない
 
-    Csm::Rendering::CubismOffscreenSurface_D3D11 _renderBuffer;   ///< フレームバッファ以外の描画先
+    Csm::Rendering::CubismRenderTarget_D3D11 _renderBuffer;   ///< フレームバッファ以外の描画先
 };

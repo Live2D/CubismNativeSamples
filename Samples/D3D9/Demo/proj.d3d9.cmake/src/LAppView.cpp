@@ -41,7 +41,7 @@ LAppView::LAppView():
 
 LAppView::~LAppView()
 {
-    _renderBuffer.DestroyOffscreenSurface();
+    _renderBuffer.DestroyRenderTarget();
 
     ReleaseSprite();
     _shader->ReleaseShader();
@@ -131,7 +131,7 @@ void LAppView::InitializeSprite()
     _shader = new LAppSpriteShader();
     if (!_shader->CreateShader())
     {
-      return;
+        return;
     }
 
     int width, height;
@@ -223,7 +223,7 @@ void LAppView::OnDeviceLost()
     _shader = NULL;
 
     // レンダリングターゲット開放
-    _renderBuffer.DestroyOffscreenSurface();
+    _renderBuffer.DestroyRenderTarget();
 }
 
 void LAppView::OnTouchesBegan(float px, float py) const
@@ -280,7 +280,7 @@ void LAppView::PreModelDraw(LAppModel &refModel)
     {// 別のレンダリングターゲットへ向けて描画する場合
 
         // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-        Csm::Rendering::CubismOffscreenSurface_D3D9* useTarget = NULL;
+        Csm::Rendering::CubismRenderTarget_D3D9* useTarget = NULL;
 
         // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
@@ -293,7 +293,7 @@ void LAppView::PreModelDraw(LAppModel &refModel)
             if (width != 0 && height != 0)
             {
                 // モデル描画キャンバス
-                useTarget->CreateOffscreenSurface(LAppDelegate::GetInstance()->GetD3dDevice(),
+                useTarget->CreateRenderTarget(LAppDelegate::GetInstance()->GetD3dDevice(),
                     static_cast<csmUint32>(width), static_cast<csmUint32>(height));
             }
         }
@@ -314,7 +314,7 @@ void LAppView::PostModelDraw(LAppModel &refModel)
         device->SetRenderState(D3DRS_SRCBLENDALPHA, D3DBLEND_ONE);
 
         // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-        Csm::Rendering::CubismOffscreenSurface_D3D9* useTarget = NULL;
+        Csm::Rendering::CubismRenderTarget_D3D9* useTarget = NULL;
 
         // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();

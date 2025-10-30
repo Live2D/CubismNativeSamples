@@ -9,7 +9,8 @@ set(FRAMEWORK_PATH ${SDK_ROOT_PATH}/Framework)
 set(THIRD_PARTY_PATH ${SDK_ROOT_PATH}/Samples/Metal/thirdParty)
 set(STB_PATH ${THIRD_PARTY_PATH}/stb)
 set(RES_PATH ${SDK_ROOT_PATH}/Samples/Resources)
-set(SHADER_PATH ${SDK_ROOT_PATH}/Samples/Metal/Shaders)
+set(SAMPLE_SHADER_PATH ${SDK_ROOT_PATH}/Samples/Metal/Shaders)
+set(FRAMEWORK_SHADER_PATH ${FRAMEWORK_PATH}/src/Rendering/Metal/Shaders)
 
 # Set project.
 project(${APP_NAME})
@@ -79,12 +80,15 @@ set_target_properties(Live2DCubismCore
 set(FRAMEWORK_SOURCE Metal)
 # Add Cubism Native Framework.
 add_subdirectory(${FRAMEWORK_PATH} ${CMAKE_CURRENT_BINARY_DIR}/Framework)
+add_subdirectory(${FRAMEWORK_SHADER_PATH} ${CMAKE_CURRENT_BINARY_DIR}/FrameworkShaders)
 # Add rendering definition to framework.
 target_compile_definitions(Framework PUBLIC CSM_TARGET_IPHONE_ES2)
 # Add include path of GLEW to framework.
 target_include_directories(Framework PUBLIC ${GLEW_PATH}/include)
 # Link libraries to framework.
 target_link_libraries(Framework Live2DCubismCore)
+
+add_dependencies(Framework FrameworkShaders)
 
 # Find libraries.
 find_library(COREGRAPHICS_LIBRARY CoreGraphics)
@@ -115,6 +119,7 @@ target_include_directories(${APP_NAME} PRIVATE ${STB_PATH})
 # NOTE: In iOS, "Resources" is a reserved word of Xcode.
 # Therefore, copy destination directory name to "Res".
 target_sources(${APP_NAME} PUBLIC ${RES_PATH})
+target_sources(${APP_NAME} PUBLIC ${FRAMEWORK_SHADER_PATH})
 
 if(CSM_MAC_CATALYST)
   set_source_files_properties(${RES_PATH} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
@@ -144,6 +149,20 @@ if(PLATFORM STREQUAL "OS64")
   set_xcode_property(${APP_NAME} ARCHS "arm64" "All")
 elseif(PLATFORM STREQUAL "SIMULATOR64")
   set_xcode_property(${APP_NAME} ARCHS "x86_64" "All")
+endif()
+
+if(CSM_MAC_CATALYST)
+  add_custom_command(
+    TARGET ${APP_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/FrameworkShaders/FrameworkMetallibs $<TARGET_FILE_DIR:${APP_NAME}>/Contents/Resources/FrameworkMetallibs
+  )
+else()
+  add_custom_command(
+    TARGET ${APP_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/FrameworkShaders/FrameworkMetallibs $<TARGET_FILE_DIR:${APP_NAME}>/FrameworkMetallibs
+  )
 endif()
 
 # Disable ARC

@@ -218,10 +218,6 @@ void LAppLive2DManager::OnUpdate() const
     int width, height;
     LAppDelegate::GetInstance()->GetClientSize(width, height);
 
-    // D3D9 フレーム先頭処理
-    // 各フレームでの、Cubism SDK の処理前にコール
-    Rendering::CubismRenderer_D3D9::StartFrame(LAppDelegate::GetInstance()->GetD3dDevice(), width, height);
-
     csmUint32 modelCount = _models.GetSize();
     for (csmUint32 i = 0; i < modelCount; ++i)
     {
@@ -233,6 +229,10 @@ void LAppLive2DManager::OnUpdate() const
             LAppPal::PrintLogLn("Failed to model->GetModel().");
             continue;
         }
+
+        // D3D9 フレーム先頭処理
+        // モデルごとの各フレームでの、Cubism SDK の処理前にコール
+        model->GetRenderer<Rendering::CubismRenderer_D3D9>()->StartFrame();
 
         if (model->GetModel()->GetCanvasWidth() > 1.0f && width < height)
         {
@@ -259,12 +259,11 @@ void LAppLive2DManager::OnUpdate() const
 
         // モデル1体描画後コール
         LAppDelegate::GetInstance()->GetView()->PostModelDraw(*model);
+
+        // D3D9 フレーム終了処理
+        // モデルごとの各フレームでの、Cubism SDK の処理前にコール
+        model->GetRenderer<Rendering::CubismRenderer_D3D9>()->EndFrame();
     }
-
-    // D3D9 フレーム終了処理
-    // 各フレームでの、Cubism SDK の処理前にコール
-    Rendering::CubismRenderer_D3D9::EndFrame(LAppDelegate::GetInstance()->GetD3dDevice());
-
 }
 
 void LAppLive2DManager::NextScene()
@@ -355,13 +354,10 @@ void LAppLive2DManager::EndFrame()
 
 void LAppLive2DManager::OnDeviceLost(LPDIRECT3DDEVICE9 device)
 {
-    for (csmUint32 i = 0; i < _models.GetSize(); i++)
+    for (csmUint32 i = 0; i < _models.GetSize(); ++i)
     {
         _models[i]->OnDeviceLost();
     }
-
-    // シェーダ・頂点宣言解放等
-    Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D9::OnDeviceLost();
 }
 
 
@@ -377,6 +373,14 @@ void LAppLive2DManager::RestoreDeviceLost(LPDIRECT3DDEVICE9 device)
         }
 
         _models[i]->ReloadRenderer();
+    }
+}
+
+void LAppLive2DManager::OnDeviceChanged()
+{
+    for (csmUint32 i = 0; i < _models.GetSize(); i++)
+    {
+        _models[i]->GetRenderer<Rendering::CubismRenderer_D3D9>()->OnDeviceChanged();
     }
 }
 

@@ -125,6 +125,9 @@ macOS 用の CMake プロジェクトです。
 追加ライブラリとして [GLEW] と [GLFW] を使用しています。
 [thirdParty](#thirdParty) の項目を参照して事前にダウンロードを行なってください。
 
+Retinaディスプレイを使用する際には、フルバージョンのサンプルでは`LAppDelegate.cpp` 、ミニマムバージョンのサンプルでは`mainMinimum.cpp` 内の `IS_RETINA`マクロのコメントアウトを外してください。
+ブレンドモード機能やオフスクリーン描画機能を使用したモデルを描画した際に描画範囲が通常と異なってしまう現象を解消できます。
+
 ### proj.win.cmake
 
 Windows 用の CMake プロジェクトです。

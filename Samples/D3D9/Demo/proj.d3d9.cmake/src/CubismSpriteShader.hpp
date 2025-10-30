@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <Rendering/D3D9/CubismOffscreenSurface_D3D9.hpp>
+#include <Rendering/D3D9/CubismRenderTarget_D3D9.hpp>
 #include "CubismFramework.hpp"
 
 /**

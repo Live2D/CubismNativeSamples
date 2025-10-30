@@ -65,6 +65,14 @@ LAppMinimumModel* LAppMinimumLive2DManager::GetModel() const
     return _model;
 }
 
+void LAppMinimumLive2DManager::SetRenderTargetSize(csmUint32 width, csmUint32 height)
+{
+    if (_model)
+    {
+        _model->SetRenderTargetSize(width, height);
+    }
+}
+
 void LAppMinimumLive2DManager::OnDrag(csmFloat32 x, csmFloat32 y) const
 {
     LAppMinimumModel* model = GetModel();

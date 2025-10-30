@@ -42,7 +42,7 @@ CubismUserModelExtend::CubismUserModelExtend(const std::string modelDirectoryNam
 
 CubismUserModelExtend::~CubismUserModelExtend()
 {
-    _renderBuffer.DestroyOffscreenSurface();
+    _renderBuffer.DestroyRenderTarget();
 
     // モデルの設定データの解放
     ReleaseModelSetting();
@@ -88,7 +88,7 @@ void CubismUserModelExtend::LoadAsset(const std::string & fiileName, const std::
     LAppPal::ReleaseBytes(buffer);
 }
 
-void CubismUserModelExtend::SetupModel()
+void CubismUserModelExtend::SetupModel(csmUint32 width, csmUint32 height)
 {
     _updating = true;
     _initialized = false;
@@ -152,7 +152,7 @@ void CubismUserModelExtend::SetupModel()
     _motionManager->StopAllMotions();
 
     // レンダラの作成
-    CreateRenderer();
+    CreateRenderer(width, height);
 
     // テクスチャのセットアップ
     SetupTextures();
@@ -419,11 +419,11 @@ void CubismUserModelExtend::SetupTextures()
     GetRenderer<Rendering::CubismRenderer_D3D9>()->IsPremultipliedAlpha(isPreMult);
 }
 
-void CubismUserModelExtend::ReloadRenderer()
+void CubismUserModelExtend::ReloadRenderer(csmUint32 width, csmUint32 height)
 {
     DeleteRenderer();
 
-    CreateRenderer();
+    CreateRenderer(width, height);
 
     SetupTextures();
 }
@@ -431,7 +431,7 @@ void CubismUserModelExtend::ReloadRenderer()
 void CubismUserModelExtend::OnDeviceLost()
 {
     // レンダリングバッファ破棄
-    _renderBuffer.DestroyOffscreenSurface();
+    _renderBuffer.DestroyRenderTarget();
 
     // レンダラー破棄
     DeleteRenderer();
@@ -445,7 +445,7 @@ void CubismUserModelExtend::ModelOnUpdate()
 
     // D3D9 フレーム先頭処理
     // 各フレームでの、Cubism SDK の処理前にコール
-    Rendering::CubismRenderer_D3D9::StartFrame(CubismDirectXRenderer::GetInstance()->_device, width, height);
+    GetRenderer<Rendering::CubismRenderer_D3D9>()->StartFrame();
 
     Csm::CubismMatrix44 projection;
     // 念のため単位行列に初期化
@@ -475,7 +475,7 @@ void CubismUserModelExtend::ModelOnUpdate()
     Draw(projection); ///< 参照渡しなのでprojectionは変質する
 }
 
-Csm::Rendering::CubismOffscreenSurface_D3D9& CubismUserModelExtend::GetRenderBuffer()
+Csm::Rendering::CubismRenderTarget_D3D9& CubismUserModelExtend::GetRenderBuffer()
 {
     return _renderBuffer;
 }

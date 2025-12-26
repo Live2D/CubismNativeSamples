@@ -65,10 +65,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Add Cubism Core.
 # Import as static library.
 add_library(Live2DCubismCore STATIC IMPORTED)
+
+set(CORE_LIB_PATH ${CORE_PATH}/lib/${CORE_LIB_DIR}/libLive2DCubismCore.a)
+
 # Find library path.
 set_target_properties(Live2DCubismCore
   PROPERTIES
-    IMPORTED_LOCATION ${CORE_PATH}/lib/linux/x86_64/libLive2DCubismCore.a
+    IMPORTED_LOCATION ${CORE_LIB_PATH}
     INTERFACE_INCLUDE_DIRECTORIES ${CORE_PATH}/include
 )
 

@@ -18,6 +18,29 @@ set(COMMON_SRC_PATH ${SDK_ROOT_PATH}/Samples/Common)
 # Set project.
 project(${APP_NAME})
 
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
+    set(CORE_LIB_DIR "experimental/linux/arm64")
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
+    set(CORE_LIB_DIR "linux/x86_64")
+else()
+    find_program(UNAME_EXECUTABLE uname)
+    if(UNAME_EXECUTABLE)
+        execute_process(COMMAND ${UNAME_EXECUTABLE} -m
+            OUTPUT_VARIABLE ARCH
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+        if(ARCH MATCHES "aarch64|arm64")
+            set(CORE_LIB_DIR "experimental/linux/arm64")
+        elseif(ARCH MATCHES "x86_64|amd64")
+            set(CORE_LIB_DIR "linux/x86_64")
+        else()
+            message(FATAL_ERROR "Unsupported architecture: ${ARCH}")
+        endif()
+    else()
+        message(FATAL_ERROR "Cannot detect system architecture")
+    endif()
+endif()
+
 # Define output directory.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/${APP_NAME})
 # Set configuration (Release and Debug only).
@@ -42,10 +65,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Add Cubism Core.
 # Import as static library.
 add_library(Live2DCubismCore STATIC IMPORTED)
+
+set(CORE_LIB_PATH ${CORE_PATH}/lib/${CORE_LIB_DIR}/libLive2DCubismCore.a)
+
 # Find library path.
 set_target_properties(Live2DCubismCore
   PROPERTIES
-    IMPORTED_LOCATION ${CORE_PATH}/lib/linux/x86_64/libLive2DCubismCore.a
+    IMPORTED_LOCATION ${CORE_LIB_PATH}
     INTERFACE_INCLUDE_DIRECTORIES ${CORE_PATH}/include
 )
 

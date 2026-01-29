@@ -9,13 +9,15 @@ THIRD_PARTY_PATH=$CMAKE_PATH/../../thirdParty/
 
 PLATFORM=NONE
 NAME=unknown
+ARCH=""
 MIN_DEMO=NONE
 PS3="Select the platform number to use: "
-select var in 'iphoneOS (arm64)' 'iphoneOS Simulator (x86_64)'
+select var in 'iphoneOS (arm64)' 'iphoneOS Simulator (arm64)' 'iphoneOS Simulator (x86_64)'
 do
   case "$var" in
     'iphoneOS (arm64)' ) PLATFORM=OS64; NAME=iphoneos ;;
-    'iphoneOS Simulator (x86_64)' ) PLATFORM=SIMULATOR64; NAME=iphonesimulator ;;
+    'iphoneOS Simulator (arm64)' ) PLATFORM=SIMULATORARM64; NAME=iphonesimulator; ARCH=_arm64 ;;
+    'iphoneOS Simulator (x86_64)' ) PLATFORM=SIMULATOR64; NAME=iphonesimulator; ARCH=_x86_64 ;;
     * ) echo "Invalid option $REPLY." ;;
   esac
   break
@@ -42,7 +44,7 @@ fi
 
 # Run CMake.
 cmake -S "$CMAKE_PATH" \
-  -B "${BUILD_PATH}_${NAME}" \
+  -B "${BUILD_PATH}_${NAME}${ARCH}" \
   -D CMAKE_TOOLCHAIN_FILE="$THIRD_PARTY_PATH/ios-cmake/ios.toolchain.cmake" \
   -D PLATFORM=$PLATFORM \
   -D CSM_MINIMUM_DEMO="$MIN_DEMO" \

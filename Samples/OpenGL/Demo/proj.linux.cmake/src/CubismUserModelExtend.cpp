@@ -13,6 +13,7 @@
 #include <Physics/CubismPhysics.hpp>
 #include <CubismDefaultParameterId.hpp>
 #include <Rendering/OpenGL/CubismRenderer_OpenGLES2.hpp>
+#include <Rendering/OpenGL/CubismOffscreenManager_OpenGLES2.hpp>
 #include <Motion/CubismMotionQueueEntry.hpp>
 #include <Id/CubismIdManager.hpp>
 
@@ -224,6 +225,8 @@ void CubismUserModelExtend::ReleaseModelSetting()
     _expressions.Clear();
 
     delete(_modelJson);
+
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::ReleaseInstance();
 }
 
 /**
@@ -363,6 +366,9 @@ void CubismUserModelExtend::Draw(Csm::CubismMatrix44& matrix)
         return;
     }
 
+    // モデルで使用するオフスクリーン管理の開始処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->BeginFrameProcess();
+
     // 現在の行列に行列を乗算
     matrix.MultiplyByMatrix(_modelMatrix);
 
@@ -371,6 +377,11 @@ void CubismUserModelExtend::Draw(Csm::CubismMatrix44& matrix)
 
     // モデルの描画を命令・実行する
     GetRenderer<Csm::Rendering::CubismRenderer_OpenGLES2>()->DrawModel();
+
+    // モデルで使用するオフスクリーン管理の終了処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->EndFrameProcess();
+    // もし余っているオフスクリーンのリソースを解放したい場合行う処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->ReleaseStaleRenderTextures();
 }
 
 void CubismUserModelExtend::SetupTextures()

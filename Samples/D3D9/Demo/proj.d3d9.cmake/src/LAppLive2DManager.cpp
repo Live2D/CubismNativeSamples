@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <io.h>
 #include <Rendering/D3D9/CubismRenderer_D3D9.hpp>
+#include <Rendering/D3D9/CubismDeviceInfo_D3D9.hpp>
 #include "LAppPal.hpp"
 #include "LAppDefine.hpp"
 #include "LAppDelegate.hpp"
@@ -86,6 +87,7 @@ LAppLive2DManager::~LAppLive2DManager()
     _modelDir.Clear();
     delete _viewMatrix;
 
+    Csm::Rendering::CubismDeviceInfo_D3D9::ReleaseAllDeviceInfo();
     CubismFramework::Dispose();
 }
 
@@ -217,6 +219,10 @@ void LAppLive2DManager::OnUpdate() const
 {
     int width, height;
     LAppDelegate::GetInstance()->GetClientSize(width, height);
+    Csm::Rendering::CubismDeviceInfo_D3D9* deviceInfo = Csm::Rendering::CubismDeviceInfo_D3D9::GetDeviceInfo(LAppDelegate::GetD3dDevice());
+
+    // モデルで使用するオフスクリーン管理の開始処理
+    deviceInfo->GetOffscreenManager()->BeginFrameProcess();
 
     csmUint32 modelCount = _models.GetSize();
     for (csmUint32 i = 0; i < modelCount; ++i)
@@ -264,6 +270,11 @@ void LAppLive2DManager::OnUpdate() const
         // モデルごとの各フレームでの、Cubism SDK の処理前にコール
         model->GetRenderer<Rendering::CubismRenderer_D3D9>()->EndFrame();
     }
+
+    // モデルで使用するオフスクリーン管理の終了処理
+    deviceInfo->GetOffscreenManager()->EndFrameProcess();
+    // もし余っているオフスクリーンのリソースを解放したい場合行う処理
+    deviceInfo->GetOffscreenManager()->ReleaseStaleRenderTextures();
 }
 
 void LAppLive2DManager::NextScene()
@@ -358,6 +369,8 @@ void LAppLive2DManager::OnDeviceLost(LPDIRECT3DDEVICE9 device)
     {
         _models[i]->OnDeviceLost();
     }
+
+    Rendering::CubismDeviceInfo_D3D9::OnDeviceLost(device);
 }
 
 

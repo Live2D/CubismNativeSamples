@@ -5,9 +5,9 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-#import <Foundation/Foundation.h>
-#import <GLKit/GLKit.h>
 #import "MinLAppLive2DManager.h"
+#import <GLKit/GLKit.h>
+#import <Rendering/OpenGL/CubismOffscreenManager_OpenGLES2.hpp>
 #import "MinAppDelegate.h"
 #import "MinViewController.h"
 #import "MinLAppModel.h"
@@ -65,6 +65,7 @@ void FinishedMotion(Csm::ACubismMotion* self)
 - (void)dealloc
 {
     [self releaseModel];
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::ReleaseInstance();
 }
 
 - (void)releaseModel
@@ -98,6 +99,9 @@ void FinishedMotion(Csm::ACubismMotion* self)
     int width = screenRect.size.width;
     int height = screenRect.size.height;
 
+    // モデルで使用するオフスクリーン管理の開始処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->BeginFrameProcess();
+
     MinAppDelegate* delegate = (MinAppDelegate*) [[UIApplication sharedApplication] delegate];
     MinViewController* view = [delegate viewController];
 
@@ -127,6 +131,11 @@ void FinishedMotion(Csm::ACubismMotion* self)
     model->Draw(projection);///< 参照渡しなのでprojectionは変質する
 
     [view PostModelDraw:*model];
+
+    // モデルで使用するオフスクリーン管理の終了処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->EndFrameProcess();
+    // もし余っているオフスクリーンのリソースを解放したい場合行う処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->ReleaseStaleRenderTextures();
 }
 
 - (void)SetViewMatrix:(Csm::CubismMatrix44*)m;

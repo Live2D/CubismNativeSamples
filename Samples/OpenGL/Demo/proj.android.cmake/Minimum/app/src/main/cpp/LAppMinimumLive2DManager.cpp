@@ -9,6 +9,7 @@
 #include <string>
 #include <GLES2/gl2.h>
 #include <Rendering/CubismRenderer.hpp>
+#include <Rendering/OpenGL/CubismOffscreenManager_OpenGLES2.hpp>
 #include "LAppPal.hpp"
 #include "LAppDefine.hpp"
 #include "LAppMinimumDelegate.hpp"
@@ -53,6 +54,7 @@ LAppMinimumLive2DManager::~LAppMinimumLive2DManager()
 {
     ReleaseModel();
     delete _viewMatrix;
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::ReleaseInstance();
 }
 
 void LAppMinimumLive2DManager::ReleaseModel()
@@ -84,11 +86,16 @@ void LAppMinimumLive2DManager::OnUpdate() const
     int width = LAppMinimumDelegate::GetInstance()->GetWindowWidth();
     int height = LAppMinimumDelegate::GetInstance()->GetWindowHeight();
 
+    // モデルで使用するオフスクリーン管理の開始処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->BeginFrameProcess();
+
     CubismMatrix44 projection;
 
     LAppMinimumModel* model = GetModel();
 
-    if (model->GetModel()->GetCanvasWidth() > 1.0f && width < height)
+    float displayRatio = static_cast<float>(height) / static_cast<float>(width);
+    float canvasRatio = model->GetModel()->GetCanvasHeight() / model->GetModel()->GetCanvasWidth();
+    if (canvasRatio < displayRatio)
     {
         // 横に長いモデルを縦長ウィンドウに表示する際モデルの横サイズでscaleを算出する
         model->GetModelMatrix()->SetWidth(2.0f);
@@ -96,6 +103,7 @@ void LAppMinimumLive2DManager::OnUpdate() const
     }
     else
     {
+        model->GetModelMatrix()->SetHeight(2.0f);
         projection.Scale(static_cast<float>(height) / static_cast<float>(width), 1.0f);
     }
 
@@ -113,6 +121,11 @@ void LAppMinimumLive2DManager::OnUpdate() const
 
     // モデル1体描画前コール
     LAppMinimumDelegate::GetInstance()->GetView()->PostModelDraw(*model);
+
+    // モデルで使用するオフスクリーン管理の終了処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->EndFrameProcess();
+    // もし余っているオフスクリーンのリソースを解放したい場合行う処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->ReleaseStaleRenderTextures();
 }
 
 void LAppMinimumLive2DManager::SetAssetDirectory(const std::string &path)

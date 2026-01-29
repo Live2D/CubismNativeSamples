@@ -10,7 +10,7 @@
 #include <CubismFramework.hpp>
 #include <ICubismModelSetting.hpp>
 #include <Type/csmRectF.hpp>
-#include <Rendering/Vulkan/CubismOffscreenSurface_Vulkan.hpp>
+#include <Rendering/Vulkan/CubismRenderTarget_Vulkan.hpp>
 #include "LAppWavFileHandler_Common.hpp"
 #include "LAppModel_Common.hpp"
 
@@ -122,7 +122,7 @@ public:
     /**
      * @brief   別ターゲットに描画する際に使用するバッファの取得
      */
-    Csm::Rendering::CubismOffscreenSurface_Vulkan& GetRenderBuffer();
+    Csm::Rendering::CubismRenderTarget_Vulkan& GetRenderBuffer();
 
 protected:
     /**
@@ -196,6 +196,6 @@ private:
 
     LAppWavFileHandler_Common _wavFileHandler; ///< wavファイルハンドラ
 
-    Csm::Rendering::CubismOffscreenSurface_Vulkan _renderBuffer; ///< フレームバッファ以外の描画先
+    Csm::Rendering::CubismRenderTarget_Vulkan _renderBuffer; ///< フレームバッファ以外の描画先
     Csm::csmVector<Csm::csmUint32> _bindTextureId; ///< テクスチャID
 };

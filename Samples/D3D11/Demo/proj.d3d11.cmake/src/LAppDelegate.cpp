@@ -266,6 +266,7 @@ void LAppDelegate::Release()
 
     if (_device)
     {
+        Csm::Rendering::CubismDeviceInfo_D3D11::ReleaseDeviceInfo(_device);
         _device->Release();
         _device = NULL;
     }
@@ -350,7 +351,7 @@ void LAppDelegate::InitializeCubism()
     CubismFramework::Initialize();
 
     // モデルロード前に必ず呼び出す必要がある
-    Live2D::Cubism::Framework::Rendering::DeviceInfo_D3D11::SetConstantSettings(BackBufferNum, _device);
+    Csm::Rendering::CubismRenderer_D3D11::SetConstantSettings(BackBufferNum, _device);
 
     //load model
     LAppLive2DManager::GetInstance();

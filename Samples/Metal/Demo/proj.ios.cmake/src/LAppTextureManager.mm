@@ -93,6 +93,7 @@
     // Set the pixel dimensions of the texture
     textureDescriptor.width = width;
     textureDescriptor.height = height;
+    textureDescriptor.storageMode = MTLStorageModeShared;
 
     int widthLevels = ceil(log2(width));
     int heightLevels = ceil(log2(height));

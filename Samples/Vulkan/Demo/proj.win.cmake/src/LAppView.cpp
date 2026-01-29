@@ -44,7 +44,7 @@ LAppView::LAppView():
 LAppView::~LAppView()
 {
     VkDevice device = LAppDelegate::GetInstance()->GetVulkanManager()->GetDevice();
-    _renderBuffer.DestroyOffscreenSurface(device);
+    _renderBuffer.DestroyRenderTarget();
 
     LAppDelegate::GetInstance()->GetTextureManager()->ReleaseTexture(_back->GetTextureId());
     LAppDelegate::GetInstance()->GetTextureManager()->ReleaseTexture(_gear->GetTextureId());
@@ -337,7 +337,7 @@ void LAppView::PreModelDraw(LAppModel& refModel)
     else
     {
         // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-        Csm::Rendering::CubismOffscreenSurface_Vulkan* useTarget = NULL;
+        Csm::Rendering::CubismRenderTarget_Vulkan* useTarget = NULL;
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer                // LAppView が持つバッファ
                                                                     : &refModel.GetRenderBuffer();  // Model が持つバッファ
 
@@ -350,7 +350,7 @@ void LAppView::PreModelDraw(LAppModel& refModel)
             VulkanManager* vkManager = LAppDelegate::GetInstance()->GetVulkanManager();
             if (width != 0 && height != 0)
             {
-                useTarget->CreateOffscreenSurface(vkManager->GetDevice(), vkManager->GetPhysicalDevice(),
+                useTarget->CreateRenderTarget(vkManager->GetDevice(), vkManager->GetPhysicalDevice(),
                     static_cast<csmUint32>(width), static_cast<csmUint32>(height),
                     vkManager->GetImageFormat(),
                     vkManager->GetDepthFormat()
@@ -369,7 +369,7 @@ void LAppView::PreModelDraw(LAppModel& refModel)
 void LAppView::PostModelDraw(LAppModel& refModel, csmInt32 modelIndex)
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-    Csm::Rendering::CubismOffscreenSurface_Vulkan* useTarget = NULL;
+    Csm::Rendering::CubismRenderTarget_Vulkan* useTarget = NULL;
 
     if (_renderTarget != SelectTarget_None)
     {
@@ -516,12 +516,12 @@ void LAppView::ResizeSprite(int width, int height)
     }
 }
 
-void LAppView::DestroyOffscreenSurface()
+void LAppView::DestroyRenderTarget()
 {
     LAppLive2DManager* live2DManager = LAppLive2DManager::GetInstance();
     if (_renderTarget == SelectTarget_ViewFrameBuffer)
     {
-        _renderBuffer.DestroyOffscreenSurface(LAppDelegate::GetInstance()->GetVulkanManager()->GetDevice());
+        _renderBuffer.DestroyRenderTarget();
     }
     else if (_renderTarget == SelectTarget_ModelFrameBuffer)
     {
@@ -529,7 +529,7 @@ void LAppView::DestroyOffscreenSurface()
         {
             LAppModel* model = live2DManager->GetModel(i);
             model->GetRenderBuffer().
-                   DestroyOffscreenSurface(LAppDelegate::GetInstance()->GetVulkanManager()->GetDevice());
+                   DestroyRenderTarget();
         }
     }
 }

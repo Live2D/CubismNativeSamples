@@ -86,7 +86,7 @@ static void InitializeCubism()
     CubismFramework::Initialize();
 
     // モデルロード前に必ず呼び出す必要がある
-    Live2D::Cubism::Framework::Rendering::DeviceInfo_D3D9::SetConstantSettings(CubismDirectXRenderer::GetInstance()->BackBufferNum, CubismDirectXRenderer::GetInstance()->_device);
+    Csm::Rendering::CubismRenderer_D3D9::SetConstantSettings(CubismDirectXRenderer::GetInstance()->BackBufferNum, CubismDirectXRenderer::GetInstance()->_device);
 
     LAppPal::UpdateTime();
 }

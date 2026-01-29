@@ -130,6 +130,8 @@ Csm::csmString GetPath(CFURLRef url)
     delete _viewMatrix;
     _viewMatrix = nil;
 
+    Csm::Rendering::CubismDeviceInfo_Metal::ReleaseAllDeviceInfo();
+
     [self releaseAllModel];
     [super dealloc];
 }
@@ -237,6 +239,10 @@ Csm::csmString GetPath(CFURLRef url)
     Csm::csmUint32 modelCount = _models.GetSize();
 
     id<MTLDevice> device = [view getDevice];
+    Csm::Rendering::CubismDeviceInfo_Metal* deviceInfo = Csm::Rendering::CubismDeviceInfo_Metal::GetDeviceInfo(device);
+
+    // モデルで使用するオフスクリーン管理の開始処理
+    deviceInfo->GetOffscreenManager()->BeginFrameProcess();
 
     _renderPassDescriptor.colorAttachments[0].texture = drawable.texture;
     _renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionLoad;
@@ -248,8 +254,7 @@ Csm::csmString GetPath(CFURLRef url)
         {
             _renderBuffer = new Csm::Rendering::CubismRenderTarget_Metal;
             _renderBuffer->SetMTLPixelFormat(MTLPixelFormatBGRA8Unorm);
-            _renderBuffer->SetClearColor(0.0, 0.0, 0.0, 0.0);
-            _renderBuffer->CreateRenderTarget(device, static_cast<LAppDefine::csmUint32>(width), static_cast<LAppDefine::csmUint32>(height), nil);
+            _renderBuffer->CreateRenderTarget(device, static_cast<LAppDefine::csmUint32>(width), static_cast<LAppDefine::csmUint32>(height));
 
             if (_renderTarget == SelectTarget_ViewFrameBuffer)
             {
@@ -372,6 +377,11 @@ Csm::csmString GetPath(CFURLRef url)
             [depthSprite dealloc];
         }
     }
+
+    // モデルで使用するオフスクリーン管理の終了処理
+    deviceInfo->GetOffscreenManager()->EndFrameProcess();
+    // もし余っているオフスクリーンのリソースを解放したい場合行う処理
+    deviceInfo->GetOffscreenManager()->ReleaseStaleRenderTextures();
 }
 
 - (void)nextScene;

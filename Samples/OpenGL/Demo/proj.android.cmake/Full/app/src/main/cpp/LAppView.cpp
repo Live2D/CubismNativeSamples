@@ -98,8 +98,9 @@ void LAppView::InitializeSprite()
 
     float x = width * 0.5f;
     float y = height * 0.5f;
-    float fWidth = (backgroundTexture->width * 2.0f);
     float fHeight = (height * 0.95f);
+    float ratio = fHeight / static_cast<float>(backgroundTexture->height);
+    float fWidth = static_cast<float>(backgroundTexture->width) * ratio;
 
     if(_back == NULL)
     {
@@ -269,12 +270,11 @@ void LAppView::PreModelDraw(LAppModel &refModel)
 
         // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
+        int width = LAppDelegate::GetInstance()->GetWindowWidth();
+        int height = LAppDelegate::GetInstance()->GetWindowHeight();
 
-        if (!useTarget->IsValid())
+        if (!useTarget->IsValid() || static_cast<int>(useTarget->GetBufferWidth()) != width || static_cast<int>(useTarget->GetBufferHeight()) != height)
         {// 描画ターゲット内部未作成の場合はここで作成
-            int width = LAppDelegate::GetInstance()->GetWindowWidth();
-            int height = LAppDelegate::GetInstance()->GetWindowHeight();
-
             // モデル描画キャンバス
             useTarget->CreateRenderTarget(static_cast<csmUint32>(width), static_cast<csmUint32>(height));
         }

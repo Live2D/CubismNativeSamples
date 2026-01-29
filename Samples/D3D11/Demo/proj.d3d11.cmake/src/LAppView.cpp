@@ -157,8 +157,9 @@ void LAppView::InitializeSprite()
     LAppTextureManager::TextureInfo* backgroundTexture = textureManager->CreateTextureFromPngFile(imageName, false);
     x = width * 0.5f;
     y = height * 0.5f;
-    fWidth = static_cast<float>(backgroundTexture->width * 2);
     fHeight = static_cast<float>(height) * 0.95f;
+    float ratio = fHeight / static_cast<float>(backgroundTexture->height);
+    fWidth = static_cast<float>(backgroundTexture->width) * ratio;
     _back = new LAppSprite(x, y, fWidth, fHeight, backgroundTexture->id, _spriteShader, device);
 
     imageName = resourcesPath + GearImageName;
@@ -240,8 +241,9 @@ void LAppView::ResizeSprite()
         {
             x = width * 0.5f;
             y = height * 0.5f;
-            fWidth = static_cast<float>(texInfo->width * 2);
             fHeight = static_cast<float>(height) * 0.95f;
+            float ratio = fHeight / static_cast<float>(texInfo->height);
+            fWidth = static_cast<float>(texInfo->width) * ratio;
             _back->ResetRect(x, y, fWidth, fHeight);
         }
     }

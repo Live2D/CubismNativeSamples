@@ -390,9 +390,14 @@ void VulkanManager::CreateLogicalDevice()
     dynamicStateF.extendedDynamicState = VK_TRUE;
     dynamicStateF.pNext = &dynamicRenderingF;
 
+    VkPhysicalDeviceVulkan13Features deviceVulkan13Features{};
+    deviceVulkan13Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
+    deviceVulkan13Features.synchronization2 = VK_TRUE;
+    deviceVulkan13Features.pNext = &dynamicStateF;
+
     VkPhysicalDeviceFeatures2 deviceFeatures2{};
     deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-    deviceFeatures2.pNext = &dynamicStateF;
+    deviceFeatures2.pNext = &deviceVulkan13Features;
     vkGetPhysicalDeviceFeatures2(_physicalDevice, &deviceFeatures2);
     createInfo.pNext = &deviceFeatures2;
 

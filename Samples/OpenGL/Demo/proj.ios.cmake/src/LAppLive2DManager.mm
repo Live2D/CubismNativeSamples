@@ -9,6 +9,7 @@
 #import <string.h>
 #import <stdlib.h>
 #import <GLKit/GLKit.h>
+#import <Rendering/OpenGL/CubismOffscreenManager_OpenGLES2.hpp>
 #import "AppDelegate.h"
 #import "ViewController.h"
 #import "LAppModel.h"
@@ -94,6 +95,7 @@ Csm::csmString GetPath(CFURLRef url)
     _viewMatrix = nil;
 
     [self releaseAllModel];
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::ReleaseInstance();
 }
 
 - (void)releaseAllModel
@@ -182,6 +184,9 @@ Csm::csmString GetPath(CFURLRef url)
     int width = screenRect.size.width;
     int height = screenRect.size.height;
 
+    // モデルで使用するオフスクリーン管理の開始処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->BeginFrameProcess();
+
     AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
     ViewController* view = [delegate viewController];
 
@@ -221,6 +226,11 @@ Csm::csmString GetPath(CFURLRef url)
 
         [view PostModelDraw:*model];
     }
+
+    // モデルで使用するオフスクリーン管理の終了処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->EndFrameProcess();
+    // もし余っているオフスクリーンのリソースを解放したい場合行う処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->ReleaseStaleRenderTextures();
 }
 
 - (void)nextScene;

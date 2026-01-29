@@ -57,13 +57,13 @@ public:
      *
      * @return プリマルチプライ処理後のカラー値
      */
-    virtual inline unsigned int Premultiply(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha)
+    static unsigned int Premultiply(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha)
     {
-        return static_cast<unsigned>(\
-            (red * (alpha + 1) >> 8) | \
-            ((green * (alpha + 1) >> 8) << 8) | \
-            ((blue * (alpha + 1) >> 8) << 16) | \
-            (((alpha)) << 24)   \
+        return static_cast<unsigned>(
+            (red * (alpha + 1) >> 8) |
+            ((green * (alpha + 1) >> 8) << 8) |
+            ((blue * (alpha + 1) >> 8) << 16) |
+            (((alpha)) << 24)
             );
     }
 

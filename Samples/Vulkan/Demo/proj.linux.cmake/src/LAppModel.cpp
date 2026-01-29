@@ -45,7 +45,7 @@ LAppModel::LAppModel()
 
 LAppModel::~LAppModel()
 {
-    _renderBuffer.DestroyOffscreenSurface(VulkanManager::GetInstance()->GetDevice());
+    _renderBuffer.DestroyRenderTarget();
 
     ReleaseMotions();
     ReleaseExpressions();
@@ -82,7 +82,7 @@ void LAppModel::LoadAssets(VkDevice device, VkFormat imageFormat, const csmChar*
         return;
     }
 
-    CreateRenderer();
+    CreateRenderer(LAppDelegate::GetInstance()->GetWindowWidth(), LAppDelegate::GetInstance()->GetWindowHeight());
 
     SetupTextures(device, imageFormat);
 }
@@ -575,7 +575,7 @@ void LAppModel::ReloadRenderer(VkDevice device, VkFormat surfaceFormat)
 {
     DeleteRenderer();
 
-    CreateRenderer();
+    CreateRenderer(LAppDelegate::GetInstance()->GetWindowHeight(), LAppDelegate::GetInstance()->GetWindowHeight());
 
     SetupTextures(device, surfaceFormat);
 }
@@ -626,7 +626,7 @@ void LAppModel::MotionEventFired(const csmString& eventValue)
     CubismLogInfo("%s is fired on LAppModel!!", eventValue.GetRawString());
 }
 
-Csm::Rendering::CubismOffscreenSurface_Vulkan& LAppModel::GetRenderBuffer()
+Csm::Rendering::CubismRenderTarget_Vulkan& LAppModel::GetRenderBuffer()
 {
     return _renderBuffer;
 }

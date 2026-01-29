@@ -87,6 +87,7 @@ LAppLive2DManager::~LAppLive2DManager()
     _modelDir.Clear();
     delete _viewMatrix;
 
+    Csm::Rendering::CubismDeviceInfo_D3D11::ReleaseAllDeviceInfo();
     CubismFramework::Dispose();
 }
 
@@ -228,6 +229,10 @@ void LAppLive2DManager::OnUpdate() const
 {
     int windowWidth, windowHeight;
     LAppDelegate::GetInstance()->GetClientSize(windowWidth, windowHeight);
+    Csm::Rendering::CubismDeviceInfo_D3D11* deviceInfo = Csm::Rendering::CubismDeviceInfo_D3D11::GetDeviceInfo(LAppDelegate::GetD3dDevice());
+
+    // モデルで使用するオフスクリーン管理の開始処理
+    deviceInfo->GetOffscreenManager()->BeginFrameProcess();
 
     const csmUint32 modelCount = _models.GetSize();
     for (csmUint32 i = 0; i < modelCount; ++i)
@@ -277,6 +282,11 @@ void LAppLive2DManager::OnUpdate() const
         // モデルごとの各フレームでの、Cubism SDK の処理後にコール
         model->GetRenderer<Rendering::CubismRenderer_D3D11>()->EndFrame();
     }
+
+    // モデルで使用するオフスクリーン管理の終了処理
+    deviceInfo->GetOffscreenManager()->EndFrameProcess();
+    // もし余っているオフスクリーンのリソースを解放したい場合行う処理
+    deviceInfo->GetOffscreenManager()->ReleaseStaleRenderTextures();
 }
 
 void LAppLive2DManager::NextScene()

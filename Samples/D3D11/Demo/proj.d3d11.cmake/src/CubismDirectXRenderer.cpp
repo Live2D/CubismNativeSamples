@@ -9,7 +9,7 @@
 
 #include <d3dcompiler.h>
 #include <Rendering/D3D11/CubismNativeInclude_D3D11.hpp>
-
+#include <Rendering/D3D11/CubismDeviceInfo_D3D11.hpp>
 #include "CubismDirectXRenderer.hpp"
 #include "CubismDirectXView.hpp"
 #include "CubismTextureManager.hpp"
@@ -79,6 +79,7 @@ void CubismDirectXRenderer::Release()
 
     if (_device)
     {
+        Csm::Rendering::CubismDeviceInfo_D3D11::ReleaseDeviceInfo(_device);
         _device->Release();
         _device = nullptr;
     }

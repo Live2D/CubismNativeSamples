@@ -98,6 +98,16 @@ public:
     LAppTextureManager* GetTextureManager() { return _textureManager; }
     VulkanManager* GetVulkanManager();
 
+    /**
+     * @brief ウィンドウの幅を取得する
+     */
+    int GetWindowWidth() { return _windowWidth; }
+
+    /**
+     * @brief ウィンドウの高さを取得する
+     */
+    int GetWindowHeight() { return _windowHeight; }
+
 private:
     /**
     * @brief   コンストラクタ

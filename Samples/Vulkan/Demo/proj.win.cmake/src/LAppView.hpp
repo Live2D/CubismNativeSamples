@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <Rendering/Vulkan/CubismOffscreenSurface_Vulkan.hpp>
+#include <Rendering/Vulkan/CubismRenderTarget_Vulkan.hpp>
 #include <Rendering/Vulkan/CubismRenderer_Vulkan.hpp>
 #include <Math/CubismMatrix44.hpp>
 #include <Math/CubismViewMatrix.hpp>
@@ -162,7 +162,7 @@ public:
     /**
      * @brief オフスクリーンの破棄
      */
-    void DestroyOffscreenSurface();
+    void DestroyRenderTarget();
 
 private:
     TouchManager_Common* _touchManager;                          ///< タッチマネージャー
@@ -170,7 +170,7 @@ private:
     LAppSprite* _gear;                                           ///< ギア画像
     LAppSprite* _power;                                          ///< 電源画像
     LAppSprite* _renderSprite;                                   ///< レンダリング先を別ターゲットにする方式の場合に使用
-    Csm::Rendering::CubismOffscreenSurface_Vulkan _renderBuffer; ///< モードによってはCubismモデル結果をこっちにレンダリング
+    Csm::Rendering::CubismRenderTarget_Vulkan _renderBuffer; ///< モードによってはCubismモデル結果をこっちにレンダリング
     SelectTarget _renderTarget;                                  ///< レンダリング先の選択肢
     float _clearColor[4];                                        ///< レンダリングターゲットのクリアカラー
     LAppSpritePipeline* _spritePipeline;                         ///< スプライト用パイプライン

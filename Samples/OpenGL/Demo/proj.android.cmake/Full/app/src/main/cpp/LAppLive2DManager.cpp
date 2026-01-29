@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <GLES2/gl2.h>
 #include <Rendering/CubismRenderer.hpp>
+#include <Rendering/OpenGL/CubismOffscreenManager_OpenGLES2.hpp>
 #include "LAppPal.hpp"
 #include "LAppDefine.hpp"
 #include "LAppDelegate.hpp"
@@ -73,6 +74,7 @@ LAppLive2DManager::~LAppLive2DManager()
 {
     ReleaseAllModel();
     delete _viewMatrix;
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::ReleaseInstance();
 }
 
 void LAppLive2DManager::ReleaseAllModel()
@@ -139,6 +141,11 @@ void LAppLive2DManager::OnDrag(csmFloat32 x, csmFloat32 y) const
 
 void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
 {
+    int width = LAppDelegate::GetInstance()->GetWindowWidth();
+    int height = LAppDelegate::GetInstance()->GetWindowHeight();
+    float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+    float displayRatio = static_cast<float>(height) / static_cast<float>(width);
+
     if (DebugLogEnable)
     {
         LAppPal::PrintLogLn("[APP]tap point: {x:%.2f y:%.2f}", x, y);
@@ -146,21 +153,34 @@ void LAppLive2DManager::OnTap(csmFloat32 x, csmFloat32 y)
 
     for (csmUint32 i = 0; i < _models.GetSize(); i++)
     {
-        if (_models[i]->HitTest(HitAreaNameHead, x, y))
+        LAppModel* model = GetModel(i);
+        float canvasRatio = model->GetModel()->GetCanvasHeight() / model->GetModel()->GetCanvasWidth();
+
+        csmFloat32 adjustedX = x;
+        csmFloat32 adjustedY = y;
+
+        if (canvasRatio < displayRatio)
+        {
+            // OnUpdateでのプロジェクションスケールを打ち消してモデル座標系に変換
+            adjustedX = x / aspectRatio;
+            adjustedY = y / aspectRatio;
+        }
+
+        if (model->HitTest(HitAreaNameHead, adjustedX, adjustedY))
         {
             if (DebugLogEnable)
             {
                 LAppPal::PrintLogLn("[APP]hit area: [%s]", HitAreaNameHead);
             }
-            _models[i]->SetRandomExpression();
+            model->SetRandomExpression();
         }
-        else if (_models[i]->HitTest(HitAreaNameBody, x, y))
+        else if (model->HitTest(HitAreaNameBody, adjustedX, adjustedY))
         {
             if (DebugLogEnable)
             {
                 LAppPal::PrintLogLn("[APP]hit area: [%s]", HitAreaNameBody);
             }
-            _models[i]->StartRandomMotion(MotionGroupTapBody, PriorityNormal, FinishedMotion, BeganMotion);
+            model->StartRandomMotion(MotionGroupTapBody, PriorityNormal, FinishedMotion, BeganMotion);
         }
     }
 }
@@ -169,6 +189,11 @@ void LAppLive2DManager::OnUpdate() const
 {
     int width = LAppDelegate::GetInstance()->GetWindowWidth();
     int height = LAppDelegate::GetInstance()->GetWindowHeight();
+    float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+    float displayRatio = static_cast<float>(height) / static_cast<float>(width);
+
+    // モデルで使用するオフスクリーン管理の開始処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->BeginFrameProcess();
 
     csmUint32 modelCount = _models.GetSize();
     for (csmUint32 i = 0; i < modelCount; ++i)
@@ -182,15 +207,19 @@ void LAppLive2DManager::OnUpdate() const
             continue;
         }
 
-        if (model->GetModel()->GetCanvasWidth() > 1.0f && width < height)
+        float canvasRatio = model->GetModel()->GetCanvasHeight() / model->GetModel()->GetCanvasWidth();
+
+        if (canvasRatio < displayRatio)
         {
-            // 横に長いモデルを縦長ウィンドウに表示する際モデルの横サイズでscaleを算出する
+            // 横長モデルを幅に合わせて縦方向のスケールを調整
             model->GetModelMatrix()->SetWidth(2.0f);
-            projection.Scale(1.0f, static_cast<float>(width) / static_cast<float>(height));
+            projection.Scale(1.0f, aspectRatio);
         }
         else
         {
-            projection.Scale(static_cast<float>(height) / static_cast<float>(width), 1.0f);
+            // 縦長モデルを高さに合わせて横方向のスケールを調整
+            model->GetModelMatrix()->SetHeight(2.0f);
+            projection.Scale(1.0f / aspectRatio, 1.0f);
         }
 
         // 必要があればここで乗算
@@ -208,6 +237,11 @@ void LAppLive2DManager::OnUpdate() const
         // モデル1体描画後コール
         LAppDelegate::GetInstance()->GetView()->PostModelDraw(*model);
     }
+
+    // モデルで使用するオフスクリーン管理の終了処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->EndFrameProcess();
+    // もし余っているオフスクリーンのリソースを解放したい場合行う処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->ReleaseStaleRenderTextures();
 }
 
 void LAppLive2DManager::NextScene()

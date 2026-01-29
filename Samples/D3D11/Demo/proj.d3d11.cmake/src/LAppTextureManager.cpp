@@ -148,7 +148,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(st
 
                             for (UINT i = 0; i < subRes.RowPitch; i += 4)
                             {
-                                unsigned int val = Premultiply(pixel4[i + 0], pixel4[i + 1], pixel4[i + 2], pixel4[i + 3]);
+                                unsigned int val = LAppTextureManager_Common::Premultiply(pixel4[i + 0], pixel4[i + 1], pixel4[i + 2], pixel4[i + 3]);
                                 pixel32[(i >> 2)] = val;
                             }
                         }

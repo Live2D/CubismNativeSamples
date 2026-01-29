@@ -167,7 +167,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(
         for (int i = 0; i < width * height; i++)
         {
             unsigned char* p = png + i * 4;
-            fourBytes[i] = Premultiply(p[0], p[1], p[2], p[3]);
+            fourBytes[i] = LAppTextureManager_Common::Premultiply(p[0], p[1], p[2], p[3]);
         }
 #endif
     }

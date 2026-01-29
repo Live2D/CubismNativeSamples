@@ -127,6 +127,8 @@ private:
 
     /**
     * @brief   デバイスロスト時の対応
+    *
+    * @param[in]   device      使用デバイス
     */
-    void OnDeviceLost();
+    void OnDeviceLost(LPDIRECT3DDEVICE9 device);
 };

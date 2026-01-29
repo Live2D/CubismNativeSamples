@@ -12,6 +12,7 @@
 #include <Physics/CubismPhysics.hpp>
 #include <CubismDefaultParameterId.hpp>
 #include <Rendering/Vulkan/CubismRenderer_Vulkan.hpp>
+#include <Rendering/Vulkan/CubismOffscreenManager_Vulkan.hpp>
 #include <Motion/CubismMotionQueueEntry.hpp>
 #include <Id/CubismIdManager.hpp>
 
@@ -52,7 +53,7 @@ CubismUserModelExtend::~CubismUserModelExtend()
     delete _textureManager;
 }
 
-void CubismUserModelExtend::LoadAssets(const Csm::csmChar* fileName)
+void CubismUserModelExtend::LoadAssets(const Csm::csmChar* fileName, const csmInt32 windowWidth, const csmInt32 windowHeight)
 {
     csmSizeInt size;
     const csmString path = csmString(_currentModelDirectory.c_str()) + fileName;
@@ -62,10 +63,10 @@ void CubismUserModelExtend::LoadAssets(const Csm::csmChar* fileName)
     DeleteBuffer(buffer, path.GetRawString());
 
     // モデルの生成
-    SetupModel();
+    SetupModel(windowWidth, windowHeight);
 }
 
-void CubismUserModelExtend::SetupModel()
+void CubismUserModelExtend::SetupModel(const csmInt32 windowWidth, const csmInt32 windowHeight)
 {
     _updating = true;
     _initialized = false;
@@ -163,7 +164,7 @@ void CubismUserModelExtend::SetupModel()
     _motionManager->StopAllMotions();
 
     // レンダラの作成
-    CreateRenderer();
+    CreateRenderer(windowWidth, windowHeight);
 
     // テクスチャのセットアップ
     SetupTextures();
@@ -238,6 +239,8 @@ void CubismUserModelExtend::ReleaseModelSetting()
     _expressions.Clear();
 
     delete(_modelJson);
+
+    Csm::Rendering::CubismOffscreenManager_Vulkan::ReleaseInstance();
 }
 
 /**
@@ -449,6 +452,9 @@ void CubismUserModelExtend::ModelOnUpdate(GLFWwindow* window)
     // 念のため単位行列に初期化
     projection.LoadIdentity();
 
+    // モデルで使用するオフスクリーンの管理の開始処理
+    Csm::Rendering::CubismOffscreenManager_Vulkan::GetInstance()->BeginFrameProcess();
+
     if (_model->GetCanvasWidth() > 1.0f && width < height)
     {
         // 横に長いモデルを縦長ウィンドウに表示する際モデルの横サイズでscaleを算出する
@@ -471,4 +477,9 @@ void CubismUserModelExtend::ModelOnUpdate(GLFWwindow* window)
 
     // モデルの描画を更新
     Draw(projection); ///< 参照渡しなのでprojectionは変質する
+
+    // モデルで使用するオフスクリーン管理の終了処理
+    Csm::Rendering::CubismOffscreenManager_Vulkan::GetInstance()->EndFrameProcess();
+    // もし余っているオフスクリーンのリソースを解放したい場合行う処理
+    Csm::Rendering::CubismOffscreenManager_Vulkan::GetInstance()->ReleaseStaleRenderTextures();
 }

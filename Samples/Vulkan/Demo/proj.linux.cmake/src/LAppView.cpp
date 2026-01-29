@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
@@ -47,7 +47,7 @@ LAppView::LAppView():
 LAppView::~LAppView()
 {
     VkDevice device = VulkanManager::GetInstance()->GetDevice();
-    _renderBuffer.DestroyOffscreenSurface(device);
+    _renderBuffer.DestroyRenderTarget();
 
     // Vulkan のリソース削除
     Cleanup(device);
@@ -97,7 +97,7 @@ void LAppView::ChangeBeginLayout(VkCommandBuffer commandBuffer)
     memoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
     memoryBarrier.srcAccessMask = 0;
     memoryBarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_GENERAL;
     memoryBarrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
     memoryBarrier.image = vkManager->GetSwapchainImage();
     memoryBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
@@ -140,7 +140,7 @@ void LAppView::ChangeEndLayout(VkCommandBuffer commandBuffer)
     memoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
     memoryBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
     memoryBarrier.dstAccessMask = 0;
-    memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_GENERAL;
     memoryBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
     memoryBarrier.image = vkManager->GetSwapchainImage();
     memoryBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
@@ -538,7 +538,7 @@ void LAppView::PreModelDraw(LAppModel &refModel)
     else
     {
         // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-        Csm::Rendering::CubismOffscreenSurface_Vulkan* useTarget = NULL;
+        Csm::Rendering::CubismRenderTarget_Vulkan* useTarget = NULL;
         // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
 
@@ -552,7 +552,7 @@ void LAppView::PreModelDraw(LAppModel &refModel)
             if(bufWidth!=0 && bufHeight!=0)
             {
                 // モデル描画キャンバス
-                useTarget->CreateOffscreenSurface(vkManager->GetDevice(), vkManager->GetPhysicalDevice(),
+                useTarget->CreateRenderTarget(vkManager->GetDevice(), vkManager->GetPhysicalDevice(),
                     static_cast<csmUint32>(bufWidth), static_cast<csmUint32>(bufHeight),
                     vkManager->GetImageFormat(),
                     vkManager->GetDepthFormat()
@@ -569,7 +569,7 @@ void LAppView::PreModelDraw(LAppModel &refModel)
 void LAppView::PostModelDraw(LAppModel &refModel)
 {
     // 別のレンダリングターゲットへ向けて描画する場合の使用するフレームバッファ
-    Csm::Rendering::CubismOffscreenSurface_Vulkan* useTarget = NULL;
+    Csm::Rendering::CubismRenderTarget_Vulkan* useTarget = NULL;
 
     if (_renderTarget != SelectTarget_None)
     {
@@ -639,6 +639,8 @@ void LAppView::Cleanup(VkDevice device)
 {
     vkDestroyPipelineLayout(device, _spritePipelineLayout, nullptr);
     vkDestroyPipeline(device, _spritePipeline, nullptr);
+    vkDestroyPipelineLayout(device, _modelSpritePipelineLayout, nullptr);
+    vkDestroyPipeline(device, _modelSpritePipeline, nullptr);
 }
 
 void LAppView::ResizeSprite(int width, int height)
@@ -724,12 +726,12 @@ void LAppView::ResizeSprite(int width, int height)
     }
 }
 
-void LAppView::DestroyOffscreenSurface()
+void LAppView::DestroyRenderTarget()
 {
     LAppLive2DManager* live2DManager = LAppLive2DManager::GetInstance();
     if (_renderTarget == SelectTarget_ViewFrameBuffer)
     {
-        _renderBuffer.DestroyOffscreenSurface(VulkanManager::GetInstance()->GetDevice());
+        _renderBuffer.DestroyRenderTarget();
     }
     else if (_renderTarget == SelectTarget_ModelFrameBuffer)
     {
@@ -737,7 +739,7 @@ void LAppView::DestroyOffscreenSurface()
         {
             LAppModel* model = live2DManager->GetModel(i);
             model->GetRenderBuffer().
-                   DestroyOffscreenSurface(VulkanManager::GetInstance()->GetDevice());
+                   DestroyRenderTarget();
         }
     }
 }

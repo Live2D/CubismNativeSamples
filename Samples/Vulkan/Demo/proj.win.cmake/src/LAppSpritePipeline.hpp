@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <Rendering/Vulkan/CubismOffscreenSurface_Vulkan.hpp>
+#include <Rendering/Vulkan/CubismRenderTarget_Vulkan.hpp>
 #include <Rendering/Vulkan/CubismRenderer_Vulkan.hpp>
 #include "CubismFramework.hpp"
 

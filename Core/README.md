@@ -34,7 +34,8 @@ Core
 | Android | x86 | ✓ | ✓ | android/x86 |   |
 | Android | x86_64 | ✓ | ✓ | android/x86_64 |   |
 | iOS | ARM64 |   | ✓ | ios/xxx-iphoneos | iOS Devices |
-| iOS | x86_64 |   | ✓ | ios/xxx-iphonesimulator | iOS Simulator |
+| iOS | ARM64 |   | ✓ | ios/xxx-iphonesimulator-arm64 | iOS Simulator |
+| iOS | x86_64 |   | ✓ | ios/xxx-iphonesimulator-x86_64 | iOS Simulator |
 | Linux | x86_64 | ✓ | ✓ | linux/x86_64 |   |
 | Linux | ARM64 | ✓ | ✓ | experimental/linux/ARM64 |   |
 | macOS | ARM64 | ✓ | ✓ | macos/arm64 |   |

@@ -12,8 +12,8 @@
         android:theme="@style/AppTheme">
         <activity
                 android:name=".MainActivity"
-                android:configChanges="orientation"
-                android:screenOrientation="sensorLandscape"
+                android:configChanges="orientation|screenSize"
+                android:screenOrientation="fullUser"
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,5 +22,5 @@
             </intent-filter>
         </activity>
     </application>
-    
+
 </manifest>

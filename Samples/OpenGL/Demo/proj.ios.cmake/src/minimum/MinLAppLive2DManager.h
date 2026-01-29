@@ -9,6 +9,7 @@
 #define MinLAppLive2DManager_h
 
 #import <string>
+#import <Foundation/Foundation.h>
 #import <CubismFramework.hpp>
 #import <Math/CubismMatrix44.hpp>
 #import <Type/csmVector.hpp>

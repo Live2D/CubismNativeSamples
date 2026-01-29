@@ -109,6 +109,14 @@ public:
     Csm::csmUint32 GetModelNum() const;
 
     /**
+     * @brif   モデルのオフスクリーンサイズを設定
+     *
+     * @param[in]   width   ウィンドウの幅
+     * @param[in]   height   ウィンドウの高さ
+     */
+    void SetRenderTargetSize(Csm::csmUint32 width, Csm::csmUint32 height);
+
+    /**
      * @brief   viewMatrixをセットする
      */
     void SetViewMatrix(Live2D::Cubism::Framework::CubismMatrix44* m);

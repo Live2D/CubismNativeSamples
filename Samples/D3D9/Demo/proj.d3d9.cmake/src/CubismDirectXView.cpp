@@ -67,6 +67,11 @@ void CubismDirectXView::Initialize(int width, int height)
 
 void CubismDirectXView::Render(CubismUserModel* userModel)
 {
+    if (CubismDirectXRenderer::GetInstance()->IsLostStep())
+    {
+      return;
+    }
+
     // スプライト描画
     CubismDirectXRenderer::GetInstance()->GetClientSize(_windowWidth, _windowHeight);
 

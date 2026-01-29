@@ -110,27 +110,27 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 | 開発ツール | バージョン |
 | --- | --- |
-| Android Studio | Narwhal 2025.1.2 Patch 1 |
-| DevEco Studio | 6.0.0 |
+| Android Studio | Otter 3 Feature Drop 2025.2.3 |
+| DevEco Studio | 6.0.1 |
 | CMake | 3.31.8 |
 | Visual Studio 2017 | 15.9.76 |
-| Visual Studio 2019 | 16.11.51 |
-| Visual Studio 2022 | 17.14.16 |
-| Xcode | 26.0.1 |
+| Visual Studio 2019 | 16.11.53 |
+| Visual Studio 2022 | 17.14.23 |
+| Xcode | 26.2 |
 
 ### Android
 
 | Android SDK tools | バージョン |
 | --- | --- |
-| Android NDK | 29.0.13846066 |
-| Android SDK | 36.0.0 |
-| CMake | 4.1.0 |
+| Android NDK | 29.0.14206865 |
+| Android SDK | 36.1.0 |
+| CMake | 4.1.2 |
 
 ### HarmonyOS
 
 | HarmonyOS SDK tools | バージョン |
 | --- | --- |
-| HarmonyOS SDK | 6.0.0.47 |
+| HarmonyOS SDK | 6.0.1.112 |
 
 ### Linux
 
@@ -155,8 +155,8 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 | プラットフォーム | バージョン |
 | --- | --- |
-| iOS / iPadOS | 26.0.1 |
-| macOS | 26.0.1 |
+| iOS / iPadOS | 26.2 |
+| macOS | 26.2 |
 | Windows 10 | 23H2 |
 | Windows 11 | 24H2 |
 

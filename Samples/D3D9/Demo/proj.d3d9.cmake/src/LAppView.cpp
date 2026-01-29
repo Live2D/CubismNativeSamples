@@ -76,6 +76,11 @@ void LAppView::Render()
         return;
     }
 
+    if(LAppDelegate::GetInstance()->IsLostStep())
+    {
+        return;
+    }
+
     // スプライト描画
     int width, height;
     LAppDelegate::GetInstance()->GetClientSize(width, height);
@@ -146,8 +151,9 @@ void LAppView::InitializeSprite()
 
     float x = width * 0.5f;
     float y = height * 0.5f;
-    float fWidth = static_cast<float>(backgroundTexture->width * 2.0f);
     float fHeight = static_cast<float>(height * 0.95f);
+    float ratio = fHeight / static_cast<float>(backgroundTexture->height);
+    float fWidth = static_cast<float>(backgroundTexture->width) * ratio;
     _back = new LAppSprite(x, y, fWidth, fHeight, backgroundTexture->id, _shader);
 
     imageName = GearImageName;

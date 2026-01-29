@@ -19,6 +19,7 @@
 */
 class LAppAllocator_Common : public Csm::ICubismAllocator
 {
+public:
     /**
     * @brief  メモリ領域を割り当てる。
     *

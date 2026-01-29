@@ -119,6 +119,7 @@ bool LAppDelegate::Initialize()
     // Cubism SDK の初期化
     InitializeCubism();
 
+    LAppLive2DManager::GetInstance()->SetRenderTargetSize(width, height);
     return GL_TRUE;
 }
 
@@ -168,7 +169,9 @@ bool LAppDelegate::RecreateSwapchain()
         // スプライトサイズを再設定
         _view->ResizeSprite(width, height);
         // オフスクリーンを再作成する
-        _view->DestroyOffscreenSurface();
+        _view->DestroyRenderTarget();
+        // モデルのオフスクリーンのサイズを再設定
+        LAppLive2DManager::GetInstance()->SetRenderTargetSize(width, height);
         // サイズを保存しておく
         _windowWidth = width;
         _windowHeight = height;

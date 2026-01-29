@@ -191,8 +191,8 @@ void LoadModel(const std::string modelDirectoryName)
 
     // モデルデータの読み込み及び生成とセットアップを行う
     std::string json = ".model3.json";
-    std::string fileName = _modelDirectoryName + json;
-    static_cast<CubismUserModelExtend*>(_userModel)->LoadAssets(fileName.c_str());
+    std::string fileName = modelDirectoryName + json;
+    static_cast<CubismUserModelExtend*>(_userModel)->LoadAssets(fileName.c_str(), _windowWidth, _windowHeight);
 
     // ユーザーモデルをMouseActionManagerへ渡す
     MouseActionManager::GetInstance()->SetUserModel(_userModel);
@@ -217,6 +217,9 @@ bool RecreateSwapchain()
             VulkanManager::GetInstance()->GetSwapchainManager()->GetSwapchainImageFormat(),
             VulkanManager::GetInstance()->GetSwapchainManager()->GetExtent()
         );
+
+        // モデルのオフスクリーンのサイズを再設定
+        _userModel->SetRenderTargetSize(width, height);
 
         // サイズを保存しておく
         _windowWidth = width;
@@ -243,7 +246,7 @@ void PreModelDraw()
     memoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
     memoryBarrier.srcAccessMask = 0;
     memoryBarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_GENERAL;
     memoryBarrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
     memoryBarrier.image = vkManager->GetSwapchainImage();
     memoryBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
@@ -294,7 +297,7 @@ void PostModelDraw()
     memoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
     memoryBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
     memoryBarrier.dstAccessMask = 0;
-    memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_GENERAL;
     memoryBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
     memoryBarrier.image = vkManager->GetSwapchainImage();
     memoryBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };

@@ -13,6 +13,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <Rendering/CubismRenderer.hpp>
+#include <Rendering/OpenGL/CubismOffscreenManager_OpenGLES2.hpp>
 #include "LAppPal.hpp"
 #include "LAppDefine.hpp"
 #include "LAppDelegate.hpp"
@@ -77,6 +78,7 @@ LAppLive2DManager::~LAppLive2DManager()
 {
     ReleaseAllModel();
     delete _viewMatrix;
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::ReleaseInstance();
 }
 
 void LAppLive2DManager::ReleaseAllModel()
@@ -209,6 +211,9 @@ void LAppLive2DManager::OnUpdate() const
     int width, height;
     glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
 
+    // モデルで使用するオフスクリーン管理の開始処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->BeginFrameProcess();
+
     csmUint32 modelCount = _models.GetSize();
     for (csmUint32 i = 0; i < modelCount; ++i)
     {
@@ -247,6 +252,11 @@ void LAppLive2DManager::OnUpdate() const
         // モデル1体描画後コール
         LAppDelegate::GetInstance()->GetView()->PostModelDraw(*model);
     }
+
+    // モデルで使用するオフスクリーン管理の終了処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->EndFrameProcess();
+    // もし余っているオフスクリーンのリソースを解放したい場合行う処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->ReleaseStaleRenderTextures();
 }
 
 void LAppLive2DManager::NextScene()

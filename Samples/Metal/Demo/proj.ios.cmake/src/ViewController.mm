@@ -58,6 +58,7 @@ using namespace LAppDefine;
 
     view = nil;
 
+    Csm::Rendering::CubismDeviceInfo_Metal::ReleaseDeviceInfo(_device);
     delete(_viewMatrix);
     _viewMatrix = nil;
     delete(_deviceToScreen);
@@ -112,7 +113,7 @@ using namespace LAppDefine;
     _viewMatrix = new CubismViewMatrix();
 
     // モデルロード前に必ず呼び出す必要がある
-    Live2D::Cubism::Framework::Rendering::DeviceInfo_Metal::SetConstantSettings(_device);
+    Csm::Rendering::CubismRenderer_Metal::SetConstantSettings(_device);
 
     [self initializeScreen];
 }
@@ -224,8 +225,9 @@ using namespace LAppDefine;
     TextureInfo* backgroundTexture = [textureManager createTextureFromPngFile:resourcesPath+imageName];
     float x = width * 0.5f;
     float y = height * 0.5f;
-    float fWidth = static_cast<float>(backgroundTexture->width * 2.0f);
     float fHeight = static_cast<float>(height) * 0.95f;
+    float ratio = fHeight / static_cast<float>(backgroundTexture->height);
+    float fWidth = static_cast<float>(backgroundTexture->width) * ratio;
     _back = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight MaxWidth:width MaxHeight:height Texture:backgroundTexture->id];
 
     //モデル変更ボタン
@@ -257,8 +259,9 @@ using namespace LAppDefine;
     //背景
     float x = width * 0.5f;
     float y = height * 0.5f;
-    float fWidth = static_cast<float>(_back.GetTextureId.width * 2.0f);
     float fHeight = static_cast<float>(height) * 0.95f;
+    float ratio = fHeight / static_cast<float>(_back.GetTextureId.height);
+    float fWidth = static_cast<float>(_back.GetTextureId.width) * ratio;
     [_back resizeImmidiate:x Y:y Width:fWidth Height:fHeight MaxWidth:maxWidth MaxHeight:maxHeight];
 
     //モデル変更ボタン

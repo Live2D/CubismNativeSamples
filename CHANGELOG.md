@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
+## [5-r.5-beta.3] - 2026-01-29
+
+### Added
+
+* Add support for rendering portrait and landscape displays on Android.
+* Add support for Blend mode and Offscreen drawing in Vulkan.
+* Add Arm64 for iPhone Simulator from architecture support.
+
+### Changed
+
+* Change `LAppTextureManager_Common::Premultiply()` to static.
+* Change all member functions of `LAppAllocator_Common` to public.
+
+### Fixed
+
+* Fix background image distortion when window size is changed in the OpenGL, D3D9, D3D11 and Metal.
+* Fix the app crash caused by a device lost error when pressing Ctrl+Alt+Delete in D3D9.
+* Fix an issue that caused performance degradation on Metal.
+* Fix reuse of offscreen rendering buffer to avoid redundant allocations.
+
+
 ## [5-r.5-beta.2] - 2025-10-30
 
 ### Added
@@ -551,6 +572,7 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[5-r.5-beta.3]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.5-beta.2...5-r.5-beta.3
 [5-r.5-beta.2]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.5-beta.1...5-r.5-beta.2
 [5-r.5-beta.1]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.4.1...5-r.5-beta.1
 [5-r.4.1]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.4...5-r.4.1

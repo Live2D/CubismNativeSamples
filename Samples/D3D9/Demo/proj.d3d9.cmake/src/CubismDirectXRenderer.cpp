@@ -11,6 +11,7 @@
 #include "CubismDirectXView.hpp"
 #include "CubismTextureManager.hpp"
 #include "Rendering/D3D9/CubismRenderer_D3D9.hpp"
+#include "Rendering/D3D9/CubismDeviceInfo_D3D9.hpp"
 
 namespace {
     CubismDirectXRenderer* _instance = nullptr;
@@ -52,6 +53,7 @@ void CubismDirectXRenderer::Release()
 
     if (_device)
     {
+        Csm::Rendering::CubismDeviceInfo_D3D9::ReleaseDeviceInfo(_device);
         _device->Release();
         _device = nullptr;
     }
@@ -65,9 +67,10 @@ void CubismDirectXRenderer::RestoreDeviceLost(LPDIRECT3DDEVICE9 device, csmUint3
     _model->ReloadRenderer(width, height);
 }
 
-void CubismDirectXRenderer::OnDeviceLost()
+void CubismDirectXRenderer::OnDeviceLost(LPDIRECT3DDEVICE9 device)
 {
     _model->OnDeviceLost();
+    Rendering::CubismDeviceInfo_D3D9::OnDeviceLost(device);
 }
 
 void CubismDirectXRenderer::ReleaseInstance()
@@ -99,13 +102,14 @@ void CubismDirectXRenderer::RecreateDevice()
     // Viewロスト処理
     CubismDirectXView::GetInstance()->OnDeviceLost();
     // デバイスロスト処理(各モデルレンダラーの破棄)
-    OnDeviceLost();
+    OnDeviceLost(_device);
     // テクスチャ全開放
     _textureManager->ReleaseTextures();
 
     // ロスト時の処理に加えてさらにデバイスも再作成のため破棄
     if (_device)
     {
+        Csm::Rendering::CubismDeviceInfo_D3D9::ReleaseDeviceInfo(_device);
         _device->Release();
         _device = NULL;
     }
@@ -161,7 +165,7 @@ void CubismDirectXRenderer::EndFrame(CubismUserModel* userModel)
                 // Viewロスト処理
                 CubismDirectXView::GetInstance()->OnDeviceLost();
                 // デバイスロスト処理(各モデルレンダラーの破棄)
-                OnDeviceLost();
+                OnDeviceLost(_device);
                 // テクスチャ全開放
                 _textureManager->ReleaseTextures();
 
@@ -253,8 +257,7 @@ void CubismDirectXRenderer::EndFrame(CubismUserModel* userModel)
             else
             {
                 // デバイスが変わったことを通知
-                Live2D::Cubism::Framework::Rendering::DeviceInfo_D3D9::SetConstantSettings(1, _device);
-                _model->GetRenderer<Rendering::CubismRenderer_D3D9>()->OnDeviceChanged();
+                Live2D::Cubism::Framework::Rendering::CubismRenderer_D3D9::SetConstantSettings(1, _device);
 
                 // 描画のパラメータをウィンドウサイズに合わせて新設定
                 CubismDirectXView::GetInstance()->Initialize(nowWidth, nowHeight);

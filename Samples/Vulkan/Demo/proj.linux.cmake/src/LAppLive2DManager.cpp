@@ -18,6 +18,7 @@
 #include "LAppDelegate.hpp"
 #include "LAppModel.hpp"
 #include "LAppView.hpp"
+#include <Rendering/Vulkan/CubismOffscreenManager_Vulkan.hpp>
 
 using namespace Csm;
 using namespace LAppDefine;
@@ -76,6 +77,7 @@ LAppLive2DManager::~LAppLive2DManager()
 {
     ReleaseAllModel();
     delete _viewMatrix;
+    Csm::Rendering::CubismOffscreenManager_Vulkan::ReleaseInstance();
 }
 
 void LAppLive2DManager::ReleaseAllModel()
@@ -155,6 +157,16 @@ LAppModel* LAppLive2DManager::GetModel(csmUint32 no) const
     return NULL;
 }
 
+void LAppLive2DManager::SetRenderTargetSize(Csm::csmUint32 width, Csm::csmUint32 height)
+{
+    for(csmUint32 i = 0; i < _models.GetSize(); i++)
+    {
+        LAppModel* model = GetModel(i);
+
+        model->SetRenderTargetSize(width, height);
+    }
+}
+
 void LAppLive2DManager::OnDrag(csmFloat32 x, csmFloat32 y) const
 {
     for (csmUint32 i = 0; i < _models.GetSize(); i++)
@@ -198,6 +210,9 @@ void LAppLive2DManager::OnUpdate() const
     int width, height;
     glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
 
+    // モデルで使用するオフスクリーン管理の開始処理
+    Csm::Rendering::CubismOffscreenManager_Vulkan::GetInstance()->BeginFrameProcess();
+
     VulkanManager* vulkanManager = VulkanManager::GetInstance();
 
     csmUint32 modelCount = _models.GetSize();
@@ -234,6 +249,11 @@ void LAppLive2DManager::OnUpdate() const
         model->Draw(projection);///< 参照渡しなのでprojectionは変質する
         LAppDelegate::GetInstance()->GetView()->PostModelDraw(*model);
     }
+    // モデルで使用するオフスクリーン管理の終了処理
+    Csm::Rendering::CubismOffscreenManager_Vulkan::GetInstance()->EndFrameProcess();
+    // もし余っているオフスクリーンのリソースを解放したい場合に行う処理
+    Csm::Rendering::CubismOffscreenManager_Vulkan::GetInstance()->ReleaseStaleRenderTextures();
+
 }
 
 void LAppLive2DManager::NextScene()

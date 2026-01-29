@@ -13,6 +13,7 @@
 #include <Physics/CubismPhysics.hpp>
 #include <CubismDefaultParameterId.hpp>
 #include <Rendering/OpenGL/CubismRenderer_OpenGLES2.hpp>
+#include <Rendering/OpenGL/CubismOffscreenManager_OpenGLES2.hpp>
 #include <Motion/CubismMotionQueueEntry.hpp>
 #include <Id/CubismIdManager.hpp>
 
@@ -207,6 +208,8 @@ void CubismUserModelExtend::ReleaseModelSetting()
     _expressions.Clear();
 
     delete(_modelJson);
+
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::ReleaseInstance();
 }
 
 /**
@@ -407,6 +410,9 @@ void CubismUserModelExtend::ModelOnUpdate(GLFWwindow* window)
     // 念のため単位行列に初期化
     projection.LoadIdentity();
 
+    // モデルで使用するオフスクリーン管理の開始処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->BeginFrameProcess();
+
     if (_model->GetCanvasWidth() > 1.0f && width < height)
     {
         // 横に長いモデルを縦長ウィンドウに表示する際モデルの横サイズでscaleを算出する
@@ -429,4 +435,9 @@ void CubismUserModelExtend::ModelOnUpdate(GLFWwindow* window)
 
     // モデルの描画を更新
     Draw(projection); ///< 参照渡しなのでprojectionは変質する
+
+    // モデルで使用するオフスクリーン管理の終了処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->EndFrameProcess();
+    // もし余っているオフスクリーンのリソースを解放したい場合行う処理
+    Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->ReleaseStaleRenderTextures();
 }

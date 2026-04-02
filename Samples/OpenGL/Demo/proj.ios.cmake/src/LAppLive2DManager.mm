@@ -11,6 +11,7 @@
 #import <GLKit/GLKit.h>
 #import <Rendering/OpenGL/CubismOffscreenManager_OpenGLES2.hpp>
 #import "AppDelegate.h"
+#import "SceneDelegate.h"
 #import "ViewController.h"
 #import "LAppModel.h"
 #import "LAppDefine.h"
@@ -141,6 +142,15 @@ Csm::csmString GetPath(CFURLRef url)
     return nil;
 }
 
+- (void)setRenderTargetSize:(Csm::csmUint32)width height:(Csm::csmUint32)height
+{
+    for(Csm::csmUint32 i = 0; i < _models.GetSize(); i++)
+    {
+        LAppModel* model = [self getModel:i];
+        model->SetRenderTargetSize(width, height);
+    }
+}
+
 - (void)onDrag:(Csm::csmFloat32)x floatY:(Csm::csmFloat32)y
 {
     for (Csm::csmUint32 i = 0; i < _models.GetSize(); i++)
@@ -152,6 +162,14 @@ Csm::csmString GetPath(CFURLRef url)
 
 - (void)onTap:(Csm::csmFloat32)x floatY:(Csm::csmFloat32)y;
 {
+    AppDelegate *appDelegate = (AppDelegate *) [[UIApplication sharedApplication] delegate];
+    SceneDelegate* sceneDelegate = [appDelegate getActiveSceneDelegate];
+    ViewController* view = [sceneDelegate viewController];
+    int width = [view GetWindowWidth];
+    int height = [view GetWindowHeight];
+    float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+    float displayRatio = static_cast<float>(height) / static_cast<float>(width);
+
     if (LAppDefine::DebugLogEnable)
     {
         LAppPal::PrintLogLn("[APP]tap point: {x:%.2f y:%.2f}", x, y);
@@ -159,7 +177,20 @@ Csm::csmString GetPath(CFURLRef url)
 
     for (Csm::csmUint32 i = 0; i < _models.GetSize(); i++)
     {
-        if(_models[i]->HitTest(LAppDefine::HitAreaNameHead,x,y))
+
+        float canvasRatio = _models[i]->GetModel()->GetCanvasHeight() / _models[i]->GetModel()->GetCanvasWidth();
+
+        float adjustedX = x;
+        float adjustedY = y;
+
+        if (canvasRatio < displayRatio)
+        {
+            // OnUpdateでのプロジェクションスケールを打ち消してモデル座標系に変換
+            adjustedX = x / aspectRatio;
+            adjustedY = y / aspectRatio;
+        }
+
+        if(_models[i]->HitTest(LAppDefine::HitAreaNameHead, adjustedX, adjustedY))
         {
             if (LAppDefine::DebugLogEnable)
             {
@@ -167,7 +198,7 @@ Csm::csmString GetPath(CFURLRef url)
             }
             _models[i]->SetRandomExpression();
         }
-        else if (_models[i]->HitTest(LAppDefine::HitAreaNameBody, x, y))
+        else if (_models[i]->HitTest(LAppDefine::HitAreaNameBody, adjustedX, adjustedY))
         {
             if (LAppDefine::DebugLogEnable)
             {
@@ -180,15 +211,16 @@ Csm::csmString GetPath(CFURLRef url)
 
 - (void)onUpdate;
 {
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    int width = screenRect.size.width;
-    int height = screenRect.size.height;
+    AppDelegate *appDelegate = (AppDelegate *) [[UIApplication sharedApplication] delegate];
+    SceneDelegate* sceneDelegate = [appDelegate getActiveSceneDelegate];
+    ViewController* view = [sceneDelegate viewController];
+    int width = [view GetWindowWidth];
+    int height = [view GetWindowHeight];
+    float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+    float displayRatio = static_cast<float>(height) / static_cast<float>(width);
 
     // モデルで使用するオフスクリーン管理の開始処理
     Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->BeginFrameProcess();
-
-    AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
-    ViewController* view = [delegate viewController];
 
     Csm::csmUint32 modelCount = _models.GetSize();
     for (Csm::csmUint32 i = 0; i < modelCount; ++i)
@@ -202,15 +234,19 @@ Csm::csmString GetPath(CFURLRef url)
             continue;
         }
 
-        if (model->GetModel()->GetCanvasWidth() > 1.0f && width < height)
+        float canvasRatio = model->GetModel()->GetCanvasHeight() / model->GetModel()->GetCanvasWidth();
+
+        if (canvasRatio < displayRatio)
         {
-          // 横に長いモデルを縦長ウィンドウに表示する際モデルの横サイズでscaleを算出する
+          // 横長モデルを幅に合わせて縦方向のスケールを調整
           model->GetModelMatrix()->SetWidth(2.0f);
-          projection.Scale(1.0f, static_cast<float>(width) / static_cast<float>(height));
+          projection.Scale(1.0f, aspectRatio);
         }
         else
         {
-          projection.Scale(static_cast<float>(height) / static_cast<float>(width), 1.0f);
+          // 縦長モデルを高さに合わせて横方向のスケールを調整
+          model->GetModelMatrix()->SetHeight(2.0f);
+          projection.Scale(1.0f / aspectRatio, 1.0f);
         }
 
         // 必要があればここで乗算
@@ -290,8 +326,9 @@ Csm::csmString GetPath(CFURLRef url)
         float clearColorG = 0.0f;
         float clearColorB = 0.0f;
 
-        AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
-        ViewController* view = [delegate viewController];
+        AppDelegate *appDelegate = (AppDelegate *) [[UIApplication sharedApplication] delegate];
+        SceneDelegate* sceneDelegate = [appDelegate getActiveSceneDelegate];
+        ViewController* view = [sceneDelegate viewController];
 
         [view SwitchRenderingTarget:useRenderTarget];
         [view SetRenderTargetClearColor:clearColorR g:clearColorG b:clearColorB];

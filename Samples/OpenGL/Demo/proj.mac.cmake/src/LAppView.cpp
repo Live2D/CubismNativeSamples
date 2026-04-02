@@ -384,3 +384,23 @@ void LAppView::ResizeSprite()
         _renderSprite->ResetRect(x, y, width, height);
     }
 }
+
+void LAppView::DestroySpriteRenderTarget()
+{
+    LAppLive2DManager* live2DManager = LAppLive2DManager::GetInstance();
+    if (_renderTarget == SelectTarget_ViewFrameBuffer)
+    {
+        _renderBuffer.DestroyRenderTarget();
+    }
+    else if (_renderTarget == SelectTarget_ModelFrameBuffer)
+    {
+        for (csmUint32 i = 0; i < live2DManager->GetModelNum(); i++)
+        {
+            LAppModel* model = live2DManager->GetModel(i);
+            if (model)
+            {
+                model->GetRenderBuffer().DestroyRenderTarget();
+            }
+        }
+    }
+}

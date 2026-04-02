@@ -200,7 +200,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(
     LAppDelegate::GetInstance()->GetVulkanManager()->SubmitCommand(commandBuffer);
     GenerateMipmaps(textureImage, width, height, _mipLevels);
     textureImage.CreateView(device, format, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels);
-    textureImage.CreateSampler(device, anisotropy, _mipLevels);
+    textureImage.CreateSampler(device, VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, anisotropy, _mipLevels);
     _textures.PushBack(textureImage);
 
     LAppTextureManager::TextureInfo* textureInfo = new LAppTextureManager::TextureInfo();

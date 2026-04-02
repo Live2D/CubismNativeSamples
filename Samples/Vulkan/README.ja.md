@@ -98,6 +98,10 @@ Linuxでは以下のVulkanパッケージをインストールする必要があ
 | `Ubuntu` | `vulkan-tools` `libvulkan-dev` `vulkan-validationlayers-dev` `spirv-tools` |
 | `AlmaLinux` | `vulkan-tools` `vulkan-loader-devel` `vulkan-validation-layers` |
 
+### Vulkan バリデーション層
+
+サンプルビルドでプリプロセッサマクロ `CSM_DEBUG` を定義すると、デバイス作成時に Vulkan バリデーション層が有効になります。バリデーションを有効にして動作確認する場合は、上表のとおりレイヤをインストール（Windows では Vulkan SDK の標準インストールに含まれます）し、ツールチェーンで `CSM_DEBUG` を定義してください。
+
 [GLFW]: https://github.com/glfw/glfw
 [stb_image.h]: https://github.com/nothings/stb/blob/master/stb_image.h
 [Vulkan SDK]: https://www.lunarg.com/vulkan-sdk/

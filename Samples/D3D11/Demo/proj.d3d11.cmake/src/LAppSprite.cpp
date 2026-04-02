@@ -192,7 +192,7 @@ void LAppSprite::RenderImmidiate(int width, int height, ID3D11ShaderResourceView
         memset(&cb, 0, sizeof(cb));
         cb.baseColor = _color;
         DirectX::XMMATRIX proj = XMMatrixIdentity();
-        XMStoreFloat4x4(&cb.projectMatrix, XMMatrixTranspose(proj));
+        XMStoreFloat4x4(&cb.projectMatrix, proj);
         renderContext->UpdateSubresource(_constantBuffer, 0, NULL, &cb, 0, 0);
 
         renderContext->VSSetConstantBuffers(0, 1, &_constantBuffer);

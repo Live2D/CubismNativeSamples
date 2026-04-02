@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
@@ -20,6 +20,12 @@
 #include "LAppPal.hpp"
 #include "LAppTextureManager.hpp"
 #include "LAppMinimumDelegate.hpp"
+#include "Motion/CubismBreathUpdater.hpp"
+#include "Motion/CubismLookUpdater.hpp"
+#include "Motion/CubismExpressionUpdater.hpp"
+#include "Motion/CubismEyeBlinkUpdater.hpp"
+#include "Motion/CubismPhysicsUpdater.hpp"
+#include "Motion/CubismPoseUpdater.hpp"
 
 using namespace Live2D::Cubism::Framework;
 using namespace Live2D::Cubism::Framework::DefaultParameterId;
@@ -29,6 +35,7 @@ LAppMinimumModel::LAppMinimumModel()
     : LAppModel_Common()
     , _modelJson(nullptr)
     , _userTimeSeconds(0.0f)
+    , _motionUpdated(false)
 {
     if (DebugLogEnable)
     {
@@ -44,7 +51,7 @@ LAppMinimumModel::LAppMinimumModel()
 }
 
 LAppMinimumModel::LAppMinimumModel(const std::string modelDirectoryName,const std::string currentModelDirectory)
-        : LAppModel_Common(),_modelDirName(modelDirectoryName), _currentModelDirectory(currentModelDirectory), _modelJson(nullptr), _userTimeSeconds(0.0f)
+        : LAppModel_Common(),_modelDirName(modelDirectoryName), _currentModelDirectory(currentModelDirectory), _modelJson(nullptr), _userTimeSeconds(0.0f), _motionUpdated(false)
 {
     if (DebugLogEnable)
     {
@@ -126,21 +133,56 @@ void LAppMinimumModel::SetupModel()
             }
         });
     }
+    {
+        CubismExpressionUpdater* expression = CSM_NEW CubismExpressionUpdater(*_expressionManager);
+        _updateScheduler.AddUpdatableList(expression);
+    }
 
     //ポーズデータの読み込み
     LoadAssets(_modelJson->GetPoseFileName(), [=](Csm::csmByte* buffer, Csm::csmSizeInt bufferSize) {
         LoadPose(buffer, bufferSize);
     });
+    if (_pose != nullptr)
+    {
+        CubismPoseUpdater* pose = CSM_NEW CubismPoseUpdater(*_pose);
+        _updateScheduler.AddUpdatableList(pose);
+    }
 
     // 物理演算データの読み込み
     LoadAssets(_modelJson->GetPhysicsFileName(), [=](Csm::csmByte* buffer, Csm::csmSizeInt bufferSize) {
         LoadPhysics(buffer, bufferSize);
     });
+    if (_physics != nullptr)
+    {
+        CubismPhysicsUpdater* physics = CSM_NEW CubismPhysicsUpdater(*_physics);
+        _updateScheduler.AddUpdatableList(physics);
+    }
 
     // モデルに付属するユーザーデータの読み込み
     LoadAssets(_modelJson->GetUserDataFile(), [=](Csm::csmByte* buffer, Csm::csmSizeInt bufferSize) {
         LoadUserData(buffer, bufferSize);
     });
+
+    // Look
+    {
+        _look = CubismLook::Create();
+
+        csmVector<CubismLook::LookParameterData> lookParameters;
+
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamAngleX, 30.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamAngleY, 0.0f, 30.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamAngleZ, 0.0f, 0.0f, -30.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamBodyAngleX, 10.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamEyeBallX, 1.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamEyeBallY, 0.0f, 1.0f));
+
+        _look->SetParameters(lookParameters);
+
+        CubismLookUpdater* look = CSM_NEW CubismLookUpdater(*_look, *_dragManager);
+        _updateScheduler.AddUpdatableList(look);
+    }
+
+    _updateScheduler.SortUpdatableList();
 
     // Layout
     csmMap<csmString, csmFloat32> layout;
@@ -258,12 +300,8 @@ void LAppMinimumModel::Update()
     const csmFloat32 deltaTimeSeconds = LAppPal::GetDeltaTime();
     _userTimeSeconds += deltaTimeSeconds;
 
-    _dragManager->Update(deltaTimeSeconds);
-    _dragX = _dragManager->GetX();
-    _dragY = _dragManager->GetY();
-
     // モーションによるパラメータ更新の有無
-    csmBool motionUpdated = false;
+    _motionUpdated = false;
 
     //-----------------------------------------------------------------
     _model->LoadParameters(); // 前回セーブされた状態をロード
@@ -274,59 +312,14 @@ void LAppMinimumModel::Update()
     }
     else
     {
-        motionUpdated = _motionManager->UpdateMotion(_model, deltaTimeSeconds); // モーションを更新
+        _motionUpdated = _motionManager->UpdateMotion(_model, deltaTimeSeconds); // モーションを更新
     }
     _model->SaveParameters(); // 状態を保存
     //-----------------------------------------------------------------
 
-    // まばたき
-    if (!motionUpdated)
-    {
-        if (_eyeBlink)
-        {
-            // メインモーションの更新がないとき
-            _eyeBlink->UpdateParameters(_model, deltaTimeSeconds); // 目パチ
-        }
-    }
-
-    if (_expressionManager)
-    {
-        _expressionManager->UpdateMotion(_model, deltaTimeSeconds); // 表情でパラメータ更新（相対変化）
-    }
-
-    //ドラッグによる変化
-    //ドラッグによる顔の向きの調整
-    _model->AddParameterValue(_idParamAngleX, _dragX * 30); // -30から30の値を加える
-    _model->AddParameterValue(_idParamAngleY, _dragY * 30);
-    _model->AddParameterValue(_idParamAngleZ, _dragX * _dragY * -30);
-
-    //ドラッグによる体の向きの調整
-    _model->AddParameterValue(_idParamBodyAngleX, _dragX * 10); // -10から10の値を加える
-
-    //ドラッグによる目の向きの調整
-    _model->AddParameterValue(_idParamEyeBallX, _dragX); // -1から1の値を加える
-    _model->AddParameterValue(_idParamEyeBallY, _dragY);
-
-    // 呼吸など
-    if (_breath)
-    {
-        _breath->UpdateParameters(_model, deltaTimeSeconds);
-    }
-
-    // 物理演算の設定
-    if (_physics)
-    {
-        _physics->Evaluate(_model, deltaTimeSeconds);
-    }
-
-    // ポーズの設定
-    if (_pose)
-    {
-        _pose->UpdateParameters(_model, deltaTimeSeconds);
-    }
+    _updateScheduler.OnLateUpdate(_model, deltaTimeSeconds);
 
     _model->Update();
-
 }
 
 CubismMotionQueueEntryHandle LAppMinimumModel::StartMotion(const csmChar* group, csmInt32 no, csmInt32 priority)

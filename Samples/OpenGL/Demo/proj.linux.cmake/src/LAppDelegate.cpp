@@ -150,6 +150,8 @@ void LAppDelegate::Run()
         {
             _view->Initialize(width, height);
             _view->ResizeSprite();
+            // レンダーターゲットを破棄する（次フレームで新サイズで再作成される）
+            _view->DestroySpriteRenderTarget();
             // モデルのレンダーターゲットのサイズ変更
             LAppLive2DManager::GetInstance()->SetRenderTargetSize(width, height);
             _windowWidth = width;

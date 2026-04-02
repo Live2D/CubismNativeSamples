@@ -133,4 +133,5 @@ private:
     const Csm::CubismId* _idParamBodyAngleX; ///< パラメータID: ParamBodyAngleX
     const Csm::CubismId* _idParamEyeBallX; ///< パラメータID: ParamEyeBallX
     const Csm::CubismId* _idParamEyeBallY; ///< パラメータID: ParamEyeBallXY
+    Csm::csmBool _motionUpdated; ///< モーション更新フラグ
 };

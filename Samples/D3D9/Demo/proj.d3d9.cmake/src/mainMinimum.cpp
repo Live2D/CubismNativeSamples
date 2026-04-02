@@ -265,6 +265,9 @@ void Release()
     // モデルデータの解放
     delete _userModel;
 
+    // CubismDirectXViewの解放
+    CubismDirectXView::ReleaseInstance();
+
     // テクスチャマネージャーの解放
     delete _textureManager;
     _textureManager = nullptr;

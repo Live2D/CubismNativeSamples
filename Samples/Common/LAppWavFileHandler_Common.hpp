@@ -8,13 +8,14 @@
 #pragma once
 
 #include <CubismFramework.hpp>
+#include <Motion/IParameterProvider.hpp>
 #include <Type/csmVector.hpp>
 
  /**
   * @brief wavファイルハンドラ
   * @attention 16bit wav ファイル読み込みのみ実装済み
   */
-class LAppWavFileHandler_Common
+class LAppWavFileHandler_Common : public Csm::IParameterProvider
 {
 public:
     /**
@@ -56,7 +57,14 @@ public:
      * @retval  true    更新されている
      * @retval  false   更新されていない
      */
-    virtual Csm::csmBool Update(Csm::csmFloat32 deltaTimeSeconds);
+    virtual Csm::csmBool Update(Csm::csmFloat32 deltaTimeSeconds) override;
+
+    /**
+     * パラメータの値を取得するr.
+     *
+     * @return パラメータの値を返す
+     */
+    virtual Csm::csmFloat32 GetParameter() override;
 
     /**
      * @brief 引数で指定したwavファイルの読み込みを開始する

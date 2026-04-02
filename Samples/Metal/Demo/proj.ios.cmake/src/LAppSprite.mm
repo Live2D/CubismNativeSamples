@@ -8,6 +8,7 @@
 #import "LAppSprite.h"
 #import <Foundation/Foundation.h>
 #import "AppDelegate.h"
+#import "SceneDelegate.h"
 #import "LAppDefine.h"
 #import "LAppPal.h"
 #import <CubismFramework.hpp>
@@ -52,8 +53,9 @@ typedef struct
         _vertexBuffer = nil;
         _fragmentBuffer = nil;
 
-        AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
-        ViewController* viewController = delegate.viewController;
+        AppDelegate *appDelegate = (AppDelegate *) [[UIApplication sharedApplication] delegate];
+        SceneDelegate* sceneDelegate = [appDelegate getActiveSceneDelegate];
+        ViewController* viewController = [sceneDelegate viewController];
         id <MTLDevice> device = [viewController getDevice];
 
         [self SetMTLBuffer:device MaxWidth:maxWidth MaxHeight:maxHeight];
@@ -89,8 +91,9 @@ typedef struct
 
 - (void)renderImmidiate:(id<MTLRenderCommandEncoder>)renderEncoder
 {
-    AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
-    ViewController* viewController = delegate.viewController;
+    AppDelegate *appDelegate = (AppDelegate *) [[UIApplication sharedApplication] delegate];
+    SceneDelegate* sceneDelegate = [appDelegate getActiveSceneDelegate];
+    ViewController* viewController = [sceneDelegate viewController];
     id <MTLDevice> device = [viewController getDevice];
 
     float width = _rect.right - _rect.left;
@@ -124,8 +127,9 @@ typedef struct
     _rect.up = (y + height * 0.5f);
     _rect.down = (y - height * 0.5f);
 
-    AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
-    ViewController* viewController = delegate.viewController;
+    AppDelegate *appDelegate = (AppDelegate *) [[UIApplication sharedApplication] delegate];
+    SceneDelegate* sceneDelegate = [appDelegate getActiveSceneDelegate];
+    ViewController* viewController = [sceneDelegate viewController];
     id <MTLDevice> device = [viewController getDevice];
     [self SetMTLBuffer:device MaxWidth:maxWidth MaxHeight:maxHeight];
 
@@ -164,9 +168,18 @@ typedef struct
         {1.0f, 0.0f},
     };
 
+    if (_vertexBuffer != nil)
+    {
+        [_vertexBuffer release];
+    }
     _vertexBuffer = [device newBufferWithBytes:positionVertex
                                         length:sizeof(positionVertex)
                  options:MTLResourceStorageModeShared];
+
+    if (_fragmentBuffer != nil)
+    {
+        [_fragmentBuffer release];
+    }
     _fragmentBuffer = [device newBufferWithBytes:uvVertex
                                           length:sizeof(uvVertex)
                                                 options:MTLResourceStorageModeShared];

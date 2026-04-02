@@ -132,7 +132,7 @@ static bool InitializeSystem()
     VulkanManager::GetInstance()->Initialize(_window);
     SwapchainManager* swapchainManager = VulkanManager::GetInstance()->GetSwapchainManager();
     // レンダラにvulkanManagerの変数を渡す
-    Live2D::Cubism::Framework::Rendering::CubismRenderer_Vulkan::InitializeConstantSettings(
+    Live2D::Cubism::Framework::Rendering::CubismRenderer_Vulkan::SetConstantSettings(
         VulkanManager::GetInstance()->GetDevice(), VulkanManager::GetInstance()->GetPhysicalDevice(),
         VulkanManager::GetInstance()->GetCommandPool(), VulkanManager::GetInstance()->GetGraphicQueue(),
         swapchainManager->GetImageCount(), swapchainManager->GetExtent(),
@@ -246,7 +246,7 @@ void PreModelDraw()
     memoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
     memoryBarrier.srcAccessMask = 0;
     memoryBarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_GENERAL;
+    memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     memoryBarrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
     memoryBarrier.image = vkManager->GetSwapchainImage();
     memoryBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
@@ -297,7 +297,7 @@ void PostModelDraw()
     memoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
     memoryBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
     memoryBarrier.dstAccessMask = 0;
-    memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_GENERAL;
+    memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
     memoryBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
     memoryBarrier.image = vkManager->GetSwapchainImage();
     memoryBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };

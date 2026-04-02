@@ -11,6 +11,8 @@
 #include <Rendering/OpenGL/CubismRenderTarget_OpenGLES2.hpp>
 #import "LAppModel.h"
 
+@class SceneDelegate;
+
 @interface ViewController : GLKViewController <GLKViewDelegate>
 
 typedef NS_ENUM(NSUInteger, SelectTarget)
@@ -20,6 +22,7 @@ typedef NS_ENUM(NSUInteger, SelectTarget)
     SelectTarget_ViewFrameBuffer,     ///< LAppViewの持つフレームバッファにレンダリング
 };
 
+@property (nonatomic, weak) SceneDelegate *sceneDelegate;
 @property (nonatomic, assign) bool mOpenGLRun;
 @property (nonatomic) GLuint vertexBufferId;
 @property (nonatomic) GLuint fragmentBufferId;
@@ -49,9 +52,22 @@ typedef NS_ENUM(NSUInteger, SelectTarget)
 - (void)releaseView;
 
 /**
+ * @brief 画面リサイズ処理
+ */
+- (void)resizeScreen;
+
+/**
  * @brief 画像の初期化を行う。
  */
 - (void)initializeSprite;
+
+/**
+ * @brief 画像のリサイズ処理
+ *
+ * @param[in]       width            幅
+ * @param[in]       height           高さ
+ */
+- (void)resizeSprite:(float)width height:(float)height;
 
 /**
  * @brief X座標をView座標に変換する。

@@ -31,6 +31,7 @@ bool CubismSpriteShader::CreateShader()
     ReleaseShader();
 
     // ファイル読み込み
+    Csm::csmByte* shaderBytes = NULL;
     const char* shaderCode;
     Csm::csmSizeInt shaderSize;
     {
@@ -39,7 +40,8 @@ bool CubismSpriteShader::CreateShader()
         shaderFileName += LAppDefine::ShaderName;
 
         // ファイル読み込み
-        shaderCode = reinterpret_cast<const char*>(LAppPal::LoadFileAsBytes(shaderFileName.GetRawString(), &shaderSize));
+        shaderBytes = LAppPal::LoadFileAsBytes(shaderFileName.GetRawString(), &shaderSize);
+        shaderCode = reinterpret_cast<const char*>(shaderBytes);
     }
 
     ID3DXBuffer* error = 0;
@@ -65,6 +67,8 @@ bool CubismSpriteShader::CreateShader()
             break;
         }
     } while(0);
+
+    LAppPal::ReleaseBytes(shaderBytes);
 
     if (FAILED(result)) {
         return false;

@@ -262,8 +262,6 @@ void CubismDirectXRenderer::EndFrame(CubismUserModel* userModel)
                 // 描画のパラメータをウィンドウサイズに合わせて新設定
                 CubismDirectXView::GetInstance()->Initialize(nowWidth, nowHeight);
 
-                // スプライト再作成
-                CubismDirectXView::GetInstance()->InitializeSprite();
                 // レンダラー再生
                 RestoreDeviceLost(_device, nowWidth, nowHeight);
 

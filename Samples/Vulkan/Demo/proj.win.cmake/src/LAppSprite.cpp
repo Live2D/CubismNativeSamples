@@ -128,6 +128,13 @@ void LAppSprite::CreateDescriptorSet(VkDevice device, VkDescriptorSetLayout desc
     }
 }
 
+void LAppSprite::RecreateDescriptorSet(VkDevice device, VkDescriptorSetLayout descriptorSetLayout)
+{
+    vkResetDescriptorPool(device, _descriptorPool, 0);
+    CreateDescriptorSet(device, descriptorSetLayout);
+    SetDescriptorUpdated(false);
+}
+
 void LAppSprite::UpdateData(VulkanManager* vkManager, int maxWidth, int maxHeight) const
 {
     if (maxWidth == 0 || maxHeight == 0)

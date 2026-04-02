@@ -16,7 +16,7 @@
 #include "LAppDelegate.hpp"
 #include "LAppModel.hpp"
 #include "LAppView.hpp"
-#include <Rendering/Vulkan/CubismOffscreenManager_Vulkan.hpp>
+#include <Rendering/Vulkan/CubismDeviceInfo_Vulkan.hpp>
 
 using namespace Csm;
 using namespace LAppDefine;
@@ -75,7 +75,7 @@ LAppLive2DManager::~LAppLive2DManager()
 {
     ReleaseAllModel();
     delete _viewMatrix;
-    Csm::Rendering::CubismOffscreenManager_Vulkan::ReleaseInstance();
+    Csm::Rendering::CubismDeviceInfo_Vulkan::ReleaseAllDeviceInfo();
 }
 
 void LAppLive2DManager::ReleaseAllModel()
@@ -208,10 +208,11 @@ void LAppLive2DManager::OnUpdate() const
     int width, height;
     glfwGetWindowSize(LAppDelegate::GetInstance()->GetWindow(), &width, &height);
 
-    // モデルで使用するオフスクリーン管理の開始処理
-    Csm::Rendering::CubismOffscreenManager_Vulkan::GetInstance()->BeginFrameProcess();
-
     VulkanManager* vulkanManager = LAppDelegate::GetInstance()->GetVulkanManager();
+    Csm::Rendering::CubismDeviceInfo_Vulkan* deviceInfo = Csm::Rendering::CubismDeviceInfo_Vulkan::GetDeviceInfo(vulkanManager->GetDevice());
+
+    // モデルで使用するオフスクリーン管理の開始処理
+    deviceInfo->GetOffscreenManager()->BeginFrameProcess();
 
     csmUint32 modelCount = _models.GetSize();
     for (csmUint32 i = 0; i < modelCount; ++i)
@@ -249,9 +250,9 @@ void LAppLive2DManager::OnUpdate() const
     }
 
     // モデルで使用するオフスクリーン管理の終了処理
-    Csm::Rendering::CubismOffscreenManager_Vulkan::GetInstance()->EndFrameProcess();
+    deviceInfo->GetOffscreenManager()->EndFrameProcess();
     // もし余っているオフスクリーンのリソースを解放したい場合に行う処理
-    Csm::Rendering::CubismOffscreenManager_Vulkan::GetInstance()->ReleaseStaleRenderTextures();
+    deviceInfo->GetOffscreenManager()->ReleaseStaleRenderTextures();
 }
 
 void LAppLive2DManager::NextScene()

@@ -21,7 +21,14 @@
 #import "LAppPal.h"
 #import "LAppTextureManager.h"
 #import "AppDelegate.h"
+#import "SceneDelegate.h"
 #import "ViewController.h"
+#import "Motion/CubismBreathUpdater.hpp"
+#import "Motion/CubismLookUpdater.hpp"
+#import "Motion/CubismExpressionUpdater.hpp"
+#import "Motion/CubismEyeBlinkUpdater.hpp"
+#import "Motion/CubismPhysicsUpdater.hpp"
+#import "Motion/CubismPoseUpdater.hpp"
 
 using namespace Live2D::Cubism::Framework;
 using namespace Live2D::Cubism::Framework::DefaultParameterId;
@@ -51,6 +58,7 @@ LAppModel::LAppModel()
 : CubismUserModel()
 , _modelSetting(NULL)
 , _userTimeSeconds(0.0f)
+, _motionUpdated(false)
 {
     if (DebugLogEnable)
     {
@@ -104,8 +112,9 @@ void LAppModel::LoadAssets(const csmChar* dir, const csmChar* fileName)
         return;
     }
 
-    AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
-    ViewController* view = [delegate viewController];
+    AppDelegate *appDelegate = (AppDelegate *) [[UIApplication sharedApplication] delegate];
+    SceneDelegate* sceneDelegate = [appDelegate getActiveSceneDelegate];
+    ViewController* view = [sceneDelegate viewController];
     int width = [view GetWindowWidth];
     int height = [view GetWindowHeight];
 
@@ -165,6 +174,9 @@ void LAppModel::SetupModel(ICubismModelSetting* setting)
 
             DeleteBuffer(buffer, path.GetRawString());
         }
+
+        CubismExpressionUpdater* expression = CSM_NEW CubismExpressionUpdater(*_expressionManager);
+        _updateScheduler.AddUpdatableList(expression);
     }
 
     //Physics
@@ -175,6 +187,13 @@ void LAppModel::SetupModel(ICubismModelSetting* setting)
 
         buffer = CreateBuffer(path.GetRawString(), &size);
         LoadPhysics(buffer, size);
+
+        if (_physics != NULL)
+        {
+            CubismPhysicsUpdater* physics = CSM_NEW CubismPhysicsUpdater(*_physics);
+            _updateScheduler.AddUpdatableList(physics);
+        }
+
         DeleteBuffer(buffer, path.GetRawString());
     }
 
@@ -186,13 +205,25 @@ void LAppModel::SetupModel(ICubismModelSetting* setting)
 
         buffer = CreateBuffer(path.GetRawString(), &size);
         LoadPose(buffer, size);
+
+        if (_pose != NULL)
+        {
+            CubismPoseUpdater* pose = CSM_NEW CubismPoseUpdater(*_pose);
+            _updateScheduler.AddUpdatableList(pose);
+        }
+
         DeleteBuffer(buffer, path.GetRawString());
     }
 
     //EyeBlink
-    if (_modelSetting->GetEyeBlinkParameterCount() > 0)
     {
-        _eyeBlink = CubismEyeBlink::Create(_modelSetting);
+        if (_modelSetting->GetEyeBlinkParameterCount() > 0)
+        {
+            _eyeBlink = CubismEyeBlink::Create(_modelSetting);
+
+            CubismEyeBlinkUpdater* eyeBlink = CSM_NEW CubismEyeBlinkUpdater(_motionUpdated, *_eyeBlink);
+            _updateScheduler.AddUpdatableList(eyeBlink);
+        }
     }
 
     //Breath
@@ -208,6 +239,9 @@ void LAppModel::SetupModel(ICubismModelSetting* setting)
         breathParameters.PushBack(CubismBreath::BreathParameterData(CubismFramework::GetIdManager()->GetId(ParamBreath), 0.5f, 0.5f, 3.2345f, 0.5f));
 
         _breath->SetParameters(breathParameters);
+
+        CubismBreathUpdater* breath = CSM_NEW CubismBreathUpdater(*_breath);
+        _updateScheduler.AddUpdatableList(breath);
     }
 
     //UserData
@@ -237,6 +271,27 @@ void LAppModel::SetupModel(ICubismModelSetting* setting)
             _lipSyncIds.PushBack(_modelSetting->GetLipSyncParameterId(i));
         }
     }
+
+    // Look
+    {
+        _look = CubismLook::Create();
+
+        csmVector<CubismLook::LookParameterData> lookParameters;
+
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamAngleX, 30.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamAngleY, 0.0f, 30.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamAngleZ, 0.0f, 0.0f, -30.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamBodyAngleX, 10.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamEyeBallX, 1.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamEyeBallY, 0.0f, 1.0f));
+
+        _look->SetParameters(lookParameters);
+
+        CubismLookUpdater* look = CSM_NEW CubismLookUpdater(*_look, *_dragManager);
+        _updateScheduler.AddUpdatableList(look);
+    }
+
+    _updateScheduler.SortUpdatableList();
 
     if (_modelSetting == NULL || _modelMatrix == NULL)
     {
@@ -338,12 +393,8 @@ void LAppModel::Update()
     const csmFloat32 deltaTimeSeconds = LAppPal::GetDeltaTime();
     _userTimeSeconds += deltaTimeSeconds;
 
-    _dragManager->Update(deltaTimeSeconds);
-    _dragX = _dragManager->GetX();
-    _dragY = _dragManager->GetY();
-
     // モーションによるパラメータ更新の有無
-    csmBool motionUpdated = false;
+    _motionUpdated = false;
 
     //-----------------------------------------------------------------
     _model->LoadParameters(); // 前回セーブされた状態をロード
@@ -354,7 +405,7 @@ void LAppModel::Update()
     }
     else
     {
-        motionUpdated = _motionManager->UpdateMotion(_model, deltaTimeSeconds); // モーションを更新
+        _motionUpdated = _motionManager->UpdateMotion(_model, deltaTimeSeconds); // モーションを更新
     }
     _model->SaveParameters(); // 状態を保存
     //-----------------------------------------------------------------
@@ -362,62 +413,7 @@ void LAppModel::Update()
     // 不透明度
     _opacity = _model->GetModelOpacity();
 
-    // まばたき
-    if (!motionUpdated)
-    {
-        if (_eyeBlink != NULL)
-        {
-            // メインモーションの更新がないとき
-            _eyeBlink->UpdateParameters(_model, deltaTimeSeconds); // 目パチ
-        }
-    }
-
-    if (_expressionManager != NULL)
-    {
-        _expressionManager->UpdateMotion(_model, deltaTimeSeconds); // 表情でパラメータ更新（相対変化）
-    }
-
-    //ドラッグによる変化
-    //ドラッグによる顔の向きの調整
-    _model->AddParameterValue(_idParamAngleX, _dragX * 30); // -30から30の値を加える
-    _model->AddParameterValue(_idParamAngleY, _dragY * 30);
-    _model->AddParameterValue(_idParamAngleZ, _dragX * _dragY * -30);
-
-    //ドラッグによる体の向きの調整
-    _model->AddParameterValue(_idParamBodyAngleX, _dragX * 10); // -10から10の値を加える
-
-    //ドラッグによる目の向きの調整
-    _model->AddParameterValue(_idParamEyeBallX, _dragX); // -1から1の値を加える
-    _model->AddParameterValue(_idParamEyeBallY, _dragY);
-
-    // 呼吸など
-    if (_breath != NULL)
-    {
-        _breath->UpdateParameters(_model, deltaTimeSeconds);
-    }
-
-    // 物理演算の設定
-    if (_physics != NULL)
-    {
-        _physics->Evaluate(_model, deltaTimeSeconds);
-    }
-
-    // リップシンクの設定
-    if (_lipSync)
-    {
-        csmFloat32 value = 0; // リアルタイムでリップシンクを行う場合、システムから音量を取得して0〜1の範囲で値を入力します。
-
-        for (csmUint32 i = 0; i < _lipSyncIds.GetSize(); ++i)
-        {
-            _model->AddParameterValue(_lipSyncIds[i], value, 0.8f);
-        }
-    }
-
-    // ポーズの設定
-    if (_pose != NULL)
-    {
-        _pose->UpdateParameters(_model, deltaTimeSeconds);
-    }
+    _updateScheduler.OnLateUpdate(_model, deltaTimeSeconds);
 
     _model->Update();
 
@@ -586,8 +582,9 @@ void LAppModel::ReloadRenderer()
 {
     DeleteRenderer();
 
-    AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
-    ViewController* view = [delegate viewController];
+    AppDelegate *appDelegate = (AppDelegate *) [[UIApplication sharedApplication] delegate];
+    SceneDelegate* sceneDelegate = [appDelegate getActiveSceneDelegate];
+    ViewController* view = [sceneDelegate viewController];
     int width = [view GetWindowWidth];
     int height = [view GetWindowHeight];
 
@@ -610,8 +607,9 @@ void LAppModel::SetupTextures()
         csmString texturePath = _modelSetting->GetTextureFileName(modelTextureNumber);
         texturePath = _modelHomeDir + texturePath;
 
-        AppDelegate *delegate = (AppDelegate *) [[UIApplication sharedApplication] delegate];
-        TextureInfo* texture = [[delegate getTextureManager] createTextureFromPngFile:texturePath.GetRawString()];
+        AppDelegate *appDelegate = (AppDelegate *) [[UIApplication sharedApplication] delegate];
+        SceneDelegate* sceneDelegate = [appDelegate getActiveSceneDelegate];
+        TextureInfo* texture = [[sceneDelegate getTextureManager] createTextureFromPngFile:texturePath.GetRawString()];
         csmInt32 glTextueNumber = texture->id;
 
         //OpenGL

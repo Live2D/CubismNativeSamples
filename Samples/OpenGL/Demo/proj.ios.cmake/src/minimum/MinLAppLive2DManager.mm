@@ -9,6 +9,7 @@
 #import <GLKit/GLKit.h>
 #import <Rendering/OpenGL/CubismOffscreenManager_OpenGLES2.hpp>
 #import "MinAppDelegate.h"
+#import "MinSceneDelegate.h"
 #import "MinViewController.h"
 #import "MinLAppModel.h"
 #import "MinLAppDefine.h"
@@ -95,28 +96,34 @@ void FinishedMotion(Csm::ACubismMotion* self)
 
 - (void)onUpdate;
 {
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    int width = screenRect.size.width;
-    int height = screenRect.size.height;
-
     // モデルで使用するオフスクリーン管理の開始処理
     Csm::Rendering::CubismOffscreenManager_OpenGLES2::GetInstance()->BeginFrameProcess();
 
-    MinAppDelegate* delegate = (MinAppDelegate*) [[UIApplication sharedApplication] delegate];
-    MinViewController* view = [delegate viewController];
+    MinAppDelegate *appDelegate = (MinAppDelegate *) [[UIApplication sharedApplication] delegate];
+    MinSceneDelegate* sceneDelegate = [appDelegate getActiveMinSceneDelegate];
+    MinViewController* view = [sceneDelegate viewController];
+
+    int width = [view GetWindowWidth];
+    int height = [view GetWindowHeight];
+    float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+    float displayRatio = static_cast<float>(height) / static_cast<float>(width);
 
     Csm::CubismMatrix44 projection;
 
     MinLAppModel* model = [self getModel];
-    if (model->GetModel()->GetCanvasWidth() > 1.0f && width < height)
+
+    float canvasRatio = model->GetModel()->GetCanvasHeight() / model->GetModel()->GetCanvasWidth();
+    if (canvasRatio < displayRatio)
     {
-      // 横に長いモデルを縦長ウィンドウに表示する際モデルの横サイズでscaleを算出する
+      // 横長モデルを幅に合わせて縦方向のスケールを調整
       model->GetModelMatrix()->SetWidth(2.0f);
-      projection.Scale(1.0f, static_cast<float>(width) / static_cast<float>(height));
+      projection.Scale(1.0f, aspectRatio);
     }
     else
     {
-      projection.Scale(static_cast<float>(height) / static_cast<float>(width), 1.0f);
+      // 縦長モデルを高さに合わせて横方向のスケールを調整
+      model->GetModelMatrix()->SetHeight(2.0f);
+      projection.Scale(1.0f / aspectRatio, 1.0f);
     }
 
     // 必要があればここで乗算

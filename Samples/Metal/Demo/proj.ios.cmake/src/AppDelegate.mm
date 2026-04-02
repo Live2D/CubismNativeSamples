@@ -6,71 +6,38 @@
  */
 
 #import "AppDelegate.h"
-#import <iostream>
 #import "ViewController.h"
 #import "LAppAllocator.h"
+#import <iostream>
 #import "LAppPal.h"
 #import "LAppDefine.h"
 #import "LAppLive2DManager.h"
-#import "LAppTextureManager.h"
 
 @interface AppDelegate ()
 
 @property (nonatomic) LAppAllocator cubismAllocator; // Cubism SDK Allocator
 @property (nonatomic) Csm::CubismFramework::Option cubismOption; // Cubism SDK Option
-@property (nonatomic) bool captured; // クリックしているか
-@property (nonatomic) float mouseX; // マウスX座標
-@property (nonatomic) float mouseY; // マウスY座標
 @property (nonatomic) bool isEnd; // APPを終了しているか
-@property (nonatomic, readwrite) LAppTextureManager *textureManager; // テクスチャマネージャー
-@property (nonatomic) Csm::csmInt32 sceneIndex;  //アプリケーションをバッググラウンド実行するときに一時的にシーンインデックス値を保存する
 
 @end
 
 @implementation AppDelegate
 
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-
-    _textureManager = [[LAppTextureManager alloc]init];
-
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    self.viewController = [[ViewController alloc] initWithNibName:nil bundle:nil];
-    self.window.rootViewController = self.viewController;
-    [self.window makeKeyAndVisible];
-
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
     [self initializeCubism];
-
-    [self.viewController initializeSprite];
-
     return YES;
 }
 
-- (void)applicationWillResignActive:(UIApplication *)application
-{
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-    _textureManager = nil;
-
-    _sceneIndex = [[LAppLive2DManager getInstance] sceneIndex];
-}
-
-- (void)applicationWillEnterForeground:(UIApplication *)application
-{
-    _textureManager = [[LAppTextureManager alloc]init];
-
-    [[LAppLive2DManager getInstance] changeScene:_sceneIndex];
-}
-
-- (void)applicationDidBecomeActive:(UIApplication *)application
-{
-
-}
-
-- (void)applicationWillTerminate:(UIApplication *)application {
-    self.viewController = nil;
+- (UISceneConfiguration *)application:(UIApplication *)application
+        configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession
+                                      options:(UISceneConnectionOptions *)options {
+    UISceneConfiguration *config = [[UISceneConfiguration alloc]
+                                    initWithName:@"Default Configuration"
+                                    sessionRole:connectingSceneSession.role];
+    config.delegateClass = [SceneDelegate class];
+    return config;
 }
 
 - (void)initializeCubism
@@ -83,8 +50,6 @@
     Csm::CubismFramework::StartUp(&_cubismAllocator,&_cubismOption);
 
     Csm::CubismFramework::Initialize();
-
-    [LAppLive2DManager getInstance];
 
     Csm::CubismMatrix44 projection;
 
@@ -99,21 +64,46 @@
 
 - (void)finishApplication
 {
-    [self.viewController releaseView];
+    // アクティブなSceneを取得
+    UIWindowScene *activeScene = nil;
+    for (UIScene *scene in [UIApplication sharedApplication].connectedScenes)
+    {
+        if (scene.activationState == UISceneActivationStateForegroundActive)
+        {
+            activeScene = (UIWindowScene *)scene;
+            break;
+        }
+    }
 
-    _textureManager = nil;
+    if (activeScene)
+    {
+        SceneDelegate *sceneDelegate = (SceneDelegate *)activeScene.delegate;
+        [sceneDelegate.viewController release];
+        sceneDelegate.viewController = nil;
+        [sceneDelegate.window release];
+        sceneDelegate.window = nil;
+    }
 
     [LAppLive2DManager releaseInstance];
 
     Csm::CubismFramework::Dispose();
 
-    self.window = nil;
-
-    self.viewController = nil;
-
     _isEnd = true;
 
     exit(0);
+}
+
+- (SceneDelegate*)getActiveSceneDelegate
+{
+    // UIApplicationSupportsMultipleScenesがfalseなので、シーンは1つのみ
+    for (UIScene *scene in [UIApplication sharedApplication].connectedScenes)
+    {
+        if ([scene.delegate isKindOfClass:[SceneDelegate class]])
+        {
+            return (SceneDelegate *)scene.delegate;
+        }
+    }
+    return nil;
 }
 
 @end

@@ -4,11 +4,6 @@
 
 # Notices
 
-## [Cautions] Memory Leak in Cubism 5 SDK for Native R5 beta3 in Metal Environments (2026-01-28)
-
-A memory leak occurs in the Metal environment of Cubism 5 SDK for Native R5 beta3 when the window size is changed.
-We will investigate and consider addressing this issue in future updates, including modifications to the Framework and migration to the latest Metal version.
-
 ## [Notes] Building with Visual Studio 2017 (2025-05-29)
 
 Visual Studio 2017 provides Windows 10 SDK versions up to 10.0.17763.0 only, which may cause execution issues in some situations.  
@@ -45,7 +40,7 @@ We are continuing to investigate this issue.
 ## [Caution] Regarding Cubism SDK for Native Cocos2d-x Support (2024-12-19)
 
 Support for Cocos2d-x in the Cubism SDK for Native has been discontinued starting with Cubism 5 SDK for Native R2. 
-For any inquiries regarding this matter, please contact us through the [contact form]](<https://www.live2d.jp/contact/>).
+For any inquiries regarding this matter, please contact us through the [contact form](https://www.live2d.jp/contact/).
 
 
 ## [Caution] Support for Apple's Privacy Manifest Policy

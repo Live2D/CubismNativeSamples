@@ -135,7 +135,10 @@ CubismSprite::CubismSprite(float x, float y, float width, float height, Csm::csm
 
 CubismSprite::~CubismSprite()
 {
-    CubismDirectXRenderer::GetInstance()->_textureManager->ReleaseTexture(_textureId);
+    if (CubismDirectXRenderer::GetInstance()->_textureManager != NULL)
+    {
+        CubismDirectXRenderer::GetInstance()->_textureManager->ReleaseTexture(_textureId);
+    }
 
     _shader = NULL;
 
@@ -196,7 +199,7 @@ void CubismSprite::Render(int width, int height) const
         memset(&cb, 0, sizeof(cb));
         cb.baseColor = _color;
         DirectX::XMMATRIX proj = DirectX::XMMatrixIdentity();
-        XMStoreFloat4x4(&cb.projectMatrix, XMMatrixTranspose(proj));
+        XMStoreFloat4x4(&cb.projectMatrix, proj);
         renderContext->UpdateSubresource(_constantBuffer, 0, NULL, &cb, 0, 0);
 
         renderContext->VSSetConstantBuffers(0, 1, &_constantBuffer);
@@ -268,7 +271,7 @@ void CubismSprite::RenderImmidiate(int width, int height, ID3D11ShaderResourceVi
         memset(&cb, 0, sizeof(cb));
         cb.baseColor = _color;
         DirectX::XMMATRIX proj = DirectX::XMMatrixIdentity();
-        XMStoreFloat4x4(&cb.projectMatrix, XMMatrixTranspose(proj));
+        XMStoreFloat4x4(&cb.projectMatrix, proj);
         renderContext->UpdateSubresource(_constantBuffer, 0, NULL, &cb, 0, 0);
 
         renderContext->VSSetConstantBuffers(0, 1, &_constantBuffer);

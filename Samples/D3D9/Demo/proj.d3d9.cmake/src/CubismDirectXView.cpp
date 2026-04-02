@@ -27,6 +27,16 @@ CubismDirectXView* CubismDirectXView::GetInstance()
     return  _instance;
 }
 
+void CubismDirectXView::ReleaseInstance()
+{
+    if (_instance != NULL)
+    {
+        delete _instance;
+    }
+
+    _instance = NULL;
+}
+
 CubismDirectXView::CubismDirectXView()
     :LAppView_Common(),
     _windowWidth(0),

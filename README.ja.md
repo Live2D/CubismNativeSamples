@@ -21,11 +21,11 @@ Cubism Native Framework および Live2D Cubism Core と組み合わせて使用
 本 SDK を使用する前に [お知らせ](NOTICE.ja.md)をご確認ください。
 
 
-## Cubism 5新機能や過去バージョンとの互換性について
+## Cubism 5.3新機能や過去バージョンとの互換性について
 
-本 SDK はCubism 5に対応した製品です。  
-Cubism 5 Editorに搭載された新機能のSDK対応については [こちら](https://docs.live2d.com/cubism-sdk-manual/cubism-5-new-functions/)をご確認ください。  
-過去バージョンのCubism SDKとの互換性については [こちら](https://docs.live2d.com/cubism-sdk-manual/compatibility-with-cubism-5/)をご確認ください。
+本 SDK はCubism 5.3に対応した製品です。  
+Cubism 5.3 Editorに搭載された新機能のSDK対応については [こちら](https://docs.live2d.com/cubism-sdk-manual/cubism-5-3-new-functions/)をご確認ください。  
+過去バージョンのCubism SDKとの互換性については [こちら](https://docs.live2d.com/cubism-sdk-manual/compatibility-with-cubism-5-3/)をご確認ください。
 
 
 ## ディレクトリ構成
@@ -110,13 +110,13 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 | 開発ツール | バージョン |
 | --- | --- |
-| Android Studio | Otter 3 Feature Drop 2025.2.3 |
-| DevEco Studio | 6.0.1 |
+| Android Studio | Panda 2 2025.3.2 |
+| DevEco Studio | 6.0.1.251 |
 | CMake | 3.31.8 |
-| Visual Studio 2017 | 15.9.76 |
-| Visual Studio 2019 | 16.11.53 |
-| Visual Studio 2022 | 17.14.23 |
-| Xcode | 26.2 |
+| Visual Studio 2017 | 15.9.78 |
+| Visual Studio 2019 | 16.11.54 |
+| Visual Studio 2022 | 17.14.29 |
+| Xcode | 26.3 |
 
 ### Android
 
@@ -155,10 +155,10 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 | プラットフォーム | バージョン |
 | --- | --- |
-| iOS / iPadOS | 26.2 |
-| macOS | 26.2 |
+| iOS / iPadOS | 26.4 |
+| macOS | 26.4 |
 | Windows 10 | 23H2 |
-| Windows 11 | 24H2 |
+| Windows 11 | 25H2 |
 
 ### Android
 

@@ -38,9 +38,13 @@ typedef struct
  * @param[in]       y            y座標
  * @param[in]       width        横幅
  * @param[in]       height       高さ
+ * @param[in]       maxWidth     最大幅
+ * @param[in]       maxHeight    最大高さ
  * @param[in]       textureId    テクスチャID
  */
-- (id)initWithMyVar:(float)x Y:(float)y Width:(float)width Height:(float)height TextureId:(GLuint) textureId;
+- (id)initWithMyVar:(float)x Y:(float)y Width:(float)width Height:(float)height
+                    MaxWidth:(float)maxWidth MaxHeight:(float)maxHeight TextureId:(GLuint) textureId;
+
 
 /**
  * @brief 描画する
@@ -77,6 +81,19 @@ typedef struct
  * @param[in]       a       α
  */
 - (void)SetColor:(float)r g:(float)g b:(float)b a:(float)a;
+
+/**
+ * @brief 画面サイズ変更処理
+ *
+ * @param[in]       x            x座標
+ * @param[in]       y            y座標
+ * @param[in]       width        横幅
+ * @param[in]       height       高さ
+ * @param[in]       maxWidth     最大幅
+ * @param[in]       maxHeight    最大高さ
+ */
+- (void)resizeImmidiate:(float)x Y:(float)y Width:(float)width Height:(float)height
+                        MaxWidth:(float)maxWidth MaxHeight:(float)maxHeight;
 
 @end
 

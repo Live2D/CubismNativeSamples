@@ -6,16 +6,9 @@
  */
 
 #import <UIKit/UIKit.h>
-
-@class MinViewController;
-@class MinLAppView;
-@class MinLAppTextureManager;
+#import "MinSceneDelegate.h"
 
 @interface MinAppDelegate : UIResponder <UIApplicationDelegate>
-
-@property (strong, nonatomic) UIWindow *window;
-@property (strong, nonatomic) MinViewController *viewController;
-@property (nonatomic, readonly, getter=getTextureManager) MinLAppTextureManager *textureManager; // テクスチャマネージャー
 
 /**
  * @brief   Cubism SDK の初期化
@@ -31,6 +24,11 @@
  * @brief   アプリケーションを終了する。
  */
 - (void)finishApplication;
+
+/**
+ * @brief   アクティブシーンを取得する。
+ */
+- (MinSceneDelegate*) getActiveMinSceneDelegate;
 
 @end
 

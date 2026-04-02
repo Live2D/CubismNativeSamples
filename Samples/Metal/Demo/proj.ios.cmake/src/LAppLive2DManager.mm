@@ -10,6 +10,7 @@
 #import <stdlib.h>
 #import <Foundation/Foundation.h>
 #import "AppDelegate.h"
+#import "SceneDelegate.h"
 #import "ViewController.h"
 #import "LAppModel.h"
 #import "LAppDefine.h"
@@ -199,6 +200,14 @@ Csm::csmString GetPath(CFURLRef url)
 
 - (void)onTap:(Csm::csmFloat32)x floatY:(Csm::csmFloat32)y;
 {
+    AppDelegate *appDelegate = (AppDelegate *) [[UIApplication sharedApplication] delegate];
+    SceneDelegate* sceneDelegate = [appDelegate getActiveSceneDelegate];
+    ViewController* view = [sceneDelegate viewController];
+    int width = [view getWindowWidth];
+    int height = [view getWindowHeight];
+    float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+    float displayRatio = static_cast<float>(height) / static_cast<float>(width);
+
     if (LAppDefine::DebugLogEnable)
     {
         LAppPal::PrintLogLn("[APP]tap point: {x:%.2f y:%.2f}", x, y);
@@ -206,7 +215,19 @@ Csm::csmString GetPath(CFURLRef url)
 
     for (Csm::csmUint32 i = 0; i < _models.GetSize(); i++)
     {
-        if (_models[i]->HitTest(LAppDefine::HitAreaNameHead,x,y))
+        float canvasRatio = _models[i]->GetModel()->GetCanvasHeight() / _models[i]->GetModel()->GetCanvasWidth();
+
+        float adjustedX = x;
+        float adjustedY = y;
+
+        if (canvasRatio < displayRatio)
+        {
+            // OnUpdateでのプロジェクションスケールを打ち消してモデル座標系に変換
+            adjustedX = x / aspectRatio;
+            adjustedY = y / aspectRatio;
+        }
+
+        if (_models[i]->HitTest(LAppDefine::HitAreaNameHead,adjustedX,adjustedY))
         {
             if (LAppDefine::DebugLogEnable)
             {
@@ -214,7 +235,7 @@ Csm::csmString GetPath(CFURLRef url)
             }
             _models[i]->SetRandomExpression();
         }
-        else if (_models[i]->HitTest(LAppDefine::HitAreaNameBody, x, y))
+        else if (_models[i]->HitTest(LAppDefine::HitAreaNameBody, adjustedX, adjustedY))
         {
             if (LAppDefine::DebugLogEnable)
             {
@@ -227,15 +248,16 @@ Csm::csmString GetPath(CFURLRef url)
 
 - (void)onUpdate:(id <MTLCommandBuffer>)commandBuffer currentDrawable:(id<CAMetalDrawable>)drawable depthTexture:(id<MTLTexture>)depthTarget;
 {
-    AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
-    ViewController* view = [delegate viewController];
+    AppDelegate *appDelegate = (AppDelegate *) [[UIApplication sharedApplication] delegate];
+    SceneDelegate* sceneDelegate = [appDelegate getActiveSceneDelegate];
+    ViewController* view = [sceneDelegate viewController];
 
-    const CGFloat retinaScale = [[UIScreen mainScreen] scale];
-    // Retinaディスプレイサイズにするため倍率をかける
-    const float width = view.view.frame.size.width * retinaScale;
-    const float height = view.view.frame.size.height * retinaScale;
+    int width = [view getWindowWidth];
+    int height = [view getWindowHeight];
 
-    Csm::CubismMatrix44 projection;
+    float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+    float displayRatio = static_cast<float>(height) / static_cast<float>(width);
+
     Csm::csmUint32 modelCount = _models.GetSize();
 
     id<MTLDevice> device = [view getDevice];
@@ -258,6 +280,25 @@ Csm::csmString GetPath(CFURLRef url)
 
             if (_renderTarget == SelectTarget_ViewFrameBuffer)
             {
+                _sprite = [[LAppSprite alloc] initWithMyVar:width * 0.5f Y:height * 0.5f Width:width Height:height
+                                                   MaxWidth:width MaxHeight:height Texture:_renderBuffer->GetColorBuffer()];
+                _modelSprite = [[LAppModelSprite alloc] initWithMyVar:width * 0.5f Y:height * 0.5f Width:width Height:height
+                                                   MaxWidth:width MaxHeight:height Texture:_renderBuffer->GetColorBuffer()];
+            }
+        }
+        else if (_renderBuffer->GetBufferWidth() != static_cast<LAppDefine::csmUint32>(width) ||
+                 _renderBuffer->GetBufferHeight() != static_cast<LAppDefine::csmUint32>(height))
+        {
+            // 画面サイズが変わった場合はレンダーバッファを再生成する
+            _renderBuffer->CreateRenderTarget(device, static_cast<LAppDefine::csmUint32>(width), static_cast<LAppDefine::csmUint32>(height));
+
+            if (_renderTarget == SelectTarget_ViewFrameBuffer)
+            {
+                // スプライトをレンダーバッファの新しいテクスチャで再生成する
+                [_sprite release];
+                _sprite = nil;
+                [_modelSprite release];
+                _modelSprite = nil;
                 _sprite = [[LAppSprite alloc] initWithMyVar:width * 0.5f Y:height * 0.5f Width:width Height:height
                                                    MaxWidth:width MaxHeight:height Texture:_renderBuffer->GetColorBuffer()];
                 _modelSprite = [[LAppModelSprite alloc] initWithMyVar:width * 0.5f Y:height * 0.5f Width:width Height:height
@@ -291,17 +332,32 @@ Csm::csmString GetPath(CFURLRef url)
             continue;
         }
 
-        model->GetRenderer<Csm::Rendering::CubismRenderer_Metal>()->StartFrame(commandBuffer, _renderPassDescriptor);
+        Csm::CubismMatrix44 projection;
 
-        if (model->GetModel()->GetCanvasWidth() > 1.0f && width < height)
+        model->GetRenderer<Csm::Rendering::CubismRenderer_Metal>()->StartFrame(commandBuffer, _renderPassDescriptor);
+        if (_renderTarget != SelectTarget_None)
         {
-            // 横に長いモデルを縦長ウィンドウに表示する際モデルの横サイズでscaleを算出する
-            model->GetModelMatrix()->SetWidth(2.0f);
-            projection.Scale(1.0f, static_cast<float>(width) / static_cast<float>(height));
+            MTLViewport viewport = {0, 0, static_cast<double>(width), static_cast<double>(height), 0.0, 1.0};
+            model->GetRenderer<Csm::Rendering::CubismRenderer_Metal>()->SetRenderViewport(viewport);
         }
         else
         {
-            projection.Scale(static_cast<float>(height) / static_cast<float>(width), 1.0f);
+            MTLViewport safeAreaViewport = [view getSafeAreaViewport];
+            model->GetRenderer<Csm::Rendering::CubismRenderer_Metal>()->SetRenderViewport(safeAreaViewport);
+        }
+
+        float canvasRatio = model->GetModel()->GetCanvasHeight() / model->GetModel()->GetCanvasWidth();
+        if (canvasRatio < displayRatio)
+        {
+            // 横長モデルを幅に合わせて縦方向のスケールを調整
+            model->GetModelMatrix()->SetWidth(2.0f);
+            projection.Scale(1.0f, aspectRatio);
+        }
+        else
+        {
+            // 縦長モデルを高さに合わせて横方向のスケールを調整
+            model->GetModelMatrix()->SetHeight(2.0f);
+            projection.Scale(1.0f / aspectRatio, 1.0f);
         }
 
         // 必要があればここで乗算
@@ -346,6 +402,10 @@ Csm::csmString GetPath(CFURLRef url)
             renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
             renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1);
             id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+
+            MTLViewport safeAreaViewport = [view getSafeAreaViewport];
+            [renderEncoder setViewport:safeAreaViewport];
+
             float alpha = 0.4f;
             [_modelSprite SetColor:1.0f * alpha g:1.0f * alpha b:1.0f * alpha a:alpha];
             [_modelSprite renderImmidiate:renderEncoder];
@@ -367,6 +427,9 @@ Csm::csmString GetPath(CFURLRef url)
             renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1);
             id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
 
+            MTLViewport safeAreaViewport = [view getSafeAreaViewport];
+            [renderEncoder setViewport:safeAreaViewport];
+
             Csm::Rendering::CubismRenderTarget_Metal& useTarget = model->GetRenderBuffer();
             LAppModelSprite* depthSprite = [[LAppModelSprite alloc] initWithMyVar:width * 0.5f Y:height * 0.5f Width:width Height:height
                                                                MaxWidth:width MaxHeight:height Texture:useTarget.GetColorBuffer()];
@@ -374,7 +437,7 @@ Csm::csmString GetPath(CFURLRef url)
             [depthSprite SetColor:1.0f * a g:1.0f * a b:1.0f * a a:a];
             [depthSprite renderImmidiate:renderEncoder];
             [renderEncoder endEncoding];
-            [depthSprite dealloc];
+            [depthSprite release];
         }
     }
 
@@ -441,8 +504,9 @@ Csm::csmString GetPath(CFURLRef url)
         float clearColorG = 0.0f;
         float clearColorB = 0.0f;
 
-        AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
-        ViewController* view = [delegate viewController];
+        AppDelegate *appDelegate = (AppDelegate *) [[UIApplication sharedApplication] delegate];
+        SceneDelegate* sceneDelegate = [appDelegate getActiveSceneDelegate];
+        ViewController* view = [sceneDelegate viewController];
 
         [self SwitchRenderingTarget:useRenderTarget];
         [self SetRenderTargetClearColor:clearColorR g:clearColorG b:clearColorB];

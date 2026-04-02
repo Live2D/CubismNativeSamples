@@ -97,7 +97,7 @@ void LAppView::ChangeBeginLayout(VkCommandBuffer commandBuffer)
     memoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
     memoryBarrier.srcAccessMask = 0;
     memoryBarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_GENERAL;
+    memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     memoryBarrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
     memoryBarrier.image = vkManager->GetSwapchainImage();
     memoryBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
@@ -140,7 +140,7 @@ void LAppView::ChangeEndLayout(VkCommandBuffer commandBuffer)
     memoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
     memoryBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
     memoryBarrier.dstAccessMask = 0;
-    memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_GENERAL;
+    memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
     memoryBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
     memoryBarrier.image = vkManager->GetSwapchainImage();
     memoryBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
@@ -649,12 +649,6 @@ void LAppView::ResizeSprite(int width, int height)
     VkDevice device = vkManager->GetDevice();
     SwapchainManager* swapchainManager = vkManager->GetSwapchainManager();
     Cleanup(device);
-    // CreateSpriteGraphicsPipeline(device, swapchainManager->GetExtent(), _vertShaderModule, _fragShaderModule,
-    //                              vkManager->GetSwapchainManager()->GetSwapchainImageFormat());
-    // スプライト用のブレンド設定
-    // VkPipelineColorBlendAttachmentState spriteColorBlendAttachment = CreateSpriteColorBlendAttachment();
-    // モデルスプライト用のブレンド設定
-    // VkPipelineColorBlendAttachmentState modelSpriteColorBlendAttachment = CreateModelSpriteColorBlendAttachment();
     // スプライト用のパイプライン作成
     CreateSpriteGraphicsPipeline(device, swapchainManager->GetExtent(), _vertShaderModule, _fragShaderModule,
                                  vkManager->GetSwapchainManager()->GetSwapchainImageFormat(),

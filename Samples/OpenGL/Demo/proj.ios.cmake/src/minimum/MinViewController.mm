@@ -16,6 +16,7 @@
 #import <OpenGLES/ES2/gl.h>
 #import <OpenGLES/ES2/glext.h>
 #import "MinAppDelegate.h"
+#import "MinSceneDelegate.h"
 #import "MinLAppSprite.h"
 #import "MinTouchManager.h"
 #import "MinLAppDefine.h"
@@ -80,7 +81,6 @@ using namespace MinLAppDefine;
 
     [self initializeScreen];
 
-    [super viewDidLoad];
     GLKView *view = (GLKView*)self.view;
 
     // OpenGL ES2を指定
@@ -103,15 +103,39 @@ using namespace MinLAppDefine;
 
     glGenBuffers(1, &_fragmentBufferId);
     glBindBuffer(GL_ARRAY_BUFFER,  _fragmentBufferId);
+
+    [self initializeSprite];
+}
+
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    [self resizeScreen];
 }
 
 - (void)initializeScreen
 {
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    int width = screenRect.size.width;
-    int height = screenRect.size.height;
+    UIWindowScene *windowScene = (UIWindowScene *)[UIApplication sharedApplication].connectedScenes.anyObject;
+    if (!windowScene)
+    {
+        return;
+    }
 
-    const CGFloat retinaScale = [[UIScreen mainScreen] scale];
+    if (windowScene.screen.bounds.size.width <= 0 || windowScene.screen.bounds.size.height <= 0)
+    {
+        return;
+    }
+
+    UIEdgeInsets insets = windowScene.windows.firstObject.safeAreaInsets;
+    int width = windowScene.screen.bounds.size.width - insets.left - insets.right;
+    int height = windowScene.screen.bounds.size.height - insets.top - insets.bottom;
+
+    if (width <= 0 || height <= 0)
+    {
+        return;
+    }
+
+    const CGFloat retinaScale = self.traitCollection.displayScale;
     _windowWidth = width * retinaScale;
     _windowHeight = height * retinaScale;
 
@@ -199,8 +223,7 @@ using namespace MinLAppDefine;
     int width = screenRect.size.width;
     int height = screenRect.size.height;
 
-    MinAppDelegate *delegate = (MinAppDelegate *)[[UIApplication sharedApplication] delegate];
-    MinLAppTextureManager* textureManager = [delegate getTextureManager];
+    MinLAppTextureManager* textureManager = [self.sceneDelegate getTextureManager];
     const string resourcesPath = ResourcesPath;
 
     string imageName = BackImageName;
@@ -210,7 +233,7 @@ using namespace MinLAppDefine;
     float fWidth = static_cast<float>(width*2);
     float fHeight = static_cast<float>(height*2);
 
-    _renderSprite = [[MinLAppSprite alloc] initWithMyVar:x Y:y Width:fWidth/2 Height:fHeight/2 TextureId:0];
+    _renderSprite = [[MinLAppSprite alloc] initWithMyVar:x Y:y Width:fWidth/2 Height:fHeight/2 MaxWidth:width MaxHeight:height TextureId:0];
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
@@ -283,8 +306,7 @@ using namespace MinLAppDefine;
 
 - (float)transformTapY:(float)deviceY
 {
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    int height = screenRect.size.height;
+    float height = self.view.frame.size.height;
     return deviceY * -1 + height;
 }
 
@@ -304,9 +326,9 @@ using namespace MinLAppDefine;
 
         if (!useTarget->IsValid())
         {// 描画ターゲット内部未作成の場合はここで作成
-            CGRect screenRect = [[UIScreen mainScreen] nativeBounds];
-            int width = screenRect.size.width;
-            int height = screenRect.size.height;
+            CGFloat scale = self.traitCollection.displayScale;
+            int width = self.view.frame.size.width * scale;
+            int height = self.view.frame.size.height * scale;
 
             // モデル描画キャンバス
             // PadとPhoneで縦横を変えている
@@ -394,6 +416,75 @@ using namespace MinLAppDefine;
 - (int)GetWindowHeight;
 {
     return _windowHeight;
+}
+
+- (void)resizeScreen
+{
+    int width = self.view.frame.size.width;
+    int height = self.view.frame.size.height;
+
+    if (width == 0 || height == 0)
+    {
+        return;
+    }
+
+    const CGFloat retinaScale = self.traitCollection.displayScale;
+    int newWindowWidth = width * retinaScale;
+    int newWindowHeight = height * retinaScale;
+    if (newWindowWidth == _windowWidth && newWindowHeight == _windowHeight)
+    {
+        return;
+    }
+    _windowWidth = newWindowWidth;
+    _windowHeight = newWindowHeight;
+
+    // 縦サイズを基準とする
+    float ratio = static_cast<float>(width) / static_cast<float>(height);
+    float left = -ratio;
+    float right = ratio;
+    float bottom = ViewLogicalLeft;
+    float top = ViewLogicalRight;
+
+    // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
+    _viewMatrix->SetScreenRect(left, right, bottom, top);
+    _viewMatrix->Scale(ViewScale, ViewScale);
+
+    _deviceToScreen->LoadIdentity(); // サイズが変わった際などリセット必須
+    if (width > height)
+    {
+        float screenW = fabsf(right - left);
+        _deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
+    }
+    else
+    {
+        float screenH = fabsf(top - bottom);
+        _deviceToScreen->ScaleRelative(screenH / height, -screenH / height);
+    }
+    _deviceToScreen->TranslateRelative(-width * 0.5f, -height * 0.5f);
+
+    // 表示範囲の設定
+    _viewMatrix->SetMaxScale(ViewMaxScale); // 限界拡大率
+    _viewMatrix->SetMinScale(ViewMinScale); // 限界縮小率
+
+    // 表示できる最大範囲
+    _viewMatrix->SetMaxScreenRect(
+                                  ViewLogicalMaxLeft,
+                                  ViewLogicalMaxRight,
+                                  ViewLogicalMaxBottom,
+                                  ViewLogicalMaxTop
+                                  );
+
+    [self resizeSprite:width height:height];
+}
+
+- (void)resizeSprite:(float)width height:(float)height
+{
+    // レンダリングスプライト
+    if (_renderSprite) {
+        float x = static_cast<float>(width) * 0.5f;
+        float y = static_cast<float>(height) * 0.5f;
+        [_renderSprite resizeImmidiate:x Y:y Width:width Height:height MaxWidth:width MaxHeight:height];
+    }
 }
 
 @end

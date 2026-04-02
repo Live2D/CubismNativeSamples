@@ -75,6 +75,11 @@ Csm::csmBool LAppWavFileHandler_Common::Update(Csm::csmFloat32 deltaTimeSeconds)
     return true;
 }
 
+Csm::csmFloat32 LAppWavFileHandler_Common::GetParameter()
+{
+    return GetRms();
+}
+
 void LAppWavFileHandler_Common::Start(const Csm::csmString& filePath)
 {
     // WAVファイルのロード

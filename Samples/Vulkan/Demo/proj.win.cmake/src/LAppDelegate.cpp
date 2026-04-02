@@ -75,7 +75,7 @@ bool LAppDelegate::Initialize()
         return GL_FALSE;
     }
 
-    glfwSetWindowUserPointer(window, this);
+    glfwSetWindowUserPointer(window, s_vulkanManager);
 
     // Windowのコンテキストをカレントに設定
     glfwMakeContextCurrent(window);
@@ -103,7 +103,7 @@ bool LAppDelegate::Initialize()
     s_vulkanManager->Initialize();
     SwapchainManager* swapchainManager = s_vulkanManager->GetSwapchainManager();
     // レンダラにvulkanManagerの変数を渡す
-    Live2D::Cubism::Framework::Rendering::CubismRenderer_Vulkan::InitializeConstantSettings(
+    Live2D::Cubism::Framework::Rendering::CubismRenderer_Vulkan::SetConstantSettings(
         s_vulkanManager->GetDevice(), s_vulkanManager->GetPhysicalDevice(),
         s_vulkanManager->GetCommandPool(), s_vulkanManager->GetGraphicQueue(),
         swapchainManager->GetImageCount() , swapchainManager->GetExtent(),

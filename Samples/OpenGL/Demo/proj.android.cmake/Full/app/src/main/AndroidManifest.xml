@@ -12,7 +12,7 @@
         android:theme="@style/AppTheme">
         <activity
                 android:name=".MainActivity"
-                android:configChanges="orientation|screenSize"
+                android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize"
                 android:screenOrientation="fullUser"
                 android:exported="true">
             <intent-filter>

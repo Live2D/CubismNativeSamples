@@ -21,7 +21,14 @@
 #import "MinLAppPal.h"
 #import "MinLAppTextureManager.h"
 #import "MinAppDelegate.h"
+#import "MinSceneDelegate.h"
 #import "MinViewController.h"
+#import "Motion/CubismBreathUpdater.hpp"
+#import "Motion/CubismLookUpdater.hpp"
+#import "Motion/CubismExpressionUpdater.hpp"
+#import "Motion/CubismEyeBlinkUpdater.hpp"
+#import "Motion/CubismPhysicsUpdater.hpp"
+#import "Motion/CubismPoseUpdater.hpp"
 
 using namespace Live2D::Cubism::Framework;
 using namespace Live2D::Cubism::Framework::DefaultParameterId;
@@ -53,6 +60,7 @@ MinLAppModel::MinLAppModel(const std::string modelDirectryName,const std::string
 , _userTimeSeconds(0.0f)
 ,_modelDirName(modelDirectryName)
 ,_currentModelDirectory(currentModelDirectry)
+, _motionUpdated(false)
 {
     if (DebugLogEnable)
     {
@@ -139,21 +147,56 @@ void MinLAppModel::SetupModel()
             }
         });
     }
+    {
+        CubismExpressionUpdater* expression = CSM_NEW CubismExpressionUpdater(*_expressionManager);
+        _updateScheduler.AddUpdatableList(expression);
+    }
 
     //ポーズデータの読み込み
     LoadAssets(_modelSetting->GetPoseFileName(), [=](Csm::csmByte* buffer, Csm::csmSizeInt bufferSize) {
         LoadPose(buffer, bufferSize);
     });
+    if (_pose != NULL)
+    {
+        CubismPoseUpdater* pose = CSM_NEW CubismPoseUpdater(*_pose);
+        _updateScheduler.AddUpdatableList(pose);
+    }
 
     // 物理演算データの読み込み
     LoadAssets(_modelSetting->GetPhysicsFileName(), [=](Csm::csmByte* buffer, Csm::csmSizeInt bufferSize) {
         LoadPhysics(buffer, bufferSize);
     });
+    if (_physics != NULL)
+    {
+        CubismPhysicsUpdater* physics = CSM_NEW CubismPhysicsUpdater(*_physics);
+        _updateScheduler.AddUpdatableList(physics);
+    }
 
     // モデルに付属するユーザーデータの読み込み
     LoadAssets(_modelSetting->GetUserDataFile(), [=](Csm::csmByte* buffer, Csm::csmSizeInt bufferSize) {
         LoadUserData(buffer, bufferSize);
     });
+
+    // Look
+    {
+        _look = CubismLook::Create();
+
+        csmVector<CubismLook::LookParameterData> lookParameters;
+
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamAngleX, 30.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamAngleY, 0.0f, 30.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamAngleZ, 0.0f, 0.0f, -30.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamBodyAngleX, 10.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamEyeBallX, 1.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamEyeBallY, 0.0f, 1.0f));
+
+        _look->SetParameters(lookParameters);
+
+        CubismLookUpdater* look = CSM_NEW CubismLookUpdater(*_look, *_dragManager);
+        _updateScheduler.AddUpdatableList(look);
+    }
+
+    _updateScheduler.SortUpdatableList();
 
     // Layout
     csmMap<csmString, csmFloat32> layout;
@@ -174,8 +217,9 @@ void MinLAppModel::SetupModel()
 
     _motionManager->StopAllMotions();
 
-    MinAppDelegate* delegate = (MinAppDelegate*) [[UIApplication sharedApplication] delegate];
-    MinViewController* view = [delegate viewController];
+    MinAppDelegate *appDelegate = (MinAppDelegate *) [[UIApplication sharedApplication] delegate];
+    MinSceneDelegate* sceneDelegate = [appDelegate getActiveMinSceneDelegate];
+    MinViewController* view = [sceneDelegate viewController];
     int width = [view GetWindowWidth];
     int height = [view GetWindowHeight];
 
@@ -262,75 +306,26 @@ void MinLAppModel::Update()
     const csmFloat32 deltaTimeSeconds = MinLAppPal::GetDeltaTime();
     _userTimeSeconds += deltaTimeSeconds;
 
-    _dragManager->Update(deltaTimeSeconds);
-    _dragX = _dragManager->GetX();
-    _dragY = _dragManager->GetY();
-
     // モーションによるパラメータ更新の有無
-    csmBool motionUpdated = false;
+    _motionUpdated = false;
 
     //-----------------------------------------------------------------
     _model->LoadParameters(); // 前回セーブされた状態をロード
     if (_motionManager->IsFinished())
     {
         // モーションの再生がない場合、最初に登録されているモーションを再生する
-        return StartMotion(MotionGroupIdle, 0, PriorityIdle);
+        StartMotion(MotionGroupIdle, 0, PriorityIdle);
     }
     else
     {
-        motionUpdated = _motionManager->UpdateMotion(_model, deltaTimeSeconds); // モーションを更新
+        _motionUpdated = _motionManager->UpdateMotion(_model, deltaTimeSeconds); // モーションを更新
     }
     _model->SaveParameters(); // 状態を保存
     //-----------------------------------------------------------------
 
-    // まばたき
-    if (!motionUpdated)
-    {
-        if (_eyeBlink != NULL)
-        {
-            // メインモーションの更新がないとき
-            _eyeBlink->UpdateParameters(_model, deltaTimeSeconds); // 目パチ
-        }
-    }
-
-    if (_expressionManager != NULL)
-    {
-        _expressionManager->UpdateMotion(_model, deltaTimeSeconds); // 表情でパラメータ更新（相対変化）
-    }
-
-    //ドラッグによる変化
-    //ドラッグによる顔の向きの調整
-    _model->AddParameterValue(_idParamAngleX, _dragX * 30); // -30から30の値を加える
-    _model->AddParameterValue(_idParamAngleY, _dragY * 30);
-    _model->AddParameterValue(_idParamAngleZ, _dragX * _dragY * -30);
-
-    //ドラッグによる体の向きの調整
-    _model->AddParameterValue(_idParamBodyAngleX, _dragX * 10); // -10から10の値を加える
-
-    //ドラッグによる目の向きの調整
-    _model->AddParameterValue(_idParamEyeBallX, _dragX); // -1から1の値を加える
-    _model->AddParameterValue(_idParamEyeBallY, _dragY);
-
-    // 呼吸など
-    if (_breath != NULL)
-    {
-        _breath->UpdateParameters(_model, deltaTimeSeconds);
-    }
-
-    // 物理演算の設定
-    if (_physics != NULL)
-    {
-        _physics->Evaluate(_model, deltaTimeSeconds);
-    }
-
-    // ポーズの設定
-    if (_pose != NULL)
-    {
-        _pose->UpdateParameters(_model, deltaTimeSeconds);
-    }
+    _updateScheduler.OnLateUpdate(_model, deltaTimeSeconds);
 
     _model->Update();
-
 }
 
 CubismMotionQueueEntryHandle MinLAppModel::StartMotion(const csmChar* group, csmInt32 no, csmInt32 priority)
@@ -417,8 +412,9 @@ void MinLAppModel::ReloadRenderer()
 {
     DeleteRenderer();
 
-    MinAppDelegate* delegate = (MinAppDelegate*) [[UIApplication sharedApplication] delegate];
-    MinViewController* view = [delegate viewController];
+    MinAppDelegate *appDelegate = (MinAppDelegate *) [[UIApplication sharedApplication] delegate];
+    MinSceneDelegate* sceneDelegate = [appDelegate getActiveMinSceneDelegate];
+    MinViewController* view = [sceneDelegate viewController];
     int width = [view GetWindowWidth];
     int height = [view GetWindowHeight];
 
@@ -441,8 +437,9 @@ void MinLAppModel::SetupTextures()
         csmString texturePath = _modelSetting->GetTextureFileName(modelTextureNumber);
         texturePath = Csm::csmString(_currentModelDirectory.c_str()) + texturePath;
 
-        MinAppDelegate *delegate = (MinAppDelegate *) [[UIApplication sharedApplication] delegate];
-        TextureInfo* texture = [[delegate getTextureManager] createTextureFromPngFile:texturePath.GetRawString()];
+        MinAppDelegate *appDelegate = (MinAppDelegate *) [[UIApplication sharedApplication] delegate];
+        MinSceneDelegate* sceneDelegate = [appDelegate getActiveMinSceneDelegate];
+        TextureInfo* texture = [[sceneDelegate getTextureManager] createTextureFromPngFile:texturePath.GetRawString()];
         csmInt32 glTextueNumber = texture->id;
 
         //OpenGL

@@ -7,6 +7,7 @@
 
 #include "TouchManager_Common.hpp"
 #include <math.h>
+#include <Math/CubismMath.hpp>
 
 TouchManager_Common::TouchManager_Common()
     : _startY(0.0f)
@@ -91,7 +92,7 @@ float TouchManager_Common::CalculateMovingAmount(float v1, float v2)
     }
 
     float sign = v1 > 0.0f ? 1.0f : -1.0f;
-    float absoluteValue1 = fabsf(v1);
-    float absoluteValue2 = fabsf(v2);
+    float absoluteValue1 = Csm::CubismMath::AbsF(v1);
+    float absoluteValue2 = Csm::CubismMath::AbsF(v2);
     return sign * ((absoluteValue1 < absoluteValue2) ? absoluteValue1 : absoluteValue2);
 }

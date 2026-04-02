@@ -273,9 +273,6 @@ static bool InitializeSystem()
     // デバイス作成の後
     _textureManager = new CubismTextureManager();
 
-    //MouseActionManagerの初期化
-    MouseActionManager_Common::GetInstance()->Initialize(windowWidth, windowHeight);
-
     // Cubism SDK の初期化
     InitializeCubism();
 
@@ -289,6 +286,9 @@ void Release()
 
     // モデルデータの解放
     delete _userModel;
+
+    // CubismDirectXViewの解放
+    CubismDirectXView::ReleaseInstance();
 
     // テクスチャマネージャーの解放
     delete _textureManager;

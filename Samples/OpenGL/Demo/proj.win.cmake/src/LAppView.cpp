@@ -78,7 +78,10 @@ void LAppView::Initialize(int width, int height)
         _spriteShader = new LAppSpriteShader();
     }
 
-    InitializeSprite();
+    if (_back == NULL)
+    {
+        InitializeSprite();
+    }
 }
 
 void LAppView::Render()
@@ -371,6 +374,33 @@ void LAppView::ResizeSprite()
             fWidth = static_cast<float>(texInfo->width);
             fHeight = static_cast<float>(texInfo->height);
             _gear->ResetRect(x, y, fWidth, fHeight);
+        }
+    }
+
+    if (_renderSprite)
+    {
+        x = width * 0.5f;
+        y = height * 0.5f;
+        _renderSprite->ResetRect(x, y, static_cast<float>(width), static_cast<float>(height));
+    }
+}
+
+void LAppView::DestroySpriteRenderTarget()
+{
+    LAppLive2DManager* live2DManager = LAppLive2DManager::GetInstance();
+    if (_renderTarget == SelectTarget_ViewFrameBuffer)
+    {
+        _renderBuffer.DestroyRenderTarget();
+    }
+    else if (_renderTarget == SelectTarget_ModelFrameBuffer)
+    {
+        for (csmUint32 i = 0; i < live2DManager->GetModelNum(); i++)
+        {
+            LAppModel* model = live2DManager->GetModel(i);
+            if (model)
+            {
+                model->GetRenderBuffer().DestroyRenderTarget();
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
@@ -22,6 +22,12 @@
 #include "MouseActionManager.hpp"
 
 #include "CubismUserModelExtend.hpp"
+#include "Motion/CubismBreathUpdater.hpp"
+#include "Motion/CubismLookUpdater.hpp"
+#include "Motion/CubismExpressionUpdater.hpp"
+#include "Motion/CubismEyeBlinkUpdater.hpp"
+#include "Motion/CubismPhysicsUpdater.hpp"
+#include "Motion/CubismPoseUpdater.hpp"
 
 using namespace Live2D::Cubism::Framework;
 using namespace DefaultParameterId;
@@ -34,6 +40,7 @@ CubismUserModelExtend::CubismUserModelExtend(const std::string modelDirectoryNam
     , _modelDirName(modelDirectoryName)
     , _currentModelDirectory(_currentModelDirectory)
     , _textureManager(new LAppTextureManager())
+    , _motionUpdated(false)
 {
     // パラメータIDの取得
     _idParamAngleX = CubismFramework::GetIdManager()->GetId(ParamAngleX);
@@ -111,6 +118,10 @@ void CubismUserModelExtend::SetupModel(csmUint32 width, csmUint32 height)
             DeleteBuffer(buffer, path.GetRawString());
         }
     }
+    {
+        CubismExpressionUpdater* expression = CSM_NEW CubismExpressionUpdater(*_expressionManager);
+        _updateScheduler.AddUpdatableList(expression);
+    }
 
     //ポーズデータの読み込み
     if (strcmp(_modelJson->GetPoseFileName(), ""))
@@ -122,16 +133,28 @@ void CubismUserModelExtend::SetupModel(csmUint32 width, csmUint32 height)
         LoadPose(buffer, size);
         DeleteBuffer(buffer, path.GetRawString());
     }
+    if (_pose != nullptr)
+    {
+        CubismPoseUpdater* pose = CSM_NEW CubismPoseUpdater(*_pose);
+        _updateScheduler.AddUpdatableList(pose);
+    }
 
     // 物理演算データの読み込み
-    if (strcmp(_modelJson->GetPhysicsFileName(), ""))
     {
-        csmString path = _modelJson->GetPhysicsFileName();
-        path = csmString(_currentModelDirectory.c_str()) + path;
+        if (strcmp(_modelJson->GetPhysicsFileName(), ""))
+        {
+            csmString path = _modelJson->GetPhysicsFileName();
+            path = csmString(_currentModelDirectory.c_str()) + path;
 
-        buffer = CreateBuffer(path.GetRawString(), &size);
-        LoadPhysics(buffer, size);
-        DeleteBuffer(buffer, path.GetRawString());
+            buffer = CreateBuffer(path.GetRawString(), &size);
+            LoadPhysics(buffer, size);
+            DeleteBuffer(buffer, path.GetRawString());
+        }
+        if (_physics != nullptr)
+        {
+            CubismPhysicsUpdater* physics = CSM_NEW CubismPhysicsUpdater(*_physics);
+            _updateScheduler.AddUpdatableList(physics);
+        }
     }
 
     // モデルに付属するユーザーデータの読み込み
@@ -143,6 +166,27 @@ void CubismUserModelExtend::SetupModel(csmUint32 width, csmUint32 height)
         LoadUserData(buffer, size);
         DeleteBuffer(buffer, path.GetRawString());
     }
+
+    // Look
+    {
+        _look = CubismLook::Create();
+
+        csmVector<CubismLook::LookParameterData> lookParameters;
+
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamAngleX, 30.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamAngleY, 0.0f, 30.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamAngleZ, 0.0f, 0.0f, -30.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamBodyAngleX, 10.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamEyeBallX, 1.0f));
+        lookParameters.PushBack(CubismLook::LookParameterData(_idParamEyeBallY, 0.0f, 1.0f));
+
+        _look->SetParameters(lookParameters);
+
+        CubismLookUpdater* look = CSM_NEW CubismLookUpdater(*_look, *_dragManager);
+        _updateScheduler.AddUpdatableList(look);
+    }
+
+    _updateScheduler.SortUpdatableList();
 
     // Layout
     csmMap<csmString, csmFloat32> layout;
@@ -288,13 +332,8 @@ void CubismUserModelExtend::ModelParamUpdate()
     const Csm::csmFloat32 deltaTimeSeconds = LAppPal::GetDeltaTime();
     _userTimeSeconds += deltaTimeSeconds;
 
-    // ドラッグ情報を更新
-    _dragManager->Update(deltaTimeSeconds);
-    _dragX = _dragManager->GetX();
-    _dragY = _dragManager->GetY();
-
     // モーションによるパラメータ更新の有無
-    Csm::csmBool motionUpdated = false;
+    _motionUpdated = false;
 
     //-----------------------------------------------------------------
     // 前回セーブされた状態をロード
@@ -308,46 +347,14 @@ void CubismUserModelExtend::ModelParamUpdate()
     else
     {
         // モーションを更新し、パラメータを反映
-        motionUpdated = _motionManager->UpdateMotion(_model, deltaTimeSeconds);
+        _motionUpdated = _motionManager->UpdateMotion(_model, deltaTimeSeconds);
     }
 
     // 状態を保存
     _model->SaveParameters();
     //-----------------------------------------------------------------
 
-    if (_expressionManager)
-    {
-        // 表情でパラメータ更新（相対変化）
-        _expressionManager->UpdateMotion(_model, deltaTimeSeconds);
-    }
-
-    //ドラッグによる変化
-    /**
-    *ドラッグによる顔の向きの調整
-    * -30から30の値を加える
-    */
-    _model->AddParameterValue(_idParamAngleX, _dragX * 30.0f);
-    _model->AddParameterValue(_idParamAngleY, _dragY * 30.0f);
-    _model->AddParameterValue(_idParamAngleZ, _dragX * _dragY * -30.0f);
-
-    //ドラッグによる体の向きの調整
-    _model->AddParameterValue(_idParamBodyAngleX, _dragX * 10.0f); // -10から10の値を加える
-
-    //ドラッグによる目の向きの調整
-    _model->AddParameterValue(_idParamEyeBallX, _dragX); // -1から1の値を加える
-    _model->AddParameterValue(_idParamEyeBallY, _dragY);
-
-    // 物理演算の設定
-    if (_physics)
-    {
-        _physics->Evaluate(_model, deltaTimeSeconds);
-    }
-
-    // ポーズの設定
-    if (_pose)
-    {
-        _pose->UpdateParameters(_model, deltaTimeSeconds);
-    }
+    _updateScheduler.OnLateUpdate(_model, deltaTimeSeconds);
 
     // モデルのパラメータ情報を更新
     _model->Update();

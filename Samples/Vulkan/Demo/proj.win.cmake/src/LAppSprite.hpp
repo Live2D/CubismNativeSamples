@@ -110,6 +110,14 @@ public:
     void CreateDescriptorSet(VkDevice device, VkDescriptorSetLayout descriptorSetLayout);
 
     /**
+     * @brief ディスクリプタセットを再作成する
+     *
+     * @param[in]       device                  デバイス
+     * @param[in]       descriptorSetLayout     ディスクリプタセットレイアウト
+     */
+    void RecreateDescriptorSet(VkDevice device, VkDescriptorSetLayout descriptorSetLayout);
+
+    /**
     * @brief ユニフォームバッファを更新する
     *
     * @param[in]       vkManager           Vulkanリソースマネージャ

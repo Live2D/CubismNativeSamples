@@ -9,8 +9,11 @@
 #import "LAppModel.h"
 #import "MetalView.h"
 
+@class SceneDelegate;
+
 @interface ViewController : UIViewController <MetalViewDelegate>
 
+@property (nonatomic) SceneDelegate *sceneDelegate;
 @property (nonatomic) bool anotherTarget;
 @property (nonatomic) float spriteColorR;
 @property (nonatomic) float spriteColorG;
@@ -42,6 +45,14 @@
  * @brief 画像の初期化を行う。
  */
 - (void)initializeSprite;
+
+/**
+ * @brief 画像のリサイズ処理
+ *
+ * @param[in]       width            幅
+ * @param[in]       height           高さ
+ */
+- (void)resizeSprite:(float)width height:(float)height;
 
 /**
  * @brief X座標をView座標に変換する。
@@ -77,5 +88,26 @@
  * @return  デバイスを返す
  */
 - (id <MTLDevice>)getDevice;
+
+/**
+ * @brief   ウインドウの幅を取得する
+ *
+ * @return  ウィンドウの幅
+ */
+- (int)getWindowWidth;
+
+/**
+ * @brief   ウインドウの高さを取得する
+ *
+ * @return  ウィンドウの高さ
+ */
+- (int)getWindowHeight;
+
+/**
+ * @brief   セーフエリア内のビューポートを取得する
+ *
+ * @return   セーフエリア内のビューポート
+ */
+- (MTLViewport) getSafeAreaViewport;
 
 @end

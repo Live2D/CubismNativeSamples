@@ -16,6 +16,7 @@
 #import <OpenGLES/ES2/gl.h>
 #import <OpenGLES/ES2/glext.h>
 #import "AppDelegate.h"
+#import "SceneDelegate.h"
 #import "LAppSprite.h"
 #import "TouchManager.h"
 #import "LAppDefine.h"
@@ -86,7 +87,6 @@ using namespace LAppDefine;
 
     [self initializeScreen];
 
-    [super viewDidLoad];
     GLKView *view = (GLKView*)self.view;
 
     // GL描画周期を60FPSに設定
@@ -112,15 +112,29 @@ using namespace LAppDefine;
 
     glGenBuffers(1, &_fragmentBufferId);
     glBindBuffer(GL_ARRAY_BUFFER,  _fragmentBufferId);
+
+    [self initializeSprite];
 }
 
 - (void)initializeScreen
 {
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    int width = screenRect.size.width;
-    int height = screenRect.size.height;
+    UIWindowScene *windowScene = (UIWindowScene *)[UIApplication sharedApplication].connectedScenes.anyObject;
+    if (!windowScene)
+    {
+        return;
+    }
 
-    const CGFloat retinaScale = [[UIScreen mainScreen] scale];
+    UIEdgeInsets insets = windowScene.windows.firstObject.safeAreaInsets;
+
+    if (windowScene.screen.bounds.size.width <= 0 || windowScene.screen.bounds.size.height <= 0)
+    {
+        return;
+    }
+
+    int width = windowScene.screen.bounds.size.width - insets.left - insets.right;
+    int height = windowScene.screen.bounds.size.height - insets.top - insets.bottom;
+
+    CGFloat retinaScale = self.traitCollection.displayScale;
     _windowWidth = width * retinaScale;
     _windowHeight = height * retinaScale;
 
@@ -161,6 +175,12 @@ using namespace LAppDefine;
                                   );
 }
 
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    [self resizeScreen];
+}
+
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
     //時間更新
@@ -170,6 +190,15 @@ using namespace LAppDefine;
     {
         // 画面クリア
         glClear(GL_COLOR_BUFFER_BIT);
+
+        // セーフエリアのみ
+        UIEdgeInsets insets = self.view.safeAreaInsets;
+        CGFloat scale = self.traitCollection.displayScale;
+        GLint vpX = (GLint)(insets.left * scale);
+        GLint vpY = (GLint)(insets.bottom * scale);
+        GLsizei vpW = (GLsizei)((self.view.frame.size.width - insets.left - insets.right) * scale);
+        GLsizei vpH = (GLsizei)((self.view.frame.size.height - insets.top - insets.bottom) * scale);
+        glViewport(vpX, vpY, vpW, vpH);
 
         [_back render:_vertexBufferId fragmentBufferID:_fragmentBufferId];
 
@@ -213,51 +242,76 @@ using namespace LAppDefine;
 
 - (void)initializeSprite
 {
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    int width = screenRect.size.width;
-    int height = screenRect.size.height;
+    UIWindowScene *windowScene = (UIWindowScene *)[UIApplication sharedApplication].connectedScenes.anyObject;
+    if (!windowScene)
+    {
+        return;
+    }
+    UIEdgeInsets insets = windowScene.windows.firstObject.safeAreaInsets;
+    int width = windowScene.screen.bounds.size.width - insets.left - insets.right;
+    int height = windowScene.screen.bounds.size.height - insets.top - insets.bottom;
 
-    AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    LAppTextureManager* textureManager = [delegate getTextureManager];
+    LAppTextureManager* textureManager = [self.sceneDelegate getTextureManager];
     const string resourcesPath = ResourcesPath;
 
+    float x;
+    float y;
+    float fWidth;
+    float fHeight;
+    float ratio;
+
     string imageName = BackImageName;
-    TextureInfo* backgroundTexture = [textureManager createTextureFromPngFile:resourcesPath+imageName];
-    float x = width * 0.5f;
-    float y = height * 0.5f;
-    float fWidth = 300.0f;
-    float fHeight = 300.0f;
-    fWidth = static_cast<float>(width * 0.75f);
-    fHeight = static_cast<float>(height * 0.95f);
-    _back = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight TextureId:backgroundTexture->id];
+    if (!_back)
+    {
+        TextureInfo* backgroundTexture = [textureManager createTextureFromPngFile:resourcesPath+imageName];
+        x = width * 0.5f;
+        y = height * 0.5f;
+        fHeight = static_cast<float>(height * 0.95f);
+        ratio = fHeight / static_cast<float>(backgroundTexture->height);
+        fWidth = static_cast<float>(backgroundTexture->width * ratio);
+        _back = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight MaxWidth:width MaxHeight:height TextureId:backgroundTexture->id];
+    }
 
     imageName = GearImageName;
-    TextureInfo* gearTexture = [textureManager createTextureFromPngFile:resourcesPath+imageName];
-    x = static_cast<float>(width - gearTexture->width * 0.5f);
-    y = static_cast<float>(height - gearTexture->height * 0.5f);
-    fWidth = static_cast<float>(gearTexture->width);
-    fHeight = static_cast<float>(gearTexture->height);
-    _gear = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight TextureId:gearTexture->id];
+    if (!_gear)
+    {
+        TextureInfo* gearTexture = [textureManager createTextureFromPngFile:resourcesPath+imageName];
+        x = static_cast<float>(width - gearTexture->width * 0.5f);
+        y = static_cast<float>(height - gearTexture->height * 0.5f);
+        fWidth = static_cast<float>(gearTexture->width);
+        fHeight = static_cast<float>(gearTexture->height);
+        _gear = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight MaxWidth:width MaxHeight:height TextureId:gearTexture->id];
+    }
 
     imageName = PowerImageName;
-    TextureInfo* powerTexture = [textureManager createTextureFromPngFile:resourcesPath+imageName];
-    x = static_cast<float>(width - powerTexture->width * 0.5f);
-    y = static_cast<float>(powerTexture->height * 0.5f);
-    fWidth = static_cast<float>(powerTexture->width);
-    fHeight = static_cast<float>(powerTexture->height);
-    _power = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight TextureId:powerTexture->id];
+    if (!_power)
+    {
+        TextureInfo* powerTexture = [textureManager createTextureFromPngFile:resourcesPath+imageName];
+        x = static_cast<float>(width - powerTexture->width * 0.5f);
+        y = static_cast<float>(powerTexture->height * 0.5f);
+        fWidth = static_cast<float>(powerTexture->width);
+        fHeight = static_cast<float>(powerTexture->height);
+        _power = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight MaxWidth:width MaxHeight:height TextureId:powerTexture->id];
+    }
 
-    x = static_cast<float>(width) * 0.5f;
-    y = static_cast<float>(height) * 0.5f;
-    fWidth = static_cast<float>(width*2);
-    fHeight = static_cast<float>(height*2);
-    _renderSprite = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth/2 Height:fHeight/2 TextureId:0];
+    if (!_renderSprite)
+    {
+        x = static_cast<float>(width) * 0.5f;
+        y = static_cast<float>(height) * 0.5f;
+        fWidth = static_cast<float>(width*2);
+        fHeight = static_cast<float>(height*2);
+        _renderSprite = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth/2 Height:fHeight/2 MaxWidth:width MaxHeight:height TextureId:0];
+    }
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     UITouch *touch = [touches anyObject];
     CGPoint point = [touch locationInView:self.view];
+
+    UIEdgeInsets insets = self.view.safeAreaInsets;
+    point.x -= insets.left;
+    point.y -= insets.top;
 
     [_touchManager touchesBegan:point.x DeciveY:point.y];
 }
@@ -266,6 +320,10 @@ using namespace LAppDefine;
 {
     UITouch *touch = [touches anyObject];
     CGPoint point = [touch locationInView:self.view];
+
+    UIEdgeInsets insets = self.view.safeAreaInsets;
+    point.x -= insets.left;
+    point.y -= insets.top;
 
     float viewX = [self transformViewX:[_touchManager getX]];
     float viewY = [self transformViewY:[_touchManager getY]];
@@ -280,6 +338,9 @@ using namespace LAppDefine;
     NSLog(@"%@", touch.view);
 
     CGPoint point = [touch locationInView:self.view];
+    UIEdgeInsets insets = self.view.safeAreaInsets;
+    point.x -= insets.left;
+    point.y -= insets.top;
     float pointY = [self transformTapY:point.y];
 
     // タッチ終了
@@ -338,8 +399,8 @@ using namespace LAppDefine;
 
 - (float)transformTapY:(float)deviceY
 {
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    int height = screenRect.size.height;
+    UIEdgeInsets insets = self.view.safeAreaInsets;
+    float height = self.view.frame.size.height - insets.top - insets.bottom;
     return deviceY * -1 + height;
 }
 
@@ -357,18 +418,19 @@ using namespace LAppDefine;
         // 使用するターゲット
         useTarget = (_renderTarget == SelectTarget_ViewFrameBuffer) ? &_renderBuffer : &refModel.GetRenderBuffer();
 
-        if (!useTarget->IsValid())
+        int width = _windowWidth;
+        int height = _windowHeight;
+
+        if (!useTarget->IsValid() || useTarget->GetBufferWidth() != width || useTarget->GetBufferHeight() != height)
         {// 描画ターゲット内部未作成の場合はここで作成
-            CGRect screenRect = [[UIScreen mainScreen] nativeBounds];
-            int width = screenRect.size.width;
-            int height = screenRect.size.height;
 
             // モデル描画キャンバス
-            useTarget->CreateRenderTarget(height, width);
+            useTarget->CreateRenderTarget(width, height);
         }
 
         // レンダリング開始
         useTarget->BeginDraw();
+        glViewport(0, 0, width, height);
         useTarget->Clear(_clearColorR, _clearColorG, _clearColorB, _clearColorA); // 背景クリアカラー
     }
 }
@@ -441,6 +503,136 @@ using namespace LAppDefine;
 - (int)GetWindowHeight;
 {
     return _windowHeight;
+}
+
+- (void)resizeScreen
+{
+    UIEdgeInsets insets = self.view.safeAreaInsets;
+    int width = self.view.frame.size.width - insets.left - insets.right;
+    int height = self.view.frame.size.height - insets.top - insets.bottom;
+
+    if (width == 0 || height == 0)
+    {
+        return;
+    }
+
+    const CGFloat retinaScale = self.traitCollection.displayScale;
+    int newWindowWidth = width * retinaScale;
+    int newWindowHeight = height * retinaScale;
+    if (newWindowWidth == _windowWidth && newWindowHeight == _windowHeight)
+    {
+        return;
+    }
+    _windowWidth = newWindowWidth;
+    _windowHeight = newWindowHeight;
+
+    LAppLive2DManager* Live2DManager = [LAppLive2DManager getInstance];
+
+    [Live2DManager setRenderTargetSize:newWindowWidth height:newWindowHeight];
+
+    // 縦サイズを基準とする
+    float ratio = static_cast<float>(width) / static_cast<float>(height);
+    float left = -ratio;
+    float right = ratio;
+    float bottom = ViewLogicalLeft;
+    float top = ViewLogicalRight;
+
+    // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
+    _viewMatrix->SetScreenRect(left, right, bottom, top);
+    _viewMatrix->Scale(ViewScale, ViewScale);
+
+    _deviceToScreen->LoadIdentity(); // サイズが変わった際などリセット必須
+    if (width > height)
+    {
+        float screenW = fabsf(right - left);
+        _deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
+    }
+    else
+    {
+        float screenH = fabsf(top - bottom);
+        _deviceToScreen->ScaleRelative(screenH / height, -screenH / height);
+    }
+    _deviceToScreen->TranslateRelative(-width * 0.5f, -height * 0.5f);
+
+    // 表示範囲の設定
+    _viewMatrix->SetMaxScale(ViewMaxScale); // 限界拡大率
+    _viewMatrix->SetMinScale(ViewMinScale); // 限界縮小率
+
+    // 表示できる最大範囲
+    _viewMatrix->SetMaxScreenRect(
+                                  ViewLogicalMaxLeft,
+                                  ViewLogicalMaxRight,
+                                  ViewLogicalMaxBottom,
+                                  ViewLogicalMaxTop
+                                  );
+
+    [self resizeSprite:width height:height];
+}
+
+- (void)resizeSprite:(float)width height:(float)height
+{
+    UIEdgeInsets insets = self.view.safeAreaInsets;
+    float maxWidth = self.view.frame.size.width - insets.left - insets.right;
+    float maxHeight = self.view.frame.size.height - insets.top - insets.bottom;
+
+    LAppTextureManager* textureManager = [self.sceneDelegate getTextureManager];
+
+    const string resourcesPath = ResourcesPath;
+
+    // 背景
+    float x;
+    float y;
+    float fHeight;
+    float ratio;
+    float fWidth;
+    if (_back)
+    {
+        TextureInfo* backgroundTexture = [textureManager createTextureFromPngFile:resourcesPath+BackImageName];
+        x = width * 0.5f;
+        y = height * 0.5f;
+        fHeight = static_cast<float>(height * 0.95f);
+        ratio = fHeight / static_cast<float>(backgroundTexture->height);
+        fWidth = static_cast<float>(backgroundTexture->width * ratio);
+        [_back resizeImmidiate:x Y:y Width:fWidth Height:fHeight MaxWidth:maxWidth MaxHeight:maxHeight];
+    }
+
+    // 歯車（右上）
+    if (_gear)
+    {
+        TextureInfo* gearTexture = [textureManager createTextureFromPngFile:resourcesPath+GearImageName];
+        int gearWidth = gearTexture->width;
+        int gearHeight = gearTexture->height;
+        x = static_cast<float>(width - gearWidth * 0.5f);
+        y = static_cast<float>(height - gearHeight * 0.5f);
+        fHeight = static_cast<float>(gearHeight);
+        fWidth = static_cast<float>(gearWidth);
+        [_gear resizeImmidiate:x Y:y Width:fWidth Height:fHeight MaxWidth:maxWidth MaxHeight:maxHeight];
+    }
+
+    // 電源（右下）
+    if (_power)
+    {
+        TextureInfo* powerTexture = [textureManager createTextureFromPngFile:resourcesPath+PowerImageName];
+        int powerWidth = powerTexture->width;
+        int powerHeight = powerTexture->height;
+        x = static_cast<float>(width - powerWidth * 0.5f);
+        y = static_cast<float>(powerHeight * 0.5f);
+        fWidth = static_cast<float>(powerWidth);
+        fHeight = static_cast<float>(powerHeight);
+        [_power resizeImmidiate:x Y:y Width:fWidth Height:fHeight MaxWidth:maxWidth MaxHeight:maxHeight];
+    }
+
+    // レンダリングスプライト
+    if (_renderSprite) {
+        x = static_cast<float>(width) * 0.5f;
+        y = static_cast<float>(height) * 0.5f;
+        [_renderSprite resizeImmidiate:x Y:y Width:width Height:height MaxWidth:maxWidth MaxHeight:maxHeight];
+    }
+}
+
+- (void)dealloc
+{
+    [self releaseView];
 }
 
 @end

@@ -121,6 +121,11 @@ public:
      */
     void SetRenderTargetClearColor(float r, float g, float b);
 
+    /**
+     * @brief スプライトのレンダーターゲットの破棄
+     */
+    void DestroySpriteRenderTarget();
+
 private:
     TouchManager_Common* _touchManager;                 ///< タッチマネージャー
     LAppSprite* _back;                       ///< 背景画像

@@ -11,7 +11,6 @@
 #include <ICubismModelSetting.hpp>
 #include <Type/csmRectF.hpp>
 #include <Rendering/OpenGL/CubismRenderTarget_OpenGLES2.hpp>
-
 #include "LAppWavFileHandler_Common.hpp"
 #include "LAppModel_Common.hpp"
 
@@ -192,6 +191,7 @@ private:
     const Csm::CubismId* _idParamBodyAngleX; ///< パラメータID: ParamBodyAngleX
     const Csm::CubismId* _idParamEyeBallX; ///< パラメータID: ParamEyeBallX
     const Csm::CubismId* _idParamEyeBallY; ///< パラメータID: ParamEyeBallXY
+    Csm::csmBool _motionUpdated; ///< モーション更新フラグ
 
     LAppWavFileHandler_Common _wavFileHandler; ///< wavファイルハンドラ
 

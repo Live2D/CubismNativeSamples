@@ -217,7 +217,7 @@ LAppTextureManager::TextureInfo* LAppTextureManager::CreateTextureFromPngFile(
     textureImage.CreateView(device, format, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels);
     VkPhysicalDeviceProperties properties{};
     vkGetPhysicalDeviceProperties(physicalDevice, &properties);
-    textureImage.CreateSampler(device, properties.limits.maxSamplerAnisotropy, _mipLevels);
+    textureImage.CreateSampler(device, VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, properties.limits.maxSamplerAnisotropy, _mipLevels);
     _textures.PushBack(textureImage);
 
     LAppTextureManager::TextureInfo* textureInfo = new LAppTextureManager::TextureInfo();

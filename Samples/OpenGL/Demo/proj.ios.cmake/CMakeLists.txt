@@ -105,11 +105,19 @@ add_custom_command(
 )
 
 # Add information aboud XCode project.
-set_xcode_property(${APP_NAME}
-  INFOPLIST_FILE
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/Info.plist"
-  "All"
-)
+if(CSM_MINIMUM_DEMO)
+  set_xcode_property(${APP_NAME}
+    INFOPLIST_FILE
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/minimum/MinInfo.plist"
+    "All"
+  )
+else()
+  set_xcode_property(${APP_NAME}
+    INFOPLIST_FILE
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/Info.plist"
+    "All"
+  )
+endif()
 set_xcode_property(${APP_NAME} DEVELOPMENT_TEAM "" "All")
 set_xcode_property(${APP_NAME} CODE_SIGN_IDENTITY "iPhone Developer" "All")
 set_xcode_property(${APP_NAME}

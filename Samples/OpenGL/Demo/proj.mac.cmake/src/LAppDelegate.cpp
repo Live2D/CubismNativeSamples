@@ -161,6 +161,8 @@ void LAppDelegate::Run()
         {
             _view->Initialize(width / scaleWidth, height / scaleHeight);
             _view->ResizeSprite();
+            // レンダーターゲットを破棄する（次フレームで新サイズで再作成される）
+            _view->DestroySpriteRenderTarget();
             // オフスクリーンのサイズ変更
             LAppLive2DManager::GetInstance()->SetRenderTargetSize(width, height);
 

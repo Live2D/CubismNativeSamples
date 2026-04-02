@@ -43,6 +43,14 @@
 - (LAppModel*)getModel:(Csm::csmUint32)no;
 
 /**
+ * @brief モデルのオフスクリーンサイズを設定
+ *
+ * @param[in] width ウィンドウの幅
+ * @param[in] height ウィンドウの高さ
+ */
+- (void)setRenderTargetSize:(Csm::csmUint32)width height:(Csm::csmUint32)height;
+
+/**
  * @breif 現在のシーンで保持している全てのモデルを解放する
  */
 - (void)releaseAllModel;

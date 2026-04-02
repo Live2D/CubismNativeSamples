@@ -3,6 +3,8 @@ if (CSM_MINIMUM_DEMO)
     PRIVATE
       ${CMAKE_CURRENT_SOURCE_DIR}/minimum/MinAppDelegate.h
       ${CMAKE_CURRENT_SOURCE_DIR}/minimum/MinAppDelegate.mm
+      ${CMAKE_CURRENT_SOURCE_DIR}/minimum/MinSceneDelegate.h
+      ${CMAKE_CURRENT_SOURCE_DIR}/minimum/MinSceneDelegate.mm
       ${CMAKE_CURRENT_SOURCE_DIR}/minimum/MinLAppAllocator.h
       ${CMAKE_CURRENT_SOURCE_DIR}/minimum/MinLAppAllocator.mm
       ${CMAKE_CURRENT_SOURCE_DIR}/minimum/MinLAppDefine.h
@@ -28,6 +30,8 @@ else ()
     PRIVATE
       ${CMAKE_CURRENT_SOURCE_DIR}/AppDelegate.h
       ${CMAKE_CURRENT_SOURCE_DIR}/AppDelegate.mm
+      ${CMAKE_CURRENT_SOURCE_DIR}/SceneDelegate.h
+      ${CMAKE_CURRENT_SOURCE_DIR}/SceneDelegate.mm
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppAllocator.h
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppAllocator.mm
       ${CMAKE_CURRENT_SOURCE_DIR}/LAppDefine.h

@@ -97,6 +97,10 @@ On Linux, the following packages must be installed
 | `Ubuntu` | `vulkan-tools` `libvulkan-dev` `vulkan-validationlayers-dev` `spirv-tools` |
 | `AlmaLinux` | `vulkan-tools` `vulkan-loader-devel` `vulkan-validation-layers` |
 
+### Vulkan validation layers
+
+When the `CSM_DEBUG` preprocessor macro is defined for the sample build, the Vulkan validation layers are enabled at device creation. Install the validation layers (see the table above on Linux, or use a full Vulkan SDK install on Windows) and define `CSM_DEBUG` in your toolchain if you want to run with validation enabled.
+
 [GLFW]: https://github.com/glfw/glfw
 [stb_image.h]: https://github.com/nothings/stb/blob/master/stb_image.h
 [Vulkan SDK]: https://www.lunarg.com/vulkan-sdk/

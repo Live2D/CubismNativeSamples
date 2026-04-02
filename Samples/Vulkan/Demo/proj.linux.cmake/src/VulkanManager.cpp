@@ -381,18 +381,15 @@ void VulkanManager::CreateLogicalDevice()
         createInfo.enabledLayerCount = 0;
     }
 
-    VkPhysicalDeviceDynamicRenderingFeaturesKHR dynamicRenderingF{};
-    dynamicRenderingF.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR;
-    dynamicRenderingF.dynamicRendering = VK_TRUE;
-
     VkPhysicalDeviceExtendedDynamicStateFeaturesEXT dynamicStateF{};
     dynamicStateF.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT;
     dynamicStateF.extendedDynamicState = VK_TRUE;
-    dynamicStateF.pNext = &dynamicRenderingF;
+    dynamicStateF.pNext = nullptr;
 
     VkPhysicalDeviceVulkan13Features deviceVulkan13Features{};
     deviceVulkan13Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
     deviceVulkan13Features.synchronization2 = VK_TRUE;
+    deviceVulkan13Features.dynamicRendering = VK_TRUE;
     deviceVulkan13Features.pNext = &dynamicStateF;
 
     VkPhysicalDeviceFeatures2 deviceFeatures2{};

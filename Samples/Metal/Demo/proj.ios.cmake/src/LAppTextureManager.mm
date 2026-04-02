@@ -19,6 +19,7 @@
 #pragma clang diagnostic pop
 #import "LAppPal.h"
 #import "AppDelegate.h"
+#import "SceneDelegate.h"
 #import "ViewController.h"
 #import "MetalUIView.h"
 
@@ -39,12 +40,14 @@
 - (void)dealloc
 {
     [self releaseTextures];
+    [super dealloc];
 }
 
 - (TextureInfo*) createTextureFromPngFile:(std::string)fileName
 {
-    AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
-    ViewController* viewController = delegate.viewController;
+    AppDelegate *appDelegate = (AppDelegate *) [[UIApplication sharedApplication] delegate];
+    SceneDelegate* sceneDelegate = [appDelegate getActiveSceneDelegate];
+    ViewController* viewController = [sceneDelegate viewController];
 
     //search loaded texture already.
     for (Csm::csmUint32 i = 0; i < _textures.GetSize(); i++)

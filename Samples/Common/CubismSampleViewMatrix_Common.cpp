@@ -6,7 +6,7 @@
  */
 
 #include "CubismSampleViewMatrix_Common.hpp"
-#include <math.h>
+#include <Math/CubismMath.hpp>
 #include "LAppDefine.hpp"
 
 CubismSampleViewMatrix_Common::CubismSampleViewMatrix_Common(Csm::CubismMatrix44*& deviceToScreen, int windowWidth, int windowHeight)
@@ -29,13 +29,13 @@ CubismSampleViewMatrix_Common::CubismSampleViewMatrix_Common(Csm::CubismMatrix44
 
     if (windowWidth > windowHeight)
     {
-        float screenW = fabsf(right - left);
+        float screenW = Csm::CubismMath::AbsF(right - left);
         // 行列の拡大率を相対的に設定
         deviceToScreen->ScaleRelative(screenW / windowWidth, -screenW / windowWidth);
     }
     else
     {
-        float screenH = fabsf(top - bottom);
+        float screenH = Csm::CubismMath::AbsF(top - bottom);
         // 行列の拡大率を相対的に設定
         deviceToScreen->ScaleRelative(screenH / windowHeight, -screenH / windowHeight);
     }

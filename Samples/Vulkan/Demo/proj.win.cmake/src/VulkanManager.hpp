@@ -256,10 +256,14 @@ private:
     VkSemaphore _imageAvailableSemaphore;                       // セマフォ
     SwapchainManager* _swapchainManager;                        // スワップチェーンの管理を行うスワップチェーンマネージャー
     bool _isSwapchainInvalid = false;                           // ウィンドウサイズが変更されたかのフラグ
-    const bool _enableValidationLayers = true;                  // 検証レイヤーを有効にするか
     VkDebugUtilsMessengerEXT _debugMessenger;                   // デバッグメッセージを出力するオブジェクト
     Csm::csmUint32 _imageIndex = 0;                             // 現在のイメージインデックス
     VkFormat _depthFormat;                                      // 深度フォーマット
     const VkFormat _surfaceFormat = VK_FORMAT_R8G8B8A8_UNORM;   // イメージフォーマット
     bool _framebufferResized = false;                           // フレームバッファのサイズが変わったか
+#ifdef CSM_DEBUG
+    bool _enableValidationLayers = true;                        // 検証レイヤーを有効にするか
+#else
+    bool _enableValidationLayers = false;
+#endif // CSM_DEBUG
 };

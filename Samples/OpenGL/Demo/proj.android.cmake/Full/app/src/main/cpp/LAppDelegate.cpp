@@ -136,6 +136,8 @@ void LAppDelegate::OnSurfaceCreate()
 
     // 無効になっているOpenGLリソースを破棄
     Live2D::Cubism::Framework::Rendering::CubismShader_OpenGLES2::GetInstance()->ReleaseInvalidShaderProgram();
+    // シェーダコードを最読み込むするためにインスタンスを破棄しておく
+    Live2D::Cubism::Framework::Rendering::CubismShader_OpenGLES2::DeleteInstance();
 
     LAppLive2DManager* live2DManager = LAppLive2DManager::GetInstance();
     for (Csm::csmUint32 i = 0; i < live2DManager->GetModelNum(); i++)

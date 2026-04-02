@@ -7,6 +7,7 @@
 
 package com.live2d.demo;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
@@ -17,33 +18,7 @@ import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 
 public class MainActivity extends Activity {
-    @Override
-    public boolean onTouchEvent(final MotionEvent event) {
-        final float pointX = event.getX();
-        final float pointY = event.getY();
-
-        // GLSurfaceViewのイベント処理キューにタッチイベントを追加する。
-        glSurfaceView.queueEvent(
-            new Runnable() {
-                @Override
-                public void run() {
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            JniBridgeJava.nativeOnTouchesBegan(pointX, pointY);
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            JniBridgeJava.nativeOnTouchesEnded(pointX, pointY);
-                            break;
-                        case MotionEvent.ACTION_MOVE:
-                            JniBridgeJava.nativeOnTouchesMoved(pointX, pointY);
-                            break;
-                    }
-                }
-            }
-        );
-        return super.onTouchEvent(event);
-    }
-
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +30,37 @@ public class MainActivity extends Activity {
         glSurfaceView.setRenderer(glRenderer);
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         setContentView(glSurfaceView);
+
+        // GLSurfaceViewでタッチイベントを処理する
+        glSurfaceView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, final MotionEvent event) {
+                final float pointX = event.getX();
+                final float pointY = event.getY();
+
+                // GLSurfaceViewのイベント処理キューにタッチイベントを追加する。
+                glSurfaceView.queueEvent(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            switch (event.getAction()) {
+                                case MotionEvent.ACTION_DOWN:
+                                    JniBridgeJava.nativeOnTouchesBegan(pointX, pointY);
+                                    break;
+                                case MotionEvent.ACTION_UP:
+                                    JniBridgeJava.nativeOnTouchesEnded(pointX, pointY);
+                                    break;
+                                case MotionEvent.ACTION_MOVE:
+                                    JniBridgeJava.nativeOnTouchesMoved(pointX, pointY);
+                                    break;
+                            }
+                        }
+                    }
+                );
+                return true;
+            }
+        });
+
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             getWindow().getDecorView().setSystemUiVisibility(

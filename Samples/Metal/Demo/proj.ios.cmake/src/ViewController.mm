@@ -13,6 +13,7 @@
 #import <string>
 #import "CubismFramework.hpp"
 #import "AppDelegate.h"
+#import "SceneDelegate.h"
 #import "LAppSprite.h"
 #import "LAppDefine.h"
 #import "LAppLive2DManager.h"
@@ -39,6 +40,8 @@ using namespace LAppDefine;
 @property (nonatomic) TouchManager *touchManager; ///< タッチマネージャー
 @property (nonatomic) Csm::CubismMatrix44 *deviceToScreen;///< デバイスからスクリーンへの行列
 @property (nonatomic) Csm::CubismViewMatrix *viewMatrix;
+@property (nonatomic) int windowWidth;
+@property (nonatomic) int windowHeight;
 
 @end
 
@@ -54,15 +57,23 @@ using namespace LAppDefine;
     _back = nil;
     _power = nil;
 
+    [_commandQueue release];
+    _commandQueue = nil;
+    [_depthTexture release];
+    _depthTexture = nil;
+
     MetalUIView *view = (MetalUIView*)self.view;
 
     view = nil;
 
+    [_depthTexture release];
+    _depthTexture = nil;
     Csm::Rendering::CubismDeviceInfo_Metal::ReleaseDeviceInfo(_device);
     delete(_viewMatrix);
     _viewMatrix = nil;
     delete(_deviceToScreen);
     _deviceToScreen = nil;
+    [_touchManager release];
     _touchManager = nil;
 }
 
@@ -78,9 +89,10 @@ using namespace LAppDefine;
     [super viewDidLoad];
 
 #if TARGET_OS_MACCATALYST
-    if (AppDelegate* appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate])
+    UIWindowScene *windowScene = (UIWindowScene *)[UIApplication sharedApplication].connectedScenes.anyObject;
+    if (windowScene)
     {
-        appDelegate.window.windowScene.titlebar.titleVisibility = UITitlebarTitleVisibilityHidden;
+        windowScene.titlebar.titleVisibility = UITitlebarTitleVisibilityHidden;
     }
 #endif
 
@@ -120,9 +132,31 @@ using namespace LAppDefine;
 
 - (void)initializeScreen
 {
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    int width = screenRect.size.width;
-    int height = screenRect.size.height;
+    UIWindowScene *windowScene = (UIWindowScene *)[UIApplication sharedApplication].connectedScenes.anyObject;
+
+    if (!windowScene)
+    {
+        return;
+    }
+
+#if TARGET_OS_MACCATALYST
+    int width = self.view.bounds.size.width;
+    int height = self.view.bounds.size.height;
+#else
+    UIEdgeInsets insets = windowScene.windows.firstObject.safeAreaInsets;
+
+    int width = windowScene.screen.bounds.size.width - insets.left - insets.right;
+    int height = windowScene.screen.bounds.size.height - insets.top - insets.bottom;
+#endif
+
+    if (width <= 0 || height <= 0)
+    {
+        return;
+    }
+
+    const CGFloat retinaScale = self.traitCollection.displayScale;
+    _windowWidth = width * retinaScale;
+    _windowHeight = height * retinaScale;
 
     // 縦サイズを基準とする
     float ratio = static_cast<float>(width) / static_cast<float>(height);
@@ -163,10 +197,29 @@ using namespace LAppDefine;
 
 - (void)resizeScreen
 {
-    AppDelegate* delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
-    ViewController* view = [delegate viewController];
-    int width = view.view.frame.size.width;
-    int height = view.view.frame.size.height;
+#if TARGET_OS_MACCATALYST
+    int width = self.view.frame.size.width;
+    int height = self.view.frame.size.height;
+#else
+    UIEdgeInsets insets = self.view.safeAreaInsets;
+    int width = self.view.frame.size.width - insets.left - insets.right;
+    int height = self.view.frame.size.height - insets.top - insets.bottom;
+#endif
+
+    if (width == 0 || height == 0)
+    {
+        return;
+    }
+
+    const CGFloat retinaScale = self.traitCollection.displayScale;
+    int newWindowWidth = width * retinaScale;
+    int newWindowHeight = height * retinaScale;
+    if (newWindowWidth == _windowWidth && newWindowHeight == _windowHeight)
+    {
+        return;
+    }
+    _windowWidth = newWindowWidth;
+    _windowHeight = newWindowHeight;
 
     // 縦サイズを基準とする
     float ratio = static_cast<float>(width) / static_cast<float>(height);
@@ -204,57 +257,85 @@ using namespace LAppDefine;
                                   ViewLogicalMaxTop
                                   );
 
-#if TARGET_OS_MACCATALYST
-    [self resizeSprite:width Height:height];
-#endif
-
+    [self resizeSprite:width height:height];
 }
 
 - (void)initializeSprite
 {
-    AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    ViewController* view = [delegate viewController];
-    float width = view.view.frame.size.width;
-    float height = view.view.frame.size.height;
+    UIWindowScene *windowScene = (UIWindowScene *)[UIApplication sharedApplication].connectedScenes.anyObject;
 
-    LAppTextureManager* textureManager = [delegate getTextureManager];
+    if (!windowScene)
+    {
+        return;
+    }
+
+#if TARGET_OS_MACCATALYST
+    float width = self.view.bounds.size.width;
+    float height = self.view.bounds.size.height;
+#else
+    UIEdgeInsets insets = windowScene.windows.firstObject.safeAreaInsets;
+    float width = windowScene.screen.bounds.size.width - insets.left - insets.right;
+    float height = windowScene.screen.bounds.size.height - insets.top - insets.bottom;
+#endif
+
+    LAppTextureManager* textureManager = [self.sceneDelegate getTextureManager];
     const string resourcesPath = ResourcesPath;
 
+    string imageName;
+    float x;
+    float y;
+    float fWidth;
+    float fHeight;
+    float ratio;
+
     //背景
-    string imageName = BackImageName;
-    TextureInfo* backgroundTexture = [textureManager createTextureFromPngFile:resourcesPath+imageName];
-    float x = width * 0.5f;
-    float y = height * 0.5f;
-    float fHeight = static_cast<float>(height) * 0.95f;
-    float ratio = fHeight / static_cast<float>(backgroundTexture->height);
-    float fWidth = static_cast<float>(backgroundTexture->width) * ratio;
-    _back = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight MaxWidth:width MaxHeight:height Texture:backgroundTexture->id];
+    if (!_back)
+    {
+        imageName = BackImageName;
+        TextureInfo* backgroundTexture = [textureManager createTextureFromPngFile:resourcesPath+imageName];
+        x = width * 0.5f;
+        y = height * 0.5f;
+        fHeight = static_cast<float>(height) * 0.95f;
+        ratio = fHeight / static_cast<float>(backgroundTexture->height);
+        fWidth = static_cast<float>(backgroundTexture->width) * ratio;
+        _back = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight MaxWidth:width MaxHeight:height Texture:backgroundTexture->id];
+    }
 
     //モデル変更ボタン
-    imageName = GearImageName;
-    TextureInfo* gearTexture = [textureManager createTextureFromPngFile:resourcesPath+imageName];
-    x = static_cast<float>(width - gearTexture->width * 0.5f);
-    y = static_cast<float>(height - gearTexture->height * 0.5f);
-    fWidth = static_cast<float>(gearTexture->width);
-    fHeight = static_cast<float>(gearTexture->height);
-    _gear = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight MaxWidth:width MaxHeight:height Texture:gearTexture->id];
+    if (!_gear)
+    {
+        imageName = GearImageName;
+        TextureInfo* gearTexture = [textureManager createTextureFromPngFile:resourcesPath+imageName];
+        x = static_cast<float>(width - gearTexture->width * 0.5f);
+        y = static_cast<float>(height - gearTexture->height * 0.5f);
+        fWidth = static_cast<float>(gearTexture->width);
+        fHeight = static_cast<float>(gearTexture->height);
+        _gear = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight MaxWidth:width MaxHeight:height Texture:gearTexture->id];
+    }
 
     //電源ボタン
-    imageName = PowerImageName;
-    TextureInfo* powerTexture = [textureManager createTextureFromPngFile:resourcesPath+imageName];
-    x = static_cast<float>(width - powerTexture->width * 0.5f);
-    y = static_cast<float>(powerTexture->height * 0.5f);
-    fWidth = static_cast<float>(powerTexture->width);
-    fHeight = static_cast<float>(powerTexture->height);
-    _power = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight MaxWidth:width MaxHeight:height Texture:powerTexture->id];
+    if (!_power)
+    {
+        imageName = PowerImageName;
+        TextureInfo* powerTexture = [textureManager createTextureFromPngFile:resourcesPath+imageName];
+        x = static_cast<float>(width - powerTexture->width * 0.5f);
+        y = static_cast<float>(powerTexture->height * 0.5f);
+        fWidth = static_cast<float>(powerTexture->width);
+        fHeight = static_cast<float>(powerTexture->height);
+        _power = [[LAppSprite alloc] initWithMyVar:x Y:y Width:fWidth Height:fHeight MaxWidth:width MaxHeight:height Texture:powerTexture->id];
+    }
 }
 
-- (void)resizeSprite:(float)width Height:(float)height
+- (void)resizeSprite:(float)width height:(float)height
 {
-    AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    ViewController* view = [delegate viewController];
-    float maxWidth = view.view.frame.size.width;
-    float maxHeight = view.view.frame.size.height;
+#if TARGET_OS_MACCATALYST
+    float maxWidth = self.view.frame.size.width;
+    float maxHeight = self.view.frame.size.height;
+#else
+    UIEdgeInsets insets = self.view.safeAreaInsets;
+    float maxWidth = self.view.frame.size.width - insets.left - insets.right;
+    float maxHeight = self.view.frame.size.height - insets.top - insets.bottom;
+#endif
 
     //背景
     float x = width * 0.5f;
@@ -284,6 +365,12 @@ using namespace LAppDefine;
     UITouch *touch = [touches anyObject];
     CGPoint point = [touch locationInView:self.view];
 
+#if !TARGET_OS_MACCATALYST
+    UIEdgeInsets insets = self.view.safeAreaInsets;
+    point.x -= insets.left;
+    point.y -= insets.top;
+#endif
+
     [_touchManager touchesBegan:point.x DeciveY:point.y];
 }
 
@@ -291,6 +378,12 @@ using namespace LAppDefine;
 {
     UITouch *touch = [touches anyObject];
     CGPoint point = [touch locationInView:self.view];
+
+#if !TARGET_OS_MACCATALYST
+    UIEdgeInsets insets = self.view.safeAreaInsets;
+    point.x -= insets.left;
+    point.y -= insets.top;
+#endif
 
     float viewX = [self transformViewX:[_touchManager getX]];
     float viewY = [self transformViewY:[_touchManager getY]];
@@ -305,6 +398,11 @@ using namespace LAppDefine;
     NSLog(@"%@", touch.view);
 
     CGPoint point = [touch locationInView:self.view];
+#if !TARGET_OS_MACCATALYST
+    UIEdgeInsets insets = self.view.safeAreaInsets;
+    point.x -= insets.left;
+    point.y -= insets.top;
+#endif
     float pointY = [self transformTapY:point.y];
 
     // タッチ終了
@@ -363,9 +461,12 @@ using namespace LAppDefine;
 
 - (float)transformTapY:(float)deviceY
 {
-    AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    ViewController* view = [delegate viewController];
-    float height = view.view.frame.size.height;
+#if TARGET_OS_MACCATALYST
+    float height = self.view.frame.size.height;
+#else
+    UIEdgeInsets insets = self.view.safeAreaInsets;
+    float height = self.view.frame.size.height - insets.top - insets.bottom;
+#endif
     return deviceY * -1 + height;
 }
 
@@ -380,6 +481,10 @@ using namespace LAppDefine;
     depthTextureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
     depthTextureDescriptor.storageMode = MTLStorageModePrivate;
 
+    if (_depthTexture)
+    {
+        [_depthTexture release];
+    }
     _depthTexture = [_device newTextureWithDescriptor:depthTextureDescriptor];
 
     [self resizeScreen];
@@ -410,6 +515,10 @@ using namespace LAppDefine;
 
     id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
 
+    // セーフエリアのみ
+    MTLViewport viewport = [self getSafeAreaViewport];
+    [renderEncoder setViewport:viewport];
+
     //モデル以外の描画
     [self renderSprite:renderEncoder];
 
@@ -425,6 +534,35 @@ using namespace LAppDefine;
 
 - (void)dealloc
 {
+    [self releaseView];
     [super dealloc];
+}
+
+- (int)getWindowWidth
+{
+    return _windowWidth;
+}
+
+- (int)getWindowHeight;
+{
+    return _windowHeight;
+}
+
+- (MTLViewport) getSafeAreaViewport
+{
+    CGFloat scale = self.traitCollection.displayScale;
+#if TARGET_OS_MACCATALYST
+    MTLViewport viewport =  {0,0,
+                             self.view.frame.size.width * scale,
+                             self.view.frame.size.height * scale,
+                             0.0,1.0};
+#else
+    UIEdgeInsets insets = self.view.safeAreaInsets;
+    MTLViewport viewport =  {insets.left * scale, insets.top * scale,
+                             (self.view.frame.size.width - insets.left - insets.right) * scale,
+                             (self.view.frame.size.height - insets.top - insets.bottom) * scale,
+                             0.0,1.0};
+#endif
+    return viewport;
 }
 @end

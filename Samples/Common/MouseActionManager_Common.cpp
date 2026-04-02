@@ -7,6 +7,8 @@
 
 #include "MouseActionManager_Common.hpp"
 
+#include <Math/CubismMath.hpp>
+
 #include "LAppDefine.hpp"
 
 namespace {
@@ -35,12 +37,18 @@ void MouseActionManager_Common::ReleaseInstance()
 
 MouseActionManager_Common::MouseActionManager_Common()
 {
+    // デバイス座標からスクリーン座標に変換するための
+    _deviceToScreen = new Csm::CubismMatrix44();
+
+    // 画面の表示の拡大縮小や移動の変換を行う行列
+    _viewMatrix = new CubismSampleViewMatrix_Common(_deviceToScreen, 0, 0);
 }
 
 MouseActionManager_Common::~MouseActionManager_Common()
 {
     // 行列データの解放
     delete _viewMatrix;
+    delete _deviceToScreen;
 
     delete _TouchManager;
 }
@@ -60,8 +68,45 @@ void MouseActionManager_Common::Initialize(int windowWidth, int windowHeight)
 
 void MouseActionManager_Common::ViewInitialize(int windowWidth, int windowHeight)
 {
-    _deviceToScreen = new Csm::CubismMatrix44();
-    _viewMatrix = new CubismSampleViewMatrix_Common(_deviceToScreen, windowWidth, windowHeight);
+    if (windowWidth == 0 || windowHeight == 0)
+    {
+        return;
+    }
+
+    // 縦サイズを基準とする
+    float ratio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
+    float left = -ratio;
+    float right = ratio;
+    float bottom = LAppDefine::ViewLogicalLeft;
+    float top = LAppDefine::ViewLogicalRight;
+
+    _viewMatrix->SetScreenRect(left, right, bottom, top); // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
+    _viewMatrix->Scale(LAppDefine::ViewScale, LAppDefine::ViewScale);
+
+    _deviceToScreen->LoadIdentity(); // サイズが変わった際などリセット必須
+    if (windowWidth > windowHeight)
+    {
+        float screenW = Csm::CubismMath::AbsF(right - left);
+        _deviceToScreen->ScaleRelative(screenW / windowWidth, -screenW / windowWidth);
+    }
+    else
+    {
+        float screenH = Csm::CubismMath::AbsF(top - bottom);
+        _deviceToScreen->ScaleRelative(screenH / windowHeight, -screenH / windowHeight);
+    }
+    _deviceToScreen->TranslateRelative(-windowWidth * 0.5f, -windowHeight * 0.5f);
+
+    // 表示範囲の設定
+    _viewMatrix->SetMaxScale(LAppDefine::ViewMaxScale); // 限界拡大率
+    _viewMatrix->SetMinScale(LAppDefine::ViewMinScale); // 限界縮小率
+
+    // 表示できる最大範囲
+    _viewMatrix->SetMaxScreenRect(
+        LAppDefine::ViewLogicalMaxLeft,
+        LAppDefine::ViewLogicalMaxRight,
+        LAppDefine::ViewLogicalMaxBottom,
+        LAppDefine::ViewLogicalMaxTop
+    );
 }
 
 void MouseActionManager_Common::OnDrag(Csm::csmFloat32 x, Csm::csmFloat32 y)

@@ -181,8 +181,6 @@ void LAppView::Render()
 
     LAppLive2DManager* Live2DManager = LAppLive2DManager::GetInstance();
 
-    //Live2DManager->SetViewMatrix(_viewMatrix);
-
     // Cubism更新・描画
     Live2DManager->OnUpdate();
 

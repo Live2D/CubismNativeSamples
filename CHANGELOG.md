@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
+## [5-r.5] - 2026-04-02
+
+### Added
+
+* Add support for rendering portrait displays on iOS samples.
+* Add support for resizing windows on iPad in iOS samples.
+
+### Changed
+
+* Change Vulkan samples to use `CubismDeviceInfo_Vulkan` instead of singletons.
+* Migrated the OpenGL and Metal iOS samples to the scene‑based lifecycle.
+* Change to use Vulkan validation layers when the `CSM_DEBUG` preprocessor is defined.
+* Change motion calculation order updates to be performed by `CubismUpdateScheduler`.
+* Change to configure the parameter IDs and settings used for target tracking in `CubismLook`.
+* Change Vulkan sampler settings to align with other graphics APIs.
+
+### Fixed
+
+* Fix a validation error on Vulkan.
+* Fix memory leak when resizing window with Metal.
+* Fix a memory leak in `ViewInitialize()` where `_deviceToScreen` and `_viewMatrix` were not deleted before being re-allocated in OpenGL, D3D11 and D3D9.
+* Fix a memory leak in `InitializeSprite()` where sprites were not deleted before being re-allocated on window resize in OpenGL.
+* Fix a memory leak in `CreateShader()` where shader source bytes were not released after loading in D3D11 and D3D9.
+* Fix a memory leak where `CubismDirectXView` singleton was not released in D3D11 and D3D9 minimum demos.
+* Fix a memory leak in D3D9 minimum demo where `InitializeSprite()` was called twice during device recreation.
+* Fix rendering not updating correctly after window resize when `USE_RENDER_TARGET` or `USE_MODEL_RENDER_TARGET` is enabled in OpenGL samples.
+* Fix collision detection misalignment in split-screen mode on Android.
+* Fix app state reset when entering split-screen mode on Android.
+* Remove unnecessary matrix transpose in D3D11 sprites.
+* Fix rendering process to pause in the background on Metal.
+* Fix shader regeneration to be triggered when OnSurfaceCreate is called on Android OpenGL.
+* Fix an issue where the application might not terminate correctly after resizing the window in Vulkan on Windows.
+
+
 ## [5-r.5-beta.3.1] - 2026-02-19
 
 ### Fixed
@@ -49,7 +83,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 * Change to the implementation now enables support for multiple devices instead of a single one.
   * In Metal, the device is now managed on the sample side.
 
-## Fixed
+### Fixed
 
 * Fix OpenGL renderer now supports Retina displays on macOS.
 * Fix warnings occurs during build on OpenGL-Android.
@@ -78,7 +112,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   * Upgrade the version of Android Gradle Plugin from 8.6.1 to 8.9.1.
   * Upgrade the version of Gradle from 8.7 to 8.11.1.
 
-## Fixed
+### Fixed
 
 * Fix unintended object recreating when resizing the window in the OpenGL sample program. by [@KhangPham9](https://github.com/Live2D/CubismNativeSamples/pull/50)
 
@@ -580,6 +614,7 @@ See [Core Changelog] for details.
 * What was `Package.json` is currently being changed to`cubism-info.yml`.
 
 
+[5-r.5]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.5-beta.3.1...5-r.5
 [5-r.5-beta.3.1]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.5-beta.3...5-r.5-beta.3.1
 [5-r.5-beta.3]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.5-beta.2...5-r.5-beta.3
 [5-r.5-beta.2]: https://github.com/Live2D/CubismNativeSamples/compare/5-r.5-beta.1...5-r.5-beta.2

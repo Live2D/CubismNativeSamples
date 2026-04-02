@@ -463,13 +463,19 @@ void LAppView::ResizeSprite(int width, int height)
     float fWidth = 0.0f;
     float fHeight = 0.0f;
 
+    CubismImageVulkan textureImage;
+
     if (_back)
     {
         _back->SetPipeline(_spritePipeline);
+        _back->RecreateDescriptorSet(device, _spritePipeline->GetDescriptorSetLayout());
         uint32_t id = _back->GetTextureId();
         LAppTextureManager::TextureInfo* texInfo = textureManager->GetTextureInfoById(id);
         if (texInfo)
         {
+            textureManager->GetTexture(id, textureImage);
+            _back->UpdateDescriptorSet(device, textureImage.GetView(), textureImage.GetSampler());
+
             x = width * 0.5f;
             y = height * 0.5f;
             fWidth = static_cast<float>(texInfo->width * 2);
@@ -481,10 +487,14 @@ void LAppView::ResizeSprite(int width, int height)
     if (_power)
     {
         _power->SetPipeline(_spritePipeline);
+        _power->RecreateDescriptorSet(device, _spritePipeline->GetDescriptorSetLayout());
         uint32_t id = _power->GetTextureId();
         LAppTextureManager::TextureInfo* texInfo = textureManager->GetTextureInfoById(id);
         if (texInfo)
         {
+            textureManager->GetTexture(id, textureImage);
+            _power->UpdateDescriptorSet(device, textureImage.GetView(), textureImage.GetSampler());
+
             x = static_cast<float>(width - texInfo->width * 0.5f);
             y = static_cast<float>(height - texInfo->height * 0.5f);
             fWidth = static_cast<float>(texInfo->width);
@@ -496,10 +506,14 @@ void LAppView::ResizeSprite(int width, int height)
     if (_gear)
     {
         _gear->SetPipeline(_spritePipeline);
+        _gear->RecreateDescriptorSet(device, _spritePipeline->GetDescriptorSetLayout());
         uint32_t id = _gear->GetTextureId();
         LAppTextureManager::TextureInfo* texInfo = textureManager->GetTextureInfoById(id);
         if (texInfo)
         {
+            textureManager->GetTexture(id, textureImage);
+            _gear->UpdateDescriptorSet(device, textureImage.GetView(), textureImage.GetSampler());
+
             x = static_cast<float>(width - texInfo->width * 0.5f);
             y = static_cast<float>(texInfo->height * 0.5f);
             fWidth = static_cast<float>(texInfo->width);
@@ -510,6 +524,7 @@ void LAppView::ResizeSprite(int width, int height)
     if (_renderSprite)
     {
         _renderSprite->SetPipeline(_modelSpritePipeline);
+        _renderSprite->RecreateDescriptorSet(device, _modelSpritePipeline->GetDescriptorSetLayout());
         x = width * 0.5f;
         y = height * 0.5f;
         _renderSprite->ResetRect(x, y, static_cast<float>(width), static_cast<float>(height));

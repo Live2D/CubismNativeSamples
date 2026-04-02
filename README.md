@@ -21,11 +21,11 @@ Please check the [license](LICENSE.md) before using this SDK.
 Please check the [notices](NOTICE.md) before using this SDK.
 
 
-## Compatibility with Cubism 5 new features and previous Cubism SDK versions
+## Compatibility with Cubism 5.3 new features and previous Cubism SDK versions
 
-This SDK is compatible with Cubism 5.  
-For SDK compatibility with new features in Cubism 5 Editor, please refer to [here](https://docs.live2d.com/en/cubism-sdk-manual/cubism-5-new-functions/).  
-For compatibility with previous versions of Cubism SDK, please refer to [here](https://docs.live2d.com/en/cubism-sdk-manual/compatibility-with-cubism-5/).
+This SDK is compatible with Cubism 5.3.  
+For SDK compatibility with new features in Cubism 5.3 Editor, please refer to [here](https://docs.live2d.com/en/cubism-sdk-manual/cubism-5-3-new-functions/).  
+For compatibility with previous versions of Cubism SDK, please refer to [here](https://docs.live2d.com/en/cubism-sdk-manual/compatibility-with-cubism-5-3/).
 
 
 ## Directory structure
@@ -109,13 +109,13 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 | Development Tool | Version |
 | --- | --- |
-| Android Studio | Otter 3 Feature Drop 2025.2.3 |
-| DevEco Studio | 6.0.1 |
+| Android Studio | Panda 2 2025.3.2 |
+| DevEco Studio | 6.0.1.251 |
 | CMake | 3.31.8 |
-| Visual Studio 2017 | 15.9.76 |
-| Visual Studio 2019 | 16.11.53 |
-| Visual Studio 2022 | 17.14.23 |
-| Xcode | 26.2 |
+| Visual Studio 2017 | 15.9.78 |
+| Visual Studio 2019 | 16.11.54 |
+| Visual Studio 2022 | 17.14.29 |
+| Xcode | 26.3 |
 
 ### Android
 
@@ -154,10 +154,10 @@ Core : [CHANGELOG.md](Core/CHANGELOG.md)
 
 | Platform | Version |
 | --- | --- |
-| iOS / iPadOS | 26.2 |
-| macOS | 26.2 |
+| iOS / iPadOS | 26.4 |
+| macOS | 26.4 |
 | Windows 10 | 23H2 |
-| Windows 11 | 24H2 |
+| Windows 11 | 25H2 |
 
 ### Android
 

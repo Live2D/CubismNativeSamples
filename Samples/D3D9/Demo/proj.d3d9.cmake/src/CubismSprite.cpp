@@ -68,7 +68,10 @@ CubismSprite::CubismSprite(float x, float y, float width, float height, Csm::csm
 
 CubismSprite::~CubismSprite()
 {
-    CubismDirectXRenderer::GetInstance()->_textureManager->ReleaseTexture(_textureId);
+    if (CubismDirectXRenderer::GetInstance()->_textureManager != NULL)
+    {
+        CubismDirectXRenderer::GetInstance()->_textureManager->ReleaseTexture(_textureId);
+    }
 
     // インデックス
     if (_indexStore)

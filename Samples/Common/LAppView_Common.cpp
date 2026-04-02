@@ -7,7 +7,7 @@
 
 #include "LAppView_Common.hpp"
 
-#include <math.h>
+#include <Math/CubismMath.hpp>
 
 #include "LAppDefine.hpp"
 
@@ -46,12 +46,12 @@ void LAppView_Common::Initialize(int width, int height)
     _deviceToScreen->LoadIdentity(); // サイズが変わった際などリセット必須
     if (width > height)
     {
-        float screenW = fabsf(right - left);
+        float screenW = Csm::CubismMath::AbsF(right - left);
         _deviceToScreen->ScaleRelative(screenW / width, -screenW / width);
     }
     else
     {
-        float screenH = fabsf(top - bottom);
+        float screenH = Csm::CubismMath::AbsF(top - bottom);
         _deviceToScreen->ScaleRelative(screenH / height, -screenH / height);
     }
     _deviceToScreen->TranslateRelative(-width * 0.5f, -height * 0.5f);

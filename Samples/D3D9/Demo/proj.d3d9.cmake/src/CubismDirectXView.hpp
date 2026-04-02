@@ -39,6 +39,11 @@ public:
     static CubismDirectXView* GetInstance();
 
     /**
+    * @brief   クラスのインスタンス（シングルトン）を解放する
+    */
+    static void ReleaseInstance();
+
+    /**
     * @brief コンストラクタ
     */
     CubismDirectXView();

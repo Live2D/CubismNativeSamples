@@ -6,16 +6,9 @@
  */
 
 #import <UIKit/UIKit.h>
-
-@class ViewController;
-@class LAppView;
-@class LAppTextureManager;
+#import "SceneDelegate.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
-
-@property (strong, nonatomic) UIWindow *window;
-@property (strong, nonatomic) ViewController *viewController;
-@property (nonatomic, readonly, getter=getTextureManager) LAppTextureManager *textureManager; // テクスチャマネージャー
 
 /**
  * @brief   Cubism SDK の初期化
@@ -31,6 +24,11 @@
  * @brief   アプリケーションを終了する。
  */
 - (void)finishApplication;
+
+/**
+ * @brief   アクティブシーンを取得する。
+ */
+- (SceneDelegate*)getActiveSceneDelegate;
 
 @end
 

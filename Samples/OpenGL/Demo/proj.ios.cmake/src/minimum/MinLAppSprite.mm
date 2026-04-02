@@ -6,6 +6,8 @@
  */
 
 #import <Foundation/Foundation.h>
+#import "MinViewController.h"
+#import "MinSceneDelegate.h"
 #import "MinLAppSprite.h"
 #import <GLKit/GLKit.h>
 #import <OpenGLES/ES2/gl.h>
@@ -13,8 +15,11 @@
 
 #define BUFFER_OFFSET(bytes) ((GLubyte *)NULL + (bytes))
 
-
 @interface MinLAppSprite()
+{
+    float _maxWidth;
+    float _maxHeight;
+}
 
 @property (nonatomic, readwrite) GLuint textureId; // テクスチャID
 @property (nonatomic) SpriteRect rect; // 矩形
@@ -26,7 +31,8 @@
 @implementation MinLAppSprite
 @synthesize baseEffect;
 
-- (id)initWithMyVar:(float)x Y:(float)y Width:(float)width Height:(float)height TextureId:(GLuint) textureId
+- (id)initWithMyVar:(float)x Y:(float)y Width:(float)width Height:(float)height
+                    MaxWidth:(float)maxWidth MaxHeight:(float)maxHeight TextureId:(GLuint) textureId
 {
     self = [super self];
 
@@ -36,6 +42,8 @@
         _rect.right = (x + width * 0.5f);
         _rect.up = (y + height * 0.5f);
         _rect.down = (y - height * 0.5f);
+        _maxWidth = maxWidth;
+        _maxHeight = maxHeight;
         _textureId = textureId;
 
         _spriteColorR = _spriteColorG = _spriteColorB = _spriteColorA = 1.0f;
@@ -60,16 +68,12 @@
 
     [self.baseEffect prepareToDraw];
 
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    float maxWidth = screenRect.size.width;
-    float maxHeight = screenRect.size.height;
-
     float positionVertex[] =
     {
-        (_rect.left  - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f),
-        (_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f),
-        (_rect.left  - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.up   - maxHeight * 0.5f) / (maxHeight * 0.5f),
-        (_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.up   - maxHeight * 0.5f) / (maxHeight * 0.5f),
+        (_rect.left  - _maxWidth * 0.5f) / (_maxWidth * 0.5f), (_rect.down - _maxHeight * 0.5f) / (_maxHeight * 0.5f),
+        (_rect.right - _maxWidth * 0.5f) / (_maxWidth * 0.5f), (_rect.down - _maxHeight * 0.5f) / (_maxHeight * 0.5f),
+        (_rect.left  - _maxWidth * 0.5f) / (_maxWidth * 0.5f), (_rect.up   - _maxHeight * 0.5f) / (_maxHeight * 0.5f),
+        (_rect.right - _maxWidth * 0.5f) / (_maxWidth * 0.5f), (_rect.up   - _maxHeight * 0.5f) / (_maxHeight * 0.5f),
     };
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
@@ -114,16 +118,12 @@
 
     [self.baseEffect prepareToDraw];
 
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    float maxWidth = screenRect.size.width;
-    float maxHeight = screenRect.size.height;
-
     float positionVertex[] =
     {
-        (_rect.left  - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f),
-        (_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.down - maxHeight * 0.5f) / (maxHeight * 0.5f),
-        (_rect.left  - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.up   - maxHeight * 0.5f) / (maxHeight * 0.5f),
-        (_rect.right - maxWidth * 0.5f) / (maxWidth * 0.5f), (_rect.up   - maxHeight * 0.5f) / (maxHeight * 0.5f),
+        (_rect.left  - _maxWidth * 0.5f) / (_maxWidth * 0.5f), (_rect.down - _maxHeight * 0.5f) / (_maxHeight * 0.5f),
+        (_rect.right - _maxWidth * 0.5f) / (_maxWidth * 0.5f), (_rect.down - _maxHeight * 0.5f) / (_maxHeight * 0.5f),
+        (_rect.left  - _maxWidth * 0.5f) / (_maxWidth * 0.5f), (_rect.up   - _maxHeight * 0.5f) / (_maxHeight * 0.5f),
+        (_rect.right - _maxWidth * 0.5f) / (_maxWidth * 0.5f), (_rect.up   - _maxHeight * 0.5f) / (_maxHeight * 0.5f),
     };
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
@@ -160,6 +160,17 @@
     _spriteColorG = g;
     _spriteColorB = b;
     _spriteColorA = a;
+}
+
+- (void)resizeImmidiate:(float)x Y:(float)y Width:(float)width Height:(float)height
+                        MaxWidth:(float)maxWidth MaxHeight:(float)maxHeight
+{
+    _rect.left = (x - width * 0.5f);
+    _rect.right = (x + width * 0.5f);
+    _rect.up = (y + height * 0.5f);
+    _rect.down = (y - height * 0.5f);
+    _maxWidth = maxWidth;
+    _maxHeight = maxHeight;
 }
 
 @end
